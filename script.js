@@ -2007,34 +2007,43 @@ function displayTimeLeft(seconds) {
 }
 
 
+let notifLog = {};
+
+function genUID() {
+    return Date.now().toString(36) + Math.random().toString(36).substr(2);
+}
+
 function notify(title, description, appname) {
-	if (document.getElementById("notification").style.display == "block") {
-		document.getElementById("notification").style.display = "none";
-		setTimeout(notify(title, description, appname), 500)
-	}
+    const notificationID = genUID();
+    notifLog[notificationID] = { title, description, appname };
+    displayNotifications();
+}
 
-	var appnameb = document.getElementById('notifappName');
-	var descb = document.getElementById('notifappDesc');
-	var titleb = document.getElementById('notifTitle');
+function displayNotifications() {
+    const notifList = document.getElementById("notiflist");
+    notifList.innerHTML = "";
 
-	if (appnameb && descb && titleb) {
-		appnameb.innerText = appname;
-		descb.innerText = description;
-		titleb.innerText = title;
-		const windValues = Object.values(winds).map(Number);
+    Object.values(notifLog).forEach(({ title, description, appname }) => {
+        const notifDiv = document.createElement("div");
+        notifDiv.className = "notification";
 
-		// Calculate the maximum value from the array
-		const maxWindValue = Math.max(...windValues);
+        const titleDiv = document.createElement("div");
+        titleDiv.className = "notifTitle";
+        titleDiv.innerText = title;
 
-		// Set the zIndex
-		document.getElementById("notification").style.zIndex = maxWindValue + 1;
-		document.getElementById("notification").style.display = "block";
-		setTimeout(function () {
-			document.getElementById("notification").style.display = "none";
-		}, 5000);
-	} else {
-		console.error("One or more DOM elements not found.");
-	}
+        const descDiv = document.createElement("div");
+        descDiv.className = "notifDesc";
+        descDiv.innerText = description;
+
+        const appNameDiv = document.createElement("div");
+        appNameDiv.className = "notifAppName";
+        appNameDiv.innerText = appname;
+
+        notifDiv.appendChild(titleDiv);
+        notifDiv.appendChild(descDiv);
+        notifDiv.appendChild(appNameDiv);
+        notifList.appendChild(notifDiv);
+    });
 }
 
 function runAsOSL(content) {
