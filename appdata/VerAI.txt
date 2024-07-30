@@ -1,0 +1,87 @@
+<html lang="en"><head><base target="_blank">
+
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background-color: #323131;
+            color: white;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        textarea {
+            width: 100%;
+            height: 150px;
+            margin-bottom: 10px;
+            background-color: #323131;
+            color: white;
+            border: 1px solid #555;
+            padding: 10px;
+            font-size: 1em;
+        }
+        #response {
+            margin-top: 20px;
+            font-size: 1.2em;
+            color: white;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #555;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #777;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Try it now!</h1>
+    <form id="apiForm">
+        <label for="message">Message:</label><br>
+        <textarea id="message" name="message" required=""></textarea><br>
+        <button type="submit">Send</button>
+    </form>
+
+    <div id="response"></div>
+
+    <script>
+        document.getElementById('apiForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const message = document.getElementById('message').value;
+
+            const payload = {
+                messages: [{ role: 'user', content: message }],
+                model: 'blackbox'
+            };
+
+            fetch('https://ai.milosantos.com/blackbox', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(response => response.json())
+            .then(data => {
+                const responseMessage = data.choices[0].message.content;
+                document.getElementById('response').innerText = `Response: ${responseMessage}`;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('response').innerText = 'An error occurred. Please try again.';
+            });
+        });
+    </script>
+
+
+
+</body></html>
