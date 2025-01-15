@@ -1325,6 +1325,67 @@ function notify(title, description, appname) {
 	notifLog[notificationID] = { title, description, appname };
 
 }
+let toastInProgress = false;
+let totalDuration = 0;
+const minToastDuration = 3000;
+const maxToastDuration = 5000;
+let toastQueue = [];
+
+function toast(text, duration = 5000) {
+	let displayDuration = Math.min(duration, maxToastDuration);
+
+	if (toastInProgress) {
+		toastQueue.push({ text, duration: displayDuration });
+	} else {
+		totalDuration = displayDuration;
+		toastInProgress = true;
+		displayToast(text, displayDuration);
+	}
+}
+
+function displayToast(text, duration) {
+	var titleb = document.getElementById('toastdivtext');
+	if (titleb) {
+		titleb.innerText = text;
+
+		const windValues = Object.values(winds).map(Number);
+		const maxWindValue = Math.max(...windValues);
+		document.getElementById("toastdiv").style.zIndex = maxWindValue + 1;
+		document.getElementById("toastdiv").classList.add('notifpullanim');
+		document.getElementById("toastdiv").style.display = "block";
+
+		setTimeout(function() {
+			document.getElementById("toastdiv").classList.remove('closeEffect');
+		}, 200);
+
+		document.getElementById("toastdiv").onclick = function () {
+			document.getElementById("toastdiv").classList.add('closeEffect');
+			setTimeout(function() {
+				document.getElementById("toastdiv").style.display = "none";
+				toastInProgress = false;
+				if (toastQueue.length > 0) {
+					const nextToast = toastQueue.shift();
+					displayToast(nextToast.text, nextToast.duration);
+				}
+			}, 200);
+		};
+
+		setTimeout(function () {
+			document.getElementById("toastdiv").classList.add('closeEffect');
+			setTimeout(function() {
+				document.getElementById("toastdiv").style.display = "none";
+				toastInProgress = false;
+				if (toastQueue.length > 0) {
+					const nextToast = toastQueue.shift();
+					displayToast(nextToast.text, nextToast.duration);
+				}
+			}, 200);
+		}, duration);
+	} else {
+		console.error("DOM elements not found.");
+	}
+}
+
 function displayNotifications(x) {
 	if (x == "clear") {
 		notifLog = {};

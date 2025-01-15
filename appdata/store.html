@@ -581,10 +581,22 @@
 			display: flex;
 			align-items: flex-start;
 			justify-content: space-between;
+			gap: 0.3rem;
+			flex-direction: column;
+			width: 0;
+			flex: 1;
+			overflow-x: hidden;
+		}
+
+		.themedetdiv {
+			display: flex;
+			align-items: flex-start;
+			justify-content: space-between;
+			flex-direction: row;
 			gap: 0.5rem;
 		}
 
-		.themeinfodiv button {
+		.themedetdiv button {
 			display: flex;
 			border: 0;
 
@@ -613,9 +625,12 @@
 
 		.themename {
 			flex: 1;
-			width: 0;
-			overflow: hidden;
 			text-overflow: ellipsis;
+		}
+
+		.themeauth {
+			opacity: 0.5;
+			font-size: var(--font-size-small);
 		}
 	</style>
 </head>
@@ -685,6 +700,7 @@
 						Object.entries(data).forEach(([themeName, themeData]) => {
 							const themeContainer = document.createElement('div');
 							themeContainer.classList.add("themesing");
+							themeContainer.style.border = `1px solid ${themeData.colors["--colors-BG-sub"]}`;
 
 							themeContainer.style.background = `linear-gradient(to bottom right, 
 								${themeData.colors["--colors-BG-normal"]} 0%, 
@@ -745,25 +761,41 @@
 							svg.appendChild(g1);
 							colorsSvg.appendChild(svg);
 
+							const themedetdiv = document.createElement('div');
+							themedetdiv.classList.add('themedetdiv');
+
 							const infoDiv = document.createElement('div');
 							infoDiv.classList.add('themeinfodiv');
+
 
 							const nameDiv = document.createElement('div');
 							nameDiv.classList.add("themename")
 							nameDiv.innerText = themeName;
 							infoDiv.appendChild(nameDiv);
 
+							themeData.by = themeData.by || 'NovaOS';
+							const authdiv = document.createElement('div');
+							authdiv.classList.add("themeauth")
+							authdiv.innerText = themeData.by;
+							infoDiv.appendChild(authdiv);
+
+							themedetdiv.appendChild(infoDiv);
+
 							const instdiv = document.createElement('button');
 							instdiv.style.background = themeData.colors["--colors-BG-highlighted"];
 							instdiv.style.color = themeData.colors["--colors-text-high"];
+							instdiv.style.border = `1px solid ${themeData.colors["--colors-BG-sub"]}`;
 							instdiv.innerHTML = `<i
 						class="material-symbols-rounded">format_paint</i>`;
-							infoDiv.appendChild(instdiv);
+							themedetdiv.appendChild(instdiv);
 
 							themeContainer.appendChild(colorsSvg);
-							themeContainer.appendChild(infoDiv);
+							themeContainer.appendChild(themedetdiv);
 
-							themeContainer.addEventListener('click', () => window.parent.applyThemeNonVisual(themeData, document));
+							themeContainer.addEventListener('click', async () => {
+								await window.parent.applyThemeNonVisual(themeData, document);
+								window.parent.toast(`Theme pack "${themeName}" applied.`)
+							});
 							container.appendChild(themeContainer);
 						});
 
@@ -852,7 +884,7 @@
 		}
 
 		function greenflag() {
-			
+
 			initializeLoader();
 			fetchAppData().then(appData => {
 				renderSections();
@@ -864,9 +896,9 @@
 			});
 			const data = myWindow?.params?.opener;
 
-				if (data == 'themes') {
-					setTimeout(openwin('themesmode', document.getElementById('themesmodebtn')), 500);
-				}
+			if (data == 'themes') {
+				setTimeout(openwin('themesmode', document.getElementById('themesmodebtn')), 500);
+			}
 		}
 
 		function initializeLoader() {
