@@ -1,355 +1,601 @@
+<!--License addition: you should never open this site outside of NovaOS or not as a nova application.-->
 <!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<meta name="capabilities" content=".html,.js,.css,.osl,.py,.cpp,.wasm">
-	<meta name="nova-icon" content="<svg version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='25.76994' height='26.02576' viewBox='0,0,25.76994,26.02576'><g transform='translate(-227.11503,-166.98712)'><g data-paper-data='{&quot;isPaintingLayer&quot;:true}' fill-rule='nonzero' stroke='none' stroke-width='0' stroke-linecap='butt' stroke-linejoin='miter' stroke-miterlimit='10' stroke-dasharray='' stroke-dashoffset='0' style='mix-blend-mode: normal'><path d='M228.2798,187.47756c0,0 2.39508,0.27621 3.97551,-1.30421c3.80695,-3.80695 10.63683,-10.63683 12.96363,-12.96363c1.52501,-1.52501 2.01133,-4.68262 2.01133,-4.68262c0,0 1.6857,-0.9856 2.12132,-0.54997c0.09297,0.09297 0.26437,0.23749 0.47664,0.41866c-0.4391,0.00653 -0.87619,0.17732 -1.21124,0.51237c-0.68342,0.68342 -0.68342,1.79145 0,2.47487c0.68342,0.68342 1.79145,0.68342 2.47487,0c0.32427,-0.32427 0.49468,-0.74414 0.51123,-1.16889c0.1075,0.16095 0.19627,0.32167 0.25848,0.47905c0.44289,1.12044 -0.38865,2.07656 -0.38865,2.07656c0,0 -3.50091,0.67248 -4.99689,2.16846c-2.38439,2.38439 -8.97331,9.13044 -12.72792,12.88505c-1.40538,1.40538 -1.22565,3.89694 -1.22565,3.89694c0,0 -1.0517,0.63065 -2.04981,0.14999c-0.02445,-0.01178 -0.04885,-0.02456 -0.07317,-0.03831c0.24019,-0.08412 0.46571,-0.22217 0.6577,-0.41417c0.68342,-0.68342 0.68342,-1.79145 0,-2.47487c-0.68342,-0.68342 -1.79145,-0.68342 -2.47487,0c-0.09153,0.09153 -0.17081,0.19069 -0.23782,0.29541c-0.23176,-0.71003 -0.06466,-1.76069 -0.06466,-1.76069z' fill='#cfcfcf'/><g><path d='M240.45171,181.81318c0,0 -9.97747,-9.97747 -12.2535,-12.2535c-0.87906,-0.87906 -1.08318,-2.57256 -1.08318,-2.57256c0,0 1.73399,0.24461 2.64026,1.15088c2.29782,2.29782 12.18579,12.18579 12.18579,12.18579z' fill='#cfcfcf'/><path d='M249.23218,193.01288c0,0 -4.34335,-4.34335 -7.22494,-7.22494c-0.14733,-0.14732 0.4075,-0.98915 0.26859,-1.12806c-0.37988,-0.37988 -0.72538,-0.72538 -1.02063,-1.02063c-0.22994,-0.22994 -1.12772,0.26893 -1.28923,0.10744c-0.8746,-0.8746 -1.90705,-1.90705 -1.90705,-1.90705l3.6528,-3.65279c0,0 0.9654,0.9654 1.79962,1.79961c0.1134,0.1134 -0.31653,1.08013 0,1.39666c0.30958,0.30958 0.61149,0.71893 0.91319,1.02063c0.19135,0.19135 1.11306,-0.39104 1.23551,-0.26859c2.80147,2.80148 7.22494,7.22494 7.22494,7.22494z' fill='#cf7b3a'/></g></g></g></svg>">
-	<title>Nova Studio</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<meta name="nova-include" content="nova.css">
+	<title>Studio</title>
 	<style>
-		@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300&family=Ubuntu+Mono&display=swap');
-
-		::-webkit-scrollbar {
-			width: 0.5em;
-		}
-
-		::-webkit-scrollbar-thumb {
-			background: #2b2b2b;
-			border-radius: 5px;
-		}
-
-		::-webkit-scrollbar-track {
-			background: transparent;
+		html {
+			height: 100%;
+			width: 100%;
 		}
 
 		body {
-			justify-content: center;
-			align-items: center;
 			margin: 0;
-			font-size: 12px;
-			color: white;
-			font-family: 'Poppins', sans-serif;
-			box-sizing: border-box;
-			background: #0c0c0c;
+			height: 100%;
+			display: flex;
+			flex-direction: column;
+			transition: .3s;
 		}
 
-		::selection {
-			color: white;
-			background: #2f2f2f;
+		.ui.dropdown .menu {
+			background-color: var(--colors-BG-section) !important;
+			color: var(--colors-text-normal) !important;
 		}
 
-		textarea {
-			border-radius: 8px;
-			font-size: 14px;
-			display: block;
-			background-color: transparent;
-			color: #d0e1eb;
-			width: calc(100% - 23px);
-			margin: auto;
-			outline: none;
-			font-family: 'Ubuntu Mono', monospace;
-			height: calc(100vh - 39px);
-			resize: none;
-			border: none;
+		.ui.dropdown .menu>.item {
+			color: var(--colors-text-normal) !important;
+
 		}
 
-		nav {
-			margin: 5px 7px;
-			padding-bottom: 4px;
-			border-bottom: 1px solid #393939;
-		}
-
-		nav button {
-			background: transparent;
-			border: none;
-			border-radius: 0px;
-			color: white;
-			font-size: 10px;
-			padding: 0;
-			cursor: pointer;
-			padding-right: 6px;
-			border-right: 1px solid #414141;
-			margin-right: 2px;
-		}
-
-		.dropbtn {}
-
-		/* The container <div> - needed to position the dropup content */
-		.dropup {
-			position: relative;
-			display: inline-block;
-		}
-
-		@keyframes bop {
-			0% {
-				transform: scaleY(0.5) translateY(-25px);
-				opacity: 0%;
-			}
-
-			100% {
-				opacity: 100%;
-			}
-		}
-
-		/* Dropup content (Hidden by Default) */
-		.dropup-content {
-			display: none;
-			position: absolute;
-			animation: bop 0.2s;
-			top: 12px;
-			border-bottom: 5px solid #161616;
-			border-radius: 5px;
-			background-color: #282828;
-			min-width: 90px;
+		.nav {
+			padding: 0.5rem;
+			background-color: var(--colors-BG-normal);
+			display: flex;
+			flex-direction: row;
+			justify-content: flex-start;
 			z-index: 1;
-			overflow: hidden;
+			display: flex;
+			gap: .2rem;
 		}
 
-		/* Links inside the dropup */
-		.dropup-content a {
-			color: white;
-			padding: 2px 8px;
-			text-decoration: none;
-			display: block;
+		.navitem {
+			background-color: var(--colors-BG-section);
+			padding: 0.2rem 0.5rem;
+			border-radius: 0.3rem;
 			cursor: pointer;
 		}
 
-		/* Change color of dropup links on hover */
-		.dropup-content a:hover {
-			color: #cbcbcb;
-			background: #1f1f1f;
+		.editorsection {
+			display: flex;
+			flex-direction: row;
+			gap: 1px;
+			padding: 1px;
+			flex: 1;
 		}
 
-		/* Show the dropup menu on hover */
-		.dropup:hover .dropup-content {
-			display: block;
-		}
-
-		/* Change the background color of the dropup button when the dropup content is shown */
-		.dropup:hover .dropbtn {
-			background-color: #393939;
-		}
-
-		.zobtns {
-			position: fixed;
-			right: 23px;
-			bottom: 11px;
-		}
-
-		.zobtn {
-			background: transparent;
-			border: none;
-			color: white;
-			backdrop-filter: brightness(250%) blur(5px);
-			border-radius: 50px;
-			padding: 3px 7px;
-			min-width: 22px;
-			min-height: 22px;
-			text-align: center;
-			display: block;
-			margin-top: 5px;
-		}
-
-		h1 {
-			font-weight: normal;
-			padding-bottom: 5px;
-			border-bottom: 1px solid #36434e;
-		}
-
-		#issuesmd {
-			border: none;
-			background: #1d1d1d;
+		.codepart {
 			width: 50vw;
-			color: #c1cfd5;
-			height: 80%;
-			border-radius: 6px;
-			padding: 15px;
-			box-shadow: 0 0 20px 0px #0000005e;
 		}
 
-		.issue {
-			padding: 10px;
-			border-radius: 5px;
-			background: #1a1a1a;
-			color: white;
-			border: 1px solid #3d3d3d;
-			margin-bottom: 10px;
+		#resultspart {
+			flex: 1;
+			display: flex;
+			flex-direction: column;
 		}
 
-		.issue b {
-			margin-top: 7px;
-			display: block;
-			font-size: 13px;
-			font-weight: normal;
+		.editorpart {
+			width: 0;
+			overflow: hidden;
+			resize: horizontal;
+		}
+
+		#editor {
+			width: 100%;
+			height: 100%;
+			font-size: 1rem;
+		}
+
+		#outputframe {
+			width: 100%;
+			height: 0;
+			flex: 3;
+			border: none;
+			background-color: white;
+		}
+
+		.ui.dropdown .menu .menu {
+			max-height: 200px !important;
+			overflow-y: scroll;
+		}
+
+		#runbtn {
+			background-color: #518b5736;
+			backdrop-filter: brightness(130%);
+			color: #a8ffa8;
+		}
+
+		#consolelogs .log {
+			background-color: transparent;
+			backdrop-filter: brightness(200%);
+			margin: 1px;
+			font-size: 1rem;
+			font-family: 'Inconsolata', monospace;
+		}
+
+		.consolenav {
+			padding: 0.3rem 0.5rem;
+		}
+
+		.consolenav button {
+			background-color: transparent;
+			backdrop-filter: brightness(200%);
+			border: none;
+			font-family: inherit;
+			border-radius: 1.5rem;
+			padding: 0.5rem 0.7rem;
+			cursor: pointer;
+			color: inherit;
+		}
+
+		#console {
+			display: flex;
+			flex: 1;
+			flex-direction: column;
+		}
+
+		#consolelogs {
+			flex: 1;
+			overflow-y: scroll;
+			max-height: calc(100vh - 110px);
+		}
+
+		div#interactive {
+			display: flex;
+			flex-direction: row;
+			flex-wrap: nowrap;
+		}
+
+		div#interactive input {
+			flex: 1;
+			padding: 0.3rem 0.5rem;
+			font-family: inherit;
+			font-size: 16px;
+			border: none;
+			outline: none;
+			color: inherit;
+			background-color: transparent;
+			backdrop-filter: brightness(200%);
+		}
+
+		div#interactive button {
+			padding: 0.3rem 0.5rem;
+			font-family: inherit;
+			border: none;
+			outline: none;
+			color: inherit;
+			background-color: transparent;
+			backdrop-filter: brightness(230%);
+		}
+
+		@media only screen and (max-width:500px) {
+			.editorpart {
+				width: 100% !important;
+				flex: 1;
+				resize: vertical;
+			}
+
+			.editorsection {
+				flex-direction: column;
+			}
+		}
+
+
+		.ui.dropdown.navitem .text {
+			color: var(--colors-text-normal) !important;
+		}
+
+		.ui.dropdown.navitem .description {
+			color: var(--colors-text-normal) !important;
+		}
+
+		.ui.dropdown.navitem .menu {
+			background-color: var(--colors-BG-section);
+			border: 1px solid var(--colors-BG-sub);
+		}
+
+		.ui.dropdown.navitem .menu .item {
+			color: var(--colors-text-normal) !important;
+		}
+
+		.ui.dropdown.navitem .menu .item:hover {
+			background-color: var(--colors-BG-sub);
+			color: var(--colors-text-normal) !important;
+		}
+
+		.ui.dropdown.navitem .dropdown.icon {
+			color: var(--colors-text-normal) !important;
 		}
 	</style>
-	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+	<link rel="stylesheet"
+		href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link
+		href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@200..900&family=Poppins:wght@400;700&display=swap"
+		rel="stylesheet">
+	<link rel="stylesheet" type="text/css"
+		href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ace-builds@1.31.1/css/ace.min.css">
+
 </head>
 
 <body>
+	<script src="https://cdn.jsdelivr.net/npm/ace-builds@1.31.1/src-min-noconflict/ace.min.js"></script>
 
-	<nav>
-		<button onclick="window.top.openwindow('App Preview',disp.value)">Run</button>
-		<small>This app is deprecated.</small>
-	</nav>
-
-	<textarea id="thedisplay" spellcheck="false" autocapitalize="false" autocomplete="off">&lt;!DOCTYPE html&gt;
-		&lt;html&gt;
-		&lt;head&gt;
-			&lt;style&gt;
-			body {
-			color: white;
-			background-color: black;
-			text-align: center;
-			margin-top: calc(50vh - 20px)
-			}
-			&lt;/style&gt;
-		&lt;/head&gt;
-		&lt;body&gt;
-			&lt;p id="p"&gt;
-			Please consider using Apps in the store like WCanvas for a better experience&lt;br&gt;
-			Use Text app to save files. This app is being updated.
-			&lt;/p&gt;
-
-			&lt;script&gt;
-			function greenflag() {
-			const p = document.getElementById("p");
-			p.innerHTML += "!"
-			}
-			&lt;/script&gt;
-		&lt;/body&gt;
-		&lt;/html&gt;</textarea>
-	<dialog id="issuesmd">
-
-		<span class="material-icons" style="float: right; font-size: 12px;"
-			onclick="document.getElementById('issuesmd').close()">close</span>
-		<h1>Issues</h1>
-		<div id="issues">
-			<br>
-			<center>No Issues, you are great asset for the humanity!</center>
+	<nav class="nav" id="nav">
+		<div class="navitem" id="modedisp">
+			HTML
 		</div>
-	</dialog>
-	<script>
-		function issueshuh() {
+		<div class="ui dropdown navitem">
+			<div class="text">File</div>
+			<div class="menu">
+				<div class="item">New
+				</div>
+				<div class="item" onclick="openfromfiles()">
+					Open
+				</div>
+				<div class="item">
+					Save
+				</div>
+				<div class="item">
+					Save As
+				</div>
+				<div class="divider"></div>
+				<div class="item">
+					<i class="dropdown icon"></i>
+					Export
+					<div class="menu">
+						<div class="item">To device</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="ui dropdown navitem">
+			<div class="text">View</div>
+			<div class="menu">
+				<div class="item">Code
+					<i class="dropdown icon"></i>
+					<div class="menu">
+						<div class="item" onclick="togglewordwrap()">Word wrap
+							<span class="description" id="wordwrapdisp">Off</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="ui dropdown navitem">
+			<div class="text">Edit</div>
+			<div class="menu">
+				<div class="item" onclick="showFindBox(editor)">Find and replace
+					<span class="description" id="wordwrapdisp">ctrl+f</span>
+				</div>
+				<div class="item" onclick="editor.setValue(beautifyHTML(editor.getValue()));">Beautify
+					<span class="description" id="wordwrapdisp">HTML</span>
+				</div>
+			</div>
+		</div>
+		</div>
+		<div title="Run in preview" class="navitem" id="runbtn" onclick="run()">
+			Preview
+		</div>
+		<div title="Run in new window" class="navitem" id="runbtn" onclick="runnewwin()">
+			Run
+		</div>
+	</nav>
+	<div class="editorsection">
+		<div class="codepart editorpart" style="width: 70vw;">
+			<div id="editor"></div>
+		</div>
+		<div id="resultspart" class="editorpart">
+			<div id="outputnav">
+			</div>
+			<iframe src="about:blank" id="outputframe"></iframe>
 
-			console.log("lol")
-			document.getElementById('issuesmd').showModal();
-			let issus = document.getElementById("issues");
-			issus.innerHTML = ""
-			if (!disp.value.includes("function greenflag()")) {
-				issus.innerHTML += `<div class="issue">
-					<b>No Greenflag defined</b>
-					<p>Greenflag must be defined in an application.</p>
-				</div>`;
-			}
-			if (!disp.value.includes("<script")) {
-				issus.innerHTML += `<div class="issue">
-					<b>No Scripts</b>
-					<p>A script should exist to determine the greenflag.</p>
-				</div>`;
-			}
-			if (disp.value.includes(`<script src=`)) {
-				issus.innerHTML += `<div class="issue">
-					<b>External Libraries</b>
-					<p>External libraries cannot be used for JavaScript.</p>
-				</div>`;
-			}
-			if (disp.value.includes("window.")) {
-				issus.innerHTML += `<div class="issue">
-					<b>Navigator usage</b>
-					<p>Permissions needed must be added in a meta tag. Undefined permissions will cause usage errors.</p>
-				</div>`;
-			}
-
-			if (issus.innerHTML === "") {
-				issus.innerHTML = "<center>You are great, Zero issues in code! Nice work.</center>";
-			}
-
-
-		}
-
-		function runCodeInNewWindow(htmlContent) {
-			return new Promise((resolve, reject) => {
-				// Create a new iframe element
-				const iframe = document.createElement('iframe');
-				iframe.style.display = 'none'; // Hide the iframe
-
-				// Append the iframe to the document body
-				document.body.appendChild(iframe);
-
-			});
-		}
-
-	</script>
-
-	<div class="zobtns">
-		<button class="zobtn" onclick="currentFontSize = parseInt(window.getComputedStyle(disp).fontSize); // Get the current font size as an integer
-		disp.style.fontSize = (currentFontSize + 2) + 'px';">+</button>
-		<button class="zobtn" onclick="currentFontSize = parseInt(window.getComputedStyle(disp).fontSize); // Get the current font size as an integer
-		disp.style.fontSize = (currentFontSize - 2) + 'px';">-</button>
-		<button class="zobtn" onclick="issueshuh()" style="
-			padding: 1px;
-		"><span class="material-icons" style="
-			font-size: 14px;
-		">check_circle</span></button>
-
+			<div id="console">
+				<div class="consolenav">
+					<button onclick="gid('consolelogs').innerHTML = ''">Clear Console</button>
+				</div>
+				<div id="consolelogs">
+				</div>
+				<div id="interactive">
+					<input id="interactiveinput" placeholder=">>>">
+					<button onclick="runinteractiveinput()">Run</button>
+				</div>
+			</div>
+		</div>
 	</div>
+	<script src="https://code.jquery.com/jquery-3.1.1.min.js"
+		integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/ace-builds@1.31.1/src-min-noconflict/ace.min.js"></script>
 
+	<script src="https://cdn.jsdelivr.net/npm/skulpt@1.0.0/dist/skulpt.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/skulpt@1.0.0/dist/skulpt-stdlib.js"></script>
 
-	<script>
-		var disp
-		var currentFontSize
-		async function greenflag() {
+	<script defer>
 
-			try {
+		var wordwrap = false, currentmode = 'py';
 
-				var sbtn = document.getElementById("sbtn");
-				var todo = localStorage.getItem("todo");
-				disp = document.getElementById("thedisplay")
-				disp.value = formatHTML(disp.value)
-				var defile;
+		$('.ui.dropdown').dropdown({
+			action: 'hide'
+		})
 
-				const parsedTodo = JSON.parse(todo);
+		gid("modedisp").innerText = "PY";
 
-				if (parsedTodo.appname === "studio" && parsedTodo.data && parsedTodo.data.lclfile) {
-					console.log("Data is valid")
-					const theID = parsedTodo.data.lclfile;
-					defile = theID;
-					let file = await window.parent.getFileById(theID);
+		document.getElementsByClassName("editorpart")[0].addEventListener('resize', function (event) {
+			editor.resize()
+		});
 
-					if (file && file.content) {
-						console.log("file is valid: " + JSON.stringify(file.content));
-						file.content = window.parent.unshrinkbsf(file.content);
-						if (file.content.startsWith("data:") && file.content.includes("base64")) {
-							if (await window.parent.justConfirm("Convert Base64?", "The code you tried to open is encoded with base64. Do you want to decode it?")) {
-								document.getElementById("thedisplay").value = atob(file.content.split(',')[1]);
-							} else {
-								document.getElementById("thedisplay").value = file.content;
-							}
-						} else {
-							document.getElementById("thedisplay").value = file.content;
-						}
+		function gid(x) {
+			return document.getElementById(x)
+		}
 
-						console.log("0002");
-						localStorage.setItem("todo", "");
-					} else {
-						console.error("0004");
-					}
+		var editor = ace.edit("editor");
+		editor.setTheme("ace/theme/monokai");
+
+		function showFindBox() {
+			// Execute the 'find' command
+			editor.execCommand("find");
+
+			// Wait for a short delay to ensure the command execution has completed
+			setTimeout(function () {
+				// Ensure the searchbox extension is loaded
+				var searchbox = ace.require("ace/ext/searchbox");
+				if (searchbox && searchbox.Search) {
+					// Show the find box
+					searchbox.Search(editor, true);
 				} else {
-					document.getElementById("thedisplay").value = "Please open the files app to read a file from your system memory.";
+					console.error("Searchbox extension or Search method not available.");
 				}
-			} catch (error) {
-				console.error("Error fetching or parsing:", error);
+			}, 200); // Adjust the delay as needed
+		}
+
+		editor.session.setUseWrapMode(true);
+		wordwrap = true;
+		wordwrapdisp.innerHTML = "On"
+
+
+		function togglewordwrap() {
+			let wordwrapdisp = gid("wordwrapdisp");
+			if (wordwrap) {
+				editor.session.setUseWrapMode(false);
+				wordwrap = false;
+				wordwrapdisp.innerHTML = "Off"
+			} else {
+				editor.session.setUseWrapMode(true);
+				wordwrap = true;
+				wordwrapdisp.innerHTML = "On"
 			}
 		}
 
-		function formatHTML(htmlString) {
-			const doc = new DOMParser().parseFromString(htmlString, 'text/html');
-			return new XMLSerializer().serializeToString(doc);
+		function builtinRead(x) {
+			if (Sk.builtinFiles === undefined || Sk.builtinFiles["files"][x] === undefined)
+				throw "File not found: '" + x + "'";
+			return Sk.builtinFiles["files"][x];
 		}
 
-	</script>
+		function runnewwin() {
+			var prog = editor.getValue();
+			window.top.openwindow('App Preview', prog)
+		}
+
+		function run() {
+			if (currentmode == 'py') {
+				var prog = editor.getValue();
+				Sk.pre = "output";
+				Sk.configure({ output: consolelog, read: builtinRead });
+				(Sk.TurtleGraphics || (Sk.TurtleGraphics = {})).target = 'mycanvas';
+				var myPromise = Sk.misceval.asyncToPromise(function () {
+					return Sk.importMainWithBody("<stdin>", false, prog, true);
+				});
+				myPromise.then(function (mod) {
+					console.log('success');
+				},
+					function (err) {
+						consolelog(err.toString());
+					});
+				return
+			} else if (currentmode == 'html') {
+				var iframe = gid("outputframe")
+				var iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
+
+				let htmlContent = editor.getValue();
+
+				iframeDocument.open();
+				iframeDocument.write('');
+				iframe.setAttribute("srcdoc", htmlContent);
+				iframeDocument.close();
+			} else if (currentmode == 'osl') {
+				const encodedContent = encodeURIComponent(editor.getValue()).replace(/'/g, "%27").replace(/"/g, "%22");
+				const cont = `https://origin.mistium.com/Versions/originv5.0.6.html?embed=${encodedContent}`
+				gid("outputframe").src = cont;
+			}
+		}
+
+		setUpForHTML()
+		run()
+
+		function setUpForHTML() {
+			currentmode = 'html'
+			gid("modedisp").innerText = "HTML";
+			editor.session.setMode("ace/mode/html");
+			editor.setValue(`<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml"><head>
+			<style>
+			html {
+			    height:100%;
+			}
+			body {
+			color: lightgrey;
+			background-color: black;
+			height:calc(100% - 4rem);
+			text-align: center;
+			display:flex;
+			justify-content:center;
+            align-items: center;
+			font-size: 1.5rem;
+			padding:2rem;
+			margin:0;
+			}
+			
+			a {
+			    color:lightblue;
+			}
+			</style>
+		</head>
+		<body>
+			<p id="p">
+			   Check out the docs at <a href="https://novaos.gitbook.io/main">this website</a> to learn how to make NovaOS apps.
+			</p>
+		
+		</body></html>`, 1);
+			gid("outputframe").style.display = "flex"
+			gid("console").style.display = "none"
+		}
+
+		function setUpForPython() {
+			currentmode = 'py'
+			gid("modedisp").innerText = "PY";
+			editor.session.setMode("ace/mode/python");
+			editor.setValue(`# Define two numbers
+num1 = 5
+num2 = 3
+
+# Calculate the sum
+sum_result = num1 + num2
+
+# Print the result
+print("The sum is:", sum_result)
+`);
+			gid("outputframe").style.display = "none"
+			gid("console").style.display = "flex"
+		}
+
+		function setUpForOSL() {
+			currentmode = 'osl'
+			gid("modedisp").innerText = "OSL";
+			editor.session.setMode("ace/mode/python");
+			editor.setValue(`people_x = "array".new(100)
+people_y = "array".new(100)
+pd = "array".new(100)
+count = 0
+loop 100 (
+count += 1
+people_x.[count] = 0
+people_y.[count] = 0
+pd.[count] = 0
+)
+mainloop:
+count = 0
+c #fff
+loop 20 (
+count += 1
+goto people_x.[count].destr people_y.[count].destr
+icon "w 4 dot 0 0" 1
+d = [0,0].dist(x_position,y_position)
+if d.int >= 100 "pd.[count] += 180"
+people_x.[count] += pd.[count].destr.sin * ( d / 10 + 1 )
+people_y.[count] += pd.[count].destr.cos * ( d / 10 + 1 )
+pd.[count] += [-10,10].random
+)
+import "win-buttons"`);
+			gid("outputframe").style.display = "flex";
+			gid("outputframe").src = "about:blank";
+			gid("console").style.display = "none"
+		}
+
+		function consolelog(x) {
+			// Create a new div element for the log
+			var logDiv = document.createElement('div');
+
+			// Set the class name for the log div
+			logDiv.className = 'log';
+
+			// Get the current time
+			var now = new Date();
+			var hours = String(now.getHours()).padStart(2, '0');
+			var minutes = String(now.getMinutes()).padStart(2, '0');
+			var timeString = hours + '-' + minutes;
+
+			// Set the text content of the log div with the time prefix
+			logDiv.textContent = timeString + ': ' + x;
+
+			// Append the log div to the console logs container
+			gid("consolelogs").appendChild(logDiv);
+		}
+
+		function beautifyHTML(html, indentSize = 2) {
+    const formatted = [];
+    const indent = ' '.repeat(indentSize);
+    let level = 0;
+
+    html.split(/(<\/?[^>]+>)/g)
+        .filter((element) => element.trim().length > 0)
+        .forEach((element) => {
+            if (element.match(/^<\/\w/)) {
+                level = Math.max(level - 1, 0);
+            }
+
+            formatted.push(`${indent.repeat(level)}${element.trim()}`);
+
+            if (element.match(/^<\w[^>]*[^\/]>$/)) {
+                level++;
+            }
+        });
+
+    return formatted.join('\n').trim();
+}
+
+		function saveas(x) {
+			var now = new Date();
+			var hours = String(now.getHours()).padStart(2, '0');
+			var minutes = String(now.getMinutes()).padStart(2, '0');
+			var timeString = hours + '-' + minutes;
+
+			function createCanvasFile(extension) {
+				window.parent.createFile("Downloads/", "Canvas-" + timeString, extension, editor.getValue());
+			}
+
+			createCanvasFile("app");
+
+			gid("console").style.display = "block"
+			consolelog("WCANVAS: File saved as Canvas-" + timeString + " in Downloads/")
+		}
+
+		function runinteractiveinput() {
+			var prog = gid("interactiveinput").value;
+			consolelog(">>> " + prog)
+			gid("interactiveinput").value = '';
+			Sk.pre = "output";
+			Sk.configure({ output: consolelog, read: builtinRead });
+			(Sk.TurtleGraphics || (Sk.TurtleGraphics = {})).target = 'mycanvas';
+			var myPromise = Sk.misceval.asyncToPromise(function () {
+				return Sk.importMainWithBody("<stdin>", false, prog, true);
+			});
+			myPromise.then(function (mod) {
+				console.log('success');
+			},
+				function (err) {
+					consolelog(err.toString());
+				});
+		}
+
+		gid("interactiveinput").addEventListener("keyup", function (event) {
+			if (event.key == "Enter") {
+				runinteractiveinput()
+			}
+		})
+
+		function openfromfiles() {
+			window.parent.openlaunchprotocol("files", { "type": "open" })
+		}
+
+		window.addEventListener('storage', async (event) => {
+			if (event.key === 'todo') {
+
+				if (JSON.parse(localStorage.getItem("todo")).type == "opentotext") {
+					console.log('Loading todo');
+
+					const file = await window.parent.getFileById(JSON.parse(localStorage.getItem("todo")).lclfile);
+					editor.setValue(file.content, 1);
+				}
+			}
+		});</script>
 </body>
 
 </html>
