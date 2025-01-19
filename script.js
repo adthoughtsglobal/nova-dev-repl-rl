@@ -1610,11 +1610,11 @@ async function checkifpassright() {
 		startup();
 	} else {
 		gid("loginform1").classList.add("thatsnotrightcls");
-		gid("loginform1").value = '';
 		setTimeout(function () {
 			gid("loginform1").classList.remove("thatsnotrightcls");
 		}, 1000)
 	}
+	gid("loginform1").value = '';
 }
 var chat;
 function resetchat() {

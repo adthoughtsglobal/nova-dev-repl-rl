@@ -301,7 +301,7 @@ nav [navobj] div {
 	margin-top: 0.5rem;
 	color: var(--colors-text-normal);
 	display: block;
-	border-radius: 10px;
+	border-radius: var(--sizing-border-radius);
 	font-size: var(--font-size-normal);
 	text-overflow: ellipsis;
 	overflow: hidden;
@@ -315,7 +315,7 @@ nav [navobj] div {
 
 .navWindows {
 	width: 50%;
-	border-radius: 10px;
+	border-radius: var(--sizing-border-radius);
 	text-align: center;
 	border: none;
 	max-height: 70%;
@@ -398,7 +398,7 @@ nav [navobj] div {
 	padding: 10px 25px;
 	padding-top: 0;
 	border: 0;
-	border-radius: 10px;
+	border-radius: var(--sizing-border-radius);
 	color: var(--colors-text-normal);
 	background: var(--colors-BG-section);
 	text-align: center;
@@ -615,7 +615,7 @@ nav [navobj] div {
 .notifpan {
 	width: calc(100% - 20px);
 	background: var(--colors-BG-section);
-	border-radius: 10px;
+	border-radius: var(--sizing-border-radius);
 	color: var(--colors-text-normal);
 	padding: 10px;
 	margin-bottom: 5px;
@@ -863,7 +863,8 @@ nav [navobj] div {
 	padding: 0.3rem var(--font-size-normal);
 	border-radius: var(--sizing-border-radius);
 	border: none;
-	background: var(--colors-text-normal)c2;
+    background: #dbdbdb;
+	color: black;
 	font-size: var(--font-size-normal);
 	transition: var(--time-action);
 }
@@ -892,8 +893,8 @@ nav [navobj] div {
 	display: flex;
 	align-items: center;
 	margin-top: 2rem;
-	background: var(--colors-text-normal)1a;
-	color: var(--colors-text-normal);
+	background: #ffffff1a;
+	color: #ffffff;
 	border-radius: 2rem;
 	padding: 0.3rem 0.9rem;
 	padding-left: 5px;
@@ -968,10 +969,10 @@ input#novamenusearchinp {
 .novamenusearchinpbtn {
 	display: flex !important;
 	flex-direction: row;
-	background: #78787838 !important;
+    background: var(--colors-BG-sub);
 	padding: 1px 7px !important;
 	height: 27px;
-	border-radius: 9px !important;
+	border-radius: var(--sizing-border-radius) !important;
 	gap: 0.3rem;
 }
 
@@ -1088,7 +1089,7 @@ input#novamenusearchinp {
 	right: 10px;
 	width: 250px;
 	background: var(--colors-BG-normal);
-	border-radius: 10px;
+	border-radius: var(--sizing-border-radius);
 	padding: 10px;
 	bottom: 61px;
 	box-shadow: 0 1rem 2rem rgb(0 0 0 / 77%);
@@ -1432,7 +1433,7 @@ dialog#terminal {
 .loader5653 {
 	width: 90%;
 	height: 4.8px;
-	border-radius: 10px;
+	border-radius: var(--sizing-border-radius);
 	display: inline-block;
 	overflow: hidden;
 	position: absolute;
@@ -1445,7 +1446,7 @@ dialog#terminal {
 	width: 96px;
 	height: 4.8px;
 	background: #5c8dab;
-	border-radius: 10px;
+	border-radius: var(--sizing-border-radius);
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -2011,7 +2012,7 @@ dialog#terminal {
 }
 
 .thatsnotrightcls {
-	animation: thatsnotright var(--time-action) 3 ;
+	animation: thatsnotright .2s 3 ;
 	background: rgb(255, 129, 129);
 }
 
