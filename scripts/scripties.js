@@ -347,6 +347,13 @@ function getMenuItems(target) {
 					await updateFile(false, itemuid, file);
 				}
 			},
+			{
+				icon: 'download',
+				label: 'Reinstall',
+				action: async () => {
+					extractAndRegisterCapabilities(itemuid);
+				}
+			},
 		];
 	}
 	if (target.id === 'desktop') {

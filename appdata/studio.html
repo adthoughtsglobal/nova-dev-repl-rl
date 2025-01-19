@@ -6,6 +6,7 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
 	<meta name="nova-include" content="nova.css">
+	<meta name="capabilities" content=".json,.app,.html,.css,.js,.xml,.svg,any">
 	<title>Studio</title>
 	<style>
 		html {
@@ -93,9 +94,7 @@
 		}
 
 		#runbtn {
-			background-color: #518b5736;
-			backdrop-filter: brightness(130%);
-			color: #a8ffa8;
+			background-color: var(--colors-BG-sub);
 		}
 
 		#consolelogs .log {
@@ -230,12 +229,12 @@
 				<div class="item" onclick="openfromfiles()">
 					Open
 				</div>
-				<div class="item">
+				<div class="item" onclick="savetx()">
 					Save
 				</div>
-				<div class="item">
+				<!-- <div class="item">
 					Save As
-				</div>
+				</div> -->
 				<div class="divider"></div>
 				<div class="item">
 					<i class="dropdown icon"></i>
@@ -309,6 +308,95 @@
 	<script src="https://cdn.jsdelivr.net/npm/skulpt@1.0.0/dist/skulpt-stdlib.js"></script>
 
 	<script defer>
+		var mode = "new";
+		var currentfile = {};
+		var currentMime = 'text/plain';
+		var currentreqID = null;
+
+		function openfromfiles() {
+			currentreqID = window.parent.genUID();
+			let appIdToOpen = window.parent.fileTypeAssociations['file'][0] || null;
+			window.parent.openlaunchprotocol(appIdToOpen, { "opener": 'any', "dir": "Downloads/" }, currentreqID, myWindow.windowID);
+		}
+
+		window.addEventListener('message', async (event) => {
+			console.log(event, currentreqID)
+			if (event.data.action === 'loadlocalfile') {
+				if (event.data.id === myWindow.windowID) {
+					const file = await window.parent.getFileById(event.data.returned);
+					readthefile(file);
+				}
+			}
+		});
+
+		function readthefile(file) {
+			console.log(file);
+			currentfile = file;
+			mode = "edit";
+			const mimePrefix = file.content.match(/^data:([^;]+);base64,/i);
+
+			if (mimePrefix) {
+				file.type = mimePrefix[1];
+				currentMime = mimePrefix[1];
+				file.content = file.content.replace(/^data:([^;]+);base64,/i, '');
+				processFileContent(file);
+			} else {
+				const extension = window.parent.mtpetxt(file.fileName);
+				window.parent.getMimeType(extension).then(mimeType => {
+					file.type = mimeType || 'application/octet-stream';
+					processFileContent(file);
+				});
+			}
+		}
+
+		function processFileContent(file) {
+			file.content = window.parent.decodeBase64Content(file.content);
+
+			if (file.content == undefined) {
+				window.parent.say("Currupted file", "Your file is having no reader data.")
+
+				myWindow.titleElement.innerText = file.fileName;
+				editor.setValue(file.content)
+				return;
+			}
+
+			if (file.type === "application/json") {
+				try {
+					file.content = formatJS(JSON.stringify(JSON.parse(file.content)));
+				} catch (e) {
+					console.error("Error parsing JSON content", e);
+				}
+			}
+
+			if (file) {
+				myWindow.titleElement.innerText = file.fileName;
+				editor.setValue(file.content)
+				console.log("Content displayed successfully");
+			} else {
+				console.error("Error displaying content");
+			}
+		}
+
+		async function savetx() {
+
+			const content = editor.getValue();
+			const encodedContent = btoa(content);
+
+			if (mode === "edit") {
+				const dataUri = `data:${currentMime};base64,${encodedContent}`;
+				await window.parent.updateFile(currentfile.path, currentfile.id, {
+					metadata: currentfile.metadata,
+					content: dataUri,
+					fileName: currentfile.fileName
+				});
+			} else {
+				const dataUri = `data:text/plain;base64,${encodedContent}`;
+				let y = await window.parent.ask("Enter a file name:", "untitled.txt");
+				window.parent.createFile("Documents", y, false, dataUri);
+			}
+
+			mode = "edit";
+		}
 
 		var wordwrap = false, currentmode = 'py';
 
@@ -348,7 +436,8 @@
 
 		editor.session.setUseWrapMode(true);
 		wordwrap = true;
-		wordwrapdisp.innerHTML = "On"
+		wordwrapdisp.innerHTML = "On";
+		var novadotcsscache;
 
 
 		function togglewordwrap() {
@@ -376,35 +465,71 @@
 		}
 
 		function run() {
-			if (currentmode == 'py') {
-				var prog = editor.getValue();
-				Sk.pre = "output";
-				Sk.configure({ output: consolelog, read: builtinRead });
-				(Sk.TurtleGraphics || (Sk.TurtleGraphics = {})).target = 'mycanvas';
-				var myPromise = Sk.misceval.asyncToPromise(function () {
-					return Sk.importMainWithBody("<stdin>", false, prog, true);
-				});
-				myPromise.then(function (mod) {
-					console.log('success');
-				},
-					function (err) {
-						consolelog(err.toString());
-					});
-				return
-			} else if (currentmode == 'html') {
-				var iframe = gid("outputframe")
-				var iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
+			var iframe = gid("outputframe")
+			var iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
 
-				let htmlContent = editor.getValue();
+			let htmlContent = editor.getValue();
 
-				iframeDocument.open();
-				iframeDocument.write('');
-				iframe.setAttribute("srcdoc", htmlContent);
-				iframeDocument.close();
-			} else if (currentmode == 'osl') {
-				const encodedContent = encodeURIComponent(editor.getValue()).replace(/'/g, "%27").replace(/"/g, "%22");
-				const cont = `https://origin.mistium.com/Versions/originv5.0.6.html?embed=${encodedContent}`
-				gid("outputframe").src = cont;
+
+			const blobURL = URL.createObjectURL(new Blob([htmlContent], { type: 'text/html' }));
+			iframe.src = blobURL;
+			iframe.onload = async () => {
+				let greenflagResult;
+					try {
+						greenflagResult = iframe.contentWindow.greenflag();
+					} catch (e) {
+						if (!e.message.includes("greenflag")) {
+							console.warn(e);
+						}
+					}
+
+				if (htmlContent.includes("nova-include") && window.parent.getMetaTagContent(htmlContent, 'nova-include') != null) {
+					try {
+
+						if (novadotcsscache == null) {
+							novadotcsscache = await window.parent.fetch('nova.css');
+							novadotcsscache = await novadotcsscache.text()
+						}
+						var novadotcss = novadotcsscache;
+
+						const computedStyles = getComputedStyle(window.parent.document.body);
+						const variables = {
+							'--font-size-small': computedStyles.getPropertyValue('--font-size-small'),
+							'--font-size-normal': computedStyles.getPropertyValue('--font-size-normal'),
+							'--font-size-big': computedStyles.getPropertyValue('--font-size-big'),
+							'--colors-BG-normal': computedStyles.getPropertyValue('--colors-BG-normal'),
+							'--colors-BG-sub': computedStyles.getPropertyValue('--colors-BG-sub'),
+							'--colors-BG-section': computedStyles.getPropertyValue('--colors-BG-section'),
+							'--colors-BG-highlighted': computedStyles.getPropertyValue('--colors-BG-highlighted'),
+							'--colors-text-normal': computedStyles.getPropertyValue('--colors-text-normal'),
+							'--colors-text-high': computedStyles.getPropertyValue('--colors-text-high'),
+							'--sizing-border-radius': computedStyles.getPropertyValue('--sizing-border-radius'),
+							'--sizing-normal': computedStyles.getPropertyValue('--sizing-normal'),
+							'--sizing-nano': computedStyles.getPropertyValue('--sizing-nano'),
+							'--vw': computedStyles.getPropertyValue('--vw'),
+							'--vh': computedStyles.getPropertyValue('--vh'),
+							'--font-size-default': computedStyles.getPropertyValue('--font-size-default')
+						};
+
+						const updatedCssText = novadotcss.replace(/:root\s*{([^}]*)}/, (match, declarations) => {
+							let updatedDeclarations = declarations.trim();
+							for (const [variable, value] of Object.entries(variables)) {
+								const regex = new RegExp(`(${variable}\\s*:\\s*).*?;`, 'g');
+								updatedDeclarations = updatedDeclarations.replace(regex, `$1${value.trim()};`);
+							}
+							return `:root { ${updatedDeclarations} }`;
+						});
+
+						const style = document.createElement('style');
+						style.textContent = updatedCssText;
+						iframe.contentDocument.head.appendChild(style);
+					} catch (error) {
+						console.error('Error fetching or injecting CSS:', error);
+					}
+
+					URL.revokeObjectURL(blobURL);
+				}
+
 			}
 		}
 
@@ -520,26 +645,26 @@ import "win-buttons"`);
 		}
 
 		function beautifyHTML(html, indentSize = 2) {
-    const formatted = [];
-    const indent = ' '.repeat(indentSize);
-    let level = 0;
+			const formatted = [];
+			const indent = ' '.repeat(indentSize);
+			let level = 0;
 
-    html.split(/(<\/?[^>]+>)/g)
-        .filter((element) => element.trim().length > 0)
-        .forEach((element) => {
-            if (element.match(/^<\/\w/)) {
-                level = Math.max(level - 1, 0);
-            }
+			html.split(/(<\/?[^>]+>)/g)
+				.filter((element) => element.trim().length > 0)
+				.forEach((element) => {
+					if (element.match(/^<\/\w/)) {
+						level = Math.max(level - 1, 0);
+					}
 
-            formatted.push(`${indent.repeat(level)}${element.trim()}`);
+					formatted.push(`${indent.repeat(level)}${element.trim()}`);
 
-            if (element.match(/^<\w[^>]*[^\/]>$/)) {
-                level++;
-            }
-        });
+					if (element.match(/^<\w[^>]*[^\/]>$/)) {
+						level++;
+					}
+				});
 
-    return formatted.join('\n').trim();
-}
+			return formatted.join('\n').trim();
+		}
 
 		function saveas(x) {
 			var now = new Date();
@@ -581,21 +706,22 @@ import "win-buttons"`);
 			}
 		})
 
-		function openfromfiles() {
-			window.parent.openlaunchprotocol("files", { "type": "open" })
-		}
+		async function greenflag() {
 
-		window.addEventListener('storage', async (event) => {
-			if (event.key === 'todo') {
-
-				if (JSON.parse(localStorage.getItem("todo")).type == "opentotext") {
-					console.log('Loading todo');
-
-					const file = await window.parent.getFileById(JSON.parse(localStorage.getItem("todo")).lclfile);
-					editor.setValue(file.content, 1);
+			var defile;
+			try {
+				if (myWindow.params.appid == myWindow.appID) {
+					editor.setValue("Loading...");
+					defile = myWindow.params.data;
+					const file = await window.parent.getFileById(defile);
+					readthefile(file);
 				}
+			} catch (error) {
+				console.error("Error parsing todo JSON:", error);
 			}
-		});</script>
+
+		}
+	</script>
 </body>
 
 </html>

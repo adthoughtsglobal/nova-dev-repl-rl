@@ -53,7 +53,7 @@ nav .flodiv {
 	justify-content: center;
 	align-items: stretch;
 	flex-direction: row;
-	border-radius: 7px;
+	border-radius: var(--sizing-border-radius);
 	background: transparent;
 	padding: 1px;
 	margin-bottom: 0.3rem;
@@ -62,7 +62,7 @@ nav .flodiv {
 nav [navobj] {
 	padding: 1px 2px;
 	margin: 3px;
-	border-radius: 5px;
+	border-radius: var(--sizing-border-radius);
 	background-color:var(--colors-BG-normal);
 	display: flex;
 	justify-content: center;
@@ -70,6 +70,7 @@ nav [navobj] {
 	flex-direction: row;
 	animation: pop var(--time-action);
 	transition: flex-basis var(--time-action), width var(--time-action), opacity var(--time-action);width: fit-content;
+    min-width: 1.8rem;
 }
 
 nav [navobj] div {
@@ -115,7 +116,7 @@ nav [navobj] div {
 	position: absolute;
 	min-height: 200px;
 	background-color: transparent;
-	border-radius: 5px;
+	border-radius: var(--sizing-border-radius);
 	font-size: var(--font-size-normal);
 	padding: 0px;
 	overflow: hidden;
@@ -204,7 +205,7 @@ nav [navobj] div {
 	float: right;
 	margin: 2px;
 	cursor: pointer;
-	border-radius: 5px;
+	border-radius: var(--sizing-border-radius);
 	padding: 4px 5px;
 	font-size: var(--font-size-normal) !important;
 	opacity: 0.6;
@@ -217,7 +218,7 @@ nav [navobj] div {
 
 .app-shortcut {
 	background-color: transparent;
-	border-radius: 10px;
+	border-radius: var(--sizing-border-radius);
 	padding: 10px;
 	margin: 5px;
 	cursor: pointer;
@@ -248,7 +249,7 @@ nav [navobj] div {
 	overflow: hidden;
 	padding: 0;
 	display: flex;
-	border-radius: 0.5rem;
+	border-radius: var(--sizing-border-radius);
 	justify-content: center;
 }
 
@@ -418,7 +419,7 @@ nav [navobj] div {
 	color: inherit;
 	background: var(--colors-BG-normal);
 	border: none;
-	border-radius: 5px;
+	border-radius: var(--sizing-border-radius);
 }
 
 .modal p {
@@ -435,7 +436,7 @@ nav [navobj] div {
 .modal select {
 	background: var(--colors-BG-highlighted);
 	color: var(--colors-text-normal);
-	border-radius: 5px;
+	border-radius: var(--sizing-border-radius);
 	padding: 0.5rem;
 	outline: none;
 	display: block;
@@ -450,7 +451,7 @@ nav [navobj] div {
 	color: inherit;
 	flex-grow: 1;
 	cursor: pointer;
-	border-radius: 7px;
+	border-radius: var(--sizing-border-radius);
 	margin: 10px 4px;
 	width: 100%;
 }
@@ -523,7 +524,7 @@ nav [navobj] div {
 .strtappsugs {
 	display: block;
 	background: transparent;
-	border-radius: 7px;
+	border-radius: var(--sizing-border-radius);
 	width: calc(100% - 5px);
 	color: inherit;
 	animation: pop var(--time-action) ;
@@ -549,7 +550,7 @@ nav [navobj] div {
 	font-size: var(--font-size-normal);
 	background: #2f2f2f78;
 	cursor: pointer;
-	border-radius: 5px;
+	border-radius: var(--sizing-border-radius);
 	padding: 3px;
 	align-self: flex-end;
 }
@@ -735,7 +736,7 @@ nav [navobj] div {
 	background: var(--colors-BG-sub);
 	color: var(--colors-text-normal);
 	border: none;
-	border-radius: 6px;
+	border-radius: var(--sizing-border-radius);
 	width: 100%;
 	overflow-x: hidden;
 	white-space: nowrap;
@@ -769,7 +770,7 @@ nav [navobj] div {
 	box-shadow: 0px 0px 30px 7px #298429;
 	color: #aeffb2;
 	border: none;
-	border-radius: 6px;
+	border-radius: var(--sizing-border-radius);
 }
 
 #bios .gudbtn:hover {
@@ -860,7 +861,7 @@ nav [navobj] div {
 
 #loginform #loginform1 {
 	padding: 0.3rem var(--font-size-normal);
-	border-radius: 0.5rem;
+	border-radius: var(--sizing-border-radius);
 	border: none;
 	background: var(--colors-text-normal)c2;
 	font-size: var(--font-size-normal);
@@ -912,7 +913,7 @@ nav [navobj] div {
 
 .logincard button {
 	padding: 0.5rem;
-	border-radius: 0.5rem;
+	border-radius: var(--sizing-border-radius);
 	border: none;
 	background: #dbdbdb;
 	justify-content: flex-start;
@@ -925,7 +926,7 @@ nav [navobj] div {
 
 .logincard img {
 	width: 1.5rem;
-	border-radius: 5px;
+	border-radius: var(--sizing-border-radius);
 	background: black;
 	border: 2px solid #748497;
 }
@@ -950,7 +951,7 @@ input#novamenusearchinp {
 	width: 60px;
 	font-size: inherit;
 	font-family: inherit;
-	border-radius: 8px;
+	border-radius: var(--sizing-border-radius);
 	border: none;
 	background: transparent;
 	color: inherit;
@@ -979,7 +980,7 @@ input#novamenusearchinp {
 	display: flex;
 	background: var(--colors-BG-section);
 	padding: 1px 3px;
-	border-radius: 0.5rem;
+	border-radius: var(--sizing-border-radius);
 	height: 34px;
 	width: 100%;
 	justify-content: flex-start;
@@ -1048,7 +1049,7 @@ input#novamenusearchinp {
 #sleepwindow button {
 	padding: 7px 11px;
 	background: #242424;
-	border-radius: 5px;
+	border-radius: var(--sizing-border-radius);
 	border: none;
 	color: var(--colors-text-normal);
 	cursor: pointer;
@@ -1159,7 +1160,7 @@ input#novamenusearchinp {
 
 .messagecont input {
 	flex-grow: 4;
-	border-radius: 5px;
+	border-radius: var(--sizing-border-radius);
 	border: 0;
 	margin-right: 2px;
 	padding: 5px;
@@ -1183,7 +1184,7 @@ input#novamenusearchinp {
 	outline: none;
 	min-width: 200px;
 	max-width: 80vw;
-	border-radius: 0.5rem;
+	border-radius: var(--sizing-border-radius);
 	padding: 0.3rem;
 	box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
 	background-color: rgb(28 28 28 / 79%);
@@ -1200,7 +1201,7 @@ input#novamenusearchinp {
 		justify-content: space-between;
 		align-items: center;
 		padding: 0.3rem 0.5rem;
-		border-radius: 0.5rem;
+		border-radius: var(--sizing-border-radius);
 		background: #91919117;
 	}
 
@@ -1241,7 +1242,7 @@ input#novamenusearchinp {
 			display: flex;
 			align-items: center;
 			justify-content: center;
-			border-radius: 0.5rem;
+			border-radius: var(--sizing-border-radius);
 			margin: 6px 0;
 			opacity: 0.5;
 		}
@@ -1290,7 +1291,7 @@ input#novamenusearchinp {
 		color: var(--colors-text-normal);
 		padding-left: 0.5rem;
 		background: #80808036;
-		border-radius: 0.5rem;
+		border-radius: var(--sizing-border-radius);
 	}
 
 	.nvacoplt-sndbtn {
@@ -1299,7 +1300,7 @@ input#novamenusearchinp {
 		color: inherit;
 		display: flex;
 		padding: 0.5rem;
-		border-radius: 0.5rem;
+		border-radius: var(--sizing-border-radius);
 	}
 
 	.nvacoplt-sndbtn i {
@@ -1364,7 +1365,7 @@ dialog iframe {
 	background-color: #2f2f2f;
 	color: grey;
 	font-family: inherit;
-	border-radius: 0.5rem;
+	border-radius: var(--sizing-border-radius);
 	border: 1px solid grey;
 	margin-top: 0.5rem;
 }
@@ -1548,7 +1549,7 @@ dialog#terminal {
 .searchside .notification {
 	background: var(--colors-BG-normal)3b;
 	padding: 0.5rem;
-	border-radius: 0.5rem;
+	border-radius: var(--sizing-border-radius);
 	color: var(--colors-text-normal);
 	display: flex;
 	flex-direction: column;
@@ -1576,7 +1577,7 @@ dialog#terminal {
 }
 
 .searchinputcont {
-	border-radius: 5px;
+	border-radius: var(--sizing-border-radius);
 	background: var(--colors-BG-normal);
 	color: inherit;
 	display: flex;
@@ -1598,7 +1599,7 @@ dialog#terminal {
 	width: 100%;
 	background: transparent;
 	border: none;
-	border-radius: 5px;
+	border-radius: var(--sizing-border-radius);
 	color: inherit;
 	padding: 0.5rem 0rem;
 	display: block;
@@ -1614,7 +1615,7 @@ dialog#terminal {
 	align-items: center;
 	justify-content: center;
 	transition: 0.3s;
-	border-radius: 0.5rem;
+	border-radius: var(--sizing-border-radius);
 	margin-left: 0.7rem;
 	background: linear-gradient(90deg, #00000021 0%, transparent 30%);
 }
@@ -1772,7 +1773,7 @@ dialog#terminal {
 	position: absolute;
 	left: 50%;
 	top: 50%;
-	border-radius: 5px;
+	border-radius: var(--sizing-border-radius);
 
 }
 
@@ -2061,7 +2062,7 @@ dialog#terminal {
 		background: #2f425b;
 		margin-right: 0.3rem;
 		border: none;
-		border-radius: 0.5rem;
+		border-radius: var(--sizing-border-radius);
 		padding: 0.5rem var(--sizing-huge);
 		font-size: var(--font-size-normal);
 		color: var(--colors-text-normal);
@@ -2120,7 +2121,7 @@ noscript {
 	gap: 0.3rem;
 	padding: 0.5rem;
 	align-items: center;
-	border-radius: 0.5rem;
+	border-radius: var(--sizing-border-radius);
 	cursor: pointer;
 }
 
@@ -2279,7 +2280,7 @@ noscript {
 
 .upgradeversionbtn {
 	border: none;
-	border-radius: 0.5rem;
+	border-radius: var(--sizing-border-radius);
 	padding: 0.7rem 2rem;
 	display: block;
 	margin: 1rem auto;
@@ -2308,7 +2309,7 @@ div#toastdiv {
     padding: 0.5rem 1rem;
     background: var(--colors-BG-section);
     border-radius: 1.5rem;
-    box-shadow: 0 5px 0.5rem var(--colors-text-normal);
+    box-shadow: 0 8px 1rem #00000085;
     margin: auto;
 	cursor: pointer;
 	transition: .2s;
