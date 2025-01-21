@@ -841,8 +841,7 @@
 		}
 
 		async function installapp(x, appName, obj, method = "icononly") {
-			console.log(x)
-			let prefixurl = ""
+			let prefixurl = "";
 			if (!x.src.startsWith("http")) {
 				prefixurl = "https://adthoughtsglobal.github.io/"
 			}
@@ -924,7 +923,6 @@
 		}
 
 		function populateApps(data) {
-			console.log(data);
 			const vdevs = data.vdevs;
 			const featured = data.featured;
 
@@ -1065,7 +1063,6 @@
 		}
 
 		function openappinstr(appName, appDetails) {
-			console.log(appDetails)
 			const installButton = document.getElementById("installButton");
 
 			installButton.className = 'insbtn';
@@ -1132,10 +1129,10 @@
 							openButton.onclick = async function () {
 								const item = appDetails.src; // Find the correct item
 								let prefixurl = "";
-								if (!item.src.startsWith("http")) {
+								if (!item.startsWith("http")) {
 									prefixurl = "https://adthoughtsglobal.github.io/";
 								}
-								const response = await fetch(prefixurl + item.src);
+								const response = await fetch(prefixurl + item);
 								const content = await response.text();
 								window.parent.openwindow(appName, content); // Use appName instead of app.name
 							};

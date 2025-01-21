@@ -118,11 +118,9 @@
 			document.getElementById("nomedia").close()
 			disp = document.getElementById("displays");
 			var file = await window.parent.getFileById(fileID);
-			console.log(file, fileID);
 			if (file && file.content) {
 
 				document.getElementById("tils").innerText = file.fileName;
-				console.log(file)
 				const type = file.type || 'application/octet-stream';
 				const base64Content = file.content;
 

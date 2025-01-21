@@ -116,7 +116,6 @@
             }
 
             window.addEventListener('message', async (event) => {
-                console.log(event, currentreqID)
                 if (event.data.action === 'loadlocalfile') {
                     if (event.data.id === myWindow.windowID) {
                         const file = await window.parent.getFileById(event.data.returned);
@@ -206,7 +205,6 @@
                 if (myWindow.params.appid == myWindow.appID) {
                     document.getElementById("thedisplay").value = "Loading...";
                     defile = myWindow.params.data;
-                    console.log("defile, ", defile)
                     const file = await window.parent.getFileById(defile);
                     readthefile(file)
 
@@ -221,7 +219,6 @@
 
 
         function readthefile(file) {
-            console.log(file);
             currentfile = file;
             mode = "edit";
             const mimePrefix = file.content.match(/^data:([^;]+);base64,/i);

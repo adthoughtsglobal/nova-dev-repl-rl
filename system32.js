@@ -775,7 +775,6 @@ async function moveFileToFolder(flid, dest) {
     let fileToMove = await getFileById(flid);
     if (!fileToMove) return; // Ensure the file exists
     let removeoutput = await remfile(flid);
-    console.log(removeoutput, fileToMove)
     await createFile(dest, fileToMove.fileName, fileToMove.type, fileToMove.content, fileToMove.metadata);
     eventBusWorker.deliver({
         "type": "memory",
@@ -897,7 +896,6 @@ async function updateFile(folderName, fileId, newData) {
         if (fileLocation) {
             let fileToUpdate = fileLocation.parent[fileLocation.key];
 
-            console.log(newData, fileToUpdate);
 
             // Update metadata only if newData.metadata is defined and has properties
             if (newData.metadata && Object.keys(newData.metadata).length > 0) {

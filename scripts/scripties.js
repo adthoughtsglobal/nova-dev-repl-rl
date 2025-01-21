@@ -4,22 +4,22 @@ var defaultAppIcon = `<?xml version="1.0" encoding="UTF-8"?> <svg version="1.1" 
 
 var globalmimeDb = null;
 
+function updateNavSize() {
+	navheight = parseFloat(getComputedStyle(gid("novanav")).height);
+	navheight = navheight + (0.3 * remToPx);
+}
 
 async function checkdmode() {
-	const [uiSizing, darkMode, simpleMode] = await Promise.all([
-		getSetting("UISizing"),
-		getSetting("darkMode"),
-		getSetting("simpleMode")
-	]);
+	const uiSizing = await getSetting("UISizing");
 
 	if (uiSizing === 1) scaleUIElements(uiSizing);
 
 	const themeColors = await window.parent.getSetting("themeColors");
-        if (!themeColors) return;
+	if (!themeColors) return;
 
-        Object.entries(themeColors).forEach(([variableName, colorValue]) => {
-            document.documentElement.style.setProperty(variableName, colorValue);
-        });
+	Object.entries(themeColors).forEach(([variableName, colorValue]) => {
+		document.documentElement.style.setProperty(variableName, colorValue);
+	});
 }
 
 const setStyle = (element, styles) => {
@@ -98,7 +98,7 @@ function cuteee() {
 
 const originalFetch = window.fetch;
 window.fetch = async function (...args) {
-	console.log('NovaOS Fetch:', ...args);
+	console.log(...args);
 	return originalFetch.apply(this, args);
 };
 
@@ -371,16 +371,16 @@ function getMenuItems(target) {
 
 function applyThemeNonVisual(data, doc) {
 
-    saveColorsNonVisual(data.colors, doc);
+	saveColorsNonVisual(data.colors, doc);
 }
 
 function saveColorsNonVisual(colors, doc) {
-    const colorsToSave = {};
-    for (const variableName in colors) {
-        colorsToSave[variableName] = colors[variableName];
-		
+	const colorsToSave = {};
+	for (const variableName in colors) {
+		colorsToSave[variableName] = colors[variableName];
+
 		window.parent.document.documentElement.style.setProperty(variableName, colors[variableName]);
 		doc.documentElement.style.setProperty(variableName, colors[variableName]);
-    }
-    window.parent.setSetting("themeColors", colorsToSave);
+	}
+	window.parent.setSetting("themeColors", colorsToSave);
 }

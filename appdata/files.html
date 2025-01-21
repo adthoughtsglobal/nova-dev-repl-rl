@@ -1134,9 +1134,7 @@
 
 	<script>
 		function liststuff() {
-			console.log("hi")
 			$(function () {
-				console.log("h")
 				const jsTreeData = memoryToJsTree(window.parent.memory.root);
 
 				if ($('#jstree').jstree(true)) {
@@ -2181,7 +2179,6 @@ ${item.icon || ""}
 		});
 
 		function getMenuItems(target) {
-			console.log(target)
 			if (target.classList.contains('jstree-anchor')) {
 				var itemuid = target.innerText;
 				return [

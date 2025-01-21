@@ -1715,7 +1715,7 @@
 						spanIcon.textContent = "do_disturb";
 						spanIcon.onclick = function () {
 							spanIcon.classList.add('wooboo-animation');
-							delete window.parent.winds[taskName + taskId];
+							delete window.parent.winds[taskId];
 							window.parent.clwin("window" + taskId);
 
 						}
@@ -2457,7 +2457,6 @@
 						psmm = true;
 						document.getElementById("cbx-51").check()
 					}
-					console.log(psmm)
 				}
 
 			</script>

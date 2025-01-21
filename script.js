@@ -152,6 +152,8 @@ async function startup() {
 	setsrtpprgbr(50);
 	const start = performance.now();
 
+	updateNavSize();
+
 	let localupdatedataver = localStorage.getItem("updver");
 	let localupdatedataverstring = parseFloat(localStorage.getItem("updver"));
 	if (localupdatedataverstring <= 1.7 || !localupdatedataverstring) {
@@ -589,7 +591,6 @@ async function dod() {
 		x = await getSetting("wall");
 		if (x != undefined && x != '' && x != ' ') {
 			let unshrinkbsfX;
-			console.log(x)
 			if (x.startsWith("http")) {
 				unshrinkbsfX = x;
 			} else {
@@ -631,10 +632,8 @@ function clwin(x) {
 
 	const windKey = el.getAttribute("data-winuid");
 	if (windKey) {
-		console.log("data winds: removing", windKey)
+		URL.revokeObjectURL(winds[windKey].src);
 		delete winds[windKey];
-		URL.revokeObjectURL(windowData[windKey].src);
-		delete windowData[windKey];
 	}
 
 	el.classList.add("transp3");
@@ -703,13 +702,40 @@ async function fetchData(url) {
 var content;
 function putwinontop(x) {
 	if (Object.keys(winds).length > 1) {
-		const windValues = Object.values(winds).map(Number);
+		const windValues = Object.values(winds).map(wind => Number(wind.zIndex) || 0);
 		const maxWindValue = Math.max(...windValues);
 		document.getElementById(x).style.zIndex = maxWindValue + 1;
+		normalizeZIndexes(x);
 	} else {
 		document.getElementById(x).style.zIndex = 0;
 	}
 }
+
+
+function normalizeZIndexes(excludeWindowId = null) {
+	const windValues = Object.entries(winds)
+		.filter(([key]) => key !== excludeWindowId)
+		.map(([_, wind]) => Number(wind.zIndex) || 0);
+
+	const uniqueSorted = [...new Set(windValues)].sort((a, b) => a - b);
+	if (uniqueSorted.length === uniqueSorted[uniqueSorted.length - 1]) return;
+
+	const zIndexMap = uniqueSorted.reduce((map, value, index) => {
+		map[value] = index + 1;
+		return map;
+	}, {});
+
+	winds = Object.keys(winds).reduce((normalizedWinds, key) => {
+		normalizedWinds[key] = {
+			...winds[key],
+			zIndex: key === excludeWindowId 
+				? winds[key].zIndex
+				: zIndexMap[Number(winds[key].zIndex) || 0],
+		};
+		return normalizedWinds;
+	}, {});
+}
+
 function requestLocalFile() {
 	var requestID = genUID()
 	x = {
@@ -906,9 +932,11 @@ function ask(question, preset = '') {
 async function loadtaskspanel() {
 	let appbarelement = gid("nowrunninapps");
 	let currentKeys = Array.from(appbarelement.querySelectorAll(".app-shortcut")).map(el => el.dataset.key);
+	let validKeys = Object.entries(winds)
+		.filter(([winID, data]) => gid("window" + winID) !== null);
 
-	let validKeys = Object.keys(winds).filter(key => gid("window" + key.slice(-12)) !== null);
-	let newKeys = validKeys.map(key => key.slice(0, -12) + key.slice(-12));
+	let newKeys = validKeys.map(([winID, data]) => data.title + winID);
+
 
 	let keysToAdd = newKeys.filter(key => !currentKeys.includes(key));
 	let keysToRemove = currentKeys.filter(key => !newKeys.includes(key));
@@ -929,7 +957,7 @@ async function loadtaskspanel() {
 
 		appShortcutDiv.addEventListener("click", function () {
 			putwinontop('window' + wid);
-			winds[app + wid] = Number(gid("window" + wid).style.zIndex);
+			winds[wid].zIndex = Number(gid(`window${wid}`).style.zIndex || 0);
 			gid('window' + wid).style.display = "flex";
 		});
 
@@ -956,7 +984,6 @@ function unshrinkbsf(compressedStr) {
 }
 async function makewall(deid) {
 	let x = deid;
-	console.log("Setting custom wallpaper", deid)
 	if (x != undefined) {
 		let unshrinkbsfX;
 		if (x.startsWith("http")) {
@@ -1144,7 +1171,6 @@ async function strtappse(event) {
 			return;
 		}
 		if (appToOpen) {
-			console.log(appToOpen);
 			openfile(appToOpen.id);
 		}
 		return;
@@ -1354,13 +1380,13 @@ function displayToast(text, duration) {
 		document.getElementById("toastdiv").classList.add('notifpullanim');
 		document.getElementById("toastdiv").style.display = "block";
 
-		setTimeout(function() {
+		setTimeout(function () {
 			document.getElementById("toastdiv").classList.remove('closeEffect');
 		}, 200);
 
 		document.getElementById("toastdiv").onclick = function () {
 			document.getElementById("toastdiv").classList.add('closeEffect');
-			setTimeout(function() {
+			setTimeout(function () {
 				document.getElementById("toastdiv").style.display = "none";
 				toastInProgress = false;
 				if (toastQueue.length > 0) {
@@ -1372,7 +1398,7 @@ function displayToast(text, duration) {
 
 		setTimeout(function () {
 			document.getElementById("toastdiv").classList.add('closeEffect');
-			setTimeout(function() {
+			setTimeout(function () {
 				document.getElementById("toastdiv").style.display = "none";
 				toastInProgress = false;
 				if (toastQueue.length > 0) {
@@ -1596,7 +1622,7 @@ function closeallwindows() {
 		const taskId = key.slice(-12);
 		const taskName = key.slice(0, -12);
 		clwin("window" + taskId);
-		delete winds[taskName + taskId];
+		delete winds[taskId];
 	});
 	gid("closeallwinsbtn").checked = true;
 }
@@ -1669,7 +1695,6 @@ const sendMessage = () => {
 	})
 		.then(response => response.json())
 		.then(data => {
-			console.log(data);
 			const responseMessage = data.choices[0].message.content;
 			chat.push({ "role": "assistant", "content": responseMessage });
 			nvacopilot.message(responseMessage, "bot");
@@ -1703,8 +1728,7 @@ async function cleanupram() {
 	contentpool = null;
 	CurrentUsername = null;
 	password = 'nova';
-	winds = [];
-	windowData = {};
+	winds = {};
 	MemoryTimeCache = null;
 	lethalpasswordtimes = true;
 	dbCache = null;

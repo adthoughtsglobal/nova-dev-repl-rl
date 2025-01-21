@@ -1,4 +1,4 @@
-var dragging = false, windowData = {};
+var dragging = false, remToPx = parseFloat(getComputedStyle(document.documentElement).fontSize), navheight;;
 
 var novadotcsscache;
 
@@ -76,8 +76,8 @@ function flwin(x) {
 
     const isFullScreen = x.innerHTML === "open_in_full";
     const aspectRatio = winElement.getAttribute("data-aspectratio") || "9/6";
-    const sizeStyles = isFullScreen ? 
-        { width: 'calc(100% - 0px)', height: 'calc(100% - 57px)', left: '0', top: '0' } : 
+    const sizeStyles = isFullScreen ?
+        { width: 'calc(100% - 0px)', height: 'calc(100% - 57px)', left: '0', top: '0' } :
         calculateWindowSize(aspectRatio);
 
     for (const [key, value] of Object.entries(sizeStyles)) {
@@ -117,18 +117,19 @@ function calculateWindowSize(aspectratio) {
     const left = `calc(50vw - ${widthVW / 2}vw + ${offset}px)`;
     const top = `calc(50vh - ${heightVH / 2}vh + ${offset}px)`;
 
-    return { left, top, width: `${widthVW}vw`, height: `${heightVH}vh`};
+    return { left, top, width: `${widthVW}vw`, height: `${heightVH}vh` };
 }
 
 async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
-    console.log("params: ",params)
     appsHistory.push(title);
     if (appsHistory.length > 5) {
         appsHistory = appsHistory.slice(-5);
     }
 
     let winuid = genUID();
-    winds[title + winuid] = 1;
+    if (!winds[winuid]) { winds[winuid] = {} };
+    winds[winuid].zIndex = 1;
+    winds[winuid].title = title;
 
     var windowDiv = document.createElement("div");
     windowDiv.id = "window" + winuid;
@@ -144,7 +145,7 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
 
     const isitmob = window.innerWidth <= 500;
     const sizeStyles = !isitmob ? calculateWindowSize(aspectratio) : { left: '0', top: '0', width: 'calc(100% - 0px)', height: 'calc(100% - 58px)' };
-    
+
     Object.assign(windowDiv.style, sizeStyles);
 
     (async function () {
@@ -163,8 +164,7 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
     windowtitlespan.innerHTML += toTitleCase(basename(title));
     windowdataspan.appendChild(windowtitlespan);
     windowHeader.appendChild(windowdataspan);
-    
-    console.log(theme, "theme")
+
     if (theme != null) {
         windowHeader.style.backgroundColor = theme;
         windowDiv.style.border = `1px solid ` + theme;
@@ -179,7 +179,6 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
         let target = event.target;
         while (target) {
             if (target.classList && target.classList.contains('wincl')) {
-                console.log('wincl');
                 return;
             }
             target = target.parentElement;
@@ -189,7 +188,7 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
 
     windowDiv.addEventListener("mousedown", function () {
         putwinontop('window' + winuid);
-        winds[title + winuid] = windowDiv.style.zIndex;
+        winds[winuid].zIndex = windowDiv.style.zIndex;
     });
 
     var ibtnsside = document.createElement("div");
@@ -221,7 +220,7 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
             dewallblur();
         }, 500);
         clwin("window" + winuid);
-        delete winds[title + winuid];
+        delete winds[winuid];
         loadtaskspanel();
     };
 
@@ -244,35 +243,34 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
     async function loadIframeContent(windowLoader, windowContent, iframe) {
         const content2 = cont;
         let contentString = isBase64(content2) ? decodeBase64Content(content2) : content2;
-    
+
         if (content2 === undefined) {
             contentString = "<center><h1>Unavailable</h1>App Data cannot be read.</center>";
         }
-    
+
         if (windowLoader) {
             windowLoader.innerHTML = await getAppIcon(contentString, appid);
             windowLoader.appendChild(loaderdiv);
         }
-    
+
         iframe = document.createElement("iframe");
         const blobURL = URL.createObjectURL(new Blob([contentString], { type: 'text/html' }));
-    
+
         iframe.onload = async () => {
             iframeReferences[winuid] = iframe.contentWindow;
-            
+
             iframe.contentWindow.myWindow = {
                 element: windowDiv,
                 eventBusWorker,
                 close: () => {
                     clwin("window" + winuid);
-                    delete winds[title + winuid];
+                    delete winds[winuid];
                 },
                 titleElement: windowtitlespan,
                 appID: appid,
                 windowID: winuid,
                 ...(params && { params })
             };
-            console.log("inframe: ", iframe.contentWindow.myWindow)
 
             if (contentString.includes("nova-include") && getMetaTagContent(contentString, 'nova-include') != null) {
                 try {
@@ -319,45 +317,44 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
                 }
             }
 
-        const script = document.createElement('script');
-        script.innerHTML = `
+            const script = document.createElement('script');
+            script.innerHTML = `
             document.addEventListener('mousedown', function(event) {
                 window.parent.postMessage({ type: 'iframeClick', iframeId: '${winuid}' }, '*');
             });
         `;
-        iframe.contentDocument.body.appendChild(script);
+            iframe.contentDocument.body.appendChild(script);
 
-        let greenflagResult;
-        try {
-            greenflagResult = iframe.contentWindow.greenflag();
-        } catch (e) {
-            if (!e.message.includes("greenflag")) {
-                console.warn(e);
+            let greenflagResult;
+            try {
+                greenflagResult = iframe.contentWindow.greenflag();
+            } catch (e) {
+                if (!e.message.includes("greenflag")) {
+                    console.warn(e);
+                }
             }
-        }
 
-        if (windowLoader) {
-            windowLoader.classList.add("transp5");
-            setTimeout(() => {
-                windowLoader.remove();
-            }, 700);
-        }
-        URL.revokeObjectURL(blobURL);
-    };
+            if (windowLoader) {
+                windowLoader.classList.add("transp5");
+                setTimeout(() => {
+                    windowLoader.remove();
+                }, 700);
+            }
+        };
 
-    iframe.src = blobURL;
-    if (!windowData[winuid]) windowData[winuid] = {};
-    windowData[winuid]["src"] = blobURL;
-    
-    windowContent.appendChild(iframe);
+        iframe.src = blobURL;
+        if (!winds[winuid]) winds[winuid] = {};
+        winds[winuid]["src"] = blobURL;
 
-    window.addEventListener('message', function (event) {
-        if (event.data.type === 'iframeClick' && event.data.iframeId === winuid) {
-            putwinontop('window' + winuid);
-            winds[title + winuid] = windowDiv.style.zIndex;
-        }
-    });
-}
+        windowContent.appendChild(iframe);
+
+        window.addEventListener('message', function (event) {
+            if (event.data.type === 'iframeClick' && event.data.iframeId === winuid) {
+                putwinontop('window' + winuid);
+                winds[winuid].zIndex = windowDiv.style.zIndex;
+            }
+        });
+    }
 
     nowwindow = 'window' + winuid;
     windowDiv.appendChild(windowHeader);
@@ -366,6 +363,11 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
 
     document.body.appendChild(windowDiv);
 
+
+    const windValues = Object.values(winds).map(wind => Number(wind.zIndex) || 0);
+    const maxWindValue = Math.max(...windValues);
+    windowDiv.style.zIndex = maxWindValue + 1;
+
     loadIframeContent(windowLoader, windowContent);
 
     dragElement(windowDiv);
@@ -373,6 +375,7 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
     loadtaskspanel();
 }
 async function checksnapping(x, event) {
+    updateNavSize();
     const logData = {
         x: x,
         eventType: event.type,
@@ -411,14 +414,14 @@ async function checksnapping(x, event) {
 
     const resetWindow = () => {
         x.classList.add("snapping");
-        
+
         const aspectRatio = x.getAttribute("data-aspectratio") || "9/6";
         const sizeStyles = calculateWindowSize(aspectRatio);
-    
+
         Object.assign(x.style, sizeStyles);
         x.getElementsByClassName("flbtn")[0].innerHTML = "open_in_full";
         fulsapp = false;
-    
+
         setTimeout(() => {
             x.classList.remove("snapping");
         }, 1000);
@@ -427,7 +430,7 @@ async function checksnapping(x, event) {
     const maximizeWindow = () => {
         x.classList.add("snapping");
         x.style.width = "calc(100% - 0px)";
-        x.style.height = "calc(100% - 60px)";
+        x.style.height = "calc(100% - " + navheight + "px)";
         x.style.top = "0";
         x.style.left = "0";
         fulsapp = true;
@@ -443,7 +446,7 @@ async function checksnapping(x, event) {
         maximizeWindow();
     } else if (logData.cursorX < VWInPixels) {
         x.classList.add("snapping");
-        x.style = `left: 0; top: 0; width: calc(50% - 0px); height: calc(100% - 50px);`;
+        x.style = `left: 0; top: 0; width: calc(50% - 0px); height: calc(100% - ${navheight}px);`;
         fulsapp = true;
         x.getElementsByClassName("flbtn")[0].innerHTML = "open_in_full";
         setTimeout(() => {
@@ -451,7 +454,7 @@ async function checksnapping(x, event) {
         }, 1000);
     } else if ((logData.viewportWidth - logData.cursorX) < VWInPixels) {
         x.classList.add("snapping");
-        x.style = `right: 0; top: 0; width: calc(50% - 0px); height: calc(100% - 50px);`;
+        x.style = `right: 0; top: 0; width: calc(50% - 0px); height: calc(100% - ${navheight}px);`;
         fulsapp = true;
         x.getElementsByClassName("flbtn")[0].innerHTML = "open_in_full";
         setTimeout(() => {
@@ -478,7 +481,7 @@ function dragElement(elmnt) {
         e.preventDefault();
         pos3 = e.clientX;
         pos4 = e.clientY;
-        
+
         iframeOverlay = document.createElement('div');
         iframeOverlay.style.position = 'absolute';
         iframeOverlay.style.top = 0;
@@ -530,12 +533,12 @@ function dragElement(elmnt) {
     function closeDragElement(event) {
         document.onmouseup = null;
         document.onmousemove = null;
-    
+
         if (iframeOverlay) {
             document.body.removeChild(iframeOverlay);
             iframeOverlay = null;
         }
-    
+
         const mouseUpEvent = new MouseEvent('mouseup', {
             clientX: event.clientX,
             clientY: event.clientY,
@@ -584,8 +587,7 @@ async function openapp(x, od, customtodo) {
             if (Gtodo == null && customtodo) {
                 Gtodo = customtodo;
             }
-            console.log('gtodo: ', Gtodo)
-            
+
             openwindow(x, y, await getAppIcon(y, x), getAppTheme(y), getAppAspectRatio(y), od, Gtodo);
 
             Gtodo = null;

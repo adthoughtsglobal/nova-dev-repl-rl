@@ -694,7 +694,6 @@
 		}
 
 		window.addEventListener('message', async (event) => {
-			console.log(event, currentreqID)
 			if (event.data.action === 'loadlocalfile') {
 				if (event.data.id === myWindow.windowID) {
 					const file = await window.parent.getFileById(event.data.returned);
@@ -704,7 +703,6 @@
 		});
 
 		function readthefile(base64Url, filethings, fileName = 'Unknown Title') {
-			console.log(fileName);
 			const base64String = base64Url.split(',')[1];
 			const binaryString = atob(base64String);
 			const bytes = new Uint8Array(binaryString.length);

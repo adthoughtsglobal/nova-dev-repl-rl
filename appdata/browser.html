@@ -382,7 +382,6 @@
 		function openCity(evt, cityName) {
 			lasttab = nowtab
 			nowtab = evt.substring(4);
-			console.log("Opens " + evt);
 			var i, tabcontent, tablinks;
 			tabcontent = document.getElementsByClassName("tabcontent");
 			for (i = 0; i < tabcontent.length; i++) {
@@ -418,7 +417,6 @@
 		}
 
 		function remtab(obj) {
-			console.log("ok? " + obj)
 			document.getElementById('tabn' + obj).remove()
 			document.getElementById('wincs' + obj).remove()
 			let index = tabsnow.indexOf(obj);
@@ -435,7 +433,6 @@
 				clearTimeout(navigationTimer);
 			}
 			navigationTimer = setTimeout(() => {
-				console.log(iframe, newSrc)
 				iframe.src = newSrc;
 			}, 100);
 		}
@@ -444,7 +441,6 @@
 		function newtab(src) {
 			let nowid = genID();
 			tabsnow.push(nowid)
-			console.log("Opens new tab with id: " + nowid)
 			var df = document.createElement("div");
 			df.setAttribute("class", "tabcontent");
 			df.id = "wincs" + nowid;

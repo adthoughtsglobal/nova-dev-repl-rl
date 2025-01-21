@@ -8,6 +8,7 @@
 	<meta name="nova-include" content="nova.css">
 	<meta name="capabilities" content=".json,.app,.html,.css,.js,.xml,.svg,any">
 	<title>Studio</title>
+	<meta name="nova-icon" content="<svg version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='42.1729' height='30.46614' viewBox='0,0,42.1729,30.46614'> <g transform='translate(-218.79598,-164.76693)'> <g stroke='#474747' stroke-miterlimit='10'> <path d='M220.04598,190.18573c0,-3.30187 0,-14.43234 0,-20.36737c0,-2.28616 1.815,-3.80143 3.6692,-3.80143c4.52801,0 23.79544,0 32.10533,0c2.34955,0 3.89837,1.51655 3.89837,3.80143c0,5.86137 0,16.77889 0,20.12197c0,1.91 -1.94446,4.04273 -3.89837,4.04273c-4.61128,0 -23.75035,0 -31.98249,0c-2.33464,0 -3.79204,-1.9844 -3.79204,-3.79734z' fill='#131313' stroke-width='2.5'/> <path d='M224.90209,180.43037l2.66059,-2.66059l6.94067,6.94068l-2.66059,2.66059z' fill='#086a6e' stroke-width='0'/> <path d='M227.38868,182.8976l-2.66059,-2.66059l6.94067,-6.94067l2.66059,2.66059z' fill='#13f7ff' stroke-width='0'/> <path d='M255.09791,180.14741l-2.66059,2.6606l-6.94067,-6.94068l2.66059,-2.66059z' fill='#086a6e' stroke-width='0'/> <path d='M252.61132,177.68019l2.66059,2.66059l-6.94067,6.94067l-2.66059,-2.66059z' fill='#13f7ff' stroke-width='0'/> <path d='M238.86216,189.14952c0,0 -1.70923,-0.56085 -2.36679,-0.77661c-0.46984,-0.15417 -0.93767,-1.22128 -0.66456,-2.0536c0.83443,-2.54299 5.07578,-15.46883 5.07578,-15.46883c0,0 1.43911,0.47222 2.07478,0.6808c0.54055,0.17737 1.24054,1.28399 0.97581,2.09079c-0.8251,2.51455 -5.09501,15.52746 -5.09501,15.52746z' fill='#086a6e' stroke-width='0'/> </g> </g> </svg>">
 	<style>
 		html {
 			height: 100%;
@@ -320,7 +321,6 @@
 		}
 
 		window.addEventListener('message', async (event) => {
-			console.log(event, currentreqID)
 			if (event.data.action === 'loadlocalfile') {
 				if (event.data.id === myWindow.windowID) {
 					const file = await window.parent.getFileById(event.data.returned);
@@ -330,7 +330,6 @@
 		});
 
 		function readthefile(file) {
-			console.log(file);
 			currentfile = file;
 			mode = "edit";
 			const mimePrefix = file.content.match(/^data:([^;]+);base64,/i);

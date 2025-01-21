@@ -802,7 +802,6 @@
 
             const response = await fetch("https://claw.rotur.dev/profile?name=" + name);
             const userclouddat = await response.json();
-            console.log(userclouddat);
 
             profileitems.img.src = userclouddat?.pfp || "https://uxwing.com/wp-content/themes/uxwing/download/peoples-avatars/no-profile-picture-icon.png";
             profileitems.desc.innerText = "Created " + timeSince(userclouddat.created);
