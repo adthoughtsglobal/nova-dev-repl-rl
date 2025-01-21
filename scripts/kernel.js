@@ -71,7 +71,7 @@ async function openfile(x) {
     }
 }
 function flwin(x) {
-    const winElement = x.parentElement.parentElement.parentElement;
+    const winElement = x.parentElement.parentElement.parentElement.parentElement;
     winElement.classList.add("transp2");
 
     const isFullScreen = x.innerHTML === "open_in_full";
@@ -192,37 +192,43 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
     });
 
     var ibtnsside = document.createElement("div");
-    ibtnsside.classList += "ibtnsside";
+ibtnsside.classList += "ibtnsside";
 
-    var minimbtn = document.createElement("span");
-    minimbtn.classList.add("material-symbols-rounded", "wincl", "flbtn");
-    minimbtn.textContent = "remove";
-    minimbtn.setAttribute("title", "Minimize");
-    minimbtn.onclick = function () {
-        minim(minimbtn);
-    };
+var minimbtn = document.createElement("button");
+minimbtn.setAttribute("title", "Minimize");
+var minimSpan = document.createElement("span");
+minimSpan.classList.add("material-symbols-rounded", "wincl", "flbtn");
+minimSpan.textContent = "remove";
+minimbtn.appendChild(minimSpan);
+minimbtn.onclick = function () {
+    minim(minimSpan);
+};
 
-    var flButton = document.createElement("span");
-    flButton.classList.add("material-symbols-rounded", "wincl", "flbtn");
-    flButton.textContent = "open_in_full";
-    flButton.style = `padding: 4px 5px; font-size: 0.7rem !important;`;
-    flButton.setAttribute("title", "Maximize");
-    flButton.onclick = function () {
-        flwin(flButton);
-    };
+var flButton = document.createElement("button");
+flButton.setAttribute("title", "Maximize");
+var flSpan = document.createElement("span");
+flSpan.classList.add("material-symbols-rounded", "wincl", "flbtn");
+flSpan.textContent = "open_in_full";
+flSpan.style = `font-size: 0.7rem !important;`;
+flButton.appendChild(flSpan);
+flButton.onclick = function () {
+    flwin(flSpan);
+};
 
-    var closeButton = document.createElement("span");
-    closeButton.classList.add("material-symbols-rounded", "wincl", "winclosebtn");
-    closeButton.textContent = "close";
-    closeButton.setAttribute("title", "Close");
-    closeButton.onclick = function () {
-        setTimeout(function () {
-            dewallblur();
-        }, 500);
-        clwin("window" + winuid);
-        delete winds[winuid];
-        loadtaskspanel();
-    };
+var closeButton = document.createElement("button");
+closeButton.setAttribute("title", "Close");
+var closeSpan = document.createElement("span");
+closeSpan.classList.add("material-symbols-rounded", "wincl", "winclosebtn");
+closeSpan.textContent = "close";
+closeButton.appendChild(closeSpan);
+closeButton.onclick = function () {
+    setTimeout(function () {
+        dewallblur();
+    }, 500);
+    clwin("window" + winuid);
+    delete winds[winuid];
+    loadtaskspanel();
+};
 
     ibtnsside.appendChild(closeButton);
     if (!isitmob) {
@@ -599,11 +605,11 @@ async function openapp(x, od, customtodo) {
 }
 
 function minim(x) {
-    x.parentElement.parentElement.parentElement.classList.add("transp4")
+    x.parentElement.parentElement.parentElement.parentElement.classList.add("transp4")
 
     setTimeout(() => {
-        x.parentElement.parentElement.parentElement.classList.remove("transp4")
-        x.parentElement.parentElement.parentElement.style.display = "none";
+        x.parentElement.parentElement.parentElement.parentElement.classList.remove("transp4")
+        x.parentElement.parentElement.parentElement.parentElement.style.display = "none";
         nowapp = '';
     }, 700);
 }

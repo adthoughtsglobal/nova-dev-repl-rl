@@ -63,14 +63,15 @@ nav [navobj] {
 	padding: 1px 2px;
 	margin: 3px;
 	border-radius: var(--sizing-border-radius);
-	background-color:var(--colors-BG-normal);
+	background-color: var(--colors-BG-normal);
 	display: flex;
 	justify-content: center;
 	align-items: center;
 	flex-direction: row;
 	animation: pop var(--time-action);
-	transition: flex-basis var(--time-action), width var(--time-action), opacity var(--time-action);width: fit-content;
-    min-width: 1.8rem;
+	transition: flex-basis var(--time-action), width var(--time-action), opacity var(--time-action);
+	width: fit-content;
+	min-width: 1.8rem;
 }
 
 nav [navobj] div {
@@ -103,8 +104,8 @@ nav [navobj] div {
 
 .mmic {
 	width: 1.6rem;
-    height: 1.35rem;
-    fill: var(--colors-text-normal);
+	height: 1.35rem;
+	fill: var(--colors-text-normal);
 }
 
 #novaic {
@@ -121,7 +122,7 @@ nav [navobj] div {
 	padding: 0px;
 	overflow: hidden;
 	box-shadow: 0px 5px 1rem 1px #000000b0;
-	animation: appshow 0.5s 1 ;
+	animation: appshow 0.5s 1;
 	resize: both;
 	display: flex;
 	flex-direction: column;
@@ -201,21 +202,6 @@ nav [navobj] div {
 	height: 100%;
 }
 
-.wincl {
-	float: right;
-	margin: 2px;
-	cursor: pointer;
-	border-radius: var(--sizing-border-radius);
-	padding: 4px 5px;
-	font-size: var(--font-size-normal) !important;
-	opacity: 0.6;
-}
-
-.wincl:hover {
-	background: #69696952;
-	opacity: 1;
-}
-
 .app-shortcut {
 	background-color: transparent;
 	border-radius: var(--sizing-border-radius);
@@ -223,7 +209,7 @@ nav [navobj] div {
 	margin: 5px;
 	cursor: pointer;
 	width: 70px;
-	animation: pop var(--time-action) ;
+	animation: pop var(--time-action);
 	display: inline-block;
 	border: 1px solid transparent;
 	text-align: center;
@@ -256,7 +242,7 @@ nav [navobj] div {
 .app-shortcut span svg {
 	width: 2rem;
 	height: 2rem;
-	animation: pop .5s ;
+	animation: pop .5s;
 }
 
 @keyframes appop {
@@ -330,7 +316,7 @@ nav [navobj] div {
 #appdmod {
 	padding: 5px;
 	margin-bottom: 60px;
-	animation: dmodthingy var(--time-action) ;
+	animation: dmodthingy var(--time-action);
 	padding-bottom: 1.2rem;
 	background-color: var(--colors-BG-normal);
 }
@@ -338,7 +324,7 @@ nav [navobj] div {
 #searchwindow {
 	padding: 0.7rem;
 	margin-bottom: 60px;
-	animation: dmodthingy var(--time-action) ;
+	animation: dmodthingy var(--time-action);
 	background-color: var(--colors-BG-normal);
 	padding-bottom: 9px;
 }
@@ -373,26 +359,6 @@ nav [navobj] div {
 	}
 }
 
-.transp2 {
-	transition: .5s cubic-bezier(0, 0.66, 0.57, 1.02);
-}
-
-.transp3 {
-	transition: var(--time-action);
-	transform:scale(0.98);
-	opacity: 0;
-}
-
-.transp4 {
-	transition: var(--time-action) ;
-	opacity: 0;
-	transform: translate(1rem, 1rem) scale(0.9);
-}
-
-.transp5 {
-	transition: var(--time-action);
-	opacity: 0;
-}
 
 .modal {
 	padding: 10px 25px;
@@ -406,7 +372,7 @@ nav [navobj] div {
 	width: 80%;
 	max-width: 280px;
 	box-shadow: 0 0 10px black;
-	animation: pop var(--time-action) ;
+	animation: pop var(--time-action);
 }
 
 .modal::backdrop {
@@ -497,7 +463,7 @@ nav [navobj] div {
 	background-size: 24px 24px;
 	background-repeat: no-repeat;
 	margin-bottom: 20px;
-	animation: s7 1s infinite , s3 .5s ;
+	animation: s7 1s infinite, s3 .5s;
 }
 
 @keyframes s7 {
@@ -518,7 +484,7 @@ nav [navobj] div {
 
 .fade-out {
 	opacity: 0;
-	transition: opacity 0.5s ;
+	transition: opacity 0.5s;
 }
 
 .strtappsugs {
@@ -527,7 +493,7 @@ nav [navobj] div {
 	border-radius: var(--sizing-border-radius);
 	width: calc(100% - 5px);
 	color: inherit;
-	animation: pop var(--time-action) ;
+	animation: pop var(--time-action);
 	overflow-y: auto;
 	overflow-x: hidden;
 	max-height: 30vh;
@@ -694,13 +660,13 @@ nav [navobj] div {
 	border-radius: var(--sizing-border-radius);
 	box-shadow: 0 5px 1rem black;
 	padding-top: 2rem;
-	animation: appshow .5s ;
+	animation: appshow .5s;
 }
 
 #bios::backdrop {
 	background: linear-gradient(0deg, #000000b0, transparent);
 	backdrop-filter: blur(3rem);
-	animation: appshow 2s ;
+	animation: appshow 2s;
 }
 
 #bios span.material-icons.closebtn {
@@ -744,7 +710,7 @@ nav [navobj] div {
 	display: block;
 	transition: var(--time-action);
 	cursor: pointer;
-	animation: appshow 0.5s ;
+	animation: appshow 0.5s;
 }
 
 #bios button .material-symbols-rounded {
@@ -863,7 +829,7 @@ nav [navobj] div {
 	padding: 0.3rem var(--font-size-normal);
 	border-radius: var(--sizing-border-radius);
 	border: none;
-    background: #dbdbdb;
+	background: #dbdbdb;
 	color: black;
 	font-size: var(--font-size-normal);
 	transition: var(--time-action);
@@ -899,7 +865,7 @@ nav [navobj] div {
 	padding: 0.3rem 0.9rem;
 	padding-left: 5px;
 	border: 1px solid #414141;
-	animation: appshow 0.5s 1 ;
+	animation: appshow 0.5s 1;
 }
 
 .logincard button material-icons {
@@ -969,7 +935,7 @@ input#novamenusearchinp {
 .novamenusearchinpbtn {
 	display: flex !important;
 	flex-direction: row;
-    background: var(--colors-BG-sub);
+	background: var(--colors-BG-sub);
 	padding: 1px 7px !important;
 	height: 27px;
 	border-radius: var(--sizing-border-radius) !important;
@@ -988,7 +954,7 @@ input#novamenusearchinp {
 	align-items: center;
 	flex-direction: row;
 	flex-wrap: nowrap;
-    gap: 5px;
+	gap: 5px;
 }
 
 #bobthedropdown button {
@@ -1015,7 +981,7 @@ input#novamenusearchinp {
 	padding: 20px;
 	background: radial-gradient(black, #000000c7);
 	backdrop-filter: blur(10px);
-	animation: sleepwin var(--time-action) ;
+	animation: sleepwin var(--time-action);
 	color: wheat;
 }
 
@@ -1044,7 +1010,7 @@ input#novamenusearchinp {
 	background-clip: text;
 	-webkit-text-fill-color: transparent;
 	margin: 0;
-	animation: pop var(--time-action) ;
+	animation: pop var(--time-action);
 }
 
 #sleepwindow button {
@@ -1055,7 +1021,7 @@ input#novamenusearchinp {
 	color: var(--colors-text-normal);
 	cursor: pointer;
 	transition: 0.3s;
-	animation: pop var(--time-action) ;
+	animation: pop var(--time-action);
 }
 
 #sleepwindow button:hover {
@@ -1094,7 +1060,7 @@ input#novamenusearchinp {
 	bottom: 61px;
 	box-shadow: 0 1rem 2rem rgb(0 0 0 / 77%);
 	display: none;
-	animation: notifpull var(--time-action) ;
+	animation: notifpull var(--time-action);
 }
 
 @keyframes notifpull {
@@ -1127,7 +1093,29 @@ input#novamenusearchinp {
 }
 
 .snapping {
-	transition: 0.3s;
+	transition: 0.4s cubic-bezier(0, 0, 0, 0.94);
+}
+
+
+.transp2 {
+	transition: 0.4s cubic-bezier(0, 0, 0, 0.94);
+}
+
+.transp3 {
+	transition: var(--time-action);
+	transform: scale(0.98);
+	opacity: 0;
+}
+
+.transp4 {
+	transition: var(--time-action);
+	opacity: 0;
+	transform: translate(1rem, 1rem) scale(0.9);
+}
+
+.transp5 {
+	transition: var(--time-action);
+	opacity: 0;
 }
 
 .windowheader svg {
@@ -1258,7 +1246,7 @@ input#novamenusearchinp {
 			padding: 0.4rem 0.7rem;
 			border-radius: var(--sizing-border-radius-full);
 			max-width: 70%;
-			animation: message .3s ;
+			animation: message .3s;
 			user-select: text;
 			accent-color: #7abfff;
 		}
@@ -1269,7 +1257,7 @@ input#novamenusearchinp {
 
 		.usermsg-content {
 			background: #465055;
-			animation: messagebot var(--time-action) ;
+			animation: messagebot var(--time-action);
 		}
 	}
 
@@ -1422,7 +1410,36 @@ dialog#terminal {
 	float: inline-end;
 	flex-wrap: nowrap;
 	flex-direction: row-reverse;
+	align-items: stretch;
+	margin: .2rem;
+	padding: 1px;
+	overflow: hidden;
+}
+
+.ibtnsside button {
+	flex: 1;
+	padding: .2rem;
+	display: flex;
 	align-items: center;
+	justify-content: center;
+	border: 0;
+	background-color: transparent;
+	border-radius: .3rem;
+	color: var(--colors-text-normal);
+	width: 24px;
+	aspect-ratio: 1 / 1;
+	opacity: .7;
+}
+
+.ibtnsside button:hover {
+	background-color: var(--colors-BG-section);
+	opacity: 1;
+	z-index: 2;
+	box-shadow: 0 0 10px var(--colors-BG-normal);
+}
+
+.ibtnsside button span {
+	font-size: 1rem;
 }
 
 .searchbtnac {
@@ -1685,7 +1702,7 @@ dialog#terminal {
 	.window {
 		resize: none;
 		border-radius: 0;
-        max-height: calc(100vh - 72px);
+		max-height: calc(100vh - 72px);
 	}
 
 	nav {
@@ -1699,9 +1716,9 @@ dialog#terminal {
 	}
 
 	#appsindeck {
-        height: 100%;
-        overflow-y: auto;
-        max-height: calc(100vh - 14rem) !important;
+		height: 100%;
+		overflow-y: auto;
+		max-height: calc(100vh - 14rem) !important;
 		justify-content: space-around;
 		justify-items: center;
 	}
@@ -1730,7 +1747,7 @@ dialog#terminal {
 	display: block;
 	transform-origin: 50% 50%;
 	transform-style: preserve-3d;
-	transition: transform 0.14s ;
+	transition: transform 0.14s;
 }
 
 .checkbox-wrapper-44 .toggleButton:active {
@@ -2012,7 +2029,7 @@ dialog#terminal {
 }
 
 .thatsnotrightcls {
-	animation: thatsnotright .2s 3 ;
+	animation: thatsnotright .2s 3;
 	background: rgb(255, 129, 129);
 }
 
@@ -2038,7 +2055,7 @@ dialog#terminal {
 	width: 0;
 	background-color: #76c7c0;
 	border-radius: 10px 0 0 10px;
-	transition: width 0.5s ;
+	transition: width 0.5s;
 	border-radius: var(--sizing-border-radius);
 }
 
@@ -2080,7 +2097,7 @@ dialog#terminal {
 		height: 0;
 		overflow: hidden;
 		flex: 1;
-		transition: var(--time-action) ;
+		transition: var(--time-action);
 	}
 }
 
@@ -2185,7 +2202,7 @@ noscript {
 	display: flex;
 	flex-direction: row;
 	align-items: center;
-  justify-content: center;
+	justify-content: center;
 }
 
 #userschooser {
@@ -2229,10 +2246,6 @@ noscript {
 	100% {
 		transform: rotate(360deg);
 	}
-}
-
-.winclosebtn:hover {
-	background-color: rgb(153, 41, 41);
 }
 
 .erase-everything {
@@ -2294,12 +2307,12 @@ noscript {
 }
 
 #draggable-time {
-    line-height: 15px;
+	line-height: 15px;
 }
 
 div#toastdiv {
-    position: absolute;
-    bottom: 15vh;
+	position: absolute;
+	bottom: 15vh;
 	display: none;
 	margin: auto;
 	width: 100%;
@@ -2307,11 +2320,11 @@ div#toastdiv {
 
 #toastdivtext {
 	width: fit-content;
-    padding: 0.5rem 1rem;
-    background: var(--colors-BG-section);
-    border-radius: 1.5rem;
-    box-shadow: 0 8px 1rem #00000085;
-    margin: auto;
+	padding: 0.5rem 1rem;
+	background: var(--colors-BG-section);
+	border-radius: 1.5rem;
+	box-shadow: 0 8px 1rem #00000085;
+	margin: auto;
 	cursor: pointer;
 	transition: .2s;
 }
