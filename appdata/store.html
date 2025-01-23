@@ -610,6 +610,8 @@
 			display: flex;
 			flex-direction: row;
 			flex-wrap: nowrap;
+			background-size: cover !important;
+			background-position: center !important;
 			border-radius: 0.5rem;
 		}
 
@@ -710,10 +712,13 @@
 							themeContainer.style.color = themeData.colors["--colors-text-normal"];
 
 							const colorsSvg = document.createElement('div');
+							colorsSvg.style.background = themeData.wallpaper
+								? `url("${themeData.wallpaper}")`
+								: themeData.colors["--colors-BG-normal"];
+
 							colorsSvg.classList.add('themecolors');
 							const svgNS = "http://www.w3.org/2000/svg";
 
-							const colormainbg = themeData.colors["--colors-BG-normal"] || "#000000";
 							const colorsubbg = themeData.colors["--colors-BG-sub"] || "#080808";
 							const colorsectionbg = themeData.colors["--colors-BG-section"] || "#090909";
 							const colorhighlight = themeData.colors["--colors-BG-highlighted"] || "#512DA8";
@@ -738,7 +743,6 @@
 							g2.setAttribute('stroke-miterlimit', '10');
 
 							const paths = [
-								{ d: "M146.53533,243.80761v-127.61522h186.92934v127.61522z", fill: colormainbg }, // main bg
 								{ d: "M153.33273,232.60246v-110.0906h50v110.0906z", fill: colorsectionbg }, // card section
 								{ d: "M153.33273,232.60246v-110.0906h117.15993v110.0906z", fill: colorsectionbg },
 								{ d: "M165.64709,197.15912v-13.89422h54.10463v13.89422z", fill: colorhighlight }, // button
