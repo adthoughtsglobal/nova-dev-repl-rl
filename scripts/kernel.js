@@ -192,43 +192,43 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
     });
 
     var ibtnsside = document.createElement("div");
-ibtnsside.classList += "ibtnsside";
+    ibtnsside.classList += "ibtnsside";
 
-var minimbtn = document.createElement("button");
-minimbtn.setAttribute("title", "Minimize");
-var minimSpan = document.createElement("span");
-minimSpan.classList.add("material-symbols-rounded", "wincl", "flbtn");
-minimSpan.textContent = "remove";
-minimbtn.appendChild(minimSpan);
-minimbtn.onclick = function () {
-    minim(minimSpan);
-};
+    var minimbtn = document.createElement("button");
+    minimbtn.setAttribute("title", "Minimize");
+    var minimSpan = document.createElement("span");
+    minimSpan.classList.add("material-symbols-rounded", "wincl", "flbtn");
+    minimSpan.textContent = "remove";
+    minimbtn.appendChild(minimSpan);
+    minimbtn.onclick = function () {
+        minim(minimSpan);
+    };
 
-var flButton = document.createElement("button");
-flButton.setAttribute("title", "Maximize");
-var flSpan = document.createElement("span");
-flSpan.classList.add("material-symbols-rounded", "wincl", "flbtn");
-flSpan.textContent = "open_in_full";
-flSpan.style = `font-size: 0.7rem !important;`;
-flButton.appendChild(flSpan);
-flButton.onclick = function () {
-    flwin(flSpan);
-};
+    var flButton = document.createElement("button");
+    flButton.setAttribute("title", "Maximize");
+    var flSpan = document.createElement("span");
+    flSpan.classList.add("material-symbols-rounded", "wincl", "flbtn");
+    flSpan.textContent = "open_in_full";
+    flSpan.style = `font-size: 0.7rem !important;`;
+    flButton.appendChild(flSpan);
+    flButton.onclick = function () {
+        flwin(flSpan);
+    };
 
-var closeButton = document.createElement("button");
-closeButton.setAttribute("title", "Close");
-var closeSpan = document.createElement("span");
-closeSpan.classList.add("material-symbols-rounded", "wincl", "winclosebtn");
-closeSpan.textContent = "close";
-closeButton.appendChild(closeSpan);
-closeButton.onclick = function () {
-    setTimeout(function () {
-        dewallblur();
-    }, 500);
-    clwin("window" + winuid);
-    delete winds[winuid];
-    loadtaskspanel();
-};
+    var closeButton = document.createElement("button");
+    closeButton.setAttribute("title", "Close");
+    var closeSpan = document.createElement("span");
+    closeSpan.classList.add("material-symbols-rounded", "wincl", "winclosebtn");
+    closeSpan.textContent = "close";
+    closeButton.appendChild(closeSpan);
+    closeButton.onclick = function () {
+        setTimeout(function () {
+            dewallblur();
+        }, 500);
+        clwin("window" + winuid);
+        delete winds[winuid];
+        loadtaskspanel();
+    };
 
     ibtnsside.appendChild(closeButton);
     if (!isitmob) {
@@ -278,50 +278,68 @@ closeButton.onclick = function () {
                 ...(params && { params })
             };
 
-            if (contentString.includes("nova-include") && getMetaTagContent(contentString, 'nova-include') != null) {
+            if (contentString.includes("nova-include")) {
                 try {
+                    const novaIncludes = getMetaTagContent(contentString, 'nova-include');
+                    if (!novaIncludes || !novaIncludes.length) return;
 
-                    if (novadotcsscache == null) {
-                        novadotcsscache = await fetch('nova.css');
-                        novadotcsscache = await novadotcsscache.text()
-                    }
-                    var novadotcss = novadotcsscache;
-
-                    const computedStyles = getComputedStyle(document.body);
-                    const variables = {
-                        '--font-size-small': computedStyles.getPropertyValue('--font-size-small'),
-                        '--font-size-normal': computedStyles.getPropertyValue('--font-size-normal'),
-                        '--font-size-big': computedStyles.getPropertyValue('--font-size-big'),
-                        '--colors-BG-normal': computedStyles.getPropertyValue('--colors-BG-normal'),
-                        '--colors-BG-sub': computedStyles.getPropertyValue('--colors-BG-sub'),
-                        '--colors-BG-section': computedStyles.getPropertyValue('--colors-BG-section'),
-                        '--colors-BG-highlighted': computedStyles.getPropertyValue('--colors-BG-highlighted'),
-                        '--colors-text-normal': computedStyles.getPropertyValue('--colors-text-normal'),
-                        '--colors-text-high': computedStyles.getPropertyValue('--colors-text-high'),
-                        '--sizing-border-radius': computedStyles.getPropertyValue('--sizing-border-radius'),
-                        '--sizing-normal': computedStyles.getPropertyValue('--sizing-normal'),
-                        '--sizing-nano': computedStyles.getPropertyValue('--sizing-nano'),
-                        '--vw': computedStyles.getPropertyValue('--vw'),
-                        '--vh': computedStyles.getPropertyValue('--vh'),
-                        '--font-size-default': computedStyles.getPropertyValue('--font-size-default')
-                    };
-
-                    const updatedCssText = novadotcss.replace(/:root\s*{([^}]*)}/, (match, declarations) => {
-                        let updatedDeclarations = declarations.trim();
-                        for (const [variable, value] of Object.entries(variables)) {
-                            const regex = new RegExp(`(${variable}\\s*:\\s*).*?;`, 'g');
-                            updatedDeclarations = updatedDeclarations.replace(regex, `$1${value.trim()};`);
+                    if (novaIncludes.includes('nova.css')) {
+                        if (!novadotcsscache) {
+                            const response = await fetch('nova.css');
+                            novadotcsscache = await response.text();
                         }
-                        return `:root { ${updatedDeclarations} }`;
-                    });
+                        const novadotcss = novadotcsscache;
 
-                    const style = document.createElement('style');
-                    style.textContent = updatedCssText;
-                    iframe.contentDocument.head.appendChild(style);
+                        const computedStyles = getComputedStyle(document.body);
+                        const variables = {
+                            '--font-size-small': computedStyles.getPropertyValue('--font-size-small'),
+                            '--font-size-normal': computedStyles.getPropertyValue('--font-size-normal'),
+                            '--font-size-big': computedStyles.getPropertyValue('--font-size-big'),
+                            '--colors-BG-normal': computedStyles.getPropertyValue('--colors-BG-normal'),
+                            '--colors-BG-sub': computedStyles.getPropertyValue('--colors-BG-sub'),
+                            '--colors-BG-section': computedStyles.getPropertyValue('--colors-BG-section'),
+                            '--colors-BG-highlighted': computedStyles.getPropertyValue('--colors-BG-highlighted'),
+                            '--colors-text-normal': computedStyles.getPropertyValue('--colors-text-normal'),
+                            '--colors-text-high': computedStyles.getPropertyValue('--colors-text-high'),
+                            '--sizing-border-radius': computedStyles.getPropertyValue('--sizing-border-radius'),
+                            '--sizing-normal': computedStyles.getPropertyValue('--sizing-normal'),
+                            '--sizing-nano': computedStyles.getPropertyValue('--sizing-nano'),
+                            '--vw': computedStyles.getPropertyValue('--vw'),
+                            '--vh': computedStyles.getPropertyValue('--vh'),
+                            '--font-size-default': computedStyles.getPropertyValue('--font-size-default'),
+                        };
+
+                        const updatedCssText = novadotcss.replace(/:root\s*{([^}]*)}/, (match, declarations) => {
+                            let updatedDeclarations = declarations.trim();
+                            for (const [variable, value] of Object.entries(variables)) {
+                                const regex = new RegExp(`(${variable}\\s*:\\s*).*?;`, 'g');
+                                updatedDeclarations = updatedDeclarations.replace(regex, `$1${value.trim()};`);
+                            }
+                            return `:root { ${updatedDeclarations} }`;
+                        });
+
+                        const style = document.createElement('style');
+                        style.textContent = updatedCssText;
+                        iframe.contentDocument.head.appendChild(style);
+                    }
+
+                    if (novaIncludes.includes('contextMenu')) {
+                        fetch('scripts/ctxmenu.js')
+                            .then(response => response.text())
+                            .then(scriptContent => {
+                                const scriptBlob = new Blob([scriptContent], { type: 'application/javascript' });
+                                const scriptUrl = URL.createObjectURL(scriptBlob);
+                                const script = document.createElement('script');
+                                script.src = scriptUrl;
+                                iframe.contentDocument.body.appendChild(script);
+                            });
+                    }
+                                   
                 } catch (error) {
-                    console.error('Error fetching or injecting CSS:', error);
+                    console.error('Error fetching or injecting nova things:', error);
                 }
             }
+
 
             const script = document.createElement('script');
             script.innerHTML = `

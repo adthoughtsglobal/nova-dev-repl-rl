@@ -219,7 +219,7 @@ async function startup() {
 			const end = performance.now();
 
 			rllog(
-				`You are using \n\n%cNovaOS%c\n%cNovaOS is the free, source-available,powerful and the cutest Web Operating system on the internet.%c\n\nStartup: ${(end - start).toFixed(2)}ms\nUsername: ${CurrentUsername}\nCurrent: ${localupdatedataver}\n12hr Time format: ${timetypecondition}\nNewest: ${fetchupdatedataver}`,
+				`You are using \n\n%cNovaOS%c\n%cNovaOS is the web system made for you.%c\n\nStartup: ${(end - start).toFixed(2)}ms\nUsername: ${CurrentUsername}\nCurrent: ${localupdatedataver}\n12hr Time format: ${timetypecondition}\nNewest: ${fetchupdatedataver}`,
 				'color: white; background-color: #101010; font-size: 2rem; padding: 0.7rem 1rem; border-radius: 1rem;',
 				'',
 				'padding:5px 0; padding-top:1rem;',
@@ -268,12 +268,103 @@ document.addEventListener("DOMContentLoaded", async function () {
 		}
 	});
 
+	setsrtpprgbr(10);
+
+	const scriptSources = [
+		"scripts/html2canvas.js",
+		"scripts/fflate.js",
+		"scripts/kernel.js",
+		"scripts/rotur.js",
+		"scripts/ctxmenu.js",
+		"scripts/edgecases.js",
+		"scripts/scripties.js"
+	];
+	
+	const loadScripts = async () => {
+		for (const src of scriptSources) {
+			await new Promise((resolve, reject) => {
+				const script = document.createElement('script');
+				script.src = src;
+				script.onload = resolve;
+				script.onerror = reject;
+				document.body.appendChild(script);
+			});
+		}
+		console.log("All scripts loaded and executed");
+	};
+	
+	await loadScripts();
+	setsrtpprgbr(30);
+
 	setbgimagetourl(novaFeaturedImage);
 
 	gid("nowrunninapps").style.display = "none";
 	gid('seprw-openb').onclick = function () {
 		gid('searchside').style.flexGrow = 1;
 	}
+
+	function startfunctions() {
+
+		updateBattery();
+		navigator.getBattery().then(function (battery) {
+			battery.addEventListener('levelchange', updateBattery);
+		});
+
+		makedialogclosable('appdmod');
+
+
+		// hotkeys
+		document.addEventListener('keydown', function (event) {
+			if (event.ctrlKey && (event.key === 'f' || event.keyCode === 70)) {
+				event.preventDefault();
+				openapp('files', 1);
+			}
+			if (event.ctrlKey && (event.key === 's')) {
+				event.preventDefault();
+				openapp('settings', 1);
+			}
+		});
+		document.addEventListener('keydown', function (event) {
+			if (event.key === 'Escape') {
+				var appdmod = document.getElementById('appdmod');
+				if (appdmod && appdmod.open) {
+					appdmod.close();
+				}
+			}
+		});
+		document.addEventListener('keydown', function (event) {
+			if (event.ctrlKey && event.key === '/') {
+				event.preventDefault();
+				opensearchpanel();
+			}
+		});
+		document.addEventListener('keydown', function (event) {
+			if (event.ctrlKey && event.key === ' ') {
+				event.preventDefault();
+				openn();
+			}
+		});
+
+
+		makedialogclosable('searchwindow');
+		prepareArrayToSearch();
+
+		onstartup.push(async () => {
+			if (location.origin != 'http://127.0.0.1:3000' && location.origin != 'https://adthoughtsglobal.github.io') {
+				say("You are on an <b style='color:red;'>unsafe</b> copy of NovaOS. Do not use this.", "failed");
+			}
+			edgecases();
+
+			if (detectIE()) {
+				issues = `<li><b>HTMLDialogElement Not supported: </b> We have taken some efforts to fix this for you.</li>
+				<li><b>Internet explorer detected: </b> i dunno what to say ;-;</li>`;
+				say(cantusetext + issues + caniuse2 + `<br><b>Anyway, it is so interesting why you still use explorer.</b>`, "failed");
+				badlaunch = true;
+			}
+		});
+	}
+
+	await startfunctions();
 
 	gid("versionswitcher")?.remove();
 	await registerDecryptWorker();
@@ -540,10 +631,6 @@ function updateBattery() {
 		console.log("Battery Error: " + error);
 	});
 }
-updateBattery();
-navigator.getBattery().then(function (battery) {
-	battery.addEventListener('levelchange', updateBattery);
-});
 async function dod() {
 	let x;
 	try {
@@ -728,7 +815,7 @@ function normalizeZIndexes(excludeWindowId = null) {
 	winds = Object.keys(winds).reduce((normalizedWinds, key) => {
 		normalizedWinds[key] = {
 			...winds[key],
-			zIndex: key === excludeWindowId 
+			zIndex: key === excludeWindowId
 				? winds[key].zIndex
 				: zIndexMap[Number(winds[key].zIndex) || 0],
 		};
@@ -869,7 +956,6 @@ function makedialogclosable(ok) {
 		}
 	});
 }
-makedialogclosable('appdmod');
 
 function openModal(type, { title = '', message, options = null, status = null, preset = '' } = {}) {
 	if (badlaunch) { return }
@@ -1238,19 +1324,6 @@ function containsSmallSVGElement(str) {
 	var svgRegex = /^<svg\s*[^>]*>[\s\S]*<\/svg>$/i;
 	return svgRegex.test(str) && str.length <= 5000;
 }
-var dash = gid("dashboard");
-function dashtoggle() {
-	if (dash.open) {
-		dash.close();
-	} else {
-		dash.showModal();
-	}
-}
-document.addEventListener('click', (event) => {
-	if (event.target === dash) {
-		dash.close();
-	}
-});
 async function dewallblur() {
 	if (!await getSetting("focusMode")) {
 		gid("bgimage").style.filter = "blur(0px)";
@@ -1581,8 +1654,6 @@ async function genTaskBar() {
 		document.querySelector('#taskbarloaderprime').remove();
 	}
 }
-makedialogclosable('searchwindow');
-prepareArrayToSearch()
 async function opensearchpanel(preset = "") {
 
 	gid("seapppreview").style.display = "none";

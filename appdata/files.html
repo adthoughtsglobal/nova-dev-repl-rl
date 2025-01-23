@@ -10,7 +10,6 @@
 	<meta name="nova-icon"
 		content="<svg version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='115.79063' height='79.42629' viewBox='0,0,115.79063,79.42629'><g transform='translate(-182.26576,-138.78469)'><g data-paper-data='{&quot;isPaintingLayer&quot;:true}' fill-rule='nonzero' stroke-linecap='butt' stroke-linejoin='miter' stroke-miterlimit='10' stroke-dasharray='' stroke-dashoffset='0' style='mix-blend-mode: normal'><path d='M192.5,211v-70.66666h96.33333v70.66666z' fill='#5e511c' stroke='none' stroke-width='0'/><path d='M214.94361,194.01973l7.87476,-55.19191l75.23803,10.73494l-7.87476,55.19191z' fill='#cbcbcb' stroke='none' stroke-width='0'/><path d='M215.52729,204.79778l-7.94546,-55.18178l75.22422,-10.83131l7.94545,55.18177z' fill='#ffffff' stroke='none' stroke-width='0'/><path d='M191.80875,211.01003l-9.54298,-67.4916c0,0 17.94997,0 29.05001,0c1.75099,0 3.83004,5.47155 6.1555,5.47155c21.27569,0 63.17701,0 63.17701,0l7.54298,62.02005z' fill='#ffe166' stroke='none' stroke-width='0'/><path d='M217.66762,213.21099c-0.25148,-4.40441 -2.40197,-12.90365 1.84715,-16.36796c3.99005,-3.25308 24.23976,-3.39012 28.02687,0.40735c3.79805,3.80844 6.43466,11.61379 6.49657,16.10718' fill='none' stroke='#00b8ff' stroke-width='10'/></g></g></svg>">
 	<script src="https://cdn.jsdelivr.net/npm/jsmediatags@latest/dist/jsmediatags.min.js"></script>
-	<link rel="stylesheet" href="/nova.css">
 	<style>
 		html {
 			height: 100%;
@@ -1240,7 +1239,7 @@
 				currentPath = defaultopenfold;
 			}
 
-			
+
 			if (await window.parent.getSetting("filesSidenavSize")) {
 				document.getElementById("flap-sidenav").style.width = await window.parent.getSetting("filesSidenavSize");
 			} else {
@@ -1249,7 +1248,7 @@
 
 			if (window.innerWidth <= 500) {
 				toggletree();
-				
+
 			}
 
 			$("#flap-sidenav").resizable({
@@ -1673,83 +1672,18 @@
 						dropupDiv.innerHTML = "";
 						const dropupContentDiv = document.createElement("div");
 						dropupContentDiv.className = "dropup-content";
+						const itemuid = fileData.unid;
 
-						// Add "Set As Wallpaper" option if the file is an image
-						if (window.parent.getbaseflty(ptypext(fileData.fileName)) === "image") {
-							const wallpaperOption = document.createElement("a");
-							wallpaperOption.classList.add("dropdownerthebob");
-							wallpaperOption.title = "Set as Wallpaper";
-							wallpaperOption.onclick = () => window.parent.makewall(x.getAttribute("unid"));
-							wallpaperOption.innerHTML = `<span class="material-symbols-rounded">wallpaper</span> Set As`;
-							dropupContentDiv.appendChild(wallpaperOption);
-						}
-
-						// Add "Reinstall application" option if the file is an app
-						if (ptypext(fileData.fileName) === "app") {
-							const reinstallOption = document.createElement("a");
-							reinstallOption.classList.add("dropdownerthebob");
-							reinstallOption.title = "Reinstall Application";
-							reinstallOption.onclick = () => window.parent.extractAndRegisterCapabilities(x.getAttribute("unid"));
-							reinstallOption.innerHTML = `<span class="material-symbols-rounded">download</span> Reinstall`;
-							dropupContentDiv.appendChild(reinstallOption);
-						}
-
-						// Add "Open" option
-						const openOption = document.createElement("a");
-						openOption.classList.add("dropdownerthebob");
-						openOption.title = "Open File";
-						openOption.onclick = () => openfile(x.getAttribute("unid"));
-						openOption.innerHTML = `<span class="material-symbols-rounded">open_in_new</span> Open`;
-						dropupContentDiv.appendChild(openOption);
-
-						// Add "Delete" option
-						const deleteOption = document.createElement("a");
-						deleteOption.classList.add("dropdownerthebob");
-						deleteOption.title = "Delete File";
-						deleteOption.onclick = () => remfile(x.getAttribute("unid"));
-						deleteOption.innerHTML = `<span class="material-symbols-rounded">delete</span> Delete`;
-						dropupContentDiv.appendChild(deleteOption);
-
-						// Add "Open with" option
-						const openAsTextOption = document.createElement("a");
-						openAsTextOption.classList.add("dropdownerthebob");
-						openAsTextOption.title = "Open with an app";
-						openAsTextOption.onclick = () => openfile(x.getAttribute("unid"), 'any');
-						openAsTextOption.innerHTML = `<span class="material-symbols-rounded">open_with</span> Open In`;
-						dropupContentDiv.appendChild(openAsTextOption);
-
-						// Add "Rename" option
-						const renameOption = document.createElement("a");
-						renameOption.classList.add("dropdownerthebob");
-						renameOption.title = "Rename File";
-						renameOption.onclick = () => renamef(document.getElementById(x.id));
-						renameOption.innerHTML = `<span class="material-symbols-rounded">save_as</span> Rename`;
-						dropupContentDiv.appendChild(renameOption);
-
-						// Add "copy file id" option
-						const copyid = document.createElement("a");
-						copyid.classList.add("dropdownerthebob");
-						copyid.title = "Copy file ID";
-						copyid.onclick = () => navigator.clipboard.writeText(x.getAttribute("unid"));
-						copyid.innerHTML = `<span class="material-symbols-rounded">content_copy</span> Copy ID`;
-						dropupContentDiv.appendChild(copyid);
-
-						// Add "Move" option
-						const moveOption = document.createElement("a");
-						moveOption.classList.add("dropdownerthebob");
-						moveOption.title = "Move File";
-						moveOption.onclick = () => movefile(document.getElementById(x.id));
-						moveOption.innerHTML = `<span class="material-symbols-rounded">drive_file_move</span> Move`;
-						dropupContentDiv.appendChild(moveOption);
-
-						// Add "create shortcut" option
-						const createShortcut = document.createElement("a");
-						createShortcut.classList.add("dropdownerthebob");
-						createShortcut.title = "Move File";
-						createShortcut.onclick = () => addShortcut(x.getAttribute("unid"));
-						createShortcut.innerHTML = `<span class="material-symbols-rounded">add</span> Shortcut`;
-						dropupContentDiv.appendChild(createShortcut);
-
+						Object.values(window.parent.fileActions).forEach(action => {
+							if (action.condition(fileData)) {
+								const option = document.createElement("a");
+								option.classList.add("dropdownerthebob");
+								option.title = action.label;
+								option.onclick = () => action.action(itemuid);
+								option.innerHTML = `<span class="material-symbols-rounded">${action.icon}</span> ${action.label}`;
+								dropupContentDiv.appendChild(option);
+							}
+						});
 						// Append the dropup content to the dropup container
 						dropupDiv.appendChild(dropupContentDiv);
 
@@ -2079,162 +2013,253 @@
 			}
 
 		}
-		let contextMenu;
 
-		function createContextMenu() {
-			contextMenu = document.createElement('div');
-			contextMenu.style.position = 'absolute';
-			contextMenu.style.display = 'none';
-			contextMenu.classList.add("contextmenu");
-			return contextMenu;
-		}
-
-		function adjustPositionToFitViewport(x, y, menu) {
-			menu.style.display = 'block';
-			const menuRect = menu.getBoundingClientRect();
-			menu.style.display = 'none';
-
-			const viewportWidth = window.innerWidth;
-			const viewportHeight = window.innerHeight;
-			const bottomMargin = 55;
-
-			if (x + menuRect.width > viewportWidth) {
-				x = viewportWidth - menuRect.width;
-			}
-			if (y + menuRect.height > viewportHeight - bottomMargin) {
-				y = viewportHeight - menuRect.height - bottomMargin;
-			}
-			if (x < 0) {
-				x = 0;
-			}
-			if (y < 0) {
-				y = 0;
-			}
-
-			return { x, y };
-		}
-
-		document.addEventListener('contextmenu', (event) => {
-			event.preventDefault();
-
-			const dialog = event.target.closest('dialog');
-			const targetElement = event.target.closest('.file, .jstree-anchor');
-			if (!targetElement) return;
-
-			if (!contextMenu) contextMenu = createContextMenu();
-
-			if (dialog) {
-				dialog.appendChild(contextMenu);
-			} else {
-				document.body.appendChild(contextMenu);
-			}
-
-			contextMenu.innerHTML = '';
-
-			const menuItems = getMenuItems(targetElement);
-			menuItems.forEach(item => {
-				const menuItem = document.createElement('div');
-				menuItem.innerHTML = `<span class="material-symbols-rounded">
-${item.icon || ""}
-</span>
-<span>${item.label}</span>`;
-				menuItem.classList.add("ctxmenuitem");
-				menuItem.style.padding = '5px 10px';
-				menuItem.style.cursor = 'pointer';
-				menuItem.addEventListener('click', () => {
-					item.action(targetElement);
-					contextMenu.style.display = 'none';
-				});
-				contextMenu.appendChild(menuItem);
-			});
-
-			let x = event.clientX;
-			let y = event.clientY;
-
-			if (dialog) {
-				const dialogRect = dialog.getBoundingClientRect();
-				x -= dialogRect.left;
-				y -= dialogRect.top;
-			}
-
-			const adjustedPosition = adjustPositionToFitViewport(x, y, contextMenu);
-			contextMenu.style.left = `${adjustedPosition.x}px`;
-			contextMenu.style.top = `${adjustedPosition.y}px`;
-
-			contextMenu.style.display = 'flex';
-		});
-
-		document.addEventListener('click', () => {
-			const contextMenu = document.querySelector('.contextmenu');
-			setTimeout(() => {
-				if (contextMenu) contextMenu.style.display = 'none';
-			}, 200);
-		});
-
-		document.addEventListener('keydown', (event) => {
-			const contextMenu = document.querySelector('.contextmenu');
-			if (event.key === 'Escape' && contextMenu) {
-				contextMenu.style.display = 'none';
-			}
-		});
+		window.fileActions = {
+			open: {
+				icon: 'open_in_new',
+				label: 'Open',
+				action: (itemuid) => openfile(itemuid),
+				condition: (file) => true,
+			},
+			delete: {
+				icon: 'delete',
+				label: 'Delete',
+				action: (itemuid) => remfile(itemuid),
+				condition: (file) => true,
+			},
+			rename: {
+				icon: 'save_as',
+				label: 'Rename',
+				action: async (itemuid) => {
+					let file = await getFileById(itemuid);
+					file.fileName = await ask("New Name:", file.fileName);
+					await updateFile(false, itemuid, file);
+				},
+				condition: (file) => true,
+			},
+			reinstall: {
+				icon: 'download',
+				label: 'Reinstall',
+				action: (itemuid) => window.parent.extractAndRegisterCapabilities(itemuid),
+				condition: (file) => ptypext(file.fileName) === 'app',
+			},
+			setWallpaper: {
+				icon: 'wallpaper',
+				label: 'Set As Wallpaper',
+				action: (itemuid) => window.parent.makewall(itemuid),
+				condition: (file) => window.parent.getbaseflty(ptypext(file.fileName)) === 'image',
+			},
+			move: {
+				icon: 'drive_file_move',
+				label: 'Move',
+				action: (itemuid) => movefile(itemuid),
+				condition: (file) => true,
+			},
+			copyId: {
+				icon: 'content_copy',
+				label: 'Copy ID',
+				action: (itemuid) => window.parent.navigator.clipboard.writeText(itemuid),
+				condition: (file) => true,
+			},
+			createShortcut: {
+				icon: 'add',
+				label: 'Shortcut',
+				action: (itemuid) => addShortcut(itemuid),
+				condition: (file) => true,
+			},
+		};
 
 		function getMenuItems(target) {
-			if (target.classList.contains('jstree-anchor')) {
-				var itemuid = target.innerText;
-				return [
-					{
-						icon: 'arrow_forward',
-						label: 'Open',
-						action: (el) => {
-							listFiles(itemuid);
-						}
-					},
-					{
-						icon: 'delete',
-						label: 'Delete',
-						action: (el) => window.parent.remfolder(itemuid)
-					}
-				];
-			}
-
 			if (target.classList.contains('file')) {
-				var itemuid = target.getAttribute("unid");
-				return [
-					{
-						icon: 'arrow_forward',
-						label: 'Open',
-						action: (el) => {
-							window.parent.openfile(itemuid)
-						}
-					},
-					{
-						icon: 'delete',
-						label: 'Delete',
-						action: (el) => window.parent.remfile(itemuid)
-					},
-					{
-						icon: 'edit',
-						label: 'Rename',
-						action: async () => {
-							let file = await window.parent.getFileById(itemuid);
-
-							file.fileName = await window.parent.ask("New Name:", file.fileName);
-							await window.parent.updateFile(false, itemuid, file);
-						}
-					},
-					{
-						icon: 'content_copy',
-						label: 'Copy ID',
-						action: async () => {
-							navigator.clipboard.writeText(itemuid)
-						}
-					},
-				];
+				const itemuid = target.getAttribute("unid");
+				const file = { unid: itemuid, type: 'app', fileName: window.parent.getFileNameByID(itemuid) };
+				return Object.values(window.fileActions)
+					.filter(action => action.condition(file))
+					.map(action => ({
+						icon: action.icon,
+						label: action.label,
+						action: () => action.action(itemuid),
+					}));
 			}
 			return [
 				{ label: 'Inspect', action: () => console.log('Inspect clicked') },
 			];
 		}
+
+		var contextMenu;
+
+
+		function createContextMenu(event) {
+			if (!contextMenu) {
+				contextMenu = document.createElement('div');
+				contextMenu.style.position = 'absolute';
+				contextMenu.style.display = 'none';
+				contextMenu.classList.add("contextmenu");
+			}
+
+			const dialog = event.target.closest('dialog');
+
+			if (dialog && contextMenu.parentNode !== dialog) {
+				dialog.appendChild(contextMenu);
+			} else if (!dialog && contextMenu.parentNode !== document.body) {
+				document.body.appendChild(contextMenu);
+			}
+
+			return contextMenu;
+		}
+
+
+		function createDropdownMenu(items) {
+			const dropdownMenu = document.createElement('div');
+			dropdownMenu.classList.add('contextmenu');
+			dropdownMenu.style.position = 'absolute';
+			dropdownMenu.style.display = 'none';
+			dropdownMenu.style.zIndex = '1000';
+
+			items.forEach(item => {
+				const menuItem = document.createElement('div');
+				menuItem.innerHTML = `<span class="material-symbols-rounded">${item.icon || ""}</span>
+        <span>${item.label}</span>`;
+				menuItem.classList.add('ctxmenuitem');
+				menuItem.style.padding = '5px 10px';
+				menuItem.style.cursor = 'pointer';
+				menuItem.addEventListener('click', () => {
+					item.action();
+					dropdownMenu.style.display = 'none';
+				});
+				dropdownMenu.appendChild(menuItem);
+			});
+
+			return dropdownMenu;
+		}
+
+
+		function adjustPositionToFitViewport(x, y, menu, dialogRect = null) {
+			menu.style.display = 'block';
+			const menuRect = menu.getBoundingClientRect();
+			menu.style.display = 'none';
+
+			const viewportWidth = dialogRect ? dialogRect.width : window.innerWidth;
+			const viewportHeight = dialogRect ? dialogRect.height : window.innerHeight;
+			const bottomMargin = 55;
+
+			x = Math.max(0, Math.min(x, viewportWidth - menuRect.width));
+			y = Math.max(0, Math.min(y, viewportHeight - menuRect.height - bottomMargin));
+
+			return { x, y };
+		}
+
+		function adjustDropdownPositionRelativeToTrigger(triggerElement, dropdownMenu) {
+			const triggerRect = triggerElement.getBoundingClientRect();
+			const dialog = triggerElement.closest('dialog');
+			const dialogRect = dialog ? dialog.getBoundingClientRect() : null;
+
+			if (dialog && dropdownMenu.parentNode !== dialog) {
+				dialog.appendChild(dropdownMenu);
+			} else if (!dialog && dropdownMenu.parentNode !== document.body) {
+				document.body.appendChild(dropdownMenu);
+			}
+
+			dropdownMenu.style.display = 'block';
+			const menuRect = dropdownMenu.getBoundingClientRect();
+			dropdownMenu.style.display = 'none';
+
+			const initialLeft = dialogRect
+				? triggerRect.right - dialogRect.left + menuRect.width > dialogRect.width
+					? triggerRect.left - dialogRect.left - menuRect.width
+					: triggerRect.right - dialogRect.left
+				: triggerRect.right + menuRect.width > window.innerWidth
+					? triggerRect.left - menuRect.width
+					: triggerRect.right;
+
+			const initialTop = dialogRect
+				? triggerRect.bottom - dialogRect.top + menuRect.height > dialogRect.height
+					? dialogRect.height - menuRect.height - 5
+					: triggerRect.bottom - dialogRect.top
+				: triggerRect.bottom + menuRect.height > window.innerHeight
+					? window.innerHeight - menuRect.height - 5
+					: triggerRect.bottom;
+
+			const { x, y } = adjustPositionToFitViewport(initialLeft, initialTop, dropdownMenu, dialogRect);
+
+			dropdownMenu.style.left = `${x}px`;
+			dropdownMenu.style.top = `${y}px`;
+			dropdownMenu.style.display = 'block';
+		}
+
+		document.addEventListener('contextmenu', (event) => {
+			event.preventDefault();
+
+			contextMenu = createContextMenu(event);
+			contextMenu.innerHTML = '';
+			const targetElement = event.target.closest('.file');
+			const menuItems = getMenuItems(targetElement);
+
+			menuItems.slice(0, 4).forEach(item => {
+				const menuItem = document.createElement('div');
+				menuItem.innerHTML = `<span class="material-symbols-rounded">${item.icon || ""}</span>
+        <span>${item.label}</span>`;
+				menuItem.classList.add('ctxmenuitem');
+				menuItem.style.padding = '5px 10px';
+				menuItem.style.cursor = 'pointer';
+				menuItem.addEventListener('click', () => {
+					item.action();
+					contextMenu.style.display = 'none';
+				});
+				contextMenu.appendChild(menuItem);
+			});
+
+			if (menuItems.length > 4) {
+				const moreButton = document.createElement('div');
+				moreButton.innerHTML = `<span class="material-symbols-rounded">more_vert</span>
+        <span>More</span>`;
+				moreButton.classList.add('ctxmenuitem');
+				moreButton.style.padding = '5px 10px';
+				moreButton.style.cursor = 'pointer';
+
+				const dropdownMenu = createDropdownMenu(menuItems.slice(4));
+				contextMenu.appendChild(moreButton);
+				document.body.appendChild(dropdownMenu);
+
+				moreButton.addEventListener('mouseenter', () => {
+					adjustDropdownPositionRelativeToTrigger(moreButton, dropdownMenu);
+				});
+
+				moreButton.addEventListener('mouseleave', () => {
+					dropdownMenu.style.display = 'none';
+				});
+
+				dropdownMenu.addEventListener('mouseenter', () => {
+					dropdownMenu.style.display = 'block';
+				});
+
+				dropdownMenu.addEventListener('mouseleave', () => {
+					dropdownMenu.style.display = 'none';
+				});
+			}
+
+			const dialog = event.target.closest('dialog');
+			const dialogRect = dialog ? dialog.getBoundingClientRect() : null;
+			const cursorX = dialogRect ? event.clientX - dialogRect.left : event.clientX;
+			const cursorY = dialogRect ? event.clientY - dialogRect.top : event.clientY;
+
+			const { x, y } = adjustPositionToFitViewport(cursorX, cursorY, contextMenu, dialogRect);
+			contextMenu.style.left = `${x}px`;
+			contextMenu.style.top = `${y}px`;
+			contextMenu.style.display = 'block';
+		});
+
+		document.addEventListener('click', () => {
+			if (contextMenu) contextMenu.style.display = 'none';
+			const dropdownMenus = document.querySelectorAll('.dropdown-menu');
+			dropdownMenus.forEach(menu => menu.remove());
+		});
+
+		document.addEventListener('keydown', (event) => {
+			if (event.key === 'Escape' && contextMenu) {
+				contextMenu.style.display = 'none';
+			}
+		});
 	</script>
 </body>
 

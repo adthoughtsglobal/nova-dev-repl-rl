@@ -2372,3 +2372,5 @@ function randomString(length) {
   }
   return result ?? "";
 }
+
+var roturExtension = new RoturExtension();
