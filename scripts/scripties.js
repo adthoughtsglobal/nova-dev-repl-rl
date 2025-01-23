@@ -222,16 +222,18 @@ async function logoutofrtr() {
 
 
 function applyThemeNonVisual(data, doc) {
-
-	saveColorsNonVisual(data.colors, doc);
+	saveColorsNonVisual(data.colors, doc, data);
 }
 
-function saveColorsNonVisual(colors, doc) {
+function saveColorsNonVisual(colors, doc, data) {
 	const colorsToSave = {};
 	for (const variableName in colors) {
 		colorsToSave[variableName] = colors[variableName];
 
 		window.parent.document.documentElement.style.setProperty(variableName, colors[variableName]);
+		if (data.wallpaper)
+			window.parent.makewall(data.wallpaper);
+
 		doc.documentElement.style.setProperty(variableName, colors[variableName]);
 	}
 	window.parent.setSetting("themeColors", colorsToSave);

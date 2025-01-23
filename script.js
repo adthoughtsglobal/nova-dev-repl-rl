@@ -1408,10 +1408,8 @@ function notify(title, description, appname) {
 		appnameb.innerText = appname;
 		descb.innerText = description;
 		titleb.innerText = title;
-		const windValues = Object.values(winds).map(Number);
-		// Calculate the maximum value from the array
+		const windValues = Object.values(winds).map(wind => Number(wind.zIndex) || 0);
 		const maxWindValue = Math.max(...windValues);
-		// Set the zIndex
 		document.getElementById("notification").style.zIndex = maxWindValue + 1;
 		document.getElementById("notification").style.display = "block";
 		setTimeout(function () {
@@ -1447,7 +1445,7 @@ function displayToast(text, duration) {
 	if (titleb) {
 		titleb.innerText = text;
 
-		const windValues = Object.values(winds).map(Number);
+		const windValues = Object.values(winds).map(wind => Number(wind.zIndex) || 0);
 		const maxWindValue = Math.max(...windValues);
 		document.getElementById("toastdiv").style.zIndex = maxWindValue + 1;
 		document.getElementById("toastdiv").classList.add('notifpullanim');

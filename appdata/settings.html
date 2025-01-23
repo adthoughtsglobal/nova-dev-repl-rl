@@ -1604,7 +1604,7 @@
 					.doablestep {
 						display: flex;
 						justify-content: space-between;
-						background: var(--colors-BG-sub);
+						background: var(--colors-BG-normal);
 						border-radius: var(--sizing-border-radius);
 						padding: .3rem;
 						align-items: center;
@@ -1630,9 +1630,15 @@
 						display: flex;
 						flex-direction: column;
 						gap: .3rem;
+						margin-top: 0.5rem;
 					}
 				</style>
 				<div id="supportexpandable">
+					<div class="doablestep">
+						<b>View Memberships</b>
+						<button onclick="window.open('https://www.patreon.com/adthoughtsglobal/membership')"><i
+								class="material-symbols-rounded">chevron_right</i></button>
+					</div>
 					<div class="doablestep">
 						<b>Star the repo</b>
 						<button onclick="window.open('https://github.com/adthoughtsglobal/Nova-OS')"><i

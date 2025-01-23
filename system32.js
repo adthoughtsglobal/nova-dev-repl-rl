@@ -519,8 +519,6 @@ async function ensurePreferencesFileExists() {
         console.log("Error ensuring preferences file exists", err);
     }
 }
-let settingsCache = {};
-const settingscacheDuration = 10;
 const settingsQueue = [];
 let isProcessingQueue = false;
 
@@ -556,11 +554,6 @@ async function getSetting(key) {
                 return null;
             }
 
-            const cached = settingsCache[key];
-            if (cached && (Date.now() - cached.t < settingscacheDuration)) {
-                return cached.v;
-            }
-
             await ensurePreferencesFileExists();
             const content = memory.root["System/"]["preferences.json"];
             if (!content) {
@@ -575,7 +568,6 @@ async function getSetting(key) {
             }
 
             const preferences = JSON.parse(decodeBase64Content(base64Content));
-            settingsCache[key] = { v: preferences[key], t: Date.now() };
 
             return preferences[key];
         } catch (error) {
