@@ -267,9 +267,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 			searchInput5342.value = "";
 		}
 	});
-
-	setsrtpprgbr(10);
-
 	const scriptSources = [
 		"scripts/html2canvas.js",
 		"scripts/fflate.js",
@@ -281,6 +278,10 @@ document.addEventListener("DOMContentLoaded", async function () {
 	];
 	
 	const loadScripts = async () => {
+		let prog = 10;
+		setsrtpprgbr(prog);
+		const increment = 40 / scriptSources.length;
+	
 		for (const src of scriptSources) {
 			await new Promise((resolve, reject) => {
 				const script = document.createElement('script');
@@ -289,12 +290,14 @@ document.addEventListener("DOMContentLoaded", async function () {
 				script.onerror = reject;
 				document.body.appendChild(script);
 			});
+			prog += increment;
+			setsrtpprgbr(prog);
 		}
-		console.log("All scripts loaded and executed");
+	
+		setsrtpprgbr(40);
 	};
 	
 	await loadScripts();
-	setsrtpprgbr(30);
 
 	setbgimagetourl(novaFeaturedImage);
 

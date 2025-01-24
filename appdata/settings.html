@@ -2146,6 +2146,17 @@
 					}
 				}
 			</script>
+			<h1>Wallpaper</h1>
+			<segr>
+				<div class="inpbox">
+					<span>Current</span>
+					<div class="inputwithbtn">
+						<input placeholder="Paste a URL here..." id="wallpaperurl" class="inputtype1">
+						<button onclick="savewallpap()">Save</button>
+					</div>
+				</div>
+			</segr>
+
 			<style>
 				.colorpacks {
 					display: flex;
@@ -2252,42 +2263,61 @@
 					background: #444;
 				}
 			</style>
-			<h3>Backgrounds</h3>
+			<h3>User Interface Colors</h3>
 			<segr>
 				<div setting class="colorsetting">
-					<b>Normal Background</b>
-					<input id="normal-bg" data-variable="--colors-BG-normal"></input>
+					<b>Primary Background</b>
+					<input class="colorpickerui" id="normal-bg" data-variable="--colors-BG-normal"></input>
 				</div>
 				<div setting class="colorsetting">
-					<b>Section Background</b>
-					<input id="section-bg" data-variable="--colors-BG-section"></input>
-				</div>
-				<div setting class="colorsetting">
-					<b>Sub Background</b>
-					<input id="sub-bg" data-variable="--colors-BG-sub"></input>
-				</div>
-				<div setting class="colorsetting">
-					<b>Highlighted Background</b>
-					<input id="high-bg" data-variable="--colors-BG-highlighted"></input>
+					<b>Primary text</b>
+					<input class="colorpickerui" id="text-normal" data-variable="--colors-text-normal"></input>
 				</div>
 			</segr>
-			<h3>Interface colors</h3>
 			<segr>
 				<div setting class="colorsetting">
-					<b>Highlighted Text Color</b>
-					<input id="accent-bg" data-variable="--colors-text-high"></input>
+					<b>Secondary Background</b>
+					<input class="colorpickerui" id="section-bg" data-variable="--colors-BG-section"></input>
 				</div>
 				<div setting class="colorsetting">
-					<b>Text Color</b>
-					<input id="text-normal" data-variable="--colors-text-normal"></input>
+					<b>Secondary text</b>
+					<input class="colorpickerui" id="text-normal" data-variable="--colors-text-normal"></input>
 				</div>
+			</segr>
+			<segr>
+				<div setting class="colorsetting">
+					<b>Tertiary Background</b>
+					<input class="colorpickerui" id="sub-bg" data-variable="--colors-BG-sub"></input>
+				</div>
+				<div setting class="colorsetting">
+					<b>tertiary text</b>
+					<input class="colorpickerui" id="text-sub" data-variable="--colors-text-sub"></input>
+				</div>
+			</segr>
+			<segr>
+				<div setting class="colorsetting">
+					<b>Highlighted Background</b>
+					<input class="colorpickerui" id="high-bg" data-variable="--colors-BG-highlighted"></input>
+				</div>
+				<div setting class="colorsetting">
+					<b>Highlighted text</b>
+					<input class="colorpickerui" id="text-high" data-variable="--colors-text-high"></input>
+				</div>
+			</segr>
+			<h3>Additional Interface Settings</h3>
+			<segr>
 				<div setting class="colorsetting">
 					<b>Confirm Color</b>
-					<input id="confirm-color" data-variable="--colors-special-good"></input>
+					<input class="colorpickerui" data-variable="--colors-special-good"></input>
 				</div>
 				<div setting class="colorsetting">
 					<b>Decline Color</b>
-					<input id="decline-color" data-variable="--colors-special-bad"></input>
+					<input class="colorpickerui" data-variable="--colors-special-bad"></input>
+				</div>
+				
+				<div setting class="colorsetting">
+					<b>Border radius</b>
+					<input data-variable="--sizing-border-radius"></input>
 				</div>
 			</segr>
 			<div id="themeslist"></div>
@@ -2314,7 +2344,7 @@
 					.catch(error => console.error('Error loading themes:', error));
 
 				function initColorPickers() {
-					document.querySelectorAll('[data-variable]').forEach(button => {
+					document.querySelectorAll('.colorpickerui').forEach(button => {
 						const variableName = button.dataset.variable;
 						button.jscolor = new jscolor(button, {
 							preset: 'dark',
@@ -2332,7 +2362,7 @@
 				}, 300);
 
 				function applyTheme(data) {
-					const buttons = document.querySelectorAll('[data-variable]');
+					const buttons = document.querySelectorAll('.colorpickerui');
 					buttons.forEach(button => {
 						const variableName = button.dataset.variable;
 						const newColor = data.colors[variableName];
@@ -2366,7 +2396,7 @@
 
 				async function saveColors() {
 					const colorsToSave = {};
-					const buttons = document.querySelectorAll('[data-variable]');
+					const buttons = document.querySelectorAll('.colorpickerui');
 					buttons.forEach(button => {
 						const variableName = button.dataset.variable;
 						const colorValue = button.jscolor.toHEXString();
@@ -2400,17 +2430,6 @@
 
 				window.addEventListener('load', initColorPickers);
 			</script>
-
-			<h1>Wallpaper</h1>
-			<segr>
-				<div class="inpbox">
-					<span>Current</span>
-					<div class="inputwithbtn">
-						<input placeholder="Paste a URL here..." id="wallpaperurl" class="inputtype1">
-						<button onclick="savewallpap()">Save</button>
-					</div>
-				</div>
-			</segr>
 			<style>
 				.inputwithbtn {
 					width: 100%;
