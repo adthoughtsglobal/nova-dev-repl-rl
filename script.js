@@ -1549,37 +1549,6 @@ function runAsWasm(content) {
 	div.appendChild(script);
 	openwindow("Nova Wasm Runner", div.innerHTML);
 }
-// hotkeys
-document.addEventListener('keydown', function (event) {
-	if (event.ctrlKey && (event.key === 'f' || event.keyCode === 70)) {
-		event.preventDefault();
-		openapp('files', 1);
-	}
-	if (event.ctrlKey && (event.key === 's')) {
-		event.preventDefault();
-		openapp('settings', 1);
-	}
-});
-document.addEventListener('keydown', function (event) {
-	if (event.key === 'Escape') {
-		var appdmod = document.getElementById('appdmod');
-		if (appdmod && appdmod.open) {
-			appdmod.close();
-		}
-	}
-});
-document.addEventListener('keydown', function (event) {
-	if (event.ctrlKey && event.key === '/') {
-		event.preventDefault();
-		opensearchpanel();
-	}
-});
-document.addEventListener('keydown', function (event) {
-	if (event.ctrlKey && event.key === ' ') {
-		event.preventDefault();
-		openn();
-	}
-});
 async function genTaskBar() {
 	gid("novanav").style.display = "none";
 	var appbarelement = document.getElementById("dock")

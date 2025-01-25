@@ -538,7 +538,7 @@
 			transform: translate(3px, -2px);
 		}
 
-		@media only screen and (max-width: 400px) {
+		@media only screen and (max-width: 600px) {
 			.tab button {
 				width: 35px;
 			}
@@ -1072,16 +1072,6 @@
 						document.getElementById('copy-theme-btn').addEventListener('click', copyCurrentTheme);
 						document.getElementById('paste-theme-btn').addEventListener('click', pasteThemeFromClipboard);
 
-						document.getElementById("cbx-uspawa").addEventListener("change", async function () {
-							let newValue2 = document.getElementById("cbx-uspawa").checked;
-							await window.parent.setSetting("usepackwall", newValue2)
-							window.parent.checkdmode();
-						});
-
-						if (await window.parent.getSetting("usepackwall")) {
-							document.getElementById("cbx-uspawa").checked = true;
-						}
-
 						let sizes2323 = {
 							"-1": 0.8,
 							0: 1,
@@ -1360,9 +1350,6 @@
 					}
 
 					.subapps {
-						svg {
-							height: 1.3rem;
-						}
 
 						.material-symbols-rounded {
 							color: #7b7b7b;
@@ -1371,6 +1358,13 @@
 							margin-right: var(--sizing-normal);
 						}
 					}
+
+
+				}
+
+				.themestoreopner {
+					height: 2rem;
+					margin-top: 5px;
 				}
 			</style>
 			<button onclick="rldfltyptable()" style="margin-bottom: var(--sizing-normal);">Reload Table</button>
@@ -2048,11 +2042,18 @@
 
 				</div>
 
-				<div class="newthemebtn" onclick="window.parent.openapp('store',1, {'opener':'themes'})">
-					Browse more
-
-					<svg version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'
-						width='53.37052' height='56.68831' viewBox='0,0,53.37052,56.68831'>
+				<div class="newthemebtn" id="copy-theme-btn">
+					<i class="material-symbols-rounded">content_copy</i>
+				</div>
+				<div class="newthemebtn" id="paste-theme-btn">
+					<i class="material-symbols-rounded">content_paste</i>
+				</div>
+			</div>
+			<segr style="margin-top: .5rem">
+				<div setting onclick="window.parent.openapp('store',1, {'opener':'themes'})">
+					<svg class="themestoreopner" style="float: right;" version='1.1' xmlns='http://www.w3.org/2000/svg'
+						xmlns:xlink='http://www.w3.org/1999/xlink' width='53.37052' height='56.68831'
+						viewBox='0,0,53.37052,56.68831'>
 						<g transform='translate(-213.17634,-139.63412)'>
 							<g stroke-miterlimit='10'>
 								<path
@@ -2073,30 +2074,8 @@
 							</g>
 						</g>
 					</svg>
-				</div>
-				<div class="newthemebtn" id="copy-theme-btn">
-					<i class="material-symbols-rounded">content_copy</i>
-				</div>
-				<div class="newthemebtn" id="paste-theme-btn">
-					<i class="material-symbols-rounded">content_paste</i>
-				</div>
-			</div>
-			<segr style="margin-top: 0.3rem">
-				<div setting>
-					<div class="checkbox-wrapper-51">
-						<input type="checkbox" id="cbx-uspawa" role="submit">
-						<label for="cbx-uspawa" class="toggle">
-							<span>
-								<svg width="10px" height="10px" viewBox="0 0 10 10">
-									<path
-										d="M5,1 L5,1 C2.790861,1 1,2.790861 1,5 L1,5 C1,7.209139 2.790861,9 5,9 L5,9 C7.209139,9 9,7.209139 9,5 L9,5 C9,2.790861 7.209139,1 5,1 L5,9 L5,1 Z">
-									</path>
-								</svg>
-							</span>
-						</label>
-					</div>
-					<b>Use Pack Wallpaper</b>
-					<p>Use provided theme pack wallpapers</p>
+					<span>Browse more</span>
+					<p>Browse tons public theme packs</p>
 				</div>
 			</segr>
 			<script>
@@ -2104,7 +2083,7 @@
 					const colorsToCopy = {};
 					document.querySelectorAll('[data-variable]').forEach(button => {
 						const variableName = button.dataset.variable;
-						const colorValue = button.jscolor.toHEXString();
+						const colorValue = button.jscolor ? button.jscolor.toHEXString() : button.value;
 						colorsToCopy[variableName] = colorValue;
 					});
 					if (await window.parent.justConfirm("Include current wallpaper?", "Include the currently set wallpaper with the theme code?")) {
@@ -2219,13 +2198,13 @@
 				}
 
 				.jscolor {
-					width: 6rem;
+					width: 7rem;
 					height: 35px;
 					border-radius: var(--sizing-border-radius);
 					font-family: monospace;
 					font-size: var(--font-size-default);
-					background: transparent;
-					border: 1px solid var(--colors-BG-highlighted);
+					background-color: var(--colors-BG-normal);
+					border: 0;
 					color: var(--colors-text-normal);
 				}
 
@@ -2262,7 +2241,19 @@
 				.jscolor-palette-cell:hover {
 					background: #444;
 				}
+
+				.numinp {
+					width: 7rem;
+					border-radius: var(--sizing-border-radius);
+					min-width: 0;
+					border: 0;
+					background-color: var(--colors-BG-normal);
+					color: var(--colors-text-high);
+					padding: 0.3rem;
+					text-align: center;
+				}
 			</style>
+			<h1>Advanced theme settings</h1>
 			<h3>User Interface Colors</h3>
 			<segr>
 				<div setting class="colorsetting">
@@ -2304,7 +2295,7 @@
 					<input class="colorpickerui" id="text-high" data-variable="--colors-text-high"></input>
 				</div>
 			</segr>
-			<h3>Additional Interface Settings</h3>
+			<h3>Visuals</h3>
 			<segr>
 				<div setting class="colorsetting">
 					<b>Confirm Color</b>
@@ -2314,10 +2305,14 @@
 					<b>Decline Color</b>
 					<input class="colorpickerui" data-variable="--colors-special-bad"></input>
 				</div>
-				
+
 				<div setting class="colorsetting">
 					<b>Border radius</b>
-					<input data-variable="--sizing-border-radius"></input>
+					<input class="numinp" min="0" max="100" data-variable="--sizing-border-radius"></input>
+				</div>
+				<div setting class="colorsetting">
+					<b>Spacing</b>
+					<input class="numinp" min="0" max="100" data-variable="--sizing-normal"></input>
 				</div>
 			</segr>
 			<div id="themeslist"></div>
@@ -2344,15 +2339,20 @@
 					.catch(error => console.error('Error loading themes:', error));
 
 				function initColorPickers() {
-					document.querySelectorAll('.colorpickerui').forEach(button => {
+					document.querySelectorAll('[data-variable]').forEach(button => {
 						const variableName = button.dataset.variable;
-						button.jscolor = new jscolor(button, {
-							preset: 'dark',
-							width: 150,
-							paletteCols: 0,
-							onInput: () => debouncedSaveColor(button.jscolor, variableName)
-						});
-						button.jscolor.fromString(getCSSVariableValue(variableName));
+						if (button.classList.contains('colorpickerui')) {
+							button.jscolor = new jscolor(button, {
+								preset: 'dark',
+								width: 150,
+								paletteCols: 0,
+								onInput: () => debouncedSaveColor(button.jscolor, variableName)
+							});
+							button.jscolor.fromString(getCSSVariableValue(variableName));
+						} else {
+							button.value = (getCSSVariableValue(variableName));
+
+						}
 					});
 				}
 
@@ -2372,37 +2372,18 @@
 						}
 					});
 
-					try {
-						if (data?.wallpaper) {
-							if (document.getElementById('cbx-uspawa').checked) {
-								document.getElementById("wallpaperurl").value = data.wallpaper;
-								savewallpap();
-							}
-						}
-					} catch (e) { }
 
 					saveColors();
 				}
 
 				function updateColor(picker, variableName) {
-					const colorValue = picker.toHEXString();
+					const colorValue = picker.jscolor ? picker.jscolor.toHEXString() : picker.value;
 					window.parent.document.documentElement.style.setProperty(variableName, colorValue);
 					document.documentElement.style.setProperty(variableName, colorValue);
 				}
 
 				function getCSSVariableValue(varName) {
 					return window.parent.getComputedStyle(window.parent.document.documentElement).getPropertyValue(varName).trim();
-				}
-
-				async function saveColors() {
-					const colorsToSave = {};
-					const buttons = document.querySelectorAll('.colorpickerui');
-					buttons.forEach(button => {
-						const variableName = button.dataset.variable;
-						const colorValue = button.jscolor.toHEXString();
-						colorsToSave[variableName] = colorValue;
-					});
-					await window.parent.setSetting("themeColors", colorsToSave);
 				}
 
 				function getCSSVariableValue(varName) {
@@ -2414,7 +2395,8 @@
 					const buttons = document.querySelectorAll('[data-variable]');
 					buttons.forEach(button => {
 						const variableName = button.dataset.variable;
-						const colorValue = button.jscolor.toHEXString();
+						const colorValue = button.jscolor ? button.jscolor.toHEXString() : button.value;
+
 						colorsToSave[variableName] = colorValue;
 					});
 					await window.parent.setSetting("themeColors", colorsToSave);

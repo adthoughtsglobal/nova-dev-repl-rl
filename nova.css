@@ -23,6 +23,10 @@
 	--sizing-normal: 0.5rem;
 	--sizing-nano: 0.3rem;
 
+	--spacing-huge: calc(var(--sizing-normal) * 2);
+	--spacing-normal: 0.5rem;
+	--spacing-nano: calc(var(--sizing-normal) / 2);
+
 	--time-action: .3s;
 }
 
@@ -34,7 +38,7 @@
 
 
 ::-webkit-scrollbar {
-	width: var(--sizing-normal);
+	width: 0.5rem;
 }
 
 *:hover::-webkit-scrollbar-thumb {

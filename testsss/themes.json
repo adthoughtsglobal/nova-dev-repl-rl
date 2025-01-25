@@ -13,43 +13,60 @@
         },
         "wallpaper": "https://images.unsplash.com/photo-1533135404995-a618910b7b6f?q=80&w=1769&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
     },
-    "Scarlet Gold": {
+    "Diorite": {
+        "type": "bright",
+        "by": "un4ya.1024",
+        "colors": {
+            "--colors-BG-normal": "#DFDFDF",
+            "--colors-BG-section": "#F4F9F0",
+            "--colors-BG-sub": "#D8D8D8",
+            "--colors-BG-highlighted": "#FFFFFF",
+            "--colors-text-high": "#607460",
+            "--colors-text-normal": "#424D43",
+            "--colors-special-good": "#49AC49",
+            "--colors-special-bad": "#AC4949"
+        },
+        "wallpaper": "https://file.garden/ZYaO49YewxMFnAd1/NovaOS%20TTA%20Wallpapers/Rock/Diorite1"
+    },
+    "Raw jungle": {
         "type": "dark",
         "colors": {
-            "--colors-BG-normal": "#000000",
-            "--colors-BG-section": "#1D0000",
-            "--colors-BG-sub": "#321800",
-            "--colors-BG-highlighted": "#9B5600",
+            "--colors-BG-normal": "#010500",
+            "--colors-BG-section": "#030705",
+            "--colors-BG-sub": "#032600",
+            "--colors-BG-highlighted": "#0D1609",
             "--colors-text-high": "#ffffff",
-            "--colors-text-normal": "#FFDB53",
-            "--colors-special-good": "#FF9700",
+            "--colors-text-normal": "#3DFF00",
+            "--colors-special-good": "#3DFF00",
             "--colors-special-bad": "#FF0000"
         }
     },
-    "Monkai Yellow": {
-        "type": "dark",
+    "Material Bright": {
+        "type": "bright",
         "colors": {
-            "--colors-BG-normal": "#21211A",
-            "--colors-BG-section": "#1A1B17",
-            "--colors-BG-sub": "#2A2B23",
-            "--colors-BG-highlighted": "#4D4D4D",
-            "--colors-text-high": "#ffffff",
-            "--colors-text-normal": "#FFF8CF",
+            "--colors-BG-normal": "#ECEFF1",
+            "--colors-BG-sub": "#B0BEC5",
+            "--colors-BG-section": "#FAFAFA",
+            "--colors-BG-highlighted": "#90A4AE",
+            "--colors-text-high": "#000000",
+            "--colors-text-normal": "#161616",
             "--colors-special-good": "#49AC49",
             "--colors-special-bad": "#AC4949"
-        }
+        },
+        "wallpaper":"https://images.unsplash.com/photo-1572775396187-ab78b80b32b2?q=80&w=1770&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
     },
-    "Aquamarine": {
+    "October Glow": {
         "type": "dark",
         "colors": {
-            "--colors-BG-normal": "#263A39",
-            "--colors-BG-section": "#365351",
-            "--colors-BG-sub": "#1E2E2D",
-            "--colors-BG-highlighted": "#2DA8A6",
+            "--colors-BG-normal": "#190900",
+            "--colors-BG-section": "#5A1904",
+            "--colors-BG-sub": "#E76531",
+            "--colors-BG-highlighted": "#E98006",
             "--colors-text-high": "#FFFFFF",
             "--colors-text-normal": "#FFFFFF",
-            "--colors-special-good": "#49AC49",
-            "--colors-special-bad": "#AC4949"
-        }
+            "--colors-special-good": "#FF0000",
+            "--colors-special-bad": "#FF0093"
+        },
+        "wallpaper": "https://images.unsplash.com/photo-1445586831130-7f00f5eac0f2?q=80&w=1769&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
     }
 }
