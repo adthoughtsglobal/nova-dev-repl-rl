@@ -216,6 +216,7 @@ async function setuprotur() {
 }
 
 async function logoutofrtr() {
+	window.parent.remSetting("roturLink");
 	await roturExtension.logout();
 	roturExtension.disconnect();
 }
