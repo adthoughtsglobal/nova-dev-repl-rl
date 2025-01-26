@@ -205,6 +205,19 @@
 			}
 		}
 
+		@keyframes headsad {
+			0% {
+				transform: translate(-2px, 0);
+			}
+			50% {
+				transform: translate(2px, 0);
+			}
+			
+			100% {
+				transform: translate(-2px, 0);
+			}
+		}
+
 		.file:hover {
 			background: var(--colors-BG-highlighted);
 		}
@@ -1504,9 +1517,12 @@
 						} else {
 							cachedFiles[currentPath] = filesInFolder;
 						}
+					} else {
+						fllist.innerHTML = `<center class='thisfolderisempty'><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="74.20199" height="94.1023" viewBox="0,0,74.20199,94.1023"><g transform="translate(-224.61774,-142.87893)"><g data-paper-data="{&quot;isPaintingLayer&quot;:true}" fill-rule="nonzero" stroke="#ffffff" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" style="mix-blend-mode: normal"><path style="animation: headsad .5s 2;" d="M227.11774,158.26119c0,-7.11468 5.76758,-12.88226 12.88226,-12.88226c7.11468,0 12.88226,5.76758 12.88226,12.88226c0,7.11468 -5.76758,12.88226 -12.88226,12.88226c-7.11468,0 -12.88226,-5.76758 -12.88226,-12.88226z" fill="none" stroke-width="5" stroke-linecap="butt"/><path d="M244.56247,233.94447l9.12493,-32.20565l-8.58817,-28.98508" fill="none" stroke-width="5" stroke-linecap="round"/><path d="M253.6874,202.81234l17.71311,31.66888" fill="none" stroke-width="5" stroke-linecap="round"/><path d="M246.17275,178.6581l-7.51465,27.37481" fill="none" stroke-width="5" stroke-linecap="round"/><path d="M250.46684,179.73163l28.44833,-12.3455" fill="none" stroke-width="5" stroke-linecap="round"/><path d="M260.82196,192.96703l-1.81137,-23.54791l37.99776,-2.9229l1.81138,23.54791z" fill="#aa8b00" stroke-width="0" stroke-linecap="butt"/><path onclick="window.parent.say('You found it :3')" d="M256.80524,189.29958l2.20535,-19.88046l37.99776,-2.9229l-2.20535,19.53118z" fill="#ffcf00" stroke-width="0" stroke-linecap="butt"/><path d="M279.06646,168.81576l-0.1513,-1.42964" fill="none" stroke-width="5" stroke-linecap="round"/></g></g></svg><br>This folder is empty.</center>`;
 					}
 				}
-				document.getElementById("listfilesloader").remove();
+				
+				(document.getElementById("listfilesloader")) ? document.getElementById("listfilesloader").remove() : null;
 			}
 		}
 

@@ -1813,8 +1813,7 @@
 
 					Object.keys(winds).forEach(key => {
 						const taskId = key.slice(-12);
-
-						const taskName = key.slice(0, -12);
+						const taskName = winds[key].title;
 
 						const taskDiv = document.createElement("div");
 						taskDiv.classList.add("task");
@@ -1848,8 +1847,23 @@
 
 			</script>
 		</div>
+		
 		<div id="network" class="tabcontent">
-			<h1>RoturTW</h1>
+			<h1>Networking</h1>
+			<segr>
+				<div setting onclick="openCity(event, 'rotursets');">
+					<b>RoturTW</b>
+					<button class="advancedsetsredbtn"><span class="material-symbols-rounded">
+							chevron_right
+						</span></button>
+					<p>Configure RoturTW networking</p>
+				</div>
+			</segr>
+			</div>
+		<div id="rotursets" class="tabcontent advancedsettab">
+			<h1><span class="material-symbols-rounded advancedsetsbackbtn" onclick="openCity(event, 'network');">
+				arrow_back
+			</span> RoturTW</h1>
 			<small style="margin-bottom: 0.5rem;">Rotur is a cloudlink based standard for packet based communications,
 				generally for Web OSs.</small>
 			<div id="rotursettings">
@@ -1862,7 +1876,7 @@
 				</segr>
 				<segr id="rtrsignedinsec">
 					<div setting class="spread">
-						<b id="rtruserstatsi">Signed in as Admin</b>
+						<b id="rtruserstatsi">Signed in</b>
 						<button onclick="window.parent.logoutofrtr()">Sign Out</button>
 					</div>
 				</segr>
@@ -1879,13 +1893,12 @@
 						document.getElementById("rtrinitspace").style.display = "none";
 						document.getElementById("rtrsignedinsec").style.display = "block";
 						document.getElementById("rtrsignupform").style.display = "none";
+						document.getElementById("rtruserstatsi").innerText = "Signed in as " + window.parent.roturExtension.user.username;
 					} else {
-
 						document.getElementById("rtrsignedinsec").style.display = "none";
 
 						document.getElementById("rtrsignupform").style.display = "none";
 						document.getElementById("rtrsigninbtn").style.opacity = "0.5";
-						document.getElementById("rtruserstatsi").innerText = "Signed in as " + window.parent.roturExtension.user.username;
 					}
 
 					async function loginrotur() {
@@ -1895,6 +1908,10 @@
 						document.getElementById("rtrsignedinsec").style.display = "block";
 						document.getElementById("rtrsignupform").style.display = "none";
 						document.getElementById("rtruserstatsi").innerText = "Signed in as " + targetun;
+						window.parent.setSetting("roturLink", JSON.stringify({
+							"username":targetun,
+							"password":targetpass
+						}));
 					}
 					async function initrotur() {
 						let rtrstats = await window.parent.setuprotur();

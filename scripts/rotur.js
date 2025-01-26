@@ -210,42 +210,42 @@ class RoturExtension {
     this.outdated = false;
 
     try {
-    fetch("https://raw.githubusercontent.com/Mistium/Origin-OS/main/Resources/info.json")
-      .then((response) => {
-        if (response.ok) {
-          return response.json();
-        } else {
-          throw new Error('Network response was not ok');
-        }
-      })
-      .then((data) => {
-        this.accounts = data.name;
-        this.server = data.server;
-      })
-      .catch((error) => {
-        this.accounts = "sys.-origin";
-        this.server = "wss://rotur.mistium.com";
-      });
-
-    this._initializeBadges(); // Start fetching badges
-
-
-    if (typeof window.scaffolding !== "object") {
-      fetch("https://raw.githubusercontent.com/RoturTW/main/main/Implementations/SCRATCH/version.txt")
+      fetch("https://raw.githubusercontent.com/Mistium/Origin-OS/main/Resources/info.json")
         .then((response) => {
           if (response.ok) {
-            return response.text();
+            return response.json();
           } else {
             throw new Error('Network response was not ok');
           }
         })
         .then((data) => {
-          this.outdated = this.version < parseInt(data)
+          this.accounts = data.name;
+          this.server = data.server;
         })
+        .catch((error) => {
+          this.accounts = "sys.-origin";
+          this.server = "wss://rotur.mistium.com";
+        });
+
+      this._initializeBadges(); // Start fetching badges
+
+
+      if (typeof window.scaffolding !== "object") {
+        fetch("https://raw.githubusercontent.com/RoturTW/main/main/Implementations/SCRATCH/version.txt")
+          .then((response) => {
+            if (response.ok) {
+              return response.text();
+            } else {
+              throw new Error('Network response was not ok');
+            }
+          })
+          .then((data) => {
+            this.outdated = this.version < parseInt(data)
+          })
+      }
+    } catch (e) {
+      return e;
     }
-  } catch (e) {
-    return e;
-  }
   }
 
   async _initializeBadges() {
@@ -296,7 +296,7 @@ class RoturExtension {
 
   // main functions
 
-  connectToServer(args) {
+  async connectToServer(args) {
     if (!this.server || !this.accounts) {
       console.log("Waiting for server and accounts...");
       setTimeout(() => {
@@ -311,7 +311,7 @@ class RoturExtension {
       system: args.SYSTEM,
       version: args.VERSION,
     };
-    this.connectToWebsocket();
+    await this.connectToWebsocket();
   }
 
   openPorts() {
@@ -377,15 +377,16 @@ class RoturExtension {
     return this.client.users.indexOf(this.accounts) !== -1;
   }
 
-  connectToWebsocket() {
-    try {
-      this.ws = new WebSocket(this.server);
-    } catch (e) {
-      return e;
-    }
-    this.ws.onopen = () => {
-      this.sendHandshake();
-
+  async connectToWebsocket() {
+    return new Promise((resolve, reject) => {
+      try {
+        this.ws = new WebSocket(this.server);
+      } catch (e) {
+        return reject(e);
+      }
+      this.ws.onopen = () => {
+        this.sendHandshake();
+      };
       this.ws.onmessage = (event) => {
         let packet = JSON.parse(event.data);
         if (packet.cmd == "client_ip") {
@@ -480,13 +481,13 @@ class RoturExtension {
             "event": "connected",
             "key": "connected"
           });
+          resolve();
         }
       };
-    };
-    this.ws.onclose = () => {
-      console.log("Disconnected!");
-      this.is_connected = false;
-    };
+      this.ws.onerror = (error) => {
+        reject(error);
+      };
+    });
   }
 
   sendHandshake() {
@@ -2374,3 +2375,15 @@ function randomString(length) {
 }
 
 var roturExtension = new RoturExtension();
+
+onstartup.push(async () => {
+  let localroturdata = await window.getSetting("roturLink");
+  if (localroturdata) {
+    await setuprotur();
+
+    let targetun = JSON.parse(localroturdata).username;
+    let targetpass = JSON.parse(localroturdata).password;
+    await roturExtension.login({ USERNAME: targetun, PASSWORD: targetpass });
+  }
+});
+

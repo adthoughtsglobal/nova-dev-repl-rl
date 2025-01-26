@@ -891,7 +891,7 @@ async function extractAndRegisterCapabilities(appId, content) {
 	try {
 		if (!content) {
 			content = await window.parent.getFileById(appId);
-			content = content.content;
+			content = content;
 		}
 		if (isBase64(content)) {
 			content = decodeBase64Content(content);
