@@ -1033,6 +1033,7 @@ async function loadtaskspanel() {
 		element.classList.add("closeEffect");
 		setTimeout(function () {
 			if (element) appbarelement.removeChild(element);
+			appbarelement.style.display = validKeys.length > 0 ? "flex" : "none";
 		}, 500);
 	});
 
@@ -1063,7 +1064,6 @@ async function loadtaskspanel() {
 		appbarelement.appendChild(appShortcutDiv);
 	});
 
-	appbarelement.style.display = validKeys.length > 0 ? "flex" : "none";
 }
 var dev;
 function shrinkbsf(str) {
@@ -1092,8 +1092,13 @@ async function initialiseOS() {
 	cryptoKeyCache = null;
 	await say(`
 		<h2>Terms of service and License</h2>
-		<p>By using Nova OS, you agree to the <a href="https://github.com/adthoughtsglobal/Nova-OS/blob/main/Adthoughtsglobal%20Nova%20Terms%20of%20use">Adthoughtsglobal Nova Terms of Use</a>. 
-		<br><small>We do not store your personal information. <br><iframe src="https://adthoughtsglobal.github.io/termsofuse.html"> <br>Read the terms before use.</small></p>
+		<p>By using Nova OS, you agree to the <a href="https://github.com/adthoughtsglobal/Nova-OS/blob/main/Adthoughtsglobal%20Nova%20Terms%20of%20use">Adthoughtsglobal Nova Terms of Use</a>. Read the terms before use. 
+		<div style="background-color: #001b00; color: lightgreen; padding: 0.8rem; border: 1px solid #254625;font-size:inherit; border-radius: .5rem; margin: 0.8rem 0; display: flex;flex-direction:row; align-items: center; justify-content: flex-start;gap:0.5rem;">
+			<span class="material-icons">check</span>
+			<div>We do not store or share your personal information.</div>
+		</div>
+		</p>
+		<iframe src="https://adthoughtsglobal.github.io/termsofuse.html"></iframe>
 	`);
 	console.log("Setting Up NovaOS\n\nUsername: " + CurrentUsername + "\nWith: Sample preset\nUsing host: " + location.href)
 	initialization = true
