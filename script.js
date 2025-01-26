@@ -276,12 +276,12 @@ document.addEventListener("DOMContentLoaded", async function () {
 		"scripts/edgecases.js",
 		"scripts/scripties.js"
 	];
-	
+
 	const loadScripts = async () => {
 		let prog = 10;
 		setsrtpprgbr(prog);
 		const increment = 40 / scriptSources.length;
-	
+
 		for (const src of scriptSources) {
 			await new Promise((resolve, reject) => {
 				const script = document.createElement('script');
@@ -293,10 +293,10 @@ document.addEventListener("DOMContentLoaded", async function () {
 			prog += increment;
 			setsrtpprgbr(prog);
 		}
-	
+
 		setsrtpprgbr(40);
 	};
-	
+
 	await loadScripts();
 
 	setbgimagetourl(novaFeaturedImage);
@@ -722,7 +722,8 @@ function clwin(x) {
 
 	const windKey = el.getAttribute("data-winuid");
 	if (windKey) {
-		URL.revokeObjectURL(winds[windKey].src);
+		console.log(windKey)
+		URL.revokeObjectURL(winds[windKey].src)
 		delete winds[windKey];
 	}
 
@@ -730,10 +731,7 @@ function clwin(x) {
 	setTimeout(() => {
 		el.classList.remove("transp3");
 		el.remove();
-		if (!isElement(x)) {
-			nowapp = '';
-			loadtaskspanel();
-		}
+		loadtaskspanel()
 	}, 700);
 }
 
@@ -1032,7 +1030,10 @@ async function loadtaskspanel() {
 
 	keysToRemove.forEach(key => {
 		let element = appbarelement.querySelector(`[data-key='${key}']`);
-		if (element) appbarelement.removeChild(element);
+		element.classList.add("closeEffect");
+		setTimeout(function () {
+			if (element) appbarelement.removeChild(element);
+		}, 500);
 	});
 
 	keysToAdd.forEach(async key => {
@@ -1661,9 +1662,7 @@ function mtpetxt(str) {
 function closeallwindows() {
 	Object.keys(winds).forEach(key => {
 		const taskId = key.slice(-12);
-		const taskName = key.slice(0, -12);
 		clwin("window" + taskId);
-		delete winds[taskId];
 	});
 	gid("closeallwinsbtn").checked = true;
 }

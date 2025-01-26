@@ -519,7 +519,7 @@
 			align-items: flex-start;
 			border-radius: 5px;
 			overflow: auto;
-			gap: 0.3rem;
+			gap: 5px;
 			padding: 0 0.3rem;
 		}
 
@@ -530,12 +530,14 @@
 			display: flex;
 			flex-direction: column;
 			cursor: pointer;
-			width: 50px;
+			width: fit-content;
 			transform: scale(0.75) !important;
 			animation: poprs .2s ease-out;
 			white-space: nowrap;
 			text-overflow: ellipsis;
 			align-items: center;
+			display: flex;
+			flex-direction: column;
 		}
 
 		a.dropdownerthebob.disabled {
@@ -1333,7 +1335,6 @@
 			window.parent.updateMemoryData();
 			const refreshButton = document.getElementById('ogrefreshbtn');
 
-			// Start the rotation animation
 			refreshButton.classList.add('rotating');
 
 			try {
@@ -1363,10 +1364,17 @@
 			ev.dataTransfer.setData("Text", obj.getAttribute('unid'));
 		}
 
+		let cachedFiles = {}; // To store the cached files per folder
+
 		async function listFiles(folderName, gen) {
 			const startTime = performance.now();
 			if (currentPath == folderName && gen) {
-				return;
+				const previousFiles = cachedFiles[currentPath] || [];
+				const currentFiles = await window.parent.getFileNamesByFolder(folderName);
+
+				if (JSON.stringify(previousFiles) === JSON.stringify(currentFiles)) {
+					return; // No differences; skip update
+				}
 			}
 			fllist.innerHTML = `<div class="loader33" id='listfilesloader'></div>`;
 			await window.parent.updateMemoryData();
@@ -1409,21 +1417,21 @@
 						id: "search",
 						title: "Search files",
 						onclick: window.parent.opensearchpanel,
-						innerHTML: `<span class="material-symbols-rounded">search</span> Search`,
+						innerHTML: `<span class="material-symbols-rounded">search</span> <b>Search</b>`,
 						disabled: folderName === "System/" || folderName === ""
 					},
 					{
 						id: "deleteFolder",
 						title: "Delete folder",
 						onclick: folderName === "System/" || folderName === "" ? (e) => e.preventDefault() : remfold,
-						innerHTML: `<span class="material-symbols-rounded">delete</span> Delete`,
+						innerHTML: `<span class="material-symbols-rounded">delete</span> <b>Delete</b>`,
 						disabled: folderName === "System/" || folderName === ""
 					},
 					{
 						id: "createFolder",
 						title: "Create folder",
 						onclick: makefolderhuh,
-						innerHTML: `<span class="material-symbols-rounded">add</span> Folder`
+						innerHTML: `<span class="material-symbols-rounded">add</span> <b>Folder</b>`
 					},
 					{
 						id: "createFile",
@@ -1432,7 +1440,7 @@
 							document.getElementById('makefiledia').showModal();
 							document.getElementById('makflatw').value = currentPath;
 						},
-						innerHTML: `<span class="material-symbols-rounded">add</span> New File`
+						innerHTML: `<span class="material-symbols-rounded">add</span> <b>New File</b>`
 					},
 					{
 						id: "parentFolder",
@@ -1442,7 +1450,7 @@
 								listFiles(currentPath.substring(0, currentPath.lastIndexOf('/', currentPath.lastIndexOf('/') - 1) + 1));
 							}
 						},
-						innerHTML: `<span class="material-symbols-rounded">keyboard_return</span> Parent`,
+						innerHTML: `<span class="material-symbols-rounded">keyboard_return</span> <b>Parent</b>`,
 						disabled: currentPath.split('/').length <= 1
 					},
 					{
@@ -1453,10 +1461,10 @@
 							changeview(flmode);
 							this.title = flmode === 'grid' ? 'List view' : 'Grid view';
 							this.innerHTML = flmode === 'grid' ?
-								`<span class="material-symbols-rounded">view_list</span> List View` :
+								`<span class="material-symbols-rounded">view_list</span> <b>List V</b>iew` :
 								`<span class="material-symbols-rounded">grid_view</span> Grid View`;
 						},
-						innerHTML: flmode === 'grid' ? `<span class="material-symbols-rounded">view_list</span> List View` : `<span class="material-symbols-rounded">grid_view</span> Grid View`
+						innerHTML: flmode === 'grid' ? `<span class="material-symbols-rounded">view_list</span> <b><b><b></b>List View</b></b>` : `<span class="material-symbols-rounded">grid_view</span> <b>Grid View</b>`
 					}
 				];
 
@@ -1478,83 +1486,72 @@
 				const filesInFolder = await window.parent.getFileNamesByFolder(folderName);
 				if (filesInFolder) {
 					if (filesInFolder.length > 0) {
-						// Sort files by file name
-						filesInFolder.sort((a, b) => a.name.localeCompare(b.name));
+						if (!gen) {
+							const previousFiles = cachedFiles[currentPath] || [];
+							const currentFileNames = new Set(filesInFolder.map(file => file.name));
 
-						for (let item of filesInFolder) {
-							try {
-								if (onlyshow && !item.name.endsWith(onlyshow)) {
-									continue;
-								}
-								document.getElementById("filelist").setAttribute('flmode', flmode);
-								let fileElement = document.createElement('div');
-								fileElement.classList.add("file");
-								fileElement.setAttribute(flmode, '');
-								item.id ? fileElement.setAttribute("unid", item.id) : null;
-								fileElement.setAttribute("draggable", !item.name.endsWith('/'));
+							const removedFiles = previousFiles.filter(file => !currentFileNames.has(file.name));
+							const addedFiles = filesInFolder.filter(file => !previousFiles.some(prev => prev.name === file.name));
 
-								fileElement.setAttribute("onclick", "slfile(this, '" + item.id + "');");
-								if (!item.name.endsWith('/')) {
-									fileElement.setAttribute("ondragstart", "dragfl(event, this)");
-								}
-								let icon = geticon(ptypext(item.name), item.id);
+							removedFiles.forEach(removedFile => {
+								const fileElement = document.querySelector(`[title^="${removedFile.name}"]`);
+								fileElement?.remove();
+							});
 
-								const iconSpan = document.createElement('span');
-								iconSpan.className = 'fileicons';
-								iconSpan.innerHTML = icon;
-
-								const flnameSpan = document.createElement('span');
-								flnameSpan.setAttribute('flname', '');
-
-								const filenameSpan = document.createElement('span');
-								filenameSpan.className = 'flfrname';
-								filenameSpan.textContent = item.name;
-
-								const timeSmall = document.createElement('small');
-								const dateTime = item?.metadata?.datetime;
-								if (item.name.endsWith('/')) {
-									timeSmall.textContent = '>';
-									timeSmall.title = "Open folder";
-								} else {
-									let timeagocache = window.parent.timeAgo(dateTime)
-									if (timeagocache) {
-										timeSmall.textContent = timeagocache;
-										timeSmall.title = "Last modified";
-									} else {
-										timeSmall.textContent = item.id;
-										timeSmall.title = "File ID";
-									}
-								}
-
-								flnameSpan.appendChild(filenameSpan);
-								flnameSpan.appendChild(timeSmall);
-
-								fileElement.appendChild(iconSpan);
-								fileElement.appendChild(flnameSpan);
-								fileElement.setAttribute("title", `${item.name}\nID: ${item.id}` || 'Folder');
-								fllist.appendChild(fileElement);
-							} catch (error) {
-								console.error("Safe Error processing item:", error, item.id);
-							}
+							addedFiles.forEach(newFile => {
+								createFileElement(newFile);
+							});
+						} else {
+							cachedFiles[currentPath] = filesInFolder;
 						}
-						const endTime = performance.now();
-						const timeTaken = endTime - startTime;
-						document.getElementById("fileinfobn").style.opacity = 0.5;
-						document.getElementById("fileinfobn").innerHTML = `Listed ${filesInFolder.length} item(s) in ${timeTaken.toFixed(2)}` + "ms";
-					} else {
-						fllist.innerHTML = `<center class='thisfolderisempty'><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="74.20199" height="94.1023" viewBox="0,0,74.20199,94.1023"><g transform="translate(-224.61774,-142.87893)"><g data-paper-data="{&quot;isPaintingLayer&quot;:true}" fill-rule="nonzero" stroke="#ffffff" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" style="mix-blend-mode: normal"><path d="M227.11774,158.26119c0,-7.11468 5.76758,-12.88226 12.88226,-12.88226c7.11468,0 12.88226,5.76758 12.88226,12.88226c0,7.11468 -5.76758,12.88226 -12.88226,12.88226c-7.11468,0 -12.88226,-5.76758 -12.88226,-12.88226z" fill="none" stroke-width="5" stroke-linecap="butt"/><path d="M244.56247,233.94447l9.12493,-32.20565l-8.58817,-28.98508" fill="none" stroke-width="5" stroke-linecap="round"/><path d="M253.6874,202.81234l17.71311,31.66888" fill="none" stroke-width="5" stroke-linecap="round"/><path d="M246.17275,178.6581l-7.51465,27.37481" fill="none" stroke-width="5" stroke-linecap="round"/><path d="M250.46684,179.73163l28.44833,-12.3455" fill="none" stroke-width="5" stroke-linecap="round"/><path d="M260.82196,192.96703l-1.81137,-23.54791l37.99776,-2.9229l1.81138,23.54791z" fill="#aa8b00" stroke-width="0" stroke-linecap="butt"/><path d="M256.80524,189.29958l2.20535,-19.88046l37.99776,-2.9229l-2.20535,19.53118z" fill="#ffcf00" stroke-width="0" stroke-linecap="butt"/><path d="M279.06646,168.81576l-0.1513,-1.42964" fill="none" stroke-width="5" stroke-linecap="round"/></g></g></svg><br>This folder is empty.</center>`;
-
 					}
-					try {
-						document.getElementById("listfilesloader").remove();
-					} catch { }
-				} else {
-					console.log("No files found.");
 				}
-			} else {
-				console.log("0003 b: no folder.");
+				document.getElementById("listfilesloader").remove();
 			}
 		}
+
+		function createFileElement(file) {
+			const fileElement = document.createElement('div');
+			fileElement.classList.add("file");
+			fileElement.setAttribute(flmode, '');
+			if (file.id) fileElement.setAttribute("unid", file.id);
+			fileElement.setAttribute("draggable", !file.name.endsWith('/'));
+			fileElement.setAttribute("onclick", `slfile(this, '${file.id}');`);
+			if (!file.name.endsWith('/')) {
+				fileElement.setAttribute("ondragstart", "dragfl(event, this)");
+			}
+			const icon = geticon(ptypext(file.name), file.id);
+			const iconSpan = document.createElement('span');
+			iconSpan.className = 'fileicons';
+			iconSpan.innerHTML = icon;
+			const flnameSpan = document.createElement('span');
+			flnameSpan.setAttribute('flname', '');
+			const filenameSpan = document.createElement('span');
+			filenameSpan.className = 'flfrname';
+			filenameSpan.textContent = file.name;
+			const timeSmall = document.createElement('small');
+			const dateTime = file?.metadata?.datetime;
+			if (file.name.endsWith('/')) {
+				timeSmall.textContent = '>';
+				timeSmall.title = "Open folder";
+			} else {
+				const timeAgoCache = window.parent.timeAgo(dateTime);
+				if (timeAgoCache) {
+					timeSmall.textContent = timeAgoCache;
+					timeSmall.title = "Last modified";
+				} else {
+					timeSmall.textContent = file.id;
+					timeSmall.title = "File ID";
+				}
+			}
+			flnameSpan.appendChild(filenameSpan);
+			flnameSpan.appendChild(timeSmall);
+			fileElement.appendChild(iconSpan);
+			fileElement.appendChild(flnameSpan);
+			fileElement.setAttribute("title", `${file.name}\nID: ${file.id}` || 'Folder');
+			fllist.appendChild(fileElement);
+		}
+
 
 		function updpth() {
 			const pathDisp = document.getElementById("pathdisp");
@@ -1674,13 +1671,13 @@
 						dropupContentDiv.className = "dropup-content";
 						const itemuid = fileData.unid;
 
-						Object.values(window.parent.fileActions).forEach(action => {
+						Object.values(fileActions).forEach(action => {
 							if (action.condition(fileData)) {
 								const option = document.createElement("a");
 								option.classList.add("dropdownerthebob");
 								option.title = action.label;
 								option.onclick = () => action.action(itemuid);
-								option.innerHTML = `<span class="material-symbols-rounded">${action.icon}</span> ${action.label}`;
+								option.innerHTML = `<span class="material-symbols-rounded">${action.icon}</span> <b>${action.label}</b>`;
 								dropupContentDiv.appendChild(option);
 							}
 						});
@@ -2015,10 +2012,22 @@
 		}
 
 		window.fileActions = {
+			unselect: {
+				icon: 'remove_selection',
+				label: 'Unselect',
+				action: (itemuid) => refresh(),
+				condition: (file) => true,
+			},
 			open: {
 				icon: 'open_in_new',
 				label: 'Open',
 				action: (itemuid) => openfile(itemuid),
+				condition: (file) => true,
+			},
+			openWith: {
+				icon: 'open_with',
+				label: 'Open With',
+				action: (itemuid) => openfile(itemuid, 'any'),
 				condition: (file) => true,
 			},
 			delete: {

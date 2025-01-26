@@ -45,8 +45,8 @@ async function openfile(x) {
         } else if (mm.type == "osl") {
             runAsOSL(mm.content)
         } else if (mm.type == "lnk") {
-            let z = JSON.parse(mm.content);
-            openfile(z.open)
+            let z = JSON.parse(decodeBase64Content(mm.content));
+                openfile(z.open)
         } else {
             // Not a .lnk file or an .osl file nor an .app file.
             let appIdToOpen = null;
@@ -226,7 +226,6 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
             dewallblur();
         }, 500);
         clwin("window" + winuid);
-        delete winds[winuid];
         loadtaskspanel();
     };
 
@@ -270,7 +269,6 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
                 eventBusWorker,
                 close: () => {
                     clwin("window" + winuid);
-                    delete winds[winuid];
                 },
                 titleElement: windowtitlespan,
                 appID: appid,

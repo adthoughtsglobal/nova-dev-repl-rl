@@ -98,6 +98,22 @@
 			margin-left: 10px;
 		}
 
+		.advancedsettab {
+			animation: slideIn .3s ease-out !important;
+		}
+
+		@keyframes slideIn {
+			0% {
+				opacity: 0;
+				padding-left: 1rem;
+			}
+
+			100% {
+				opacity: 1;
+				transform: translateX(0rem);
+			}
+		}
+
 		/* Style the tab content */
 		.tabcontent {
 			padding: 0px 12px;
@@ -200,7 +216,6 @@
 		supportb a[okay] {
 			background: transparent;
 			color: white;
-			margin-left: 5px;
 		}
 
 		supportb a:hover {
@@ -219,6 +234,7 @@
 
 		.supportbtns {
 			display: flex;
+			gap: 0.3rem;
 			align-items: center;
 		}
 
@@ -560,6 +576,10 @@
 			font-weight: normal;
 			font-size: var(--font-size-normal);
 			margin-top: var(--sizing-huge);
+			display: flex;
+			flex-direction: row;
+			gap: 0.5rem;
+			align-items: center;
 		}
 
 		h3 {
@@ -585,6 +605,26 @@
 			flex-direction: row;
 			flex-wrap: wrap;
 			gap: var(--sizing-nano);
+		}
+
+		span.advancedsetsbackbtn.material-symbols-rounded {
+			display: inline-flex;
+			font-size: 20px;
+			background: var(--colors-BG-section);
+			padding: 0.3rem;
+			border-radius: 50%;
+			align-items: center;
+			justify-content: center;
+			cursor: pointer;
+		}
+
+		.advancedsetsredbtn {
+			float: right;
+			margin-top: 0.3rem;
+			background-color: transparent;
+			display: flex;
+			justify-content: center;
+			align-items: center;
 		}
 	</style>
 	<link rel="stylesheet"
@@ -1625,6 +1665,7 @@
 						flex-direction: column;
 						gap: .3rem;
 						margin-top: 0.5rem;
+						animation: tab .3s;
 					}
 				</style>
 				<div id="supportexpandable">
@@ -1636,15 +1677,34 @@
 					<div class="doablestep">
 						<b>Star the repo</b>
 						<button onclick="window.open('https://github.com/adthoughtsglobal/Nova-OS')"><i
-								class="material-symbols-rounded">star</i></button>
+								class="material-symbols-rounded">chevron_right</i></button>
 					</div>
 				</div>
 				<div class="supportbtns">
-					<a onclick="window.open('https://www.patreon.com/adthoughtsglobal/membership')">Memberships</a>
-					<a okay onclick="window.open('https://www.patreon.com/adthoughtsglobal/membership')"><i
+					<a id="membershipsbtn"
+						onclick="window.open('https://www.patreon.com/adthoughtsglobal/membership')">Memberships</a>
+					<a okay onclick="supportexpand();" id="supportexpandbtn"><i
 							class="material-symbols-rounded">expand_circle_down</i> More ways</a>
 				</div>
 
+				<script>
+					function supportexpand() {
+						if (document.getElementById("membershipsbtn").style.display == "none") {
+							document.getElementById("membershipsbtn").style.display = "block";
+							document.getElementById("supportexpandable").style.display = "none"
+							document.getElementById("supportexpandbtn").innerHTML = `<i
+							class="material-symbols-rounded">expand_circle_down</i> More ways`;
+
+						} else {
+							document.getElementById("membershipsbtn").style.display = "none";
+							document.getElementById("supportexpandable").style.display = "flex"
+							document.getElementById("supportexpandbtn").innerHTML = `<i
+							class="material-symbols-rounded">expand_circle_up</i>`;
+						}
+
+
+					}
+				</script>
 			</supportb>
 			<segr>
 				<div setting>
@@ -1770,7 +1830,6 @@
 						spanIcon.textContent = "do_disturb";
 						spanIcon.onclick = function () {
 							spanIcon.classList.add('wooboo-animation');
-							delete window.parent.winds[taskId];
 							window.parent.clwin("window" + taskId);
 
 						}
@@ -1848,6 +1907,74 @@
 				</script>
 				</segr>
 			</div>
+		</div>
+
+
+		<div id="advancedthemesets" class="tabcontent advancedsettab">
+			<h1><span class="material-symbols-rounded advancedsetsbackbtn" onclick="openCity(event, 'exp');">
+					arrow_back
+				</span> Advanced theme settings</h1>
+			<h3>User Interface Colors</h3>
+			<segr>
+				<div setting class="colorsetting">
+					<b>Primary Background</b>
+					<input class="colorpickerui" id="normal-bg" data-variable="--colors-BG-normal"></input>
+				</div>
+				<div setting class="colorsetting">
+					<b>Primary text</b>
+					<input class="colorpickerui" id="text-normal" data-variable="--colors-text-normal"></input>
+				</div>
+			</segr>
+			<segr>
+				<div setting class="colorsetting">
+					<b>Secondary Background</b>
+					<input class="colorpickerui" id="section-bg" data-variable="--colors-BG-section"></input>
+				</div>
+				<div setting class="colorsetting">
+					<b>Secondary text</b>
+					<input class="colorpickerui" id="text-normal" data-variable="--colors-text-normal"></input>
+				</div>
+			</segr>
+			<segr>
+				<div setting class="colorsetting">
+					<b>Tertiary Background</b>
+					<input class="colorpickerui" id="sub-bg" data-variable="--colors-BG-sub"></input>
+				</div>
+				<div setting class="colorsetting">
+					<b>tertiary text</b>
+					<input class="colorpickerui" id="text-sub" data-variable="--colors-text-sub"></input>
+				</div>
+			</segr>
+			<segr>
+				<div setting class="colorsetting">
+					<b>Highlighted Background</b>
+					<input class="colorpickerui" id="high-bg" data-variable="--colors-BG-highlighted"></input>
+				</div>
+				<div setting class="colorsetting">
+					<b>Highlighted text</b>
+					<input class="colorpickerui" id="text-high" data-variable="--colors-text-high"></input>
+				</div>
+			</segr>
+			<h3>Visuals</h3>
+			<segr>
+				<div setting class="colorsetting">
+					<b>Confirm Color</b>
+					<input class="colorpickerui" data-variable="--colors-special-good"></input>
+				</div>
+				<div setting class="colorsetting">
+					<b>Decline Color</b>
+					<input class="colorpickerui" data-variable="--colors-special-bad"></input>
+				</div>
+
+				<div setting class="colorsetting">
+					<b>Border radius</b>
+					<input class="numinp" min="0" max="100" data-variable="--sizing-border-radius"></input>
+				</div>
+				<div setting class="colorsetting">
+					<b>Spacing</b>
+					<input class="numinp" min="0" max="100" data-variable="--sizing-normal"></input>
+				</div>
+			</segr>
 		</div>
 
 		<div id="devices" class="tabcontent">
@@ -2077,6 +2204,13 @@
 					<span>Browse more</span>
 					<p>Browse tons public theme packs</p>
 				</div>
+				<div setting onclick="openCity(event, 'advancedthemesets');">
+					<b>Advanced theme settings</b>
+					<button class="advancedsetsredbtn"><span class="material-symbols-rounded">
+							chevron_right
+						</span></button>
+					<p>Configure UI Colors, visuals...</p>
+				</div>
 			</segr>
 			<script>
 				async function copyCurrentTheme() {
@@ -2253,69 +2387,8 @@
 					text-align: center;
 				}
 			</style>
-			<h1>Advanced theme settings</h1>
-			<h3>User Interface Colors</h3>
-			<segr>
-				<div setting class="colorsetting">
-					<b>Primary Background</b>
-					<input class="colorpickerui" id="normal-bg" data-variable="--colors-BG-normal"></input>
-				</div>
-				<div setting class="colorsetting">
-					<b>Primary text</b>
-					<input class="colorpickerui" id="text-normal" data-variable="--colors-text-normal"></input>
-				</div>
-			</segr>
-			<segr>
-				<div setting class="colorsetting">
-					<b>Secondary Background</b>
-					<input class="colorpickerui" id="section-bg" data-variable="--colors-BG-section"></input>
-				</div>
-				<div setting class="colorsetting">
-					<b>Secondary text</b>
-					<input class="colorpickerui" id="text-normal" data-variable="--colors-text-normal"></input>
-				</div>
-			</segr>
-			<segr>
-				<div setting class="colorsetting">
-					<b>Tertiary Background</b>
-					<input class="colorpickerui" id="sub-bg" data-variable="--colors-BG-sub"></input>
-				</div>
-				<div setting class="colorsetting">
-					<b>tertiary text</b>
-					<input class="colorpickerui" id="text-sub" data-variable="--colors-text-sub"></input>
-				</div>
-			</segr>
-			<segr>
-				<div setting class="colorsetting">
-					<b>Highlighted Background</b>
-					<input class="colorpickerui" id="high-bg" data-variable="--colors-BG-highlighted"></input>
-				</div>
-				<div setting class="colorsetting">
-					<b>Highlighted text</b>
-					<input class="colorpickerui" id="text-high" data-variable="--colors-text-high"></input>
-				</div>
-			</segr>
-			<h3>Visuals</h3>
-			<segr>
-				<div setting class="colorsetting">
-					<b>Confirm Color</b>
-					<input class="colorpickerui" data-variable="--colors-special-good"></input>
-				</div>
-				<div setting class="colorsetting">
-					<b>Decline Color</b>
-					<input class="colorpickerui" data-variable="--colors-special-bad"></input>
-				</div>
 
-				<div setting class="colorsetting">
-					<b>Border radius</b>
-					<input class="numinp" min="0" max="100" data-variable="--sizing-border-radius"></input>
-				</div>
-				<div setting class="colorsetting">
-					<b>Spacing</b>
-					<input class="numinp" min="0" max="100" data-variable="--sizing-normal"></input>
-				</div>
-			</segr>
-			<div id="themeslist"></div>
+
 			<script>
 				window.parent.fetch('testsss/themes.json')
 					.then(response => response.json())
@@ -2325,10 +2398,10 @@
 						Object.entries(data).forEach(([themeName, themeData]) => {
 							const div = document.createElement('div');
 							div.style.background = `linear-gradient(to bottom right, 
-								${themeData.colors["--colors-BG-normal"]} 0%, 
-								${themeData.colors["--colors-BG-sub"]} 25%, 
-								${themeData.colors["--colors-BG-section"]} 75%, 
-								${themeData.colors["--colors-BG-highlighted"]}) 100%`;
+							${themeData.colors["--colors-BG-normal"]} 0%, 
+							${themeData.colors["--colors-BG-sub"]} 25%, 
+							${themeData.colors["--colors-BG-section"]} 75%, 
+							${themeData.colors["--colors-BG-highlighted"]}) 100%`;
 							div.style.color = themeData.colors["--colors-text-normal"];
 							div.style.border = `2px solid ${themeData.colors["--colors-BG-sub"]}`;
 							div.innerText = themeName;
@@ -2351,7 +2424,6 @@
 							button.jscolor.fromString(getCSSVariableValue(variableName));
 						} else {
 							button.value = (getCSSVariableValue(variableName));
-
 						}
 					});
 				}
@@ -2368,10 +2440,9 @@
 						const newColor = data.colors[variableName];
 						if (newColor) {
 							button.jscolor.fromString(newColor);
-							updateColor(button.jscolor, variableName);
+							updateColor(button, variableName);
 						}
 					});
-
 
 					saveColors();
 				}
@@ -2380,10 +2451,6 @@
 					const colorValue = picker.jscolor ? picker.jscolor.toHEXString() : picker.value;
 					window.parent.document.documentElement.style.setProperty(variableName, colorValue);
 					document.documentElement.style.setProperty(variableName, colorValue);
-				}
-
-				function getCSSVariableValue(varName) {
-					return window.parent.getComputedStyle(window.parent.document.documentElement).getPropertyValue(varName).trim();
 				}
 
 				function getCSSVariableValue(varName) {
@@ -2409,7 +2476,6 @@
 						timeout = setTimeout(() => func.apply(this, args), wait);
 					};
 				}
-
 				window.addEventListener('load', initColorPickers);
 			</script>
 			<style>
