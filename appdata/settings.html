@@ -58,6 +58,7 @@
 		/* Style the buttons inside the tab */
 		.tab button.active {
 			background-color: var(--colors-BG-sub);
+			color: var(--colors-text-sub);
 			opacity: 1;
 		}
 
@@ -332,12 +333,14 @@
 
 		[settingn] {
 			background: var(--colors-BG-section);
+			color: var(--colors-text-section);
 			padding: var(--sizing-normal);
 			margin: 0;
 		}
 
 		[setting] {
 			background: var(--colors-BG-section);
+			color: var(--colors-text-section);
 			padding: var(--sizing-normal);
 			margin: 0;
 			border-bottom: 1px solid var(--colors-BG-sub);
@@ -496,9 +499,10 @@
 
 		.progbarma {
 			width: 100%;
-			background-color: var(--colors-BG-section);
+			background-color: var(--colors-BG-sub);
+			color: var(--colors-text-section);
 			height: 20px;
-			border-radius: var(--sizing-border-radius-full);
+			border-radius: var(--sizing-border-radius);
 			overflow: hidden;
 			margin: 10px 0px;
 		}
@@ -525,6 +529,10 @@
 			transition: .2s;
 		}
 
+		segr button {
+			color: inherit;
+		}
+
 		button:hover {
 			transform: scale(0.95);
 		}
@@ -538,6 +546,7 @@
 		.inpbox {
 			background: var(--colors-BG-section);
 			padding: var(--sizing-normal);
+			color: var(--colors-text-section);
 			outline: none;
 			border-bottom: 1px solid var(--colors-BG-sub);
 		}
@@ -611,6 +620,7 @@
 			display: inline-flex;
 			font-size: 20px;
 			background: var(--colors-BG-section);
+			color: var(--colors-text-section);
 			padding: 0.3rem;
 			border-radius: 50%;
 			align-items: center;
@@ -678,6 +688,7 @@
 					align-items: center;
 					padding: 0.1rem var(--sizing-normal);
 					background: var(--colors-BG-section);
+					color: var(--colors-text-section);
 					border-radius: var(--sizing-normal);
 				}
 
@@ -792,6 +803,7 @@
 					font-size: 13px;
 					border-radius: 5px;
 					background-color: var(--colors-BG-section);
+					color: var(--colors-text-section);
 					display: inline-block;
 					border: 1px solid var(--colors-BG-sub);
 					margin-left: 10px;
@@ -1353,6 +1365,7 @@
 
 					.header-row {
 						background-color: var(--colors-BG-section);
+						color: var(--colors-text-section);
 						font-weight: normal;
 						opacity: 0.7;
 						font-size: var(--font-size-small);
@@ -1647,6 +1660,7 @@
 					.doablestep button {
 						padding: .3rem;
 						background-color: var(--colors-BG-section);
+						color: var(--colors-text-section);
 						display: flex;
 						align-items: center;
 						justify-content: center;
@@ -1748,6 +1762,7 @@
 				.task {
 					padding: 10px;
 					background: var(--colors-BG-section);
+					color: var(--colors-text-section);
 					border-radius: var(--sizing-border-radius);
 					margin: 5px 0;
 					box-shadow: 0 3px 5px #0000007e;
@@ -1847,7 +1862,7 @@
 
 			</script>
 		</div>
-		
+
 		<div id="network" class="tabcontent">
 			<h1>Networking</h1>
 			<segr>
@@ -1859,11 +1874,11 @@
 					<p>Configure RoturTW networking</p>
 				</div>
 			</segr>
-			</div>
+		</div>
 		<div id="rotursets" class="tabcontent advancedsettab">
 			<h1><span class="material-symbols-rounded advancedsetsbackbtn" onclick="openCity(event, 'network');">
-				arrow_back
-			</span> RoturTW</h1>
+					arrow_back
+				</span> RoturTW</h1>
 			<small style="margin-bottom: 0.5rem;">Rotur is a cloudlink based standard for packet based communications,
 				generally for Web OSs.</small>
 			<div id="rotursettings">
@@ -1909,8 +1924,8 @@
 						document.getElementById("rtrsignupform").style.display = "none";
 						document.getElementById("rtruserstatsi").innerText = "Signed in as " + targetun;
 						window.parent.setSetting("roturLink", JSON.stringify({
-							"username":targetun,
-							"password":targetpass
+							"username": targetun,
+							"password": targetpass
 						}));
 					}
 					async function initrotur() {
@@ -1949,7 +1964,7 @@
 				</div>
 				<div setting class="colorsetting">
 					<b>Secondary text</b>
-					<input class="colorpickerui" id="text-normal" data-variable="--colors-text-normal"></input>
+					<input class="colorpickerui" id="text-normal" data-variable="--colors-text-section"></input>
 				</div>
 			</segr>
 			<segr>
@@ -2000,6 +2015,7 @@
 				.device {
 					padding: var(--sizing-normal);
 					background: var(--colors-BG-section);
+					color: var(--colors-text-section);
 					border-radius: var(--sizing-border-radius);
 					margin: 5px 0;
 				}
@@ -2258,7 +2274,7 @@
 								const variableName = button.dataset.variable;
 								if (parsedColors[variableName]) {
 									button.jscolor.fromString(parsedColors[variableName]);
-									updateColor(button.jscolor, variableName);
+									updateColor(button, variableName);
 								}
 							});
 							if (await window.parent.justConfirm("Include theme wallpaper?", "Include the wallpaper included in the theme code?")) {
@@ -2325,6 +2341,7 @@
 
 				.newthemebtn {
 					background: var(--colors-BG-section);
+					color: var(--colors-text-section);
 					padding: 1.5rem;
 					border-radius: 0.5rem;
 					display: flex;
@@ -2436,11 +2453,12 @@
 								preset: 'dark',
 								width: 150,
 								paletteCols: 0,
-								onInput: () => debouncedSaveColor(button.jscolor, variableName)
+								onInput: () => debouncedSaveColor(button, variableName)
 							});
 							button.jscolor.fromString(getCSSVariableValue(variableName));
 						} else {
 							button.value = (getCSSVariableValue(variableName));
+							button.addEventListener('input', () => debouncedSaveColor(button, variableName));
 						}
 					});
 				}
@@ -2451,7 +2469,7 @@
 				}, 300);
 
 				function applyTheme(data) {
-					const buttons = document.querySelectorAll('.colorpickerui');
+					const buttons = document.querySelectorAll('[data-variable]');
 					buttons.forEach(button => {
 						const variableName = button.dataset.variable;
 						const newColor = data.colors[variableName];
