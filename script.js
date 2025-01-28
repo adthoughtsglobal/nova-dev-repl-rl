@@ -1017,7 +1017,6 @@ function ask(question, preset = '') {
 	return openModal('ask', { message: question, preset });
 }
 async function loadtaskspanel() {
-	console.log("tasksload", winds)
 	let appbarelement = gid("nowrunninapps");
 	let currentKeys = Array.from(appbarelement.querySelectorAll(".app-shortcut")).map(el => el.dataset.key);
 	let validKeys = Object.entries(winds)
@@ -1028,13 +1027,13 @@ async function loadtaskspanel() {
 
 	let keysToAdd = newKeys.filter(key => !currentKeys.includes(key));
 	let keysToRemove = currentKeys.filter(key => !newKeys.includes(key));
+	console.log("tasksload", winds, currentKeys, newKeys)
 
 	keysToRemove.forEach(key => {
 		let element = appbarelement.querySelector(`[data-key='${key}']`);
 		element.classList.add("closeEffect");
 		setTimeout(function () {
 			if (element) appbarelement.removeChild(element);
-			appbarelement.style.display = validKeys.length > 0 ? "flex" : "none";
 		}, 500);
 	});
 
@@ -1065,6 +1064,7 @@ async function loadtaskspanel() {
 		appbarelement.appendChild(appShortcutDiv);
 	});
 
+	appbarelement.style.display = validKeys.length > 0 ? "flex" : "none";
 }
 var dev;
 function shrinkbsf(str) {

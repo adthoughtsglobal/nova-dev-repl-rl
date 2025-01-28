@@ -88,7 +88,7 @@ function flwin(x) {
 
     x.innerHTML = isFullScreen ? "close_fullscreen" : "open_in_full";
 
-    winds[winuid]["visualState"] = "fullscreen";
+    // winds[winuid]["visualState"] = "fullscreen";
 
     setTimeout(() => {
         winElement.classList.remove("transp2");
@@ -186,11 +186,18 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
             target = target.parentElement;
         }
         checksnapping(gid('window' + winuid), event, winuid);
+        let snappingIndicator = gid('snappingIndicator');
+        snappingIndicator.style.transition = "opacity 0.2s";
+        snappingIndicator.style.opacity = "0";
+        setTimeout(() => snappingIndicator.style.display = "none", 200);
+        document.removeEventListener('mousemove', onMouseMove);
     });
 
     windowDiv.addEventListener("mousedown", function () {
         putwinontop('window' + winuid);
         winds[winuid].zIndex = windowDiv.style.zIndex;
+        document.addEventListener('mousemove', onMouseMove);
+        gid('snappingIndicator').style.display = "block";
     });
 
     var ibtnsside = document.createElement("div");
@@ -371,7 +378,7 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
         iframe.src = blobURL;
         if (!winds[winuid]) winds[winuid] = {};
         winds[winuid]["src"] = blobURL;
-        winds[winuid]["visualState"] = "free";
+        // winds[winuid]["visualState"] = "free";
 
         windowContent.appendChild(iframe);
 
@@ -449,8 +456,8 @@ async function checksnapping(x, event, winuid) {
         x.getElementsByClassName("flbtn")[0].innerHTML = "open_in_full";
         fulsapp = false;
 
-        
-    winds[winuid]["visualState"] = "free";
+
+        // winds[winuid]["visualState"] = "free";
 
         setTimeout(() => {
             x.classList.remove("snapping");
@@ -466,7 +473,7 @@ async function checksnapping(x, event, winuid) {
         fulsapp = true;
         x.getElementsByClassName("flbtn")[0].innerHTML = "close_fullscreen";
 
-        winds[winuid]["visualState"] = "fullScreen";
+        // winds[winuid]["visualState"] = "fullScreen";
 
         setTimeout(() => {
             x.classList.remove("snapping");
@@ -482,8 +489,8 @@ async function checksnapping(x, event, winuid) {
         x.style = `left: 0; top: 0; width: calc(50% - 0px); height: calc(100% - ${navheight}px);`;
         fulsapp = true;
         x.getElementsByClassName("flbtn")[0].innerHTML = "open_in_full";
-        
-    winds[winuid]["visualState"] = "snapped";
+
+        // winds[winuid]["visualState"] = "snapped";
 
         setTimeout(() => {
             x.classList.remove("snapping");
@@ -493,7 +500,7 @@ async function checksnapping(x, event, winuid) {
         x.style = `right: 0; top: 0; width: calc(50% - 0px); height: calc(100% - ${navheight}px);`;
         fulsapp = true;
         x.getElementsByClassName("flbtn")[0].innerHTML = "open_in_full";
-        winds[winuid]["visualState"] = "snapped";
+        // winds[winuid]["visualState"] = "snapped";
         setTimeout(() => {
             x.classList.remove("snapping");
         }, 1000);
@@ -639,7 +646,7 @@ function minim(x) {
     x.parentElement.parentElement.parentElement.parentElement.classList.add("transp4")
 
 
-    winds[winuid]["visualState"] = "minimized";
+    // winds[winuid]["visualState"] = "minimized";
 
     setTimeout(() => {
         x.parentElement.parentElement.parentElement.parentElement.classList.remove("transp4")

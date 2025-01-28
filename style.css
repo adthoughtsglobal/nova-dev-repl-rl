@@ -2336,3 +2336,41 @@ div#toastdiv {
 .notifpullanim {
 	animation: notifpull .2s;
 }
+
+#snappingIndicator {
+	position: absolute;
+    height: calc(100vh - 0px);
+    width: calc(100vw - 0px);
+    z-index: 0;
+	animation: .3s sleepwin;
+}
+
+#snappingIndicator div {
+	background-color: var(--colors-BG-normal);
+	border-radius: .5rem;
+	border: 2px solid var(--color-BG-sub);
+	transition: .2s ease-out;
+}
+
+.topsnappingind {
+	width: 100%;
+	position: absolute;
+	height: calc(3% - .3rem);
+	top: -0.3rem;
+}
+
+.rightsnappingind {
+	position: absolute;
+	height: calc(100% - 4rem);
+	width: calc(3% - .3rem);
+	right: -0.3rem;
+	top:calc(3% - 0px);
+}
+
+.leftsnappingind {
+	position: absolute;
+	height: calc(100% - 4rem);
+	width: calc(3% - .3rem);
+	left: -0.3rem;
+	top:calc(3% - 0px);
+}
