@@ -72,12 +72,13 @@
 			width: fit-content;
 			text-align: center;
 			background-color: var(--colors-BG-section);
+			color: var(--colors-text-section);
 			display: flex;
 			justify-content: center;
 			align-items: center;
 			border: none;
 			overflow: hidden;
-			border-radius: 0.5rem;
+			border-radius: var(--sizing-border-radius);
 			margin: 0.1rem;
 		}
 
@@ -96,11 +97,12 @@
 			overflow-y: auto;
 			min-width: 120px;
 			background: var(--colors-BG-section);
+			color: var(--colors-text-section);
 			padding-bottom: 50px;
 			display: flex;
 			flex-direction: column;
 			transition: .3s;
-			border-radius: 0.5rem;
+			border-radius: var(--sizing-border-radius);
 			overflow-x: hidden;
 			height: calc(100% - 51px);
 			padding-right: var(--sizing-nano);
@@ -124,7 +126,8 @@
 			opacity: 70%;
 			flex-direction: row;
 			background-color: var(--colors-BG-section);
-			border-radius: 0.3rem;
+			color: var(--colors-text-section);
+			border-radius: var(--sizing-border-radius);
 			padding: 3px 0px;
 		}
 
@@ -146,8 +149,9 @@
 
 		.file {
 			background: var(--colors-BG-section);
+			color: var(--colors-text-section);
 			user-select: none;
-			border-radius: 7px;
+			border-radius: var(--sizing-border-radius);
 			transition: .2s ease-out;
 			animation: poprs .2s ease-out;
 		}
@@ -219,7 +223,7 @@
 		}
 
 		.file:hover {
-			background: var(--colors-BG-highlighted);
+			background: var(--colors-BG-sub);
 		}
 
 		.file:active {
@@ -268,6 +272,7 @@
 			position: relative;
 			width: 100%;
 			background: var(--colors-BG-sub);
+			color: var(--colors-text-sub);
 			padding: 10px;
 			border-radius: 5px;
 			transform: translate(-10px, 10px);
@@ -324,6 +329,7 @@
 
 		#slfile {
 			background: var(--colors-BG-sub);
+			color: var(--colors-text-sub);
 			cursor: pointer;
 		}
 
@@ -341,7 +347,8 @@
 		[flap-fl-bottomnav] {
 			padding: 5px 7px;
 			background: var(--colors-BG-section);
-			border-radius: 0.3rem;
+			color: var(--colors-text-section);
+			border-radius: var(--sizing-border-radius);
 			transition: .3s ease-out;
 			margin: 0.2rem;
 			width: calc(100% - 25px);
@@ -538,7 +545,7 @@
 
 		/* Links inside the dropup */
 		a.dropdownerthebob {
-			color: rgb(168, 168, 168);
+			color: var(--colors-text-section);
 			text-decoration: none;
 			display: flex;
 			flex-direction: column;
@@ -551,23 +558,28 @@
 			align-items: center;
 			display: flex;
 			flex-direction: column;
+			opacity: 0.7;
 		}
 
 		a.dropdownerthebob.disabled {
 			opacity: 0.3;
 		}
 
+		a.dropdownerthebob b {
+			font-weight: normal;
+		}
+
 		a.dropdownerthebob span {
 			font-size: 24px !important;
 			border-radius: 2px;
 			opacity: 0.7;
-			color: var(--colors-text-normal);
+			color: var(--colors-text-section);
 		}
 
 		/* Change color of dropup links on hover */
 		.dropup-content a:hover {
 			opacity: 1;
-			color: var(--colors-text-normal);
+			color: var(--colors-text-section);
 		}
 
 		/* Change the background color of the dropup button when the dropup content is shown */
@@ -652,7 +664,7 @@
 
 		.jstree-anchor {
 			padding: 4px 6px 4px 5px !important;
-			border-radius: 0.5rem !important;
+			border-radius: var(--sizing-border-radius) !important;
 		}
 
 		.jstree-default .jstree-icon:empty {
@@ -661,7 +673,7 @@
 		}
 
 		.jstree-default .jstree-icon:empty {
-			color: var(--colors-text-normal);
+			color: var(--colors-text-section);
 			opacity: 0.7;
 			margin-right: 5px;
 		}
@@ -711,7 +723,7 @@
 			display: flex;
 			margin: 0.3rem;
 			gap: 2px;
-			border-radius: 0.3rem;
+			border-radius: var(--sizing-border-radius);
 			overflow: hidden;
 			width: calc(100% - 1rem);
 		}
@@ -724,6 +736,7 @@
 			color: white;
 			border-radius: 0;
 			background: var(--colors-BG-section);
+			color: var(--colors-text-section);
 			border: none;
 			width: 0;
 			outline: none;
@@ -733,9 +746,9 @@
 			padding: 0.3rem;
 			font-size: 0.8rem;
 			font-family: inherit;
-			color: white;
+			color: var(--colors-text-sub);
 			border-radius: 0;
-			background: #3d699b;
+			background: var(--colors-BG-sub);
 			border: none;
 			width: fit-content;
 		}
@@ -989,8 +1002,8 @@
 			padding-top: 0.7rem;
 			border: none;
 			background: var(--colors-BG-section);
-			color: white;
-			border-radius: 0.5rem;
+			color: var(--colors-text-section);
+			border-radius: var(--sizing-border-radius);
 			box-shadow: 0 0 10px #00000057;
 		}
 
@@ -1056,7 +1069,7 @@
 		}
 
 		#makefiledivno {
-			color: #ff6161;
+			color: var(--colors-special-bad);
 			opacity: 1;
 			font-size: 0.8rem;
 			line-height: 1.2rem;
@@ -1072,11 +1085,13 @@
 
 		.jstree-default .jstree-clicked {
 			background: var(--colors-BG-sub);
+			color: var(--colors-text-sub);
 			box-shadow: none;
 		}
 
 		.jstree-default .jstree-hovered {
 			background: var(--colors-BG-sub);
+			color: var(--colors-text-sub);
 			box-shadow: none;
 		}
 

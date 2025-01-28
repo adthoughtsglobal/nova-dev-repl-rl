@@ -91,6 +91,7 @@
 		/* Change background color of buttons on hover */
 		.tab button:hover {
 			background-color: var(--colors-BG-sub);
+			color: var(--colors-text-sub);
 		}
 
 		.tab button i {
@@ -160,7 +161,7 @@
 
 		td b,
 		ul li {
-			color: #b4d2ff;
+			color: var(--colors-text-sub);
 			background: var(--colors-BG-sub);
 			padding: 0.2rem 0.4rem;
 			border-radius: var(--sizing-nano);
@@ -250,9 +251,9 @@
 		small {
 			display: block;
 			padding: var(--sizing-normal);
-			background: var(--colors-BG-sub);
+			background: var(--colors-BG-normal);
+			color: var(--colors-text-normal);
 			border-radius: var(--sizing-border-radius);
-			opacity: 0.5;
 		}
 
 		small b {
@@ -317,7 +318,7 @@
 		}
 
 		.checkbox-wrapper-51 input[type="checkbox"]:checked+.toggle:before {
-			background: #9fff8c;
+			background: var(--colors-special-good);
 			box-shadow: 0 2px var(--sizing-normal) #79e57947;
 		}
 
@@ -326,7 +327,7 @@
 		}
 
 		.checkbox-wrapper-51 input[type="checkbox"]:checked+.toggle span path {
-			stroke: #52d66b;
+			stroke: var(--colors-special-good);
 			stroke-dasharray: 25;
 			stroke-dashoffset: 25;
 		}
@@ -500,7 +501,6 @@
 		.progbarma {
 			width: 100%;
 			background-color: var(--colors-BG-sub);
-			color: var(--colors-text-section);
 			height: 20px;
 			border-radius: var(--sizing-border-radius);
 			overflow: hidden;
@@ -509,13 +509,14 @@
 
 		.appli:hover {
 			background-color: var(--colors-BG-sub);
+			color: var(--colors-text-sub);
 		}
 
 		.progbar {
 			width: 1%;
 			height: 30px;
 			min-width: 2px;
-			background-color: #04AA6D;
+			background-color: var(--colors-special-good);
 		}
 
 		button {
@@ -527,10 +528,6 @@
 			font-size: inherit;
 			cursor: pointer;
 			transition: .2s;
-		}
-
-		segr button {
-			color: inherit;
 		}
 
 		button:hover {
@@ -553,7 +550,7 @@
 
 		.inpbox select {
 			background: var(--colors-BG-sub);
-			color: inherit;
+			color: var(--colors-text-sub);
 			border: 1px solid var(--colors-BG-sub);
 			border-radius: var(--sizing-border-radius);
 			font-size: var(--font-size-normal);
@@ -700,6 +697,7 @@
 
 				.lclstr {
 					border-bottom: 2px solid var(--colors-BG-sub);
+					color: var(--colors-text-sub);
 					padding: 0.2rem var(--sizing-normal);
 					margin-top: 0.2rem;
 					display: flex;
@@ -1775,7 +1773,7 @@
 					padding: 2px;
 					background: var(--colors-BG-highlighted);
 					border-radius: 50%;
-					color: #ff7373;
+					color: var(--colors-special-bad);
 				}
 
 				.task small {

@@ -118,9 +118,9 @@
         }
 
         .crtaccdisp span {
-                opacity: 0.5;
-                font-size: small;
-            }
+            opacity: 0.5;
+            font-size: small;
+        }
 
         .searchsection button {
             background: transparent;
@@ -493,10 +493,60 @@
             opacity: 0.5;
             font-size: smaller;
         }
+
+        .loader {
+            width: 60px;
+            height: 25px;
+            border: 2px solid;
+            box-sizing: border-box;
+            border-radius: 50%;
+            display: grid;
+            animation: l2 2s infinite linear;
+        }
+
+        .loader:before,
+        .loader:after {
+            content: "";
+            grid-area: 1/1;
+            border: inherit;
+            border-radius: 50%;
+            animation: inherit;
+            animation-duration: 3s;
+        }
+
+        .loader:after {
+            --s: -1;
+        }
+
+        @keyframes l2 {
+            100% {
+                transform: rotate(calc(var(--s, 1)*1turn))
+            }
+        }
+
+        div#loadingclaw {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 3rem;
+            background: #101010;
+            z-index: 100;
+        }
     </style>
 </head>
 
 <body>
+    <div id="loadingclaw">
+        <div class="loader"></div>
+
+        <small>Claw is loading...</small>
+    </div>
     <main id="main">
         <div id="feedsection">
             <nav id="nav">
@@ -541,6 +591,27 @@
     </main>
 
     <script>
+        const clawloader = {
+            show() {
+                const element = document.querySelector('#loadingclaw');
+                element.style.display = 'flex';
+                element.style.opacity = '0';
+                setTimeout(() => {
+                    element.style.transition = 'opacity 0.2s ease-out';
+                    element.style.opacity = '1';
+                }, 0);
+            },
+            hide() {
+                const element = document.querySelector('#loadingclaw');
+                element.style.transition = 'opacity 0.2s ease-out';
+                element.style.opacity = '0';
+                setTimeout(() => {
+                    element.style.display = 'none';
+                }, 200);
+            }
+        };
+
+
         var selecteduser = "darkdot", postlimit = 10, lastrendereditem = null;
 
         function arrayToString(arr) {
@@ -559,6 +630,7 @@
             }
 
             const feedContainer = document.getElementById("feed");
+            clawloader.show();
             feedContainer.innerHTML = "";
             var response, posts;
             if (type == 'claw') {
@@ -614,8 +686,8 @@
                 const postUserData = document.createElement("div");
                 postUserData.classList.add("postuserdata");
                 postUserData.onclick = () => {
-                    viewprofile(post.user)
-                }
+                    viewprofile(post.user);
+                };
 
                 const postUserAvatar = document.createElement("div");
                 postUserAvatar.classList.add("postuseravatar");
@@ -636,7 +708,7 @@
                 const postTimestamp = document.createElement("div");
                 postTimestamp.classList.add("posttimestamp");
                 if (post.os) {
-                    if (post.os == "novaOS") {
+                    if (post.os === "novaOS") {
                         postTimestamp.innerHTML = timeSince(post.timestamp) + " | Posted here";
                     } else {
                         postTimestamp.textContent = timeSince(post.timestamp) + " | Posted on " + post.os;
@@ -661,7 +733,7 @@
                 if (post.attachment) {
                     const postImges = document.createElement("img");
                     postImges.classList.add("postimg");
-                    postImges.src = post['attachment'];
+                    postImges.src = post.attachment;
                     postContent.appendChild(postImges);
                 }
 
@@ -682,12 +754,10 @@
 
                     const wholiked = document.createElement("div");
 
-                    if (post.likes && post?.likes?.length != 0) {
-
+                    if (post.likes && post.likes.length !== 0) {
                         wholiked.classList.add("wholikedhint");
                         wholiked.innerText = "Liked by " + arrayToString(post.likes);
                     }
-
 
                     const heartIcon = document.createElement("ion-icon");
                     heartIcon.setAttribute("name", "heart-outline");
@@ -696,7 +766,6 @@
                     likesNumber.classList.add("likesnumber");
                     likesNumber.textContent = post.likes ? post.likes.length : 0;
 
-
                     likesDiv.appendChild(heartIcon);
                     likesDiv.appendChild(likesNumber);
 
@@ -704,7 +773,6 @@
                     if (post.likes && post.likes.length > 0) {
                         likestatuses.appendChild(wholiked);
                     }
-
 
                     const moreDiv = document.createElement("div");
                     moreDiv.classList.add("more");
@@ -728,22 +796,46 @@
 
                     feedContainer.appendChild(postElement);
                 } catch (e) {
-                    console.error(e, post)
+                    console.error(e, post);
                 }
             });
+            afterloadingtheposts()
 
-            var moreelemt = document.createElement("button");
-            moreelemt.classList.add("morebtn");
-            moreelemt.innerHTML = `Load more`
-            moreelemt.onclick = async () => {
-                postlimit += 10;
+            function afterloadingtheposts() {
+
+                clawloader.hide();
+
+
+                var moreButton = document.createElement("button");
+                moreButton.classList.add("morebtn");
+                moreButton.innerHTML = "Load more";
                 let ouritem = lastrendereditem;
-                await loadFeed();
-
                 const targetElement = document.getElementById(ouritem);
-                feedContainer.scrollTop = targetElement.offsetTop - 80;
+                let timer;
+                async function loadmoreposts() {
+                    postlimit += 10;
+                    await loadFeed();
+
+                    feedContainer.scrollTop = targetElement.offsetTop - 80;
+                }
+
+                moreButton.onclick = loadmoreposts;
+
+                const handleScroll = () => {
+                    const rect = moreButton.getBoundingClientRect();
+                    if (rect.top >= 0 && rect.bottom <= feedContainer.innerHeight) {
+                        if (!timer) {
+                            timer = setTimeout(() => {
+                                loadmoreposts();
+                                timer = null;
+                            }, 100);
+                        }
+                    }
+                };
+
+                window.addEventListener('scroll', handleScroll);
+                feedContainer.appendChild(moreButton);
             }
-            feedContainer.appendChild(moreelemt);
         }
 
         function timeSince(timestamp) {
@@ -800,6 +892,8 @@
 
             profileitems.name.innerHTML = name;
 
+            clawloader.show();
+
             const response = await fetch("https://claw.rotur.dev/profile?name=" + name);
             const userclouddat = await response.json();
 
@@ -824,6 +918,8 @@
                         window.parent.roturExtension.userToken);
                 }
             }
+
+            clawloader.hide();
         }
 
         async function viewprofile(name) {

@@ -180,8 +180,8 @@ function toTitleCase(str) {
 }
 
 function ercache() {
-	window.parent.appicns = {};
-	window.parent.memory = {};
+	window.top.appicns = {};
+	window.top.memory = {};
 }
 
 function getRandomNothingQuote() {

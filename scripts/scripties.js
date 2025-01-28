@@ -14,7 +14,7 @@ async function checkdmode() {
 
 	if (uiSizing === 1) scaleUIElements(uiSizing);
 
-	const themeColors = await window.parent.getSetting("themeColors");
+	const themeColors = await getSetting("themeColors");
 	if (!themeColors) return;
 
 	Object.entries(themeColors).forEach(([variableName, colorValue]) => {
@@ -216,7 +216,7 @@ async function setuprotur() {
 }
 
 async function logoutofrtr() {
-	window.parent.remSetting("roturLink");
+	remSetting("roturLink");
 	await roturExtension.logout();
 	roturExtension.disconnect();
 }
@@ -231,11 +231,11 @@ function saveColorsNonVisual(colors, doc, data) {
 	for (const variableName in colors) {
 		colorsToSave[variableName] = colors[variableName];
 
-		window.parent.document.documentElement.style.setProperty(variableName, colors[variableName]);
+		window.top.document.documentElement.style.setProperty(variableName, colors[variableName]);
 		if (data.wallpaper)
-			window.parent.makewall(data.wallpaper);
+			window.top.makewall(data.wallpaper);
 
 		doc.documentElement.style.setProperty(variableName, colors[variableName]);
 	}
-	window.parent.setSetting("themeColors", colorsToSave);
+	window.top.setSetting("themeColors", colorsToSave);
 }

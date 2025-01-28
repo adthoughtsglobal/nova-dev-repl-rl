@@ -890,7 +890,7 @@ function isBase64(str) {
 async function extractAndRegisterCapabilities(appId, content) {
 	try {
 		if (!content) {
-			content = await window.parent.getFileById(appId);
+			content = await getFileById(appId);
 			content = content;
 		}
 		if (isBase64(content)) {
