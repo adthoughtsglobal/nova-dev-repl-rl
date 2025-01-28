@@ -1017,6 +1017,7 @@ function ask(question, preset = '') {
 	return openModal('ask', { message: question, preset });
 }
 async function loadtaskspanel() {
+	console.log("tasksload", winds)
 	let appbarelement = gid("nowrunninapps");
 	let currentKeys = Array.from(appbarelement.querySelectorAll(".app-shortcut")).map(el => el.dataset.key);
 	let validKeys = Object.entries(winds)
