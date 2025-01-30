@@ -189,14 +189,17 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
         let snappingIndicator = gid('snappingIndicator');
         snappingIndicator.style.transition = "opacity 0.2s";
         snappingIndicator.style.opacity = "0";
-        setTimeout(() => snappingIndicator.style.display = "none", 200);
-        document.removeEventListener('mousemove', onMouseMove);
+        setTimeout(() => {
+            snappingIndicator.style.display = "none", 200;
+            document.removeEventListener('mousemove', onMouseMove)
+        });
     });
 
     windowDiv.addEventListener("mousedown", function () {
         putwinontop('window' + winuid);
         winds[winuid].zIndex = windowDiv.style.zIndex;
         document.addEventListener('mousemove', onMouseMove);
+        snappingIndicator.style.opacity = "1";
         gid('snappingIndicator').style.display = "block";
     });
 

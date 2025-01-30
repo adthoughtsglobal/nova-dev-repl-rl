@@ -151,9 +151,7 @@ nav [navobj] div {
 
 .windowheader {
 	background-color: var(--colors-BG-normal);
-	padding: 0 3px;
-	padding-top: 1px;
-	padding-right: 1px;
+    padding:calc(var(--sizing-normal) / 3) calc(var(--sizing-normal) / 2);
 	cursor: grab;
 	overflow-x: auto;
 	display: flex;
@@ -808,7 +806,7 @@ nav [navobj] div {
 	height: 100%;
 	padding: 2rem 1.5rem;
 	margin: auto;
-	border-radius: var(--sizing-border-radius-full)
+	border-radius: var(--sizing-border-radius)
 }
 
 #loginmod .logincard {
@@ -1244,7 +1242,7 @@ input#novamenusearchinp {
 			background: #4d4d4d;
 			color: var(--colors-text-normal);
 			padding: 0.4rem 0.7rem;
-			border-radius: var(--sizing-border-radius-full);
+			border-radius: var(--sizing-border-radius);
 			max-width: 70%;
 			animation: message .3s;
 			user-select: text;
@@ -1643,25 +1641,31 @@ dialog#terminal {
 }
 
 #seprw-icon svg {
-	width: 30%;
-	height: auto;
-	background: #63636330;
-	padding: 0.3rem;
-	border-radius: var(--sizing-border-radius-full);
-	box-shadow: 0 5px 10px #0000004f;
+	width: 80%;
+    background: #63636330;
+    padding: 0.3rem;
+    border-radius: var(--sizing-border-radius);
+    box-shadow: 0 5px 10px #0000004f;
+    max-width: 70px;
+    height: auto;
+    aspect-ratio: 1 / 1;
 }
 
 #seprw-openb {
-	background-color: var(--colors-text-normal)21;
+	background-color: var(--colors-BG-sub);
 	color: inherit;
 	padding: 0.3rem 0.7rem;
 	border: none;
 	box-shadow: 0 2px 0.3rem #02020242;
-	border-radius: var(--sizing-border-radius-full);
+	border-radius: var(--sizing-border-radius);
 	cursor: pointer;
 	display: block;
 	margin: auto;
 	margin-top: 0.5rem;
+}
+
+div#seapppreview {
+    width: 100%;
 }
 
 #seprw-openb:hover {
@@ -1970,7 +1974,7 @@ dialog#terminal {
 .windowloader .loader33 {
 	width: 5px;
 	height: 3px;
-	border-radius: var(--sizing-border-radius-full);
+	border-radius: var(--sizing-border-radius);
 	display: block;
 	margin: 15px auto;
 	position: relative;
@@ -2043,7 +2047,7 @@ dialog#terminal {
 	width: 0;
 	max-width: 150px;
 	background-color: #141414;
-	border-radius: var(--sizing-border-radius-full);
+	border-radius: var(--sizing-border-radius);
 	margin-bottom: var(--sizing-huge);
 	background: linear-gradient(90deg, #0001 33%, #494949 50%, #0001 66%) #232323;
 	background-size: 300% 100%;
@@ -2170,7 +2174,7 @@ noscript {
 .userselect .newusbtn {
 	background: transparent;
 	color: var(--colors-text-normal);
-	border-radius: var(--sizing-border-radius-full);
+	border-radius: var(--sizing-border-radius);
 	padding: 0.3rem 0.6rem;
 	padding-right: 0.5rem;
 	display: flex;
@@ -2342,6 +2346,7 @@ div#toastdiv {
     height: calc(100vh - 0px);
     width: calc(100vw - 0px);
     z-index: 0;
+	display: none;
 	animation: .3s sleepwin;
 }
 

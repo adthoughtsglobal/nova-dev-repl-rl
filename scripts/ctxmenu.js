@@ -152,30 +152,34 @@ function adjustDropdownPositionRelativeToTrigger(triggerElement, dropdownMenu) {
 
 	dropdownMenu.style.display = 'block';
 	const menuRect = dropdownMenu.getBoundingClientRect();
+	const firstItem = dropdownMenu.firstChild;
+	const firstItemRect = firstItem ? firstItem.getBoundingClientRect() : { height: 0 };
 	dropdownMenu.style.display = 'none';
 
-	let initialLeft = 0;
+	let initialLeft, initialTop;
 
 	if (dialog) {
-		if (triggerRect.right + menuRect.width <= dialogRect.width) {
+		if (triggerRect.right + menuRect.width <= dialogRect.right) {
 			initialLeft = triggerRect.right - dialogRect.left;
 		} else {
 			initialLeft = triggerRect.left - dialogRect.left - menuRect.width;
 		}
+		initialTop = triggerRect.top - dialogRect.top;
 	} else {
 		if (triggerRect.right + menuRect.width <= window.innerWidth) {
 			initialLeft = triggerRect.right;
 		} else {
 			initialLeft = triggerRect.left - menuRect.width;
 		}
+		initialTop = triggerRect.top;
 	}
 
-	const { x, y } = adjustPositionToFitViewport(initialLeft, triggerRect.top, dropdownMenu, dialogRect);
-
+	const { x, y } = adjustPositionToFitViewport(initialLeft, initialTop, dropdownMenu, dialogRect);
 	dropdownMenu.style.left = `${x}px`;
 	dropdownMenu.style.top = `${y}px`;
 	dropdownMenu.style.display = 'block';
 }
+
 
 document.addEventListener('contextmenu', (event) => {
 	event.preventDefault();
