@@ -466,6 +466,7 @@ async function openn() {
 			appShortcutDiv.addEventListener("click", () => openfile(app.id));
 
 			var iconSpan = document.createElement("span");
+			iconSpan.classList.add("appiconspan");
 			iconSpan.innerHTML = "<span class='taskbarloader'></span>";
 			getAppIcon(false, app.id).then((appIcon) => {
 				iconSpan.innerHTML = appIcon;
@@ -524,6 +525,7 @@ async function loadrecentapps() {
 		appShortcutDiv.setAttribute("unid", app.id || '');
 		appShortcutDiv.addEventListener("click", () => openapp(app.name, app.id));
 		var iconSpan = document.createElement("span");
+		iconSpan.classList.add("appiconspan");
 		if (!appicns[app.id]) {
 			const content = await getFileById(app.id);
 			const unshrunkContent = decodeBase64Content(content.content);
@@ -668,6 +670,8 @@ async function dod() {
 			appShortcutDiv.addEventListener("click", () => openfile(app.id));
 			appShortcutDiv.setAttribute("unid", app.id);
 			var iconSpan = document.createElement("span");
+
+			iconSpan.classList.add("appiconspan");
 			getAppIcon(app.content, app.id).then((icon) => {
 				iconSpan.innerHTML = `${icon}`;
 			})
@@ -700,12 +704,6 @@ async function dod() {
 		console.error(error)
 	}
 
-
-	if (await getSetting("copilot")) {
-		gid("copilotbtn").style.display = "";
-	} else {
-		gid("copilotbtn").style.display = "none";
-	}
 	scaleUIElements(await getSetting("UISizing"))
 }
 function closeElementedis() {
@@ -1053,6 +1051,7 @@ async function loadtaskspanel() {
 		});
 
 		let iconSpan = document.createElement("span");
+		iconSpan.classList.add("appiconspan");
 		iconSpan.innerHTML = appicns[app] || defaultAppIcon;
 
 		let tooltisp = document.createElement("span");
@@ -1618,6 +1617,7 @@ async function genTaskBar() {
 				appShortcutDiv.addEventListener("click", () => openfile(app.id));
 
 				var iconSpan = document.createElement("span");
+				iconSpan.classList.add("appiconspan");
 				iconSpan.innerHTML = await getAppIcon(0, app.id, 0);
 				var tooltisp = document.createElement("span");
 				tooltisp.className = "tooltiptext";

@@ -192,7 +192,7 @@ draggableTimeDiv.addEventListener('dragstart', (e) => {
 	e.dataTransfer.setData('text/plain', getReadableTimestamp());
 });
 
-document.querySelectorAll('.tooltip').forEach(tooltip => {
+document.querySelectorAll('.tooltip.smoothtltp').forEach(tooltip => {
 	tooltip.addEventListener('mousemove', (e) => {
 		const tooltipText = tooltip.querySelector('.tooltiptext');
 		const moveX = e.offsetX * 0.3;

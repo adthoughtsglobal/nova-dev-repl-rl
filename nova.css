@@ -2,34 +2,39 @@
 
 :root {
 	--font-size-base: 1rem;
-	--font-size-small: calc(var(--font-size-base) * 0.85);
-	--font-size-normal: var(--font-size-base);
-	--font-size-subheading: calc(var(--font-size-base) * 1.25);
-	--font-size-big: calc(var(--font-size-base) * 2);
 
 	--colors-BG-normal: #101010;
-	--colors-BG-section: #171717;
-	--colors-BG-sub: #262626;
-	--colors-BG-highlighted: #44403C;
-	--colors-accent: #68c2ff;
-	--colors-text-high: #FFFFFF;
 	--colors-text-normal: #FFFFFF;
+
+	--colors-BG-section: #171717;
 	--colors-text-section: #FFFFFF;
+
+	--colors-BG-sub: #262626;
 	--colors-text-sub: #FFFFFF;
+
+	--colors-BG-highlighted: #44403C;
+	--colors-text-high: #FFFFFF;
+
 	--colors-special-good: #49AC49;
 	--colors-special-bad: #AC4949;
 
 	--sizing-border-radius: 0.5rem;
 	
-	--sizing-huge: 1rem;
 	--sizing-normal: 0.5rem;
-	--sizing-nano: 0.3rem;
+	--sizing-huge: 1rem;
+	--sizing-nano: .3rem;
 
-	--spacing-huge: calc(var(--sizing-normal) * 2);
 	--spacing-normal: 0.5rem;
-	--spacing-nano: calc(var(--sizing-normal) / 2);
 
 	--time-action: .3s;
+
+	/* Extended support */
+	--colors-accent: #68c2ff;
+	
+	--font-size-small: calc(var(--font-size-base) * 0.85);
+	--font-size-normal: var(--font-size-base);
+	--font-size-subheading: calc(var(--font-size-base) * 1.25);
+	--font-size-big: calc(var(--font-size-base) * 2);
 }
 
 @media (max-width: 768px) {
@@ -37,7 +42,6 @@
 		--time-action: .5s;
 	}
 }
-
 
 ::-webkit-scrollbar {
 	width: 0.5rem;

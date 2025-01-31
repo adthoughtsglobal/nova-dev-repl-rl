@@ -60,8 +60,8 @@ nav .flodiv {
 }
 
 nav [navobj] {
-	padding: 1px 2px;
-	margin: 3px;
+	padding:var(--spacing-normal);
+	margin: calc(var(--spacing-normal) / 2);
 	border-radius: var(--sizing-border-radius);
 	background-color: var(--colors-BG-normal);
 	display: flex;
@@ -100,12 +100,6 @@ nav [navobj] div {
 	cursor: pointer;
 	animation: appop 0.3s;
 	transition: var(--time-action);
-}
-
-.mmic {
-	width: 1.6rem;
-	height: 1.35rem;
-	fill: var(--colors-text-normal);
 }
 
 #novaic {
@@ -151,7 +145,7 @@ nav [navobj] div {
 
 .windowheader {
 	background-color: var(--colors-BG-normal);
-    padding:calc(var(--sizing-normal) / 3) calc(var(--sizing-normal) / 2);
+	padding: var(--spacing-normal);
 	cursor: grab;
 	overflow-x: auto;
 	display: flex;
@@ -515,7 +509,7 @@ nav [navobj] div {
 	background: #2f2f2f78;
 	cursor: pointer;
 	border-radius: var(--sizing-border-radius);
-	padding: 3px;
+	padding: var(--spacing-normal);
 	align-self: flex-end;
 }
 
@@ -552,7 +546,7 @@ nav [navobj] div {
 	text-align: left;
 	display: grid;
 	flex: 1;
-	width: calc(100% - var(--sizing-huge));
+	width: calc(100% - var(--sizing-normal));
 	margin: auto;
 	grid-template-columns: repeat(auto-fill, minmax(80px, 85px));
 	justify-items: center;
@@ -650,7 +644,7 @@ nav [navobj] div {
 	width: 80%;
 	max-width: 400px;
 	height: fit-content;
-	padding: var(--sizing-huge);
+	padding: 1rem;
 	border: none;
 	background: var(--colors-BG-normal);
 	text-align: center;
@@ -1117,7 +1111,7 @@ input#novamenusearchinp {
 }
 
 .windowheader svg {
-	width: var(--sizing-huge);
+	width: 1rem;
 	aspect-ratio: 1 / 1;
 	margin: 5px 2px;
 	display: flex;
@@ -1332,18 +1326,17 @@ codeblock {
 
 .adock {
 	padding: 5px;
-	margin: 2.5px 1px;
+	margin: 0;
 	width: fit-content;
 	width: -moz-fit-content;
+	aspect-ratio: 1 / 1;
+	display: flex;
+	justify-content: center;
+	height: calc(100% - 10px);
 }
 
 .adock .tooltiptext {
 	transform: translateY(-25px) scale(0.9) translateX(-4px) !important;
-}
-
-.adock svg {
-	width: 1.7rem !important;
-	height: 1.7rem !important;
 }
 
 dialog iframe {
@@ -1379,7 +1372,7 @@ dialog#terminal {
 	background: #101010;
 	color: var(--colors-text-normal);
 	font-size: var(--font-size-normal);
-	padding: var(--sizing-huge);
+	padding: var(--sizing-normal);
 	margin: 1px;
 	border: none;
 }
@@ -1452,7 +1445,7 @@ dialog#terminal {
 	display: inline-block;
 	overflow: hidden;
 	position: absolute;
-	top: var(--sizing-huge);
+	top: var(--sizing-normal);
 	background: #324f65;
 }
 
@@ -1540,7 +1533,7 @@ dialog#terminal {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	width: calc(100% - var(--sizing-huge));
+	width: calc(100% - var(--sizing-normal));
 	font-size: var(--font-size-small);
 	color: lightgrey;
 	padding: 0 0.5rem;
@@ -1570,7 +1563,7 @@ dialog#terminal {
 	display: flex;
 	flex-direction: column;
 	align-items: flex-start;
-	width: calc(100% - var(--sizing-huge));
+	width: calc(100% - var(--sizing-normal));
 	overflow: hidden;
 	word-break: break-word;
 	text-align: left;
@@ -1627,7 +1620,7 @@ dialog#terminal {
 	width: 0;
 	display: flex;
 	flex-direction: column;
-	padding: var(--sizing-huge);
+	padding: var(--sizing-normal);
 	align-items: center;
 	justify-content: center;
 	transition: 0.3s;
@@ -1642,13 +1635,13 @@ dialog#terminal {
 
 #seprw-icon svg {
 	width: 80%;
-    background: #63636330;
-    padding: 0.3rem;
-    border-radius: var(--sizing-border-radius);
-    box-shadow: 0 5px 10px #0000004f;
-    max-width: 70px;
-    height: auto;
-    aspect-ratio: 1 / 1;
+	background: #63636330;
+	padding: 0.3rem;
+	border-radius: var(--sizing-border-radius);
+	box-shadow: 0 5px 10px #0000004f;
+	max-width: 70px;
+	height: auto;
+	aspect-ratio: 1 / 1;
 }
 
 #seprw-openb {
@@ -1665,7 +1658,7 @@ dialog#terminal {
 }
 
 div#seapppreview {
-    width: 100%;
+	width: 100%;
 }
 
 #seprw-openb:hover {
@@ -2048,7 +2041,7 @@ div#seapppreview {
 	max-width: 150px;
 	background-color: #141414;
 	border-radius: var(--sizing-border-radius);
-	margin-bottom: var(--sizing-huge);
+	margin-bottom: var(--sizing-normal);
 	background: linear-gradient(90deg, #0001 33%, #494949 50%, #0001 66%) #232323;
 	background-size: 300% 100%;
 	animation: l1 1s infinite cubic-bezier(0.08, 0.82, 0.95, 0.52);
@@ -2085,7 +2078,7 @@ div#seapppreview {
 		margin-right: 0.3rem;
 		border: none;
 		border-radius: var(--sizing-border-radius);
-		padding: 0.5rem var(--sizing-huge);
+		padding: 0.5rem var(--sizing-normal);
 		font-size: var(--font-size-normal);
 		color: var(--colors-text-normal);
 	}
@@ -2129,7 +2122,7 @@ noscript {
 .userselect h1 {
 	font-size: 15vh;
 	opacity: 0.8;
-	margin-bottom: var(--sizing-huge);
+	margin-bottom: 1rem;
 }
 
 .userselect .user {
@@ -2180,7 +2173,7 @@ noscript {
 	display: flex;
 	width: fit-content;
 	flex-direction: column;
-	margin-left: var(--sizing-huge);
+	margin-left: 1rem;
 	transition: .3s;
 }
 
@@ -2195,7 +2188,7 @@ noscript {
 	display: flex;
 	width: fit-content;
 	flex-direction: column;
-	margin-left: var(--sizing-huge);
+	margin-left: 1rem;
 }
 
 .userselect .newusbtn:hover .name {
@@ -2343,9 +2336,9 @@ div#toastdiv {
 
 #snappingIndicator {
 	position: absolute;
-    height: calc(100vh - 0px);
-    width: calc(100vw - 0px);
-    z-index: 0;
+	height: calc(100vh - 0px);
+	width: calc(100vw - 0px);
+	z-index: 0;
 	display: none;
 	animation: .3s sleepwin;
 }
@@ -2369,7 +2362,7 @@ div#toastdiv {
 	height: calc(100% - 4rem);
 	width: calc(3% - .3rem);
 	right: -0.3rem;
-	top:calc(3% - 0px);
+	top: calc(3% - 0px);
 }
 
 .leftsnappingind {
@@ -2377,5 +2370,14 @@ div#toastdiv {
 	height: calc(100% - 4rem);
 	width: calc(3% - .3rem);
 	left: -0.3rem;
-	top:calc(3% - 0px);
+	top: calc(3% - 0px);
+}
+
+.mmic {
+	transform: scale(.7);
+	fill: var(--colors-text-normal);
+}
+
+.searchbtnac {
+	font-size: 1.4rem !important;
 }
