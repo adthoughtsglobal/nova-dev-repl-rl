@@ -61,7 +61,7 @@ nav .flodiv {
 
 nav [navobj] {
 	padding:var(--spacing-normal);
-	margin: calc(var(--spacing-normal) / 2);
+	margin: calc(var(--sizing-normal) / 2);
 	border-radius: var(--sizing-border-radius);
 	background-color: var(--colors-BG-normal);
 	display: flex;
