@@ -239,21 +239,3 @@ function saveColorsNonVisual(colors, doc, data) {
 	}
 	window.top.setSetting("themeColors", colorsToSave);
 }
-const snappingDivs = document.querySelectorAll('#snappingIndicator div');
-
-function onMouseMove(event) {
-    snappingDivs.forEach(div => {
-        const rect = div.getBoundingClientRect();
-        const isHovered =
-            event.clientX >= rect.left &&
-            event.clientX <= rect.right &&
-            event.clientY >= rect.top &&
-            event.clientY <= rect.bottom;
-
-        if (isHovered) {
-            div.style.opacity = 0.8;
-        } else {
-            div.style.opacity = 0.2;
-        }
-    });
-}

@@ -715,6 +715,7 @@ function closeElementedis() {
 	}, 500);
 }
 function clwin(x) {
+	snappingconthide();
 	const el = isElement(x) ? x : document.getElementById(x);
 	if (!el) return;
 
