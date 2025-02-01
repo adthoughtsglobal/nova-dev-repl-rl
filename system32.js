@@ -167,8 +167,8 @@ async function registerDecryptWorker() {
     }
 }
 
-async function erdbsfull() {
-    if (await justConfirm("Are you really sure?", "Removing all the users data includes your settings, files, and other data. Click cancel keep it.")) {
+async function erdbsfull(x) {
+    if (x == "nowarning" || await justConfirm("Are you really sure?", "Removing all the users data includes your settings, files, and other data. Click cancel keep it.")) {
         localStorage.removeItem('todo');
         localStorage.removeItem('magicString');
         localStorage.removeItem('updver');

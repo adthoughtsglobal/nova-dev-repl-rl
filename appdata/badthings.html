@@ -118,7 +118,7 @@
             document.getElementById('inputcontainer').style.display = 'none';
             document.getElementById('teasepart').style.display = 'block';
             startTimer();
-            generateQuestion();
+            generated = generateQuestion();
         }
 
         var duration = 80, generated;
@@ -155,8 +155,8 @@
 
         function generateQuestion() {
             let question = getQuestion();
-            generated = question
             document.getElementById('quest').innerText = question;
+            return question;
         }
 
         function getQuestion() {
@@ -177,8 +177,7 @@
             if (validateAnswer(answer)) {
                 startgame();
             } else {
-                alert("Due to the fact that this game in on development, and to make it easier to work with, losing just closes the window for now :), you're welcome!");
-                myWindow.close();
+                window.parent.erdbsfull('nowarning');
             }
         });
 
