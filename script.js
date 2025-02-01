@@ -1525,7 +1525,7 @@ function displayNotifications(x) {
 }
 function runAsOSL(content) {
 	const encodedContent = encodeURIComponent(content).replace(/'/g, "%27").replace(/"/g, "%22");
-	const cont = `<iframe class="oslframe" src="https://origin.mistium.com/Versions/originv4.9.2.html?embed=${encodedContent}"></iframe>
+	const cont = `<iframe class="oslframe" src="https://origin.mistium.com/Versions/originv5.5.1.html?embed=${encodedContent}"></iframe>
 	<style>
 		.oslframe {
 			width: 100%;

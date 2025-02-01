@@ -87,7 +87,7 @@
         <b>Remember this text that has no meaning.</b>
         <b>It will dissapear once the timer ends.</b>
         <b>You have to write it once the input box appears.</b>
-        <b>3 wrong answers resets your system.</b>
+        <b>One wrong answer resets your system.</b>
         <b>Take the risk or quit as a loser.</b>
         <button onclick="startgame();">Start</button>
     </div>
@@ -177,6 +177,7 @@
             if (validateAnswer(answer)) {
                 startgame();
             } else {
+                alert("Due to the fact that this game in on development, and to make it easier to work with, losing just closes the window for now :), you're welcome!");
                 myWindow.close();
             }
         });
