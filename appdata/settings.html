@@ -1909,18 +1909,18 @@
 				</segr>
 				<script>
 					function loaduprtour() {
-						
-					if (window.parent.roturExtension.loggedIn()) {
-						document.getElementById("rtrinitspace").style.display = "none";
-						document.getElementById("rtrsignedinsec").style.display = "block";
-						document.getElementById("rtrsignupform").style.display = "none";
-						document.getElementById("rtruserstatsi").innerText = "Signed in as " + window.parent.roturExtension.user.username;
-					} else {
-						document.getElementById("rtrsignedinsec").style.display = "none";
 
-						document.getElementById("rtrsignupform").style.display = "none";
-						document.getElementById("rtrsigninbtn").style.opacity = "0.5";
-					}
+						if (window.parent.roturExtension.loggedIn()) {
+							document.getElementById("rtrinitspace").style.display = "none";
+							document.getElementById("rtrsignedinsec").style.display = "block";
+							document.getElementById("rtrsignupform").style.display = "none";
+							document.getElementById("rtruserstatsi").innerText = "Signed in as " + window.parent.roturExtension.user.username;
+						} else {
+							document.getElementById("rtrsignedinsec").style.display = "none";
+
+							document.getElementById("rtrsignupform").style.display = "none";
+							document.getElementById("rtrsigninbtn").style.opacity = "0.5";
+						}
 					}
 
 					async function loginrotur() {
@@ -2006,15 +2006,19 @@
 				</div>
 
 				<div setting class="colorsetting">
-					<b>Border radius</b>
+					<b>Corner rounding</b>
 					<input class="numinp" min="0" max="100" data-variable="--sizing-border-radius"></input>
 				</div>
 				<div setting class="colorsetting">
-					<b>Spacing</b>
+					<b>Normal Spacing</b>
 					<input class="numinp" min="0" max="100" data-variable="--spacing-normal"></input>
 				</div>
 				<div setting class="colorsetting">
-					<b>Sizing</b>
+					<b>Gap spacing</b>
+					<input class="numinp" min="0" max="100" data-variable="--spacing-gap"></input>
+				</div>
+				<div setting class="colorsetting">
+					<b>Normal Sizing</b>
 					<input class="numinp" min="0" max="100" data-variable="--sizing-normal"></input>
 				</div>
 			</segr>
@@ -2503,16 +2507,24 @@
 					return window.parent.getComputedStyle(window.parent.document.documentElement).getPropertyValue(varName).trim();
 				}
 
-				async function saveColors() {
-					const colorsToSave = {};
-					const buttons = document.querySelectorAll('[data-variable]');
-					buttons.forEach(button => {
-						const variableName = button.dataset.variable;
-						const colorValue = button.jscolor ? button.jscolor.toHEXString() : button.value;
+				function applyTheme(data) {
+					const inputs = document.querySelectorAll('[data-variable]');
+					inputs.forEach(input => {
+						const variableName = input.dataset.variable;
+						const newValue = data.colors[variableName] || data.sizes[variableName];
 
-						colorsToSave[variableName] = colorValue;
+						if (newValue !== undefined) {
+							if (input.classList.contains('colorpickerui')) {
+								input.jscolor.fromString(newValue);
+								updateColor(input, variableName);
+							} else if (input.classList.contains('numinp')) {
+								input.value = newValue;
+								document.documentElement.style.setProperty(variableName, newValue + 'px');
+							}
+						}
 					});
-					await window.parent.setSetting("themeColors", colorsToSave);
+
+					saveColors();
 				}
 
 				function debounce(func, wait) {

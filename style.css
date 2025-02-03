@@ -61,11 +61,12 @@ nav .flodiv {
 
 nav [navobj] {
 	padding:var(--spacing-normal);
-	margin: calc(var(--sizing-normal) / 2);
+	margin: calc(var(--spacing-gap) / 2);
 	border-radius: var(--sizing-border-radius);
 	background-color: var(--colors-BG-normal);
 	display: flex;
 	justify-content: center;
+	gap:var(--spacing-normal);
 	align-items: center;
 	flex-direction: row;
 	animation: pop var(--time-action);
@@ -232,8 +233,8 @@ nav [navobj] div {
 }
 
 .app-shortcut span svg {
-	width: 2rem;
-	height: 2rem;
+    width: 29px;
+    height: 29px;
 	animation: pop .5s;
 }
 
@@ -1325,14 +1326,13 @@ codeblock {
 }
 
 .adock {
-	padding: 5px;
+	padding: 2px;
 	margin: 0;
 	width: fit-content;
 	width: -moz-fit-content;
-	aspect-ratio: 1 / 1;
 	display: flex;
 	justify-content: center;
-	height: calc(100% - 10px);
+    height: calc(100% - 5px);
 }
 
 .adock .tooltiptext {
