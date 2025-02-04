@@ -1402,8 +1402,6 @@ dialog#terminal {
 	flex-wrap: nowrap;
 	flex-direction: row-reverse;
 	align-items: stretch;
-	margin: .2rem;
-	padding: 1px;
 	overflow: hidden;
 }
 
