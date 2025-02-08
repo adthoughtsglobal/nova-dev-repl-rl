@@ -576,6 +576,7 @@ class RoturExtension {
               this.connectToWebsocket();
               while (!this.is_connected) { }
               this.authenticated = true;
+              console.log("login success")
               resolve(`Logged in as ${args.USERNAME}`);
             } else {
               this.authenticated = false;
@@ -699,6 +700,7 @@ class RoturExtension {
     this.userToken = "";
     this.user = {};
     this.disconnect();
+    console.log("logged out")
   }
 
   getToken() {

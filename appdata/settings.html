@@ -2501,6 +2501,18 @@
 					saveColors();
 				}, 300);
 
+				async function saveColors() {
+					const colorsToSave = {};
+					const buttons = document.querySelectorAll('[data-variable]');
+					buttons.forEach(button => {
+						const variableName = button.dataset.variable;
+						const colorValue = button.jscolor ? button.jscolor.toHEXString() : button.value;
+
+						colorsToSave[variableName] = colorValue;
+					});
+					await window.parent.setSetting("themeColors", colorsToSave);
+				}
+				
 				function applyTheme(data) {
 					const buttons = document.querySelectorAll('[data-variable]');
 					buttons.forEach(button => {
@@ -2529,7 +2541,7 @@
 					const inputs = document.querySelectorAll('[data-variable]');
 					inputs.forEach(input => {
 						const variableName = input.dataset.variable;
-						const newValue = data.colors[variableName] || data.sizes[variableName];
+						const newValue = data.colors[variableName];
 
 						if (newValue !== undefined) {
 							if (input.classList.contains('colorpickerui')) {
