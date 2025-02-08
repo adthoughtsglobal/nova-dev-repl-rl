@@ -2342,7 +2342,7 @@ div#toastdiv {
 }
 
 #snappingIndicator div {
-	background-color: var(--colors-BG-normal);
+	background-color: var(--colors-BG-sub);
 	border-radius: .5rem;
 	border: 2px solid var(--color-BG-sub);
 	transition: .2s ease-out;

@@ -352,6 +352,35 @@
 			border-bottom: 1px solid var(--colors-BG-sub);
 		}
 
+		[setting][type="advsetnav"] {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			gap: 0.5rem;
+		}
+
+		[setting][type="advsetnav"] .advseticon {
+			padding: 0.5rem;
+			background: #2f2f2f;
+			border-radius: var(--sizing-border-radius);
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 1rem;
+		}
+
+		[setting][type="advsetnav"] .advsetnavbtnprt {
+			flex: 1;
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			justify-content: space-between;
+		}
+
+		[setting][type="advsetnav"] .advsetnavbtnprt div {
+			flex: 1;
+		}
+
 		[setting] b {
 			font-weight: 500;
 		}
@@ -611,13 +640,6 @@
 			box-shadow: 0 3px 5px #0000007e;
 		}
 
-		buttongrp {
-			display: flex;
-			flex-direction: row;
-			flex-wrap: wrap;
-			gap: var(--sizing-nano);
-		}
-
 		span.advancedsetsbackbtn.material-symbols-rounded {
 			display: inline-flex;
 			font-size: 20px;
@@ -632,12 +654,57 @@
 
 		.advancedsetsredbtn {
 			float: right;
-			margin-top: 0.3rem;
+			margin: 0;
+			padding: 0;
 			background-color: transparent;
 			color: var(--colors-text-section);
 			display: flex;
 			justify-content: center;
 			align-items: center;
+		}
+
+		.buttongrp {
+			display: flex;
+			flex-direction: row;
+			justify-content: space-between;
+			padding: var(--spacing-normal);
+			gap: var(--spacing-gap);
+			align-items: stretch;
+			background-color: var(--colors-BG-section);
+		}
+
+		.btngrpelem {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			flex: 1;
+			padding: var(--sizing-normal);
+			border-radius: var(--sizing-border-radius);
+		}
+
+		.btngrpelem:hover {
+			background-color: var(--colors-BG-sub);
+		}
+
+		.btngrpelem b {
+
+			font-size: 0.8rem;
+			font-weight: normal;
+		}
+
+		.btngrpelem button {
+			background-color: transparent;
+			padding: 0;
+		}
+
+		.btngrpelem button i {
+			font-size: 1rem;
+		}
+
+		.divider {
+			width: 1px;
+			background-color: rgb(117, 117, 117);
+			opacity: 0.5;
 		}
 	</style>
 	<link rel="stylesheet"
@@ -648,22 +715,10 @@
 	<container>
 		<div class="tab">
 
-			<button class="tablinks" onclick="openCity(event, 'storage')" id="defaultOpen"><i
-					class="material-symbols-rounded">storage</i> Storage</button>
-			<button class="tablinks" onclick="openCity(event, 'battery')"><i
-					class="material-symbols-rounded">battery_full</i>
-				Battery</button>
-			<button class="tablinks" onclick="openCity(event, 'devices')"><i
-					class="material-symbols-rounded">devices</i>
-				Devices</button>
+			<button class="tablinks" onclick="openCity(event, 'system')" id="defaultOpen"><i
+					class="material-symbols-rounded">settings</i> System</button>
 			<button class="tablinks" onclick="openCity(event, 'defaults'); defs5(); defs2(); defs3()"><i
-					class="material-symbols-rounded">settings</i> Preferances</button>
-			<button class="tablinks" onclick="openCity(event, 'activity'); taskmg()"><i
-					class="material-symbols-rounded">poll</i>
-				Activity</button>
-			<button class="tablinks" onclick="openCity(event, 'perform'); updateFPS()"><i
-					class="material-symbols-rounded">speed</i>
-				Performance</button>
+					class="material-symbols-rounded">tune</i> Preferances</button>
 			<button class="tablinks" onclick="openCity(event, 'exp'); defs();"><i
 					class="material-symbols-rounded">monitor</i>
 				Display</button>
@@ -785,7 +840,10 @@
 			</script>
 		</div>
 
-		<div id="perform" class="tabcontent">
+		<div id="perform" class="tabcontent advancedsettab">
+			<h1><span class="material-symbols-rounded advancedsetsbackbtn" onclick="openCity(event, 'system');">
+					arrow_back
+				</span> Performance</h1>
 			<style>
 				.graphcanvas {
 					width: 100%;
@@ -814,7 +872,6 @@
 					transform: translate(5px, -10px);
 				}
 			</style>
-			<h1>Performance</h1>
 			<h1 id="fpsprof" class="bigtext">0</h1>
 			<br>
 			<canvas class="graphcanvas" id="fpsCanvas" width="400" height="200"></canvas>
@@ -937,7 +994,7 @@
 						ctx.lineTo(canvas.width, canvas.height);
 						ctx.lineTo(0, canvas.height);
 
-						ctx.fillStyle = '#263238';
+						ctx.fillStyle = '#263828';
 						ctx.fill();
 
 						ctx.strokeStyle = '#4CAF50';
@@ -958,8 +1015,80 @@
 			</script>
 		</div>
 
-		<div id="storage" class="tabcontent">
-			<h1>Storage</h1>
+		<div id="system" class="tabcontent">
+			<h1>System</h1>
+
+			<segr>
+				<div setting type="advsetnav" onclick="openCity(event, 'storage');">
+					<i class="material-symbols-rounded advseticon">storage</i>
+					<div class="advsetnavbtnprt">
+						<div>
+							<b>Storage</b>
+							<p>Stats, actions and more...</p>
+						</div>
+						<button class="advancedsetsredbtn"><span class="material-symbols-rounded">
+								chevron_right
+							</span></button>
+					</div>
+				</div>
+				<div setting type="advsetnav" onclick="openCity(event, 'battery');">
+					<i class="material-symbols-rounded advseticon">battery_full</i>
+					<div class="advsetnavbtnprt">
+						<div>
+							<b>Battery</b>
+							<p>Percentage, remarks and status</p>
+						</div>
+						<button class="advancedsetsredbtn"><span class="material-symbols-rounded">
+								chevron_right
+							</span></button>
+					</div>
+				</div>
+				<div setting type="advsetnav" onclick="openCity(event, 'devices');">
+					<i class="material-symbols-rounded advseticon">devices</i>
+					<div class="advsetnavbtnprt">
+						<div>
+							<b>Devices</b>
+							<p>Lists all connected devices</p>
+						</div>
+						<button class="advancedsetsredbtn"><span class="material-symbols-rounded">
+								chevron_right
+							</span></button>
+					</div>
+				</div>
+			</segr>
+			<h1>Processes</h1>
+
+			<segr>
+				<div setting type="advsetnav" onclick="openCity(event, 'activity'); taskmg()">
+					<i class="material-symbols-rounded advseticon">poll</i>
+					<div class="advsetnavbtnprt">
+						<div>
+							<b>Activity</b>
+							<p>List and force close running processes</p>
+						</div>
+						<button class="advancedsetsredbtn"><span class="material-symbols-rounded">
+								chevron_right
+							</span></button>
+					</div>
+				</div>
+				<div setting type="advsetnav" onclick="openCity(event, 'perform'); updateFPS()">
+					<i class="material-symbols-rounded advseticon">speed</i>
+					<div class="advsetnavbtnprt">
+						<div>
+							<b>Performance</b>
+							<p>FPS and memory usage graphs</p>
+						</div>
+						<button class="advancedsetsredbtn"><span class="material-symbols-rounded">
+								chevron_right
+							</span></button>
+					</div>
+				</div>
+			</segr>
+		</div>
+		<div id="storage" class="tabcontent advancedsettab">
+			<h1><span class="material-symbols-rounded advancedsetsbackbtn" onclick="openCity(event, 'system');">
+					arrow_back
+				</span> Storage</h1>
 			<segr>
 				<div settingn>
 					<b>IndexedDB</b><br>
@@ -974,31 +1103,53 @@
 				</div>
 			</segr>
 			<segr>
-				<div settingn>
-					<p style="margin-top: 0px;">Be careful while interacting with extremely dangerous settings.</p>
 
-					<script>
-						async function erdbs() {
-							if (!confirm("Erase Device? \nThis will remove all data, including every user's files, folders, apps, permissions, cache and everything.\n\nWould you like to Clear your device?")) {
-								return;
-							}
-							window.parent.erdbsfull();
+				<script>
+					async function erdbs() {
+						if (!confirm("Erase Device? \nThis will remove all data, including every user's files, folders, apps, permissions, cache and everything.\n\nWould you like to Clear your device?")) {
+							return;
 						}
-						async function erdbsur() {
-							if (!confirm("Remove User? \nThis will remove your data, including your files, folders, apps, permissions, cache and everything.\n\nWould you like to Clear your account?")) {
-								return;
-							}
-							window.parent.removeUser();
+						window.parent.erdbsfull();
+					}
+					async function erdbsur() {
+						if (!confirm("Remove User? \nThis will remove your data, including your files, folders, apps, permissions, cache and everything.\n\nWould you like to Clear your account?")) {
+							return;
 						}
+						window.parent.removeUser();
+					}
 
-					</script>
-					<buttongrp>
+				</script>
 
-						<button danger onclick="erdbsur()">Remove User</button>
-						<button danger onclick="erdbs()">Erase Device</button>
-						<button danger onclick="window.parent.ercache()">Reset cached</button>
-					</buttongrp>
+				<div class="buttongrp">
+					<div class="btngrpelem">
+						<button onclick="erdbsur()">
+							<span class="material-symbols-rounded">
+								person_remove
+							</span>
+						</button>
+						<b>Remove user</b>
+					</div>
+					<div class="divider"></div>
+					<div class="btngrpelem">
+						<button onclick="erdbs()">
+							<span class="material-symbols-rounded">
+								delete_sweep
+							</span>
+						</button>
+						<b>Erase device</b>
+					</div>
+					<div class="divider"></div>
+					<div class="btngrpelem">
+						<button onclick="window.parent.ercache()">
+
+							<span class="material-symbols-rounded">
+								delete_history
+							</span>
+						</button>
+						<b>Reset cache</b>
+					</div>
 				</div>
+
 			</segr>
 			<segr>
 				<script>
@@ -1578,8 +1729,10 @@
 
 		</div>
 
-		<div id="battery" class="tabcontent">
-			<h1>Battery</h1>
+		<div id="battery" class="tabcontent advancedsettab">
+			<h1><span class="material-symbols-rounded advancedsetsbackbtn" onclick="openCity(event, 'system');">
+					arrow_back
+				</span> Battery</h1>
 			<h1 id="batperdisp">Here's lies battery %</h1>
 			<p id="batperrem"></p>
 			<small>Remarks may be innacurate or misleading.</small>
@@ -1736,10 +1889,6 @@
 			<table>
 				<tbody style="width: 100%;">
 					<tr>
-						<td><b onclick="openlink('https://mistium.com/')">Mistium</b></td>
-						<td>Concept developer</td>
-					</tr>
-					<tr>
 						<td><b onclick="openlink('https://github.com/RoturTW')">RoturTW</b></td>
 						<td>Networking</td>
 					</tr>
@@ -1756,12 +1905,15 @@
 			</table>
 			<br>
 			<small>
-				Credits to all those who we didn't mention here.
+				Credits to all those who we couldn't mention in here.
 			</small>
 			<br>
 		</div>
-		<div id="activity" class="tabcontent">
-			<h1>Activity</h1>
+		<div id="activity" class="tabcontent advancedsettab">
+
+			<h1><span class="material-symbols-rounded advancedsetsbackbtn" onclick="openCity(event, 'system');">
+					arrow_back
+				</span> Activity</h1>
 			<style>
 				.task {
 					padding: 10px;
@@ -2042,8 +2194,10 @@
 			</segr>
 		</div>
 
-		<div id="devices" class="tabcontent">
-			<h1>Devices</h1>
+		<div id="devices" class="tabcontent advancedsettab">
+			<h1><span class="material-symbols-rounded advancedsetsbackbtn" onclick="openCity(event, 'system');">
+					arrow_back
+				</span> Devices</h1>
 			<style>
 				.device {
 					padding: var(--sizing-normal);
@@ -2512,7 +2666,7 @@
 					});
 					await window.parent.setSetting("themeColors", colorsToSave);
 				}
-				
+
 				function applyTheme(data) {
 					const buttons = document.querySelectorAll('[data-variable]');
 					buttons.forEach(button => {
