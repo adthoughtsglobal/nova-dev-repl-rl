@@ -1095,7 +1095,7 @@ async function initialiseOS() {
 		<h2>Terms of service and License</h2>
 		<p>By using Nova OS, you agree to the <a href="https://github.com/adthoughtsglobal/Nova-OS/blob/main/Adthoughtsglobal%20Nova%20Terms%20of%20use">Adthoughtsglobal Nova Terms of Use</a>. Read the terms before use. 
 		<div style="background-color: #001b00; color: lightgreen; padding: 0.8rem; border: 1px solid #254625;font-size:inherit; border-radius: .5rem; margin: 0.8rem 0; display: flex;flex-direction:row; align-items: center; justify-content: flex-start;gap:0.5rem;">
-			<span class="material-icons">check</span>
+			<span class="material-symbols-rounded">check</span>
 			<div>We do not store or share your personal information.</div>
 		</div>
 		</p>
@@ -1289,7 +1289,7 @@ async function strtappse(event) {
 		items.forEach(item => {
 			if (!mostRelevantItem) mostRelevantItem = item;
 			const newElement = document.createElement("div");
-			newElement.innerHTML = `<div>${appicns[item.id] != undefined ? appicns[item.id] : defaultAppIcon} ${item.name}</div><span class="material-icons" onclick="openfile('${item.id}')">arrow_outward</span>`;
+			newElement.innerHTML = `<div>${appicns[item.id] != undefined ? appicns[item.id] : defaultAppIcon} ${item.name}</div><span class="material-symbols-rounded" onclick="openfile('${item.id}')">arrow_outward</span>`;
 			gid("strtappsugs").appendChild(newElement);
 			elements++;
 		});
@@ -1705,7 +1705,7 @@ const nvacopilot = {
 		const navDiv = document.createElement("div");
 		navDiv.classList.add("usermsg-nav");
 		const icon = document.createElement("i");
-		icon.classList.add("material-icons");
+		icon.classList.add("material-symbols-rounded");
 		icon.textContent = role === "bot" ? "auto_awesome" : "account_circle";
 		navDiv.appendChild(icon);
 		const contentDiv = document.createElement("div");

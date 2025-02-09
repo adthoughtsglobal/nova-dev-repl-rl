@@ -1,3 +1,24 @@
+@font-face {
+	font-family: 'Material Symbols Outlined';
+	font-style: normal;
+	src: url("/libs/MaterialSymbolsRounded.woff2") format('woff2');
+}
+
+.material-symbols-rounded {
+	font-family: 'Material Symbols Outlined';
+	font-weight: normal;
+	font-style: normal;
+	font-size: 24px;
+	line-height: 1;
+	letter-spacing: normal;
+	text-transform: none;
+	display: inline-block;
+	white-space: nowrap;
+	word-wrap: normal;
+	direction: ltr;
+	-webkit-font-smoothing: antialiased;
+}
+
 body {
 	margin: 0;
 	height: 100vh;
@@ -60,13 +81,13 @@ nav .flodiv {
 }
 
 nav [navobj] {
-	padding:var(--spacing-normal);
+	padding: var(--spacing-normal);
 	margin: calc(var(--spacing-gap) / 2);
 	border-radius: var(--sizing-border-radius);
 	background-color: var(--colors-BG-normal);
 	display: flex;
 	justify-content: center;
-	gap:var(--spacing-normal);
+	gap: var(--spacing-normal);
 	align-items: center;
 	flex-direction: row;
 	animation: pop var(--time-action);
@@ -233,8 +254,8 @@ nav [navobj] div {
 }
 
 .app-shortcut span svg {
-    width: 29px;
-    height: 29px;
+	width: 29px;
+	height: 29px;
 	animation: pop .5s;
 }
 
@@ -662,7 +683,7 @@ nav [navobj] div {
 	animation: appshow 2s;
 }
 
-#bios span.material-icons.closebtn {
+#bios span.material-symbols-rounded.closebtn {
 	position: absolute;
 	left: 1rem;
 	top: 1rem;
@@ -861,7 +882,7 @@ nav [navobj] div {
 	animation: appshow 0.5s 1;
 }
 
-.logincard button material-icons {
+.logincard button material-symbols-rounded {
 	display: block;
 	text-align: center;
 	margin: 10px;
@@ -1021,7 +1042,7 @@ input#novamenusearchinp {
 	background: #333333;
 }
 
-#sleepwindow .material-icons {
+#sleepwindow .material-symbols-rounded {
 	color: var(--colors-text-normal);
 	opacity: 0.5;
 	position: absolute;
@@ -1030,7 +1051,7 @@ input#novamenusearchinp {
 	cursor: pointer;
 }
 
-#sleepwindow .material-icons:hover {
+#sleepwindow .material-symbols-rounded:hover {
 	opacity: 1;
 }
 
@@ -1332,7 +1353,7 @@ codeblock {
 	width: -moz-fit-content;
 	display: flex;
 	justify-content: center;
-    height: calc(100% - 5px);
+	height: calc(100% - 5px);
 }
 
 .adock .tooltiptext {
@@ -1538,7 +1559,7 @@ dialog#terminal {
 	padding-top: 0.3rem;
 }
 
-.notiflistnav span.material-icons {
+.notiflistnav span.material-symbols-rounded {
 	font-size: var(--font-size-normal) !important;
 }
 

@@ -20,10 +20,6 @@
 	<link href="webmanifest.json" rel="manifest">
 	<!--Google Icons-->
 	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-	<!--Google Fonts-->
-	<link rel="stylesheet"
-		href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-
 
 	<script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
 
@@ -93,7 +89,7 @@
 	</div>
 
 	<div id="notification">
-		<span class="material-icons wincl"
+		<span class="material-symbols-rounded wincl"
 			onclick="document.getElementById('notification').style.display = 'none';">close</span>
 		<span id="notifappName">App Name</span>
 		<h2 id="notifTitle">Title</h2>
@@ -119,14 +115,14 @@
 
 					<biv draggable="true"
 						class="app-shortcut tooltip adock sizableuielement">
-						<span ic class="material-icons" id="mm">N
+						<span ic class="material-symbols-rounded" id="mm">N
 						</span>
 					</biv>
 				</your>
 				<your navobj onclick="opensearchpanel()">
 					<biv draggable="true"
 						class="app-shortcut tooltip adock sizableuielement">
-						<span ic class="material-icons searchbtnac directxicons">
+						<span ic class="material-symbols-rounded searchbtnac directxicons">
 							search
 						</span>
 					</biv>
@@ -135,7 +131,7 @@
 					<div id="batterydisdiv">
 						<span id="battery-p-display">
 						</span>
-						<span id="battery-display" class="material-icons">
+						<span id="battery-display" class="material-symbols-rounded">
 							p ic
 						</span>
 					</div>
@@ -218,7 +214,7 @@
 		</div>
 	</dialog>
 	<dialog id="bios" class="scalableui onramcloseable">
-		<span class="material-icons closebtn" onclick="gid('bios').close()">
+		<span class="material-symbols-rounded closebtn" onclick="gid('bios').close()">
 			close
 		</span>
 		<small>Welcome to NovaOS Setup,</small>
@@ -290,7 +286,7 @@
 
 					</div>
 					<div class="user newusbtn" onclick="setandinitnewuser()">
-						<span class="material-icons">
+						<span class="material-symbols-rounded">
 							add
 						</span>
 						<div class="name">
@@ -304,7 +300,7 @@
 				<div id="loginform">
 					<input placeholder="Enter your password" id="loginform1" type="password">
 					<button onclick="checkifpassright()">
-						<span class="material-icons">
+						<span class="material-symbols-rounded">
 							chevron_right
 						</span>
 					</button>
@@ -335,7 +331,7 @@
 				<button onclick="setMessage()">Display a message</button>
 				<br>
 			</div>
-			<span class="material-icons"
+			<span class="material-symbols-rounded"
 				onclick="document.getElementById('sleepwindow').close(); clearInterval(countdown);clearInterval(countdown2);document.getElementById('sleeptimer').textContent = '00:00';document.getElementById('sleepbtns').style.display = 'block';">close</span>
 		</div>
 	</dialog>
@@ -373,7 +369,7 @@
 		<div class="searchwincont">
 			<div class="searchside">
 				<div class="searchinputcont">
-					<span class="material-icons" id="searchiconthingy">search</span>
+					<span class="material-symbols-rounded" id="searchiconthingy">search</span>
 					<input placeholder="Search files..." id="strtsear" onkeyup="strtappse(event)">
 				</div>
 				<div class="strtappsugs" id="strtappsugs">
@@ -382,7 +378,7 @@
 				<div class="notiflist">
 					<div class="notiflistnav">
 						<span>Notifications</span>
-						<span class="material-icons" onclick="displayNotifications('clear');">close</span>
+						<span class="material-symbols-rounded" onclick="displayNotifications('clear');">close</span>
 					</div>
 					<div id="notiflist">
 						No new notifications
@@ -412,8 +408,8 @@
 				<small>Powered By VerAI</small>
 			</div>
 			<div class="right">
-				<i class="material-icons" onclick="resetchat()">refresh</i>
-				<i class="material-icons" onclick="gid('nova-copilot-window').close()">close</i>
+				<i class="material-symbols-rounded" onclick="resetchat()">refresh</i>
+				<i class="material-symbols-rounded" onclick="gid('nova-copilot-window').close()">close</i>
 			</div>
 		</div>
 		<div id="nvacoplt-messages">
@@ -421,7 +417,7 @@
 		</div>
 		<div class="messageinput">
 			<input id="nvacoplt-msginput" placeholder="Send A Message..." maxlength="450">
-			<button class="nvacoplt-sndbtn"><i class="material-icons">send</i></button>
+			<button class="nvacoplt-sndbtn"><i class="material-symbols-rounded">send</i></button>
 		</div>
 	</dialog>
 

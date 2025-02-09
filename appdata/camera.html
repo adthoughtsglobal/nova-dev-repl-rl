@@ -161,10 +161,10 @@
 <div class="toolpart">
 	<div class="floattopnav">
 		<select id="camera-select"></select>
-		<button id="mirror-btn" onclick="toggleMirror()"><span class="material-icons">
+		<button id="mirror-btn" onclick="toggleMirror()"><span class="material-symbols-rounded">
 				360
 			</span></button>
-		<button id="flashlight-btn" onclick="toggleFlashlight()"><span class="material-icons">
+		<button id="flashlight-btn" onclick="toggleFlashlight()"><span class="material-symbols-rounded">
 				flash_on
 			</span></button>
 		<select id="timer-select">
@@ -174,7 +174,7 @@
 			<option value="10">10s</option>
 		</select>
 	</div>
-	<button id="photo-btn" onclick="capture(this)"><span class="material-icons">
+	<button id="photo-btn" onclick="capture(this)"><span class="material-symbols-rounded">
 			camera
 		</span></button>
 	</div>
@@ -259,7 +259,7 @@
 		async function toggleFlashlight() {
 			isFlashlightOn = !isFlashlightOn;
 			const flashlightBtn = document.getElementById('flashlight-btn');
-			flashlightBtn.innerHTML = `<span class="material-icons">${isFlashlightOn ? 'flash_off' : 'flash_on'}</span>`;
+			flashlightBtn.innerHTML = `<span class="material-symbols-rounded">${isFlashlightOn ? 'flash_off' : 'flash_on'}</span>`;
 
 			if (currentStream) {
 				const track = currentStream.getVideoTracks()[0];

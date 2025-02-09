@@ -251,50 +251,50 @@
 			</script>
 			<div class="tabs" id="tabs">
 			</div>
-			<span class="material-icons newtbtn" onclick="newtab()">
+			<span class="material-symbols-rounded newtbtn" onclick="newtab()">
 				add
 			</span>
 		</div>
 		<div class="urlnav">
 			<div class="btngrp">
 				<button onclick="homebtn()">
-					<span class="material-icons">
+					<span class="material-symbols-rounded">
 						home
 					</span>
 				</button>
 				<button>
-					<span class="material-icons" onclick="reloadp()">
+					<span class="material-symbols-rounded" onclick="reloadp()">
 						refresh
 					</span>
 				</button>
 			</div>
 			<div class="inpgrp">
 				<button>
-					<span class="material-icons">
+					<span class="material-symbols-rounded">
 						https
 					</span>
 				</button>
 				<input placeholder="Search or enter web address" autocapitalize="off" autocomplete="off"
 					onkeyup="isitago(event)" id="deinput" onclick="this.select()">
 				<button right onclick="readnfa()">
-					<span class="material-icons">
+					<span class="material-symbols-rounded">
 						record_voice_over
 					</span>
 				</button>
 				<button right>
-					<span class="material-icons">
+					<span class="material-symbols-rounded">
 						star_border
 					</span>
 				</button>
 			</div>
 			<div class="btngrp">
 				<button onclick="historytabopen()">
-					<span class="material-icons">
+					<span class="material-symbols-rounded">
 						history
 					</span>
 				</button>
 				<button>
-					<span class="material-icons" onclick="switchproxy()">
+					<span class="material-symbols-rounded" onclick="switchproxy()">
 						lan
 					</span>
 				</button>
@@ -306,7 +306,7 @@
 		<div id="historyitems">
 			<div class="historyitem">
 				<span>URL appears here</span>
-				<button><span class="material-icons">
+				<button><span class="material-symbols-rounded">
 						close
 					</span></button>
 			</div>
@@ -366,7 +366,7 @@
 
 				const closeButton = document.createElement('button');
 				const closeIcon = document.createElement('span');
-				closeIcon.className = 'material-icons';
+				closeIcon.className = 'material-symbols-rounded';
 				closeIcon.textContent = 'close';
 				closeButton.appendChild(closeIcon);
 
@@ -504,7 +504,7 @@
 			b.setAttribute("onclick", "openCity('" + d.id + "','wincs" + nowid + "')");
 			d.appendChild(b);
 			var s = document.createElement("span");
-			s.setAttribute("class", "material-icons clbtn");
+			s.setAttribute("class", "material-symbols-rounded clbtn");
 			s.textContent = "close";
 			s.setAttribute("onclick", "remtab('" + olo + "')");
 			d.appendChild(s);
