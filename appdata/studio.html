@@ -281,7 +281,9 @@
 	</nav>
 	<div class="editorsection">
 		<div class="codepart editorpart" style="width: 70vw;">
-			<div id="editor"></div>
+			<div id="editor">
+				<textarea id="editortextarea"></textarea>
+			</div>
 		</div>
 		<div id="resultspart" class="editorpart">
 			<div id="outputnav">
@@ -411,11 +413,7 @@
 
 		var wordwrap = false, currentmode = 'py';
 
-		$('.ui.dropdown').dropdown({
-			action: 'hide'
-		})
-
-		gid("modedisp").innerText = "PY";
+		gid("modedisp").innerText = "HTML";
 
 		document.getElementsByClassName("editorpart")[0].addEventListener('resize', function (event) {
 			editor.resize()
@@ -425,8 +423,26 @@
 			return document.getElementById(x)
 		}
 
-		var editor = ace.edit("editor");
-		editor.setTheme("ace/theme/monokai");
+		var editor;
+		try {
+
+			$('.ui.dropdown').dropdown({
+				action: 'hide'
+			})
+
+			editor = ace.edit("editor");
+			editor.setTheme("ace/theme/monokai");
+		} catch (e) {
+			editor = {
+				getValue: () => {
+					return document.getElementById("editortextarea").value;
+				},
+				setValue: (newValue) => {
+					document.getElementById("editortextarea").value = newValue;
+				}
+			}
+			document.getElementById("editortextarea").style.display = "block";
+		}
 
 		function showFindBox() {
 			// Execute the 'find' command
@@ -581,57 +597,6 @@
 		
 		</body></html>`, 1);
 			gid("outputframe").style.display = "flex"
-			gid("console").style.display = "none"
-		}
-
-		function setUpForPython() {
-			currentmode = 'py'
-			gid("modedisp").innerText = "PY";
-			editor.session.setMode("ace/mode/python");
-			editor.setValue(`# Define two numbers
-num1 = 5
-num2 = 3
-
-# Calculate the sum
-sum_result = num1 + num2
-
-# Print the result
-print("The sum is:", sum_result)
-`);
-			gid("outputframe").style.display = "none"
-			gid("console").style.display = "flex"
-		}
-
-		function setUpForOSL() {
-			currentmode = 'osl'
-			gid("modedisp").innerText = "OSL";
-			editor.session.setMode("ace/mode/python");
-			editor.setValue(`people_x = "array".new(100)
-people_y = "array".new(100)
-pd = "array".new(100)
-count = 0
-loop 100 (
-count += 1
-people_x.[count] = 0
-people_y.[count] = 0
-pd.[count] = 0
-)
-mainloop:
-count = 0
-c #fff
-loop 20 (
-count += 1
-goto people_x.[count].destr people_y.[count].destr
-icon "w 4 dot 0 0" 1
-d = [0,0].dist(x_position,y_position)
-if d.int >= 100 "pd.[count] += 180"
-people_x.[count] += pd.[count].destr.sin * ( d / 10 + 1 )
-people_y.[count] += pd.[count].destr.cos * ( d / 10 + 1 )
-pd.[count] += [-10,10].random
-)
-import "win-buttons"`);
-			gid("outputframe").style.display = "flex";
-			gid("outputframe").src = "about:blank";
 			gid("console").style.display = "none"
 		}
 

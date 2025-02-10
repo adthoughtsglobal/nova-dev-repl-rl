@@ -7,7 +7,7 @@
 	<title>Settings App</title>
 	<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 	<script src="https://jscolor.com/release/2.5/jscolor-2.5.2/jscolor.js"></script>
-	<meta name="nova-include" content="nova.css">
+	<meta name="nova-include" content="nova.css material-symbols-rounded">
 	<meta name="nova-icon"
 		content="<svg version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='40.8208' height='40.94891' viewBox='0,0,40.8208,40.94891'><g transform='translate(-219.51359,-159.63806)'><g data-paper-data='{&quot;isPaintingLayer&quot;:true}' fill-rule='nonzero' stroke-linecap='butt' stroke-linejoin='miter' stroke-miterlimit='10' stroke-dasharray='' stroke-dashoffset='0' style='mix-blend-mode: normal'><path d='M224.49728,191.97943c0,-6.51609 0,-20.12167 0,-23.80086c0,-1.79525 1.27743,-3.6813 3.28885,-3.6813c6.47459,0 20.55435,0 24.11403,0c1.56415,0 3.60258,1.44253 3.60258,3.6813c0,6.76316 0,20.4796 0,23.95744c0,1.53 -1.83996,3.36671 -3.60258,3.36671c-3.67444,0 -17.45008,0 -23.95744,0c-2.10186,0 -3.44544,-1.37709 -3.44544,-3.52329zM239.52997,189.92242c5.52285,0 10,-4.47715 10,-10c0,-5.52285 -4.47715,-10 -10,-10c-5.52285,0 -10,4.47715 -10,10c0,5.52285 4.47715,10 10,10z' fill='#7c888d' stroke='none' stroke-width='0'/><path d='M237.50865,199.43282c-4.60757,-4.60757 -14.22817,-14.22817 -16.82975,-16.82975c-1.26943,-1.26943 -1.69979,-3.50635 -0.2775,-4.92864c4.57823,-4.57823 14.53412,-14.53412 17.05119,-17.05119c1.10602,-1.10602 3.56743,-1.52738 5.15048,0.05567c4.78228,4.78228 14.48126,14.48126 16.94047,16.94047c1.08187,1.08187 1.07958,3.68167 -0.16678,4.92803c-2.59822,2.59822 -12.33907,12.33907 -16.94047,16.94047c-1.48624,1.48624 -3.41004,1.46254 -4.92764,-0.05506zM239.52997,189.92242c5.52285,0 10,-4.47715 10,-10c0,-5.52285 -4.47715,-10 -10,-10c-5.52285,0 -10,4.47715 -10,10c0,5.52285 4.47715,10 10,10z' fill='#7c888d' stroke='none' stroke-width='0'/><path d='M235.7745,180.11252c0,-2.2917 1.85779,-4.14949 4.14949,-4.14949c2.2917,0 4.14949,1.85779 4.14949,4.14949c0,2.2917 -1.85779,4.14949 -4.14949,4.14949c-2.2917,0 -4.14949,-1.85779 -4.14949,-4.14949z' fill='none' stroke='#7c888d' stroke-width='2.5'/></g></g></svg>">
 
@@ -34,7 +34,7 @@
 			overflow-y: auto;
 			max-width: 25vw;
 			min-width: 100px;
-			padding-bottom: 25vh;
+			padding-bottom: 3rem;
 		}
 
 		.tab::after {
@@ -121,7 +121,6 @@
 			padding: 0px 12px;
 			width: 0;
 			flex-grow: 3;
-			min-width: 300px;
 			padding-bottom: 30vh;
 			background-color: inherit;
 			animation: drop .2s ease-out;
@@ -337,19 +336,24 @@
 			stroke-dashoffset: 25;
 		}
 
-		[settingn] {
+		[settingn],
+		[setting] {
+			display: flex;
+			flex-direction: column;
+			gap: var(--spacing-gap);
+
+			margin: 0;
 			background: var(--colors-BG-section);
 			color: var(--colors-text-section);
 			padding: var(--sizing-normal);
-			margin: 0;
 		}
 
 		[setting] {
-			background: var(--colors-BG-section);
-			color: var(--colors-text-section);
-			padding: var(--sizing-normal);
-			margin: 0;
 			border-bottom: 1px solid var(--colors-BG-sub);
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			justify-content: space-between;
 		}
 
 		[setting][type="advsetnav"] {
@@ -579,7 +583,16 @@
 			padding: var(--sizing-normal);
 			color: var(--colors-text-section);
 			outline: none;
+			display: flex;
 			border-bottom: 1px solid var(--colors-BG-sub);
+			flex-direction: row;
+			flex-wrap: nowrap;
+			align-items: flex-start;
+			justify-content: space-between;
+		}
+
+		.inpbox[type="textInput"] {
+			flex-direction: column;
 		}
 
 		.inpbox select {
@@ -588,15 +601,14 @@
 			border: 1px solid var(--colors-BG-sub);
 			border-radius: var(--sizing-border-radius);
 			font-size: var(--font-size-normal);
-			padding: 3px 1px 3px 9px !important;
-			float: right;
+			padding: 3px 3px 3px 5px !important;
 			outline: none;
-			transform: translate(3px, -2px);
+			width: 6rem;
 		}
 
 		@media only screen and (max-width: 600px) {
 			.tab button {
-				width: 35px;
+				width: 38px;
 			}
 
 			.tab {
@@ -706,9 +718,33 @@
 			background-color: rgb(117, 117, 117);
 			opacity: 0.5;
 		}
+
+
+		.taskbarloader {
+			width: 20px;
+			height: 20px;
+			border-radius: 50%;
+			display: inline-block;
+			border-top: 3px solid var(--colors-text-normal);
+			border-right: 3px solid transparent;
+			box-sizing: border-box;
+			animation: slideIn .3s ease-out, rotation 1s linear infinite;
+		}
+
+		@keyframes rotation {
+			0% {
+				transform: rotate(0deg);
+			}
+
+			100% {
+				transform: rotate(360deg);
+			}
+		}
+
+		.settingName {
+			flex: 1;
+		}
 	</style>
-	<link rel="stylesheet"
-		href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 </head>
 
 <body>
@@ -731,8 +767,8 @@
 			<button class="tablinks" onclick="openCity(event, 'lclstgsc'); lclstgsc();"><i
 					class="material-symbols-rounded">manage_search</i>
 				Data Manager</button>
-			<button class="tablinks" onclick="openCity(event, 'defaultappsforfiles'); defs2(); defs3()"><i
-					class="material-symbols-rounded">open_in_browser</i> Defaults</button>
+			<button class="tablinks" onclick="openCity(event, 'defaultappsforfiles');
+				rldfltyptable();"><i class="material-symbols-rounded">open_in_browser</i> Defaults</button>
 			<button class="tablinks" onclick="openCity(event, 'about')"><i class="material-symbols-rounded">info</i>
 				About</button>
 
@@ -1091,15 +1127,15 @@
 				</span> Storage</h1>
 			<segr>
 				<div settingn>
-					<b>IndexedDB</b><br>
+					<b>IndexedDB</b>
 					<div class="progbarma" id="myProgress2">
 						<div id="myBar2" class="progbar"></div>
 					</div>
 					<small id="storemark2">Your system has crashed. Please Update.</small>
-				</div>
-				<div settingn id="storagesuggs">
-					<p style="margin-top: 0px;">Ran out of storage?<br>Get more storage by removing some files</p>
-					<button>Open Files</button>
+
+					<div id="storagesuggs">
+						<p style="margin-top: 0px;">Ran out of storage?<br>Get more storage by removing some files</p>
+					</div>
 				</div>
 			</segr>
 			<segr>
@@ -1153,11 +1189,11 @@
 			</segr>
 			<segr>
 				<script>
-					async function updefapps() {
+					async function updefapps(elem) {
 						try {
-							document.getElementById("updefapplog").innerHTML = "Installing...";
+							elem.innerHTML = "Installing...";
 							await window.parent.installdefaultapps();
-							document.getElementById("updefapplog").innerHTML = "All Default apps updated. <b>Re-open Settings to reflect changes.</b>";
+							elem.innerHTML = "Update again";
 						} catch (error) {
 							console.error("Error updating default apps:", error);
 						}
@@ -1165,12 +1201,10 @@
 
 				</script>
 				<div setting>
-					<b>Update Default Apps</b>
-					<button style="margin-top: 5px;float: right;" onclick="updefapps()">Update</button>
-					<p>Update or reinstall deleted or corrupted versions of default apps.</p>
-
-					<small id="updefapplog" style="margin-top: 5px;">Updating default apps frequently can assure newer
-						features and bug fixes.</small>
+					<div class="settingName"><b>Update Default Apps</b>
+						<p>Update or reinstall deleted or corrupted versions of default apps.</p>
+					</div>
+					<button style="margin-top: 5px;float: right;" onclick="updefapps(this)">Update</button>
 				</div>
 			</segr>
 		</div>
@@ -1179,6 +1213,10 @@
 			<h1>Preferances</h1>
 			<segr>
 				<div setting>
+					<div class="settingName"><b>Focus Mode</b>
+						<p>Blur the background image slowly while you use apps.
+					</p>
+					</div>
 					<div class="checkbox-wrapper-51">
 						<input type="checkbox" id="cbx-65" role="submit">
 						<label for="cbx-65" class="toggle">
@@ -1191,11 +1229,12 @@
 							</span>
 						</label>
 					</div>
-					<b>Focus Mode</b>
-					<p>Blur the background image slowly while you use apps.
-					</p>
 				</div>
 				<div setting>
+					<div class="settingName"><b>Window Snapping</b>
+						<p>Drag a window to the sides of your screen to snap it in place.
+					</p>
+					</div>
 					<div class="checkbox-wrapper-51">
 						<input type="checkbox" id="cbx-66" role="submit">
 						<label for="cbx-66" class="toggle">
@@ -1208,11 +1247,12 @@
 							</span>
 						</label>
 					</div>
-					<b>Window Snapping</b>
-					<p>Drag a window to the sides of your screen to snap it in place.
-					</p>
 				</div>
 				<div setting>
+					<div class="settingName"><b>Use NovaOS offline</b>
+						<p>If enabled, Nova will try to cache the os and save it offline.
+					</p>
+					</div>
 					<div class="checkbox-wrapper-51">
 						<input type="checkbox" id="cbx-70" role="submit">
 						<label for="cbx-70" class="toggle">
@@ -1225,29 +1265,13 @@
 							</span>
 						</label>
 					</div>
-					<b>Use NovaOS offline</b>
-					<p>If enabled, Nova will try to cache the os and save it offline.
-					</p>
 				</div>
-
 				<div setting>
-					<div class="checkbox-wrapper-51">
-						<input type="checkbox" id="cbx-71" role="submit">
-						<label for="cbx-71" class="toggle">
-							<span>
-								<svg width="10px" height="10px" viewBox="0 0 10 10">
-									<path
-										d="M5,1 L5,1 C2.790861,1 1,2.790861 1,5 L1,5 C1,7.209139 2.790861,9 5,9 L5,9 C7.209139,9 9,7.209139 9,5 L9,5 C9,2.790861 7.209139,1 5,1 L5,9 L5,1 Z">
-									</path>
-								</svg>
-							</span>
-						</label>
+					<div class="settingName">
+						<b>SmartSearch</b>
+						<p>Search through your files based on similarity algorithms.
+					</p>
 					</div>
-					<b>Enable Nova Copilot</b>
-					<p>AI copilot in your Nova Nav.
-					</p>
-				</div>
-				<div setting>
 					<div class="checkbox-wrapper-51">
 						<input type="checkbox" id="cbx-69" role="submit">
 						<label for="cbx-69" class="toggle">
@@ -1260,9 +1284,6 @@
 							</span>
 						</label>
 					</div>
-					<b>SmartSearch</b>
-					<p>Search through your files based on similarity algorithms.
-					</p>
 				</div>
 				<div class="inpbox">
 					<span>Save Camera images as </span>
@@ -1272,36 +1293,11 @@
 						<option>WEBP</option>
 					</select>
 				</div>
-				<small>Retain quality while compression using PNG.</small>
 				<script>
 					async function defs() {
 
 						document.getElementById('copy-theme-btn').addEventListener('click', copyCurrentTheme);
 						document.getElementById('paste-theme-btn').addEventListener('click', pasteThemeFromClipboard);
-
-						let sizes2323 = {
-							"-1": 0.8,
-							0: 1,
-							1: 1.1,
-							2: 1.3
-						};
-
-						let storedUISizing = await window.parent.getSetting("UISizing");
-
-						let matchingKey = Object.keys(sizes2323).find(key => sizes2323[key] === storedUISizing);
-
-						if (matchingKey !== undefined) {
-							document.getElementById("UISIZErangeslid").value = matchingKey;
-						} else {
-							console.log("No UISizing set ", storedUISizing);
-						}
-
-						document.getElementById("UISIZErangeslid").addEventListener("input", async function () {
-							let newValue = sizes2323[document.getElementById("UISIZErangeslid").value];
-							await window.parent.setSetting("UISizing", newValue);
-							window.parent.checkdmode();
-						});
-
 
 						let storedwall = await window.parent.getSetting("wall");
 
@@ -1364,20 +1360,6 @@
 							console.error(error)
 						}
 
-
-						// nova copilot
-						document.getElementById("cbx-71").addEventListener("change", function () {
-							let newValue2 = document.getElementById("cbx-71").checked;
-							window.parent.setSetting("copilot", newValue2)
-						});
-
-						try {
-							if (await window.parent.getSetting("copilot")) {
-								document.getElementById("cbx-71").checked = true;
-							}
-						} catch (error) {
-							console.error(error)
-						}
 
 						// window snapping
 						document.getElementById("cbx-66").addEventListener("change", function () {
@@ -1473,9 +1455,10 @@
 			</segr>
 			<segr>
 				<div setting>
-					<b>Reset Settings</b>
+					<div class="settingName"><b>Reset Settings</b>
+						<p>Reset to default settings.</p>
+					</div>
 					<button style="margin-top: 5px;float: right;" onclick="restsettings();" danger>Reset</button>
-					<p>Reset to default settings.</p>
 					<script>
 						async function restsettings() {
 							try {
@@ -1560,7 +1543,8 @@
 					.subapps {
 
 						.material-symbols-rounded {
-							color: #7b7b7b;
+							color: var(--colors-text-normal);
+							opacity: 0.5;
 							font-size: var(--sizing-huge) !important;
 							transform: translateY(-2px);
 							margin-right: var(--sizing-normal);
@@ -1583,6 +1567,7 @@
 				var currentreqID, replaceableapp, clickedRowId;
 
 				async function rldfltyptable() {
+					document.getElementById('appfileassos').innerHTML = "<span class='taskbarloader' id='taskbarloaderprime'></span>";
 					const fileAssociations = window.parent.fileTypeAssociations;
 
 					async function createTable(fileAssociations) {
@@ -1640,11 +1625,9 @@
 						return table;
 					}
 					const table = await createTable(fileAssociations);
-					document.getElementById('appfileassos').innerHTML = '';
 					document.getElementById('appfileassos').appendChild(table);
+					document.querySelector('#taskbarloaderprime').remove();
 				}
-
-				rldfltyptable();
 
 				window.addEventListener('message', async (event) => {
 					const fileAssociations = window.parent.fileTypeAssociations;
@@ -1688,6 +1671,7 @@
 						flex-direction: column;
 						justify-content: space-between;
 						gap: 0.3rem;
+						align-items: stretch;
 					}
 				</style>
 				<div setting id="changpassthingy" class="spread">
@@ -1879,10 +1863,11 @@
 			</supportb>
 			<segr>
 				<div setting>
-					<b>NovaOS Discord</b>
+					<div class="settingName"><b>NovaOS Discord</b>
+						<p>Join us for support, exclusive news and much more.</p>
+					</div>
 					<button style="margin-top: 5px;float: right;"
 						onclick="window.open('https://discord.gg/atkqbwEQU8')">Join</button>
-					<p>Join us for support, exclusive news and much more.</p>
 				</div>
 			</segr>
 			<h3>Credits</h3>
@@ -1916,22 +1901,28 @@
 				</span> Activity</h1>
 			<style>
 				.task {
-					padding: 10px;
+					padding: var(--sizing-normal);
 					background: var(--colors-BG-section);
 					color: var(--colors-text-section);
 					border-radius: var(--sizing-border-radius);
 					margin: 5px 0;
 					box-shadow: 0 3px 5px #0000007e;
+					display: flex;
+					flex-direction: row;
+					align-items: center;
 				}
 
 				.task .stpicn {
-					float: right;
-					transform: translateY(1px);
 					cursor: pointer;
-					padding: 2px;
-					background: var(--colors-BG-highlighted);
-					border-radius: 50%;
+					width: fit-content;
+					padding: 0.3rem;
+					background: var(--colors-BG-sub);
+					border-radius: var(--sizing-border-radius);
 					color: var(--colors-special-bad);
+				}
+
+				.task .tasknamespan {
+					flex: 1;
 				}
 
 				.task small {
@@ -1990,6 +1981,7 @@
 						taskDiv.classList.add("task");
 
 						const spanSettings = document.createElement("span");
+						spanSettings.classList.add("tasknamespan")
 						spanSettings.textContent = taskName;
 
 						const smallId = document.createElement("small");
@@ -1998,14 +1990,15 @@
 						const spanIcon = document.createElement("span");
 						spanIcon.classList.add("material-symbols-rounded", "stpicn");
 						spanIcon.textContent = "do_disturb";
+						spanIcon.title = "Force close"
 						spanIcon.onclick = function () {
 							spanIcon.classList.add('wooboo-animation');
 							window.parent.clwin("window" + taskId);
 
 						}
 
+						spanSettings.appendChild(smallId);
 						taskDiv.appendChild(spanSettings);
-						taskDiv.appendChild(smallId);
 
 						taskDiv.appendChild(spanIcon);
 
@@ -2023,11 +2016,12 @@
 			<h1>Networking</h1>
 			<segr>
 				<div setting onclick="openCity(event, 'rotursets'); loaduprtour()">
-					<b>RoturTW</b>
+					<div class="settingName"><b>RoturTW</b>
+						<p>Configure RoturTW networking</p>
+					</div>
 					<button class="advancedsetsredbtn"><span class="material-symbols-rounded">
 							chevron_right
 						</span></button>
-					<p>Configure RoturTW networking</p>
 				</div>
 			</segr>
 		</div>
@@ -2061,8 +2055,7 @@
 				</segr>
 				<script>
 					function loaduprtour() {
-
-						if (window.parent.roturExtension.loggedIn()) {
+						if (window.parent.roturExtension && window.parent.roturExtension.loggedIn()) {
 							document.getElementById("rtrinitspace").style.display = "none";
 							document.getElementById("rtrsignedinsec").style.display = "block";
 							document.getElementById("rtrsignupform").style.display = "none";
@@ -2345,6 +2338,11 @@
 			<h1>Display</h1>
 			<segr>
 				<div setting>
+					<div class="settingName"><b>Power Saving Mode</b>
+						<p>Dim the lights by: <input class="nocss" type="number" min=10 max=80 value="50" id="dimlightsby">%
+						in this session.
+					</p>
+					</div>
 					<div class="checkbox-wrapper-51">
 						<input type="checkbox" id="cbx-51" onclick="togglepsm()" role="submit">
 						<label for="cbx-51" class="toggle">
@@ -2357,30 +2355,10 @@
 							</span>
 						</label>
 					</div>
-					<b>Power Saving Mode</b>
-					<p>Dim the lights by: <input class="nocss" type="number" min=10 max=80 value="50" id="dimlightsby">%
-						in this session.
-					</p>
 
 				</div>
 			</segr>
 
-			<segr>
-				<div setting>
-					<b>UI Size <label real="">BETA</label></b>
-					<div class="UISIZEcontainer">
-
-						<div class="UISIZEslider-labels">
-							<span>small</span>
-							<span>default</span>
-							<span>big</span>
-							<span>biggest</span>
-						</div>
-						<input type="range" id="UISIZErangeslid" min="-1" max="2" step="1" value="0">
-
-					</div>
-				</div>
-			</segr>
 			<h1>Theme</h1>
 			<h3>Theme Packs</h3>
 			<div class="colorpacks">
@@ -2398,6 +2376,10 @@
 			</div>
 			<segr style="margin-top: .5rem">
 				<div setting onclick="window.parent.openapp('store',1, {'opener':'themes'})">
+
+					<div class="settingName"><span>Browse more</span>
+						<p>Browse tons public theme packs</p>
+					</div>
 					<svg class="themestoreopner" style="float: right;" version='1.1' xmlns='http://www.w3.org/2000/svg'
 						xmlns:xlink='http://www.w3.org/1999/xlink' width='53.37052' height='56.68831'
 						viewBox='0,0,53.37052,56.68831'>
@@ -2421,15 +2403,14 @@
 							</g>
 						</g>
 					</svg>
-					<span>Browse more</span>
-					<p>Browse tons public theme packs</p>
 				</div>
 				<div setting onclick="openCity(event, 'advancedthemesets');">
-					<b>Advanced theme settings</b>
+					<div class="settingName"><b>Advanced theme settings</b>
+						<p>Configure UI Colors, visuals...</p>
+					</div>
 					<button class="advancedsetsredbtn"><span class="material-symbols-rounded">
 							chevron_right
 						</span></button>
-					<p>Configure UI Colors, visuals...</p>
 				</div>
 			</segr>
 			<script>
@@ -2481,7 +2462,7 @@
 			</script>
 			<h1>Wallpaper</h1>
 			<segr>
-				<div class="inpbox">
+				<div class="inpbox" type="textInput">
 					<span>Current</span>
 					<div class="inputwithbtn">
 						<input placeholder="Paste a URL here..." id="wallpaperurl" class="inputtype1">
@@ -2769,6 +2750,7 @@
 					setTimeout(() => { window.parent.dod() }, 1000)
 
 				}
+				var prevCityBtn = null;
 				function openCity(evt, cityName) {
 					currentpage = cityName;
 					var i, tabcontent, tablinks;
@@ -2781,7 +2763,12 @@
 						tablinks[i].className = tablinks[i].className.replace(" active", "");
 					}
 					document.getElementById(cityName).style.display = "block";
-					evt.currentTarget.className += " active";
+					if (evt.currentTarget.classList.contains("tablinks")) {
+						evt.currentTarget.className += " active";
+						prevCityBtn = evt.currentTarget;
+					} else if (prevCityBtn) {
+						prevCityBtn.className += " active"
+					}
 				}
 
 				var usedMemoryPercentage;

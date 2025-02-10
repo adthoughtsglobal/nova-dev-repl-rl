@@ -214,18 +214,18 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
         checksnapping(document.getElementById('window' + winuid), event, winuid);
         snappingconthide();
     });
-    
+
     windowDiv.addEventListener("mousedown", function () {
         putwinontop('window' + winuid);
         winds[winuid].zIndex = windowDiv.style.zIndex;
-    
+
         setTimeout(() => {
             document.addEventListener('mousemove', onMouseMove);
             snappingIndicator.style.opacity = "1";
             document.getElementById('snappingIndicator').style.display = "block";
         }, 200);
     });
-    
+
     var ibtnsside = document.createElement("div");
     ibtnsside.classList += "ibtnsside";
 
@@ -370,6 +370,34 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
                                 script.src = scriptUrl;
                                 iframe.contentDocument.body.appendChild(script);
                             });
+                    }
+
+                    if (novaIncludes.includes('material-symbols-rounded')) {
+                        const style = document.createElement('style');
+                        style.innerHTML = `
+                                @font-face {
+	font-family: 'Material Symbols Rounded';
+	font-style: normal;
+	src: url("${location.href + "libs/MaterialSymbolsRounded.woff2"}") format('woff2');
+}
+    
+.material-symbols-rounded {
+	font-family: 'Material Symbols Rounded';
+	font-weight: normal;
+	font-style: normal;
+	font-size: 24px;
+	line-height: 1;
+	letter-spacing: normal;
+	text-transform: none;
+	display: inline-block;
+	white-space: nowrap;
+	word-wrap: normal;
+	direction: ltr;
+	-webkit-font-smoothing: antialiased;
+}
+`;
+                        iframe.contentDocument.body.appendChild(style);
+
                     }
 
                 } catch (error) {

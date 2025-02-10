@@ -2376,11 +2376,11 @@ function randomString(length) {
   return result ?? "";
 }
 
-var roturExtension = new RoturExtension();
-
+var roturExtension = null;
 onstartup.push(async () => {
   let localroturdata = await window.getSetting("roturLink");
   if (localroturdata) {
+    roturExtension = new RoturExtension();
     await setuprotur();
 
     let targetun = JSON.parse(localroturdata).username;

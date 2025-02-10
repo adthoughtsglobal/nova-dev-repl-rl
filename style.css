@@ -1,11 +1,11 @@
 @font-face {
-	font-family: 'Material Symbols Outlined';
+	font-family: 'Material Symbols Rounded';
 	font-style: normal;
 	src: url("/libs/MaterialSymbolsRounded.woff2") format('woff2');
 }
 
 .material-symbols-rounded {
-	font-family: 'Material Symbols Outlined';
+	font-family: 'Material Symbols Rounded';
 	font-weight: normal;
 	font-style: normal;
 	font-size: 24px;
@@ -1181,158 +1181,6 @@ input#novamenusearchinp {
 	white-space: nowrap;
 	text-align: center;
 	font-size: 13px;
-}
-
-#nova-copilot-window {
-	outline: none;
-	min-width: 200px;
-	max-width: 80vw;
-	border-radius: var(--sizing-border-radius);
-	padding: 0.3rem;
-	box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
-	background-color: rgb(28 28 28 / 79%);
-	backdrop-filter: blur(0.5rem);
-	color: var(--colors-text-normal);
-	border: none;
-	user-select: none;
-	margin-bottom: 60px;
-	font-size: var(--font-size-normal);
-
-	.nvacoplt-nav {
-		display: flex;
-		flex-direction: row;
-		justify-content: space-between;
-		align-items: center;
-		padding: 0.3rem 0.5rem;
-		border-radius: var(--sizing-border-radius);
-		background: #91919117;
-	}
-
-	.left {
-		display: flex;
-		flex-direction: column;
-	}
-
-	.left small {
-		opacity: 0.5;
-		font-size: var(--font-size-small);
-	}
-
-	.nvacoplt-nav i {
-		opacity: 0.5;
-		cursor: pointer;
-		transition: var(--time-action);
-	}
-
-	.nvacoplt-nav i:hover {
-		opacity: 1;
-	}
-
-	#nvacoplt-messages {
-		padding: 0.3rem;
-		margin: 0.2rem;
-		padding-bottom: 1.5rem;
-		max-height: 50vh;
-		overflow-y: auto;
-	}
-
-	.usermsg {
-		display: flex;
-		flex-direction: column;
-		align-items: flex-end;
-
-		.usermsg-nav {
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			border-radius: var(--sizing-border-radius);
-			margin: 6px 0;
-			opacity: 0.5;
-		}
-
-		.usermsg-nav i {
-			font-size: 19px;
-		}
-
-		.usermsg-content {
-			background: #4d4d4d;
-			color: var(--colors-text-normal);
-			padding: 0.4rem 0.7rem;
-			border-radius: var(--sizing-border-radius);
-			max-width: 70%;
-			animation: message .3s;
-			user-select: text;
-			accent-color: #7abfff;
-		}
-	}
-
-	.usermsg.bot {
-		align-items: flex-start;
-
-		.usermsg-content {
-			background: #465055;
-			animation: messagebot var(--time-action);
-		}
-	}
-
-
-	.messageinput {
-		display: flex;
-		flex-direction: row;
-		flex-wrap: nowrap;
-		justify-content: space-between;
-		align-items: stretch;
-		gap: 0.3rem;
-	}
-
-	input#nvacoplt-msginput {
-		border: none;
-		padding: 0;
-		font-family: inherit;
-		outline: none;
-		flex: 1;
-		color: var(--colors-text-normal);
-		padding-left: 0.5rem;
-		background: #80808036;
-		border-radius: var(--sizing-border-radius);
-	}
-
-	.nvacoplt-sndbtn {
-		background: #80808036;
-		border: none;
-		color: inherit;
-		display: flex;
-		padding: 0.5rem;
-		border-radius: var(--sizing-border-radius);
-	}
-
-	.nvacoplt-sndbtn i {
-		font-size: var(--font-size-normal);
-	}
-}
-
-@keyframes message {
-	from {
-		opacity: 0;
-		transform: scale(0.5) translate(50%, -50%);
-	}
-
-	to {
-		opacity: 1;
-		transform: none;
-	}
-}
-
-@keyframes messagebot {
-	from {
-		opacity: 0;
-		transform: scale(0.5) translate(-50%, 50%);
-	}
-
-	to {
-		opacity: 1;
-		transform: none;
-	}
 }
 
 codeblock {
