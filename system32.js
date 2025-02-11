@@ -406,24 +406,22 @@ async function checkPassword(password) {
 async function getallusers() {
     try {
         const db = await openDB(databaseName, 1);
-        const transaction = db.transaction('dataStore', 'readonly');
-        const store = transaction.objectStore('dataStore');
-        const request = store.getAllKeys();
-        return new Promise((resolve, reject) => {
-            request.onsuccess = async (event) => {
-                const result = await event.target.result;
-                resolve(result);
-            };
+        const users = [];
 
-            request.onerror = () => {
-                reject(request.error);
-            };
+        for (let i = 0; i < db.objectStoreNames.length; i++) {
+            const storeName = db.objectStoreNames[i];
+            if (storeName.endsWith('-memory')) {
+                users.push(storeName.replace('-memory', ''));
+            }
+        }
 
-        });
+        return users;
     } catch (error) {
-        console.error("Error in getAllKeysFromStore function:", error);
+        console.error("Error in getallusers function:", error);
+        throw error;
     }
 }
+
 
 // memory collector
 

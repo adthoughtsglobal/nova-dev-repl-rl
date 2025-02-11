@@ -7,87 +7,52 @@ async function openDB(databaseName, version) {
 
         request.onupgradeneeded = (event) => {
             const db = event.target.result;
+            const contentStoreName = `${CurrentUsername}-contentpool`;
+            const memoryStoreName = `${CurrentUsername}-memory`;
 
-            if (!db.objectStoreNames.contains('dataStore')) {
-                db.createObjectStore('dataStore', { keyPath: 'key' });
+            if (!db.objectStoreNames.contains(contentStoreName)) {
+                db.createObjectStore(contentStoreName, { keyPath: 'key' });
+            }
+
+            if (!db.objectStoreNames.contains(memoryStoreName)) {
+                db.createObjectStore(memoryStoreName, { keyPath: 'key' });
             }
         };
 
         request.onsuccess = (event) => resolve(event.target.result);
-
         request.onerror = (event) => reject(event.target.error);
     });
 }
-
-
 async function flushDB(value) {
-    if (!dbCache) {
-        dbCache = await openDB(databaseName, 1, {
-            upgrade(db) {
-                if (!db.objectStoreNames.contains(key)) {
-                    db.createObjectStore(key, { keyPath: 'CurrentUsername' });
-                }
-            }
-        });
-    }
-    if (!cryptoKeyCache) {
-        cryptoKeyCache = await getKey(password);
-    }
+    if (!dbCache) dbCache = await openDB(databaseName, 1);
+    if (!cryptoKeyCache) cryptoKeyCache = await getKey(password);
 
-    const transaction = dbCache.transaction(key, 'readwrite');
-    const store = transaction.objectStore(key);
-    const request = store.get(CurrentUsername);
+    const memoryStore = `${CurrentUsername}-memory`;
+    const transaction = dbCache.transaction(memoryStore, 'readwrite');
+    const store = transaction.objectStore(memoryStore);
+    const request = store.put({ key: 'memory', memory: value.memory });
 
     return new Promise((resolve, reject) => {
-        request.onsuccess = async () => {
-            const result = request.result || { key: CurrentUsername || 'Admin', memory: {}, contentpool: {} };
-            result.memory = value.memory;
-
-            const updateRequest = store.put(result);
-            updateRequest.onsuccess = resolve;
-            updateRequest.onerror = () => reject(updateRequest.error);
-        };
-
+        request.onsuccess = resolve;
         request.onerror = () => reject(request.error);
     });
 }
-
 async function getdb() {
-    if (!dbCache) {
-        dbCache = await openDB(databaseName, 1);
-    }
-    if (!cryptoKeyCache) {
-        cryptoKeyCache = await getKey(password);
-    }
-    try {
-        const transaction = dbCache.transaction('dataStore', 'readonly');
-        const store = transaction.objectStore('dataStore');
-        const request = store.get(CurrentUsername);
-        return new Promise((resolve, reject) => {
-            request.onsuccess = async () => {
-                const result = request.result;
-                if (result) {
-                    try {
-                        memory = result.memory;
-                        resolve(memory);
-                    } catch (error) {
-                        console.error("Decryption error:", error);
-                        if (!lethalpasswordtimes) crashScreen(error.message);
-                        reject(3);
-                    }
-                } else {
-                    resolve(null);
-                }
-            };
+    if (!dbCache) dbCache = await openDB(databaseName, 1);
+    if (!cryptoKeyCache) cryptoKeyCache = await getKey(password);
 
-            request.onerror = () => reject(request.error);
-        });
-    } catch (error) {
-        await say("Sorry, but your actions caused severe issues to the long term storage of NovaOS, click OK to reload.");
-        location.reload();
-        console.error("Error in getdb function:", error);
-        throw error;
-    }
+    const memoryStore = `${CurrentUsername}-memory`;
+    const transaction = dbCache.transaction(memoryStore, 'readonly');
+    const store = transaction.objectStore(memoryStore);
+    const request = store.get('memory');
+
+    return new Promise((resolve, reject) => {
+        request.onsuccess = () => {
+            memory = request.result ? request.result.memory : null;
+            resolve(memory);
+        };
+        request.onerror = () => reject(request.error);
+    });
 }
 
 function setdb(x) {
@@ -128,110 +93,58 @@ async function enqueueRequest(action, args) {
         processQueue();
     });
 }
-
 async function getFileContents(id) {
-    if (!dbCache) {
-        dbCache = await openDB(databaseName, 1);
-    }
-    if (!cryptoKeyCache) {
-        cryptoKeyCache = await getKey(password);
-    }
+    if (!dbCache) dbCache = await openDB(databaseName, 1);
+    if (!cryptoKeyCache) cryptoKeyCache = await getKey(password);
 
-    try {
-        const transaction = dbCache.transaction('dataStore', 'readonly');
-        const store = transaction.objectStore('dataStore');
-        const request = store.get(CurrentUsername);
+    const contentStore = `${CurrentUsername}-contentpool`;
+    const transaction = dbCache.transaction(contentStore, 'readonly');
+    const store = transaction.objectStore(contentStore);
+    const request = store.get(id);
 
-        return new Promise((resolve, reject) => {
-            request.onsuccess = async () => {
-                const result = request.result;
-                if (result && result.contentpool && result.contentpool[id]) {
-                    try {
-                        const encryptedContent = result.contentpool[id];
-                        const decryptedContent = await decryptData(cryptoKeyCache, encryptedContent);
-                        const uncompressedContent = decompressString(decryptedContent);
-                        resolve(uncompressedContent);
-                    } catch (error) {
-                        reject(error);
-                    }
-                } else {
-                    reject(new Error('File not found'));
+    return new Promise((resolve, reject) => {
+        request.onsuccess = async () => {
+            if (request.result) {
+                try {
+                    const decryptedContent = await decryptData(cryptoKeyCache, request.result.value);
+                    resolve(decompressString(decryptedContent));
+                } catch (error) {
+                    reject(error);
                 }
-            };
-
-            request.onerror = () => reject(request.error);
-        });
-    } catch (error) {
-        throw error;
-    }
+            } else {
+                reject(new Error('File not found'));
+            }
+        };
+        request.onerror = () => reject(request.error);
+    });
 }
-
 async function setFileContents(id, content) {
-    if (!dbCache) {
-        dbCache = await openDB(databaseName, 1);
-    }
-    if (!cryptoKeyCache) {
-        cryptoKeyCache = await getKey(password);
-    }
+    if (!dbCache) dbCache = await openDB(databaseName, 1);
+    if (!cryptoKeyCache) cryptoKeyCache = await getKey(password);
 
-    try {
-        const encryptedContent = await encryptData(cryptoKeyCache, compressString(content));
+    const encryptedContent = await encryptData(cryptoKeyCache, compressString(content));
+    const contentStore = `${CurrentUsername}-contentpool`;
+    const transaction = dbCache.transaction(contentStore, 'readwrite');
+    const store = transaction.objectStore(contentStore);
+    const request = store.put({ key: id, value: encryptedContent });
 
-        const transaction = dbCache.transaction('dataStore', 'readwrite');
-        const store = transaction.objectStore('dataStore');
-        const request = store.get(CurrentUsername);
-
-        return new Promise((resolve, reject) => {
-            request.onsuccess = async () => {
-                const result = request.result;
-                if (result) {
-                    result.contentpool = result.contentpool || {};
-                    result.contentpool[id] = encryptedContent;
-
-                    const updateRequest = store.put(result);
-                    updateRequest.onsuccess = () => resolve();
-                    updateRequest.onerror = () => reject(updateRequest.error);
-                } else {
-                    reject(new Error('User data not found'));
-                }
-            };
-
-            request.onerror = () => reject(request.error);
-        });
-    } catch (error) {
-        throw error;
-    }
+    return new Promise((resolve, reject) => {
+        request.onsuccess = resolve;
+        request.onerror = () => reject(request.error);
+    });
 }
-
 async function removeFileContents(id) {
-    if (!dbCache) {
-        dbCache = await openDB(databaseName, 1);
-    }
+    if (!dbCache) dbCache = await openDB(databaseName, 1);
 
-    try {
-        const transaction = dbCache.transaction('dataStore', 'readwrite');
-        const store = transaction.objectStore('dataStore');
-        const request = store.get(CurrentUsername);
+    const contentStore = `${CurrentUsername}-contentpool`;
+    const transaction = dbCache.transaction(contentStore, 'readwrite');
+    const store = transaction.objectStore(contentStore);
+    const request = store.delete(id);
 
-        return new Promise((resolve, reject) => {
-            request.onsuccess = async () => {
-                const result = request.result;
-                if (result && result.contentpool && result.contentpool[id]) {
-                    delete result.contentpool[id];
-
-                    const updateRequest = store.put(result);
-                    updateRequest.onsuccess = () => resolve();
-                    updateRequest.onerror = () => reject(updateRequest.error);
-                } else {
-                    reject(new Error('File not found'));
-                }
-            };
-
-            request.onerror = () => reject(request.error);
-        });
-    } catch (error) {
-        throw error;
-    }
+    return new Promise((resolve, reject) => {
+        request.onsuccess = resolve;
+        request.onerror = () => reject(request.error);
+    });
 }
 
 
