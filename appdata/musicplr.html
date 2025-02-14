@@ -592,24 +592,22 @@
 			const track = track_list[trackName];
 
 
+			if (curr_track) {
+				curr_track.src = '';
+				curr_track.load();
+			}
 			clearInterval(updateTimer);
 			resetValues();
 
+			console.log(track.fileRef)
 
-			const base64String = track.path.split(',')[1];
-
-
-			const binaryString = window.atob(base64String);
+			const base64String = track.fileRef.content.split(',')[1];
+			const binaryString = atob(base64String);
 			const bytes = new Uint8Array(binaryString.length);
 			for (let i = 0; i < binaryString.length; i++) {
 				bytes[i] = binaryString.charCodeAt(i);
 			}
-
-
-			const arrayBuffer = bytes.buffer;
-
-
-			const blob = new Blob([arrayBuffer], { type: 'audio/mpeg' });
+			const blob = new Blob([bytes.buffer], { type: 'audio/mpeg' });
 
 
 			jsmediatags.read(blob, {
@@ -638,7 +636,10 @@
 
 
 					curr_track.src = URL.createObjectURL(blob);
-					playTrack();
+
+					curr_track.addEventListener("canplaythrough", () => {
+						playTrack();
+					}, { once: true });
 					updateTimer = setInterval(seekUpdate, 1000);
 					curr_track.addEventListener("ended", nextTrack);
 				},
@@ -696,13 +697,13 @@
 			if (event.data.action === 'loadlocalfile') {
 				if (event.data.id === myWindow.windowID) {
 					const file = await window.parent.getFileById(event.data.returned);
-					readthefile(file.content, file, file.fileName);
+					readthefile(file, file.fileName);
 				}
 			}
 		});
 
-		function readthefile(base64Url, filethings, fileName = 'Unknown Title') {
-			const base64String = base64Url.split(',')[1];
+		function readthefile(filethings, fileName = 'Unknown Title') {
+			const base64String = filethings.content.split(',')[1];
 			const binaryString = atob(base64String);
 			const bytes = new Uint8Array(binaryString.length);
 
@@ -724,9 +725,8 @@
 
 					track_list[trackName] = {
 						artist: artistName,
-						path: base64Url
+						fileRef: filethings
 					};
-
 
 					console.log('Updated track list:', track_list);
 
