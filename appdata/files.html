@@ -1700,7 +1700,7 @@
 						dropupDiv.innerHTML = "";
 						const dropupContentDiv = document.createElement("div");
 						dropupContentDiv.className = "dropup-content";
-						const itemuid = fileData.unid;
+						const itemuid = fileData.id;
 
 						Object.values(fileActions).forEach(action => {
 							if (action.condition(fileData)) {
@@ -2072,9 +2072,9 @@
 				icon: 'save_as',
 				label: 'Rename',
 				action: async (itemuid) => {
-					let file = await getFileById(itemuid);
-					file.fileName = await ask("New Name:", file.fileName);
-					await updateFile(false, itemuid, file);
+					let file = await window.parent.getFileById(itemuid);
+					file.fileName = await window.parent.ask("New Name:", file.fileName);
+					await window.parent.updateFile(false, itemuid, file);
 				},
 				condition: (file) => true,
 			},
@@ -2099,7 +2099,10 @@
 			copyId: {
 				icon: 'content_copy',
 				label: 'Copy ID',
-				action: (itemuid) => window.parent.navigator.clipboard.writeText(itemuid),
+				action: (itemuid) => {
+					console.log(itemuid);
+					window.parent.navigator.clipboard.writeText(itemuid)
+				},
 				condition: (file) => true,
 			},
 			createShortcut: {
@@ -2119,7 +2122,7 @@
 					.map(action => ({
 						icon: action.icon,
 						label: action.label,
-						action: () => action.action(itemuid),
+						action: (itemuid) => action.action(itemuid),
 					}));
 			}
 			return [
@@ -2244,7 +2247,7 @@
 				menuItem.style.padding = '5px 10px';
 				menuItem.style.cursor = 'pointer';
 				menuItem.addEventListener('click', () => {
-					item.action();
+					item.action(targetElement.getAttribute("uuid"));
 					contextMenu.style.display = 'none';
 				});
 				contextMenu.appendChild(menuItem);
