@@ -1580,7 +1580,7 @@ async function genTaskBar() {
 			if (Array.isArray(x) && x.length === 0) {
 				const y = await getFileNamesByFolder("Apps");
 				x = (await Promise.all(
-					(window.innerWidth <= 500) ?
+					('ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0) ?
 						y.filter(item =>
 							item.name === "Files.app"
 						)

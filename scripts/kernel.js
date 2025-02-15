@@ -171,7 +171,7 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
     dewallblur();
     windowDiv.classList += "window";
 
-    const isitmob = window.innerWidth <= 500;
+    const isitmob = 'ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0;
     const sizeStyles = !isitmob ? calculateWindowSize(aspectratio) : { left: '0', top: '0', width: 'calc(100% - 0px)', height: 'calc(100% - 58px)' };
 
     Object.assign(windowDiv.style, sizeStyles);

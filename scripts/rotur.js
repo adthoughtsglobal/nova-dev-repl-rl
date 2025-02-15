@@ -481,6 +481,15 @@ class RoturExtension {
             "event": "connected",
             "key": "connected"
           });
+          if (!roturExtension.authenticated) {
+            (async () => {
+            console.log("logging in")
+              let localroturdata = await window.getSetting("roturLink");
+                let targetun = JSON.parse(localroturdata).username;
+                let targetpass = JSON.parse(localroturdata).password;
+                await roturExtension.login({ USERNAME: targetun, PASSWORD: targetpass });
+            })()
+          }
           resolve();
         }
       };
@@ -2382,10 +2391,6 @@ onstartup.push(async () => {
   if (localroturdata) {
     roturExtension = new RoturExtension();
     await setuprotur();
-
-    let targetun = JSON.parse(localroturdata).username;
-    let targetpass = JSON.parse(localroturdata).password;
-    await roturExtension.login({ USERNAME: targetun, PASSWORD: targetpass });
   }
 });
 
