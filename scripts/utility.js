@@ -91,6 +91,7 @@ function getbaseflty(ext) {
 		case 'avi':
 		case 'mov':
 		case 'mkv':
+		case 'webm':
 			return 'video';
 		case 'jpg':
 		case 'jpeg':

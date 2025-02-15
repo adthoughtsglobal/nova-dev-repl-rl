@@ -76,16 +76,16 @@
 
 		#mediaopenbtn {
 			font-size: 1rem;
-    padding: 1rem 1.5rem;
-    border-radius: 2rem;
-    border: none;
-    background: #393939;
-    color: white;
-    outline: none;
-    cursor: pointer;
-    display: block;
-    margin: auto;
-    margin-top: calc(50% - 150px);
+			padding: 1rem 1.5rem;
+			border-radius: 2rem;
+			border: none;
+			background: #393939;
+			color: white;
+			outline: none;
+			cursor: pointer;
+			display: block;
+			margin: auto;
+			margin-top: calc(50% - 150px);
 		}
 	</style>
 </head>
@@ -96,7 +96,7 @@
 	</dialog>
 
 	<nav>
-		<button><span id="tils"></span></button>
+		<button><span id="tils"></span></button><button id="usebrowser">Use Browser</button>
 	</nav>
 	<div id="displays">
 		<img id="thedisplay" alt="Nova" src="">
@@ -115,61 +115,55 @@
 			}
 		}
 		async function openfile(fileID) {
-			document.getElementById("nomedia").close()
+			document.getElementById("nomedia").close();
 			disp = document.getElementById("displays");
 			var file = await window.parent.getFileById(fileID);
+
 			if (file && file.content) {
-
 				document.getElementById("tils").innerText = file.fileName;
-				const type = file.type || 'application/octet-stream';
 				const base64Content = file.content;
+				const extension = file.fileName.split('.').pop().toLowerCase();
+				const mimeType = window.parent.getMimeType(extension) || "application/octet-stream";
 
-				if (window.parent.getbaseflty(file.fileName) == "image") {
-					disp.innerHTML = `<img id="thedisplay" alt="Nova" src="">`;
-					document.getElementById("thedisplay").src = `${base64Content}`;
-				} else if (window.parent.getbaseflty(file.fileName) == "music") {
-					disp.innerHTML = `<audio controls>
-					<source src="" type="audio/mp3" id="thedisplay">
-					Your browser does not support the audio tag.
-				</audio>`;
-					document.getElementById("thedisplay").src = `${base64Content}`;
-				} else if (window.parent.getbaseflty(file.fileName) == "video") {
-					disp.innerHTML = `<video controls width="400" height="300" id="thedisplay">
-								<source src="" type="video/mp4" id="thesource">
-								Your browser does not support the video tag.
-							  </video>`;
+				let blob = dataURItoBlob(base64Content, mimeType);
+				let fileURL = URL.createObjectURL(blob);
 
-					var blob = dataURItoBlob(base64Content);
-					var videoFile = new File([blob], "video.mp4", { type: "video/mp4" });
-					var videoElement = document.getElementById("thesource");
-					const base64Video = URL.createObjectURL(videoFile);
-					playBase64Chunks(videoElement, base64Video);
+				if (window.parent.getbaseflty(file.fileName) === "image") {
+					disp.innerHTML = `<img id="thedisplay" alt="Image Preview" src="${fileURL}">`;
+				} else if (window.parent.getbaseflty(file.fileName) === "music") {
+					disp.innerHTML = `<audio controls id="thedisplay">
+                <source src="${fileURL}" type="${mimeType}">
+                Your browser does not support the audio tag.
+            </audio>`;
+				} else if (window.parent.getbaseflty(file.fileName) === "video") {
+					disp.innerHTML = `<video controls id="thedisplay">
+                <source src="${fileURL}" type="${mimeType}">
+                Your browser does not support the video tag.
+            </video>`;
+
+					let videoElement = document.getElementById("thedisplay");
+					playBase64Chunks(videoElement, fileURL);
 				} else {
-					document.getElementById("thedisplay").alt = "Please open the files app to read a file from your system memory.";
+					disp.innerHTML = `<p>Unsupported file type. <a href="${fileURL}" download="${file.fileName}">Download file</a></p>`;
 				}
-			} else {
 			}
 		}
 
-		window.addEventListener('message', async (event) => {
 
-			if (event.data.action === 'loadlocalfile') {
-				if (event.data.id === myWindow.windowID) {
-					let newAppId = event.data.returned;
-					openfile(newAppId);
+		function dataURItoBlob(dataURI, mimeType) {
+			let byteCharacters = atob(dataURI.split(',')[1]);
+			let byteArrays = [];
+
+			for (let i = 0; i < byteCharacters.length; i += 512) {
+				let slice = byteCharacters.slice(i, i + 512);
+				let byteNumbers = new Array(slice.length);
+				for (let j = 0; j < slice.length; j++) {
+					byteNumbers[j] = slice.charCodeAt(j);
 				}
+				byteArrays.push(new Uint8Array(byteNumbers));
 			}
-		});
 
-		function dataURItoBlob(dataURI) {
-			var byteString = atob(dataURI.split(',')[1]);
-			var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
-			var ab = new ArrayBuffer(byteString.length);
-			var ia = new Uint8Array(ab);
-			for (var i = 0; i < byteString.length; i++) {
-				ia[i] = byteString.charCodeAt(i);
-			}
-			return new Blob([ab], { type: mimeString });
+			return new Blob(byteArrays, { type: mimeType });
 		}
 
 		function openfromfiles() {
@@ -178,11 +172,11 @@
 			window.parent.openlaunchprotocol(appIdToOpen, { "opener": "any", "dir": "/" }, currentreqID, myWindow.windowID);
 		}
 
-		function playBase64Chunks(videoElement, base64Video) {
-			videoElement.src = base64Video;
+		function playBase64Chunks(videoElement, videoURL) {
+			videoElement.src = videoURL;
 			videoElement.addEventListener('loadedmetadata', () => {
 				const duration = videoElement.duration;
-				const chunkSize = 10; // chunk size in seconds
+				const chunkSize = 10; // Play 10 seconds at a time
 				let currentTime = 0;
 
 				function playNextChunk() {

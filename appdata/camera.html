@@ -16,7 +16,7 @@
 			margin: 0;
 			height: calc(100vh - 5px);
 			background-color: black;
-			user-select:none;
+			user-select: none;
 		}
 
 		.videopart {
@@ -25,36 +25,37 @@
 
 		.toolpart {
 			width: fit-content;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: 0.5rem;
-    background: #101010;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			padding: 0.5rem;
+			gap:0.5rem;
+			background: #101010;
 		}
 
 		#video-container {
-			
+
 			width: 100%;
-    height: 100%;
+			height: 100%;
 		}
 
 		#video {
 			height: 100%;
-    border-radius: 0.5rem;
-    object-fit: contain;
-    width: 100%;
-    transition: 0.2s ease-in-out;
+			border-radius: 0.5rem;
+			object-fit: contain;
+			width: 100%;
+			transition: 0.2s ease-in-out;
 		}
 
 		.floattopnav {
 			position: absolute;
-    top: 10px;
-    left: 10px;
-    border-radius: 7px;
-    padding: 4px;
-    display: flex;
-    gap: 3px;
-    transition: 0.2s ease-out;
+			top: 10px;
+			left: 10px;
+			border-radius: 7px;
+			padding: 4px;
+			display: flex;
+			gap: 3px;
+			transition: 0.2s ease-out;
 		}
 
 		.floattopnav:hover {
@@ -63,15 +64,15 @@
 
 		.floattopnav select {
 			max-width: 130px;
-    background-color: #7d7d7d;
-    color: #d7d7d7;
-    border: none;
-    padding: 5px;
-    overflow: hidden;
-	opacity: 0.7;
-    border-radius: 5px;
-    text-overflow: ellipsis;
-    display: inline-flex;
+			background-color: #7d7d7d;
+			color: #d7d7d7;
+			border: none;
+			padding: 5px;
+			overflow: hidden;
+			opacity: 0.7;
+			border-radius: 5px;
+			text-overflow: ellipsis;
+			display: inline-flex;
 		}
 
 		#mirror-btn,
@@ -95,99 +96,112 @@
 			opacity: 1;
 		}
 
-		#photo-btn {
-			
+		.captoolbtn {
+
 			height: 15%;
-    border: none;
-    aspect-ratio: 1 / 1;
-    display: grid;
-    border-radius: 1rem;
-    align-items: center;
-    justify-items: center;
-    background: #ffffff14;
-    color: white;
+			border: none;
+			aspect-ratio: 1 / 1;
+			display: grid;
+			border-radius: 1rem;
+			align-items: center;
+			justify-items: center;
+			background: #ffffff14;
+			color: white;
 		}
 
-		#photo-btn:active {
+		.captoolbtn:active {
 			transform: scale(0.9);
 		}
 
 
 		#timer {
 			position: absolute;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    z-index: 2;
-    font-size: 30vh;
-    display: grid;
-    justify-content: center;
-    align-items: center;
-    align-content: center;
-    color: white;
-    text-shadow: 0 0 1rem #0000007a;
-	display: none;
+			width: 100%;
+			height: 100%;
+			top: 0;
+			left: 0;
+			z-index: 2;
+			font-size: 30vh;
+			display: grid;
+			justify-content: center;
+			align-items: center;
+			align-content: center;
+			color: white;
+			text-shadow: 0 0 1rem #0000007a;
+			display: none;
 		}
 
 		@keyframes fade-in {
-    0% {
-        opacity: 0;
-        transform: scale(0.8);
-    }
-    100% {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
+			0% {
+				opacity: 0;
+				transform: scale(0.8);
+			}
 
-.timer-animate {
-    animation: fade-in 0.5s ease-out;
-}
+			100% {
+				opacity: 1;
+				transform: scale(1);
+			}
+		}
+
+		.timer-animate {
+			animation: fade-in 0.5s ease-out;
+		}
 	</style>
 	<meta name="nova-include" content="nova.css material-symbols-rounded">
 </head>
 
 <body>
 	<div class="videopart">
-		
-	<div id="video-container">
-		<video id="video" playsinline autoplay></video>
+
+		<div id="video-container">
+			<video id="video" playsinline autoplay></video>
+		</div>
+		<div id="timer">
+			3
+		</div>
 	</div>
-	<div id="timer">
-		3
-	</div>
-</div>
-<div class="toolpart">
-	<div class="floattopnav">
-		<select id="camera-select"></select>
-		<button id="mirror-btn" onclick="toggleMirror()"><span class="material-symbols-rounded">
-				360
-			</span></button>
-		<button id="flashlight-btn" onclick="toggleFlashlight()"><span class="material-symbols-rounded">
-				flash_on
-			</span></button>
-		<select id="timer-select">
-			<option selected value="0">0s</option>
-			<option value="2">3s</option>
-			<option value="5">5s</option>
-			<option value="10">10s</option>
-		</select>
-	</div>
-	<button id="photo-btn" onclick="capture(this)"><span class="material-symbols-rounded">
-			camera
-		</span></button>
+	<div class="toolpart">
+		<div class="floattopnav">
+			<select id="camera-select"></select>
+			<button id="mirror-btn" onclick="toggleMirror()"><span class="material-symbols-rounded">
+					360
+				</span></button>
+			<button id="flashlight-btn" onclick="toggleFlashlight()"><span class="material-symbols-rounded">
+					flash_on
+				</span></button>
+			<select id="timer-select">
+				<option selected value="0">0s</option>
+				<option value="2">3s</option>
+				<option value="5">5s</option>
+				<option value="10">10s</option>
+			</select>
+		</div>
+
+		<button class="captoolbtn" id="photo-btn" onclick="capture(this)">
+			<span class="material-symbols-rounded">camera</span>
+		</button>
+		<button class="captoolbtn" id="video-btn">
+			<span class="material-symbols-rounded">videocam</span>
+		</button>
+		<button class="captoolbtn" id="pause-btn" style="display: none;">
+			<span class="material-symbols-rounded">
+				pause
+				</span>
+		<button class="captoolbtn" id="stop-btn" style="display: none;">
+			<span class="material-symbols-rounded">stop</span></button>
 	</div>
 	<script>
 		let isMirrored = false;
 		let isFlashlightOn = false;
 		let currentStream = null;
-		var timerelem = document.getElementById("timer");
+		let mediaRecorder;
+		let recordedChunks = [];
+		let isRecording = false;
+		let isPaused = false;
 
 		async function getVideoSources() {
 			const devices = await navigator.mediaDevices.enumerateDevices();
-			const cameras = devices.filter(device => device.kind === 'videoinput');
-			return cameras;
+			return devices.filter(device => device.kind === 'videoinput');
 		}
 
 		async function startCamera() {
@@ -200,6 +214,7 @@
 				return;
 			}
 
+			cameraSelect.innerHTML = "";
 			cameras.forEach(camera => {
 				const option = document.createElement('option');
 				option.value = camera.deviceId;
@@ -208,24 +223,18 @@
 			});
 
 			cameraSelect.addEventListener('change', async () => {
-				const selectedCameraId = cameraSelect.value;
 				try {
-					await startStream(selectedCameraId);
+					await startStream(cameraSelect.value);
 					resetMirror();
 				} catch (error) {
 					console.error('Error accessing camera:', error);
 				}
 			});
 
-			const defaultCameraId = cameras[0].deviceId;
 			try {
-				await startStream(defaultCameraId);
+				await startStream(cameras[0].deviceId);
 			} catch (error) {
 				console.error('Error accessing default camera:', error);
-				let x = await window.parent.justConfirm("Can't Get Camera", "Your device seem to say that there's no camera, Should we try again harder?");
-				if (x) {
-					startCamera();
-				}
 			}
 		}
 
@@ -235,47 +244,150 @@
 				currentStream.getTracks().forEach(track => track.stop());
 			}
 			const stream = await navigator.mediaDevices.getUserMedia({
-				video: {
-					deviceId: deviceId,
-					advanced: [{ torch: isFlashlightOn }]
-				}
+				video: { deviceId: deviceId },
+				audio: true
 			});
 			video.srcObject = stream;
 			currentStream = stream;
 		}
 
-		function toggleMirror() {
-			const video = document.getElementById('video');
-			isMirrored = !isMirrored;
-			video.style.transform = `scaleX(${isMirrored ? -1 : 1})`;
-		}
-
-		function resetMirror() {
-			const video = document.getElementById('video');
-			isMirrored = false;
-			video.style.transform = 'scaleX(1)';
-		}
-
-		async function toggleFlashlight() {
-			isFlashlightOn = !isFlashlightOn;
-			const flashlightBtn = document.getElementById('flashlight-btn');
-			flashlightBtn.innerHTML = `<span class="material-symbols-rounded">${isFlashlightOn ? 'flash_off' : 'flash_on'}</span>`;
-
-			if (currentStream) {
-				const track = currentStream.getVideoTracks()[0];
-				try {
-					await track.applyConstraints({
-						advanced: [{ torch: isFlashlightOn }]
-					});
-				} catch (error) {
-					console.error('Flashlight not supported:', error);
-					window.parent.justConfirm("Flashlight Error", "It seems your device doesn't support flashlight control.");
-				}
+		function pauseRecording() {
+			if (mediaRecorder && isRecording) {
+				mediaRecorder.pause();
+				isPaused = true;
+				updateUI("paused");
 			}
 		}
 
+		function resumeRecording() {
+			if (mediaRecorder && isPaused) {
+				mediaRecorder.resume();
+				isPaused = false;
+				updateUI("recording");
+			}
+		}
+
+		function stopRecording() {
+			if (mediaRecorder && isRecording) {
+				mediaRecorder.stop();
+				isRecording = false;
+				updateUI("stopped");
+			}
+		}
+		function createFile(blob, filename) {
+			const a = document.createElement("a"); const videoURL = URL.createObjectURL(blob);
+			console.log("Video URL:", videoURL);
+			window.open(videoURL);
+			a.href = url;
+			a.download = filename;
+			document.body.appendChild(a);
+			a.click();
+			document.body.removeChild(a);
+			URL.revokeObjectURL(url);
+		}
+
+		function updateUI(state) {
+			const photoBtn = document.getElementById("photo-btn");
+			const videoBtn = document.getElementById("video-btn");
+			const pauseBtn = document.getElementById("pause-btn");
+			const stopBtn = document.getElementById("stop-btn");
+
+			if (state === "recording") {
+				photoBtn.style.display = "none";
+				videoBtn.style.display = "none";
+				pauseBtn.style.display = "grid";
+				stopBtn.style.display = "grid";
+				pauseBtn.innerHTML = `
+			<span class="material-symbols-rounded">
+				pause
+				</span>`;
+			} else if (state === "paused") {
+				pauseBtn.innerHTML = `
+			<span class="material-symbols-rounded">
+				play_arrow
+				</span>`;
+			} else if (state === "stopped") {
+				photoBtn.style.display = "grid";
+				videoBtn.style.display = "grid";
+				pauseBtn.style.display = "none";
+				stopBtn.style.display = "none";
+			}
+		}
+
+		document.getElementById("video-btn").addEventListener("click", startRecording);
+		document.getElementById("pause-btn").addEventListener("click", function () {
+			if (isPaused) {
+				resumeRecording();
+			} else {
+				pauseRecording();
+			}
+		});
+		document.getElementById("stop-btn").addEventListener("click", stopRecording);
+
 		function greenflag() {
-			startCamera()
+			startCamera();
+		}
+
+		let timerelem = document.getElementById("timer");
+
+		async function startStream(deviceId) {
+			const video = document.getElementById('video');
+			if (currentStream) {
+				currentStream.getTracks().forEach(track => track.stop());
+			}
+			const stream = await navigator.mediaDevices.getUserMedia({
+				video: { deviceId: deviceId },
+				audio: true 
+			});
+
+			video.srcObject = new MediaStream(stream.getVideoTracks());
+			currentStream = stream;
+		}
+
+
+		function startRecording() {
+			if (!currentStream) {
+				console.error("No active stream to record.");
+				return;
+			}
+
+			recordedChunks = [];
+			const options = { mimeType: "video/webm; codecs=vp9" };
+			mediaRecorder = new MediaRecorder(currentStream, options);
+
+			mediaRecorder.ondataavailable = (event) => {
+				if (event.data && event.data.size > 0) {
+					recordedChunks.push(event.data);
+				}
+			};
+
+			mediaRecorder.onstop = saveRecording;
+
+			mediaRecorder.start();
+			isRecording = true;
+			isPaused = false;
+
+			updateUI("recording");
+		}
+
+		function saveRecording() {
+			const blob = new Blob(recordedChunks, { type: recordedChunks[0].type || "video/webm" });
+
+			function createFileWithTimestamp() {
+				let now = new Date();
+				let year = now.getFullYear();
+				let month = String(now.getMonth() + 1).padStart(2, '0');
+				let day = String(now.getDate()).padStart(2, '0');
+				let hours = String(now.getHours()).padStart(2, '0');
+				let minutes = String(now.getMinutes()).padStart(2, '0');
+
+				let timestamp = `${year}-${month}-${day}, ${hours}:${minutes}`;
+				let capturedString = `video_${timestamp} ${window.parent.genUID()}`;
+
+				window.parent.createFile("Media/", capturedString, "webm", blob);
+			}
+
+			createFileWithTimestamp();
 		}
 
 		async function captureCameraImage() {
@@ -294,13 +406,10 @@
 			ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
 			var dataUrl;
-			var condition = true;
 			try {
 				let qsets = await window.parent.getSetting("CamImgFormat");
 				if (qsets) {
-					if (qsets) {
-						dataUrl = canvas.toDataURL('image/' + qsets.toLowerCase() || 'webp');
-					}
+					dataUrl = canvas.toDataURL('image/' + qsets.toLowerCase() || 'webp');
 				}
 			} catch (error) {
 				console.log("safe error: " + error);
@@ -310,74 +419,75 @@
 		}
 
 		async function capture(obj) {
-    const video = document.getElementById('video');
-    let cakebuff = obj.innerHTML;
-    obj.innerHTML = "...";
-    
-    let timerValue = parseInt(document.getElementById('timer-select').value);
-timerelem.style.display = 'grid';
+			const video = document.getElementById('video');
+			let cakebuff = obj.innerHTML;
+			obj.innerHTML = "...";
 
-if (isNaN(timerValue) || timerValue <= 0) {
-    timerelem.textContent = "";
-	video.style.display = "none";
-    startCaptureProcess();
-} else {
-    timerelem.textContent = timerValue + 1;
+			let timerValue = parseInt(document.getElementById('timer-select').value);
+			timerelem.style.display = 'grid';
 
-    let countdown = setInterval(() => {
-        timerelem.textContent = timerValue;
-        timerelem.classList.remove('timer-animate');
-        void timerelem.offsetWidth;
-        timerelem.classList.add('timer-animate');
+			if (isNaN(timerValue) || timerValue <= 0) {
+				timerelem.textContent = "";
+				video.style.display = "none";
+				startCaptureProcess();
+			} else {
+				timerelem.textContent = timerValue + 1;
 
-        if (--timerValue < 0) {
-            clearInterval(countdown);
-            video.style.display = "none";
-            timerelem.textContent = "";
-            startCaptureProcess();
-        }
-    }, 1000);
-}
+				let countdown = setInterval(() => {
+					timerelem.textContent = timerValue;
+					timerelem.classList.remove('timer-animate');
+					void timerelem.offsetWidth;
+					timerelem.classList.add('timer-animate');
 
-    async function startCaptureProcess() {
-        try {
-            let x = await captureCameraImage();
-            x = window.parent.shrinkbsf(x);
+					if (--timerValue < 0) {
+						clearInterval(countdown);
+						video.style.display = "none";
+						timerelem.textContent = "";
+						startCaptureProcess();
+					}
+				}, 1000);
+			}
 
-            let FileFormat;
-            let qsets = await window.parent.getSetting("CamImgFormat");
-            if (qsets) {
-                FileFormat = qsets.toLowerCase();
-            }
+			async function startCaptureProcess() {
+				try {
+					let x = await captureCameraImage();
+					x = window.parent.shrinkbsf(x);
 
-            function createFileWithTimestamp() {
-                let now = new Date();
-                let year = now.getFullYear();
-                let month = String(now.getMonth() + 1).padStart(2, '0');
-                let day = String(now.getDate()).padStart(2, '0');
-                let hours = String(now.getHours()).padStart(2, '0');
-                let minutes = String(now.getMinutes()).padStart(2, '0');
+					let FileFormat;
+					let qsets = await window.parent.getSetting("CamImgFormat");
+					if (qsets) {
+						FileFormat = qsets.toLowerCase() || 'webm';
+					}
 
-                let timestamp = `${year}-${month}-${day}, ${hours}:${minutes}`;
-                let capturedString = `captured_${timestamp} ${window.parent.genUID()}`;
+					function createFileWithTimestamp() {
+						let now = new Date();
+						let year = now.getFullYear();
+						let month = String(now.getMonth() + 1).padStart(2, '0');
+						let day = String(now.getDate()).padStart(2, '0');
+						let hours = String(now.getHours()).padStart(2, '0');
+						let minutes = String(now.getMinutes()).padStart(2, '0');
 
-                window.parent.createFile("Media/", capturedString, FileFormat, x);
-            }
+						let timestamp = `${year}-${month}-${day}, ${hours}:${minutes}`;
+						let capturedString = `captured_${timestamp} ${window.parent.genUID()}`;
 
-            createFileWithTimestamp();
-            obj.innerHTML = cakebuff;
+						window.parent.createFile("Media/", capturedString, FileFormat, x);
+					}
 
-            setTimeout(() => {
-                video.style.display = "block";
-            }, 50);
-        } catch (error) {
-            console.log("Capture error:", error);
-            obj.innerHTML = cakebuff;
-        }
+					createFileWithTimestamp();
+					obj.innerHTML = cakebuff;
 
-		timerelem.style.display = 'none';
-    }
-}
+					setTimeout(() => {
+						video.style.display = "block";
+					}, 50);
+				} catch (error) {
+					console.log("Capture error:", error);
+					obj.innerHTML = cakebuff;
+				}
+
+				timerelem.style.display = 'none';
+			}
+		}
+
 	</script>
 </body>
 
