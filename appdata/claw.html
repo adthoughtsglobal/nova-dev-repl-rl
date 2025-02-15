@@ -109,12 +109,18 @@
 
         .crtaccdisp {
             display: flex;
-            flex-direction: column;
+            flex-direction: row;
             background: #1f1f1f;
             border: none;
             border-radius: 0.5rem;
-            padding: 0.5rem 0.7rem;
+            padding: 0.5rem;
             gap: 0.3rem;
+        }
+
+        .crtaccdisp img {
+            aspect-ratio: 1 / 1;
+            height: 25px;
+            border-radius: 0.5rem;
         }
 
         .crtaccdisp span {
@@ -252,7 +258,8 @@
             gap: 5px;
         }
 
-        span.likesnumber {
+        .likes span,
+        .replies span {
             font-size: 80%;
         }
 
@@ -432,10 +439,19 @@
         }
 
         button.morebtn {
-            background: #1f1f1f;
+            background: transparent;
             border: none;
-            border-radius: 0.5rem;
-            padding: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+        }
+
+        button.morebtn .loader {
+            height: 8px;
+            width: 20px;
+            border: 1px solid lightgrey;
         }
 
         img.postimg {
@@ -558,8 +574,7 @@
             align-items: center;
             justify-content: center;
             gap: 3rem;
-            background: #101010ab;
-            backdrop-filter: blur(10px);
+            background: #101010;
             z-index: 100;
         }
 
@@ -673,7 +688,7 @@
                 </div>
 
                 <div class="navtools">
-                    <ion-icon name="arrow-up-circle-outline" title="Refresh feed"></ion-icon>
+                    <ion-icon name="arrow-up-circle-outline" title="Refresh feed" onclick="scrollToTop()"></ion-icon>
                 </div>
             </nav>
 
@@ -686,8 +701,8 @@
             </div>
         </div>
         <div id="toolsection">
-            <div class="crtaccdisp">
-                <span>Signed in as </span> <b id="crtaccountname">Guest</b>
+            <div class="crtaccdisp" id="crtaccdisbtn">
+                <img src="https://avatars.rotur.dev/o" id="currentaccPfpdisp"> <b id="crtaccountname">Guest</b>
             </div>
             <div class="postmsgsection">
                 <textarea id="postinput" placeholder="What is going on!?"></textarea>
@@ -706,6 +721,7 @@
     </main>
 
     <script>
+        var feed = document.getElementById("feed");
         async function attachthings(obj) {
             attachments = await window.parent.ask('Enter a URL to your file:' || '')
             obj.innerHTML = `
@@ -713,7 +729,6 @@
                         <ion-icon name="reload-outline"></ion-icon>`;
         }
         function matchSizeAndPosition() {
-            let feed = document.getElementById("feed");
             let loadingClaw = document.getElementById("loadingclaw");
 
             if (feed && loadingClaw) {
@@ -768,8 +783,11 @@
                 activeElement.classList.remove('active');
             }
 
+            if (useOffset == false) {
+                scrollToTop();
+                clawloader.show();
+            }
             const feedContainer = document.getElementById("feed");
-            clawloader.show();
             var response, posts;
             if (type == 'claw') {
                 offsetParam = useOffset ? "&offset=" + currentOffset : "";
@@ -825,8 +843,8 @@
 
                 const userAvatarImg = document.createElement("img");
                 userAvatarImg.classList.add("postuseravatarsrc");
-                pfplib[post.user] = post.pfp;
-                userAvatarImg.src = post.pfp;
+                userAvatarImg.src = "https://avatars.rotur.dev/" + post.user;
+                pfplib[post.user] = userAvatarImg.src;
 
                 postUserAvatar.appendChild(userAvatarImg);
 
@@ -863,103 +881,7 @@
                 postContent.id = "postCont" + post.id;
                 postContent.textContent = post.content;
                 postContent.onclick = () => {
-                    curTargetPost = post.id;
-                    curTargetPostliterally = post;
-                    document.getElementById("moreOnPost").showModal();
-                    document.getElementById("targetpost").innerHTML = postElement.innerHTML;
-
-                    const repliesContainer = document.getElementById("postReplies");
-                    repliesContainer.innerHTML = '';  // Clear any existing replies
-
-                    if (post.replies && post.replies.length > 0) {
-                        post.replies.forEach(reply => {
-                            const replyElement = document.createElement("div");
-                            replyElement.classList.add("randompost");
-                            replyElement.id = "replyitem" + reply.id;
-
-                            replyElement.onclick = () => {
-                                document.getElementById("moreOnPost").showModal();
-                                const replyPreview = document.createElement("div");
-                                replyPreview.classList.add("randompost");
-                                replyPreview.innerHTML = replyElement.innerHTML;
-                                document.getElementById("targetpost").innerHTML = replyPreview.innerHTML;
-                            };
-
-                            const replyNav = document.createElement("div");
-                            replyNav.classList.add("postnav");
-
-                            const replyUserData = document.createElement("div");
-                            replyUserData.classList.add("postuserdata");
-                            replyUserData.onclick = () => {
-                                viewprofile(reply.user);
-                            };
-
-                            const replyUserAvatar = document.createElement("div");
-                            replyUserAvatar.classList.add("postuseravatar");
-
-                            const replyUserAvatarImg = document.createElement("img");
-                            replyUserAvatarImg.classList.add("postuseravatarsrc");
-                            replyUserAvatarImg.src = reply.pfp || pfplib[reply.user];
-
-                            replyUserAvatar.appendChild(replyUserAvatarImg);
-
-                            const replyUserDynamics = document.createElement("div");
-                            replyUserDynamics.classList.add("postuserdynamics");
-
-                            const replyUsername = document.createElement("div");
-                            replyUsername.classList.add("postusername");
-                            replyUsername.textContent = reply.user;
-
-                            const replyTimestamp = document.createElement("div");
-                            replyTimestamp.classList.add("posttimestamp");
-                            replyTimestamp.textContent = timeSince(reply.timestamp);
-
-                            replyUserDynamics.appendChild(replyUsername);
-                            replyUserDynamics.appendChild(replyTimestamp);
-
-                            replyUserData.appendChild(replyUserAvatar);
-                            replyUserData.appendChild(replyUserDynamics);
-
-                            replyNav.appendChild(replyUserData);
-                            replyElement.appendChild(replyNav);
-
-                            const replyContent = document.createElement("div");
-                            replyContent.classList.add("postcontent");
-                            replyContent.textContent = reply.content;
-
-                            replyElement.appendChild(replyContent);
-
-                            const replyFooter = document.createElement("div");
-                            replyFooter.classList.add("postfooter");
-
-                            const likestatuses = document.createElement("div");
-                            likestatuses.classList.add("likestatuses");
-
-                            const likesDiv = document.createElement("div");
-                            likesDiv.classList.add("likes");
-                            likesDiv.onclick = function () {
-                                likepost(reply.id);
-                            };
-
-                            const heartIcon = document.createElement("ion-icon");
-                            heartIcon.setAttribute("name", "heart-outline");
-
-                            const likesNumber = document.createElement("span");
-                            likesNumber.classList.add("likesnumber");
-                            likesNumber.textContent = reply.likes ? reply.likes.length : 0;
-
-                            likesDiv.appendChild(heartIcon);
-                            likesDiv.appendChild(likesNumber);
-
-                            likestatuses.appendChild(likesDiv);
-
-                            replyFooter.appendChild(likestatuses);
-                            replyElement.appendChild(replyFooter);
-
-                            repliesContainer.appendChild(replyElement);
-                        });
-                    };
-
+                    loadreplies(post, postElement);
                 }
 
                 if (post.attachment) {
@@ -1007,6 +929,9 @@
                         });
                         const repliesDiv = document.createElement("div");
                         repliesDiv.classList.add("replies");
+                        repliesDiv.onclick = () => {
+                            loadreplies(post, postElement);
+                        }
 
                         const msgIcon = document.createElement("ion-icon");
                         msgIcon.setAttribute("name", "chatbubbles-outline");
@@ -1023,13 +948,13 @@
 
                     const wholiked = document.createElement("div");
 
+                    wholiked.classList.add("wholikedhint");
                     if (post.likes && post.likes.length !== 0) {
-                        wholiked.classList.add("wholikedhint");
                         wholiked.innerText = "Liked by " + arrayToString(post.likes);
+                    } else {
+                        wholiked.innerText = "Be first to like this post."
                     }
-                    if (post.likes && post.likes.length > 0) {
-                        likestatuses.appendChild(wholiked);
-                    }
+                    likestatuses.appendChild(wholiked);
 
                     const moreDiv = document.createElement("div");
                     moreDiv.classList.add("more");
@@ -1062,7 +987,8 @@
                 if (type == 'claw' || type == 'following' || type == 'profile') {
                     var moreButton = document.createElement("button");
                     moreButton.classList.add("morebtn");
-                    moreButton.innerHTML = "Load more";
+                    moreButton.innerHTML = `
+                <div class="loader"></div> Loading more...`;
                     let ouritem = lastrendereditem;
                     let timer;
 
@@ -1116,7 +1042,7 @@
             if (!checkifaccs()) { return }
             let content = document.getElementById("postinput").value;
 
-            await fetch(`https://claw.rotur.dev/post?content=${content}&os=novaOS&auth=${window.parent.roturExtension.userToken}&attachment=${attachments }`);
+            await fetch(`https://claw.rotur.dev/post?content=${content}&os=novaOS&auth=${window.parent.roturExtension.userToken}&attachment=${attachments}`);
 
             if (attachments) {
                 document.getElementById("attachbtn").innerHTML = `
@@ -1332,6 +1258,10 @@
 
         function greenflag() {
             document.getElementById('crtaccountname').innerText = window.parent.roturExtension.user.username || 'Guest';
+            document.getElementById('currentaccPfpdisp').src = "https://avatars.rotur.dev/" + window.parent.roturExtension.user.username || 'o';
+            document.getElementById("crtaccdisbtn").onclick = () => {
+                viewprofile(window.parent.roturExtension.user.username);
+            }
         }
 
         document.getElementById("postinput").addEventListener("focus", () => {
@@ -1358,6 +1288,109 @@
                 event.preventDefault();
                 addreply();
             }
+        }
+
+        function loadreplies(post, postElement) {
+            curTargetPost = post.id;
+            curTargetPostliterally = post;
+            document.getElementById("moreOnPost").showModal();
+            document.getElementById("targetpost").innerHTML = postElement.innerHTML;
+
+            const repliesContainer = document.getElementById("postReplies");
+            repliesContainer.innerHTML = '';
+
+            if (post.replies && post.replies.length > 0) {
+                post.replies.forEach(reply => {
+                    const replyElement = document.createElement("div");
+                    replyElement.classList.add("randompost");
+                    replyElement.id = "replyitem" + reply.id;
+
+                    replyElement.onclick = () => {
+                        document.getElementById("moreOnPost").showModal();
+                        const replyPreview = document.createElement("div");
+                        replyPreview.classList.add("randompost");
+                        replyPreview.innerHTML = replyElement.innerHTML;
+                        document.getElementById("targetpost").innerHTML = replyPreview.innerHTML;
+                    };
+
+                    const replyNav = document.createElement("div");
+                    replyNav.classList.add("postnav");
+
+                    const replyUserData = document.createElement("div");
+                    replyUserData.classList.add("postuserdata");
+                    replyUserData.onclick = () => {
+                        viewprofile(reply.user);
+                    };
+
+                    const replyUserAvatar = document.createElement("div");
+                    replyUserAvatar.classList.add("postuseravatar");
+
+                    const replyUserAvatarImg = document.createElement("img");
+                    replyUserAvatarImg.classList.add("postuseravatarsrc");
+                    replyUserAvatarImg.src = reply.pfp || pfplib[reply.user];
+
+                    replyUserAvatar.appendChild(replyUserAvatarImg);
+
+                    const replyUserDynamics = document.createElement("div");
+                    replyUserDynamics.classList.add("postuserdynamics");
+
+                    const replyUsername = document.createElement("div");
+                    replyUsername.classList.add("postusername");
+                    replyUsername.textContent = reply.user;
+
+                    const replyTimestamp = document.createElement("div");
+                    replyTimestamp.classList.add("posttimestamp");
+                    replyTimestamp.textContent = timeSince(reply.timestamp);
+
+                    replyUserDynamics.appendChild(replyUsername);
+                    replyUserDynamics.appendChild(replyTimestamp);
+
+                    replyUserData.appendChild(replyUserAvatar);
+                    replyUserData.appendChild(replyUserDynamics);
+
+                    replyNav.appendChild(replyUserData);
+                    replyElement.appendChild(replyNav);
+
+                    const replyContent = document.createElement("div");
+                    replyContent.classList.add("postcontent");
+                    replyContent.textContent = reply.content;
+
+                    replyElement.appendChild(replyContent);
+
+                    const replyFooter = document.createElement("div");
+                    replyFooter.classList.add("postfooter");
+
+                    const likestatuses = document.createElement("div");
+                    likestatuses.classList.add("likestatuses");
+
+                    const likesDiv = document.createElement("div");
+                    likesDiv.classList.add("likes");
+                    likesDiv.onclick = function () {
+                        likepost(reply.id);
+                    };
+
+                    const heartIcon = document.createElement("ion-icon");
+                    heartIcon.setAttribute("name", "heart-outline");
+
+                    const likesNumber = document.createElement("span");
+                    likesNumber.classList.add("likesnumber");
+                    likesNumber.textContent = reply.likes ? reply.likes.length : 0;
+
+                    likesDiv.appendChild(heartIcon);
+                    likesDiv.appendChild(likesNumber);
+
+                    likestatuses.appendChild(likesDiv);
+
+                    replyFooter.appendChild(likestatuses);
+                    replyElement.appendChild(replyFooter);
+
+                    repliesContainer.appendChild(replyElement);
+                });
+            };
+        }
+
+        function scrollToTop() {
+            feed.scrollTop = 0;
         }
     </script>
 </body>
