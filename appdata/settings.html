@@ -2336,49 +2336,36 @@
 		</div>
 
 		<div id="exp" class="tabcontent">
-			<h1>Display</h1>
-			<segr>
-				<div setting>
-					<div class="settingName"><b>Power Saving Mode</b>
-						<p>Dim the lights by: <input class="nocss" type="number" min=10 max=80 value="50" id="dimlightsby">%
-						in this session.
-					</p>
-					</div>
-					<div class="checkbox-wrapper-51">
-						<input type="checkbox" id="cbx-51" onclick="togglepsm()" role="submit">
-						<label for="cbx-51" class="toggle">
-							<span>
-								<svg width="10px" height="10px" viewBox="0 0 10 10">
-									<path
-										d="M5,1 L5,1 C2.790861,1 1,2.790861 1,5 L1,5 C1,7.209139 2.790861,9 5,9 L5,9 C7.209139,9 9,7.209139 9,5 L9,5 C9,2.790861 7.209139,1 5,1 L5,9 L5,1 Z">
-									</path>
-								</svg>
-							</span>
-						</label>
-					</div>
-
-				</div>
-			</segr>
-
 			<h1>Theme</h1>
 			<h3>Theme Packs</h3>
-			<div class="colorpacks">
+			<segr>
 
-				<div id="themeslist">
+				<div class="buttongrp">
+					<div class="btngrpelem" id="copy-theme-btn">
+						<button>
+							<span class="material-symbols-rounded">
+								content_copy
+							</span>
+						</button>
+						<b>Copy theme</b>
+					</div>
+					<div class="divider"></div>
+					<div class="btngrpelem" id="paste-theme-btn">
+						<button>
 
+							<span class="material-symbols-rounded">
+								content_paste
+							</span>
+						</button>
+						<b>Paste theme</b>
+					</div>
 				</div>
 
-				<div class="newthemebtn" id="copy-theme-btn">
-					<i class="material-symbols-rounded">content_copy</i>
-				</div>
-				<div class="newthemebtn" id="paste-theme-btn">
-					<i class="material-symbols-rounded">content_paste</i>
-				</div>
-			</div>
+			</segr>
 			<segr style="margin-top: .5rem">
 				<div setting onclick="window.parent.openapp('store',1, {'opener':'themes'})">
 
-					<div class="settingName"><span>Browse more</span>
+					<div class="settingName"><span>Browse themes</span>
 						<p>Browse tons public theme packs</p>
 					</div>
 					<svg class="themestoreopner" style="float: right;" version='1.1' xmlns='http://www.w3.org/2000/svg'
@@ -2593,26 +2580,7 @@
 
 
 			<script>
-				window.parent.fetch('testsss/themes.json')
-					.then(response => response.json())
-					.then(data => {
-						const container = document.getElementById("themeslist");
 
-						Object.entries(data).forEach(([themeName, themeData]) => {
-							const div = document.createElement('div');
-							div.style.background = `linear-gradient(to bottom right, 
-							${themeData.colors["--colors-BG-normal"]} 0%, 
-							${themeData.colors["--colors-BG-sub"]} 25%, 
-							${themeData.colors["--colors-BG-section"]} 75%, 
-							${themeData.colors["--colors-BG-highlighted"]}) 100%`;
-							div.style.color = themeData.colors["--colors-text-normal"];
-							div.style.border = `2px solid ${themeData.colors["--colors-BG-sub"]}`;
-							div.innerText = themeName;
-							div.addEventListener('click', () => applyTheme(themeData));
-							container.appendChild(div);
-						});
-					})
-					.catch(error => console.error('Error loading themes:', error));
 
 				function initColorPickers() {
 					document.querySelectorAll('[data-variable]').forEach(button => {
