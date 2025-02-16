@@ -19,13 +19,13 @@ window.fileActions = {
 			file.fileName = await ask("New Name:", file.fileName);
 			await updateFile(false, itemuid, file);
 		},
-		condition: (file) => true,
+		condition: () => true,
 	},
 	reinstall: {
 		icon: 'download',
 		label: 'Reinstall',
 		action: (itemuid) => extractAndRegisterCapabilities(itemuid),
-		condition: (file) => ptypext(file.fileName) === 'app',
+		condition: (file) => mtpetxt(file.fileName) === 'app',
 	},
 	setWallpaper: {
 		icon: 'wallpaper',
@@ -53,10 +53,11 @@ window.fileActions = {
 	},
 };
 
-function getMenuItems(target) {
+async function getMenuItems(target) {
 	if (target.classList.contains('app-shortcut') || target.classList.contains('file')) {
 		const itemuid = target.getAttribute("unid");
-		const file = { unid: itemuid, type: 'app', fileName: getFileNameByID(itemuid) };
+		let fileNameRec = await getFileNameByID(itemuid);
+		const file = { unid: itemuid, type: 'app', fileName: fileNameRec };
 		return Object.values(window.fileActions)
 			.filter(action => action.condition(file))
 			.map(action => ({
@@ -181,13 +182,13 @@ function adjustDropdownPositionRelativeToTrigger(triggerElement, dropdownMenu) {
 }
 
 
-document.addEventListener('contextmenu', (event) => {
+document.addEventListener('contextmenu', async (event) => {
 	event.preventDefault();
 
 	contextMenu = createContextMenu(event);
 	contextMenu.innerHTML = '';
 	const targetElement = event.target.closest('.app-shortcut, .file, #desktop');
-	const menuItems = getMenuItems(targetElement);
+	const menuItems = await getMenuItems(targetElement);
 
 	menuItems.slice(0, 4).forEach(item => {
 		const menuItem = document.createElement('div');

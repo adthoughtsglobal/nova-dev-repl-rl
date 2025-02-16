@@ -156,7 +156,6 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
 
     let winuid = genUID();
     if (!winds[winuid]) { winds[winuid] = {} };
-    winds[winuid].zIndex = 1;
     winds[winuid].title = title;
 
     var windowDiv = document.createElement("div");

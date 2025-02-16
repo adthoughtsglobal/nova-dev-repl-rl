@@ -789,6 +789,10 @@ async function fetchData(url) {
 }
 var content;
 function putwinontop(x) {
+	Object.keys(winds).forEach(wid => {
+		winds[wid].zIndex = Number(gid(`window${wid}`).style.zIndex || 0);
+	});
+
 	if (Object.keys(winds).length > 1) {
 		const windValues = Object.values(winds).map(wind => Number(wind.zIndex) || 0);
 		const maxWindValue = Math.max(...windValues);
@@ -809,7 +813,7 @@ function normalizeZIndexes(excludeWindowId = null) {
 	if (uniqueSorted.length === uniqueSorted[uniqueSorted.length - 1]) return;
 
 	const zIndexMap = uniqueSorted.reduce((map, value, index) => {
-		map[value] = index + 1;
+		map[value] = index;
 		return map;
 	}, {});
 
@@ -891,7 +895,7 @@ async function extractAndRegisterCapabilities(appId, content) {
 	try {
 		if (!content) {
 			content = await getFileById(appId);
-			content = content;
+			content = content.content;
 		}
 		if (isBase64(content)) {
 			content = decodeBase64Content(content);
@@ -1048,7 +1052,6 @@ async function loadtaskspanel() {
 
 		appShortcutDiv.addEventListener("click", function () {
 			putwinontop('window' + wid);
-			winds[wid].zIndex = Number(gid(`window${wid}`).style.zIndex || 0);
 			gid('window' + wid).style.display = "flex";
 		});
 
