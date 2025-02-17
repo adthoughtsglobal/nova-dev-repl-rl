@@ -1818,7 +1818,7 @@
 
 			let selectedFolder = await window.parent.showDropdownModal("Select a folder", "Create shortcut for " + flid + " in:", filteredFolders);
 
-			if (selectedFolder !== null) {
+			if (selectedFolder) {
 
 				const openable = {
 					"open": flid
@@ -1842,7 +1842,6 @@
 
 
 		async function movefile(flid) {
-			flid = flid.getAttribute("unid");
 
 			const getFolderNames = (memory, parentPath = '', level = 0) => {
 				let folders = [];

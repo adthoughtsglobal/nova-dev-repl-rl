@@ -3,7 +3,7 @@ var dragging = false, remToPx = parseFloat(getComputedStyle(document.documentEle
 var novadotcsscache;
 
 async function openlaunchprotocol(appid, data, id, winuid) {
-    console.log("Open Lanuch Protocol", appid, data, id)
+    sysLog("OLP",`Opening "${data}" in "${appid}" for ${winuid || id || 'operation'}`);
     let x = {
         "appid": appid,
         "data": data,
@@ -377,7 +377,7 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
                                 @font-face {
 	font-family: 'Material Symbols Rounded';
 	font-style: normal;
-	src: url("libs/MaterialSymbolsRounded.woff2") format('woff2');
+	src: url("${location.href}libs/MaterialSymbolsRounded.woff2") format('woff2');
 }
     
 .material-symbols-rounded {

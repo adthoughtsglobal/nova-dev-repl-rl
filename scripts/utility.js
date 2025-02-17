@@ -199,6 +199,10 @@ function getRandomNothingQuote() {
 	return nothingquotes[Math.floor(Math.random() * nothingquotes.length)]
 }
 
+function sysLog(heading, description) {
+	rllog(`%c${heading}%c${description}`,'color: white; background-color: #224d30; font-size: 0.5rem; padding: .2rem .6rem; margin-right: .5rem; border-radius: .5rem;','color: grey;',);
+}
+
 const rllog = console.log;
 console.log = function (...args) {
 	const stack = new Error().stack;

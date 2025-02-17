@@ -159,14 +159,6 @@ async function decryptData(key, encryptedData) {
     });
 }
 
-async function registerDecryptWorker() {
-    if ('serviceWorker' in navigator) {
-        await navigator.serviceWorker.register('novaCrypt.js')
-            .then(() => decryptWorkerRegistered = true)
-            .catch(err => console.error('Service Worker registration failed:', err));
-    }
-}
-
 async function erdbsfull(x) {
     if (x == "nowarning" || await justConfirm("Are you really sure?", "Removing all the users data includes your settings, files, and other data. Click cancel keep it.")) {
         localStorage.removeItem('todo');

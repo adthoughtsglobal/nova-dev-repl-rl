@@ -238,14 +238,17 @@ async function startup() {
 	})
 }
 async function registerDecryptWorker() {
-	if ('serviceWorker' in navigator) {
+	if ('serviceWorker' in navigator && !decryptWorkerRegistered) {
 		await navigator.serviceWorker.register('novaCrypt.js')
-			.then(decryptWorkerRegistered = true)
+			.then(() => {
+				sysLog("EncDec Thread","is now running.");
+				decryptWorkerRegistered = true
+			})
 			.catch(err => console.error('Service Worker registration failed:', err));
 	}
 }
 document.addEventListener("DOMContentLoaded", async function () {
-	console.log("DOMCL");
+	sysLog("DOM","Loaded");
 	let localupdatedataver = parseFloat(localStorage.getItem("updver"));
 	if (localupdatedataver <= 1.7) {
 		console.log("Preparing NovaOS2 switch.");
@@ -308,7 +311,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 	}
 
 	function startfunctions() {
-
+		registerDecryptWorker();
 		updateBattery();
 		navigator.getBattery().then(function (battery) {
 			battery.addEventListener('levelchange', updateBattery);
@@ -371,7 +374,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 	await startfunctions();
 
 	gid("versionswitcher")?.remove();
-	await registerDecryptWorker();
 	gid("novanav").style.display = "none";
 	async function waitForNonNull() {
 		const startTime = Date.now();
@@ -1031,7 +1033,6 @@ async function loadtaskspanel() {
 
 	let keysToAdd = newKeys.filter(key => !currentKeys.includes(key));
 	let keysToRemove = currentKeys.filter(key => !newKeys.includes(key));
-	console.log("tasksload", winds, currentKeys, newKeys)
 
 	keysToRemove.forEach(key => {
 		let element = appbarelement.querySelector(`[data-key='${key}']`);
