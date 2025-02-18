@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="icon" href="https://glitch.com/favicon.ico" />
+    <meta name="capabilities" content="cli">
     <meta name="nova-icon"
         content="<svg version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='72.63792' height='72.89678' viewBox='0,0,72.63792,72.89678'><defs><linearGradient x1='236.77944' y1='195.83445' x2='262.0072' y2='195.83445' gradientUnits='userSpaceOnUse' id='color-1'><stop offset='0' stop-color='#007c30'/><stop offset='1' stop-color='#b1d900'/></linearGradient><linearGradient x1='225.81025' y1='163.6288' x2='225.81025' y2='196.37121' gradientUnits='userSpaceOnUse' id='color-2'><stop offset='0' stop-color='#89ff8f'/><stop offset='1' stop-color='#007c30'/></linearGradient></defs><g transform='translate(-203.73251,-143.3707)'><g data-paper-data='{&quot;isPaintingLayer&quot;:true}' fill-rule='nonzero' stroke-linejoin='miter' stroke-miterlimit='10' stroke-dasharray='' stroke-dashoffset='0' style='mix-blend-mode: normal'><path d='M203.73252,216.26749v-72.53497h72.53497v72.53497z' fill='#2f2f2f' stroke='none' stroke-width='none' stroke-linecap='butt'/><path d='M236.77944,195.83445h25.22776' fill='none' stroke='url(#color-1)' stroke-width='5' stroke-linecap='round'/><path d='M203.88843,186.60104v-43.23034h72.48201v7.2482c0,0 -15.14542,18.20653 -36.92222,27.32654c-15.1326,6.33745 -35.55979,8.65561 -35.55979,8.65561z' fill='#535353' stroke='none' stroke-width='0' stroke-linecap='butt'/><path d='M217.99281,163.6288l15.63488,16.5811l-15.63488,16.16132' fill='none' stroke='url(#color-2)' stroke-width='5' stroke-linecap='round'/></g></g></svg>">
 
@@ -125,6 +125,7 @@
 
         function greenflag() {
 
+
             thing = document.getElementById("thing");
             thin = document.getElementById("thin");
 
@@ -140,14 +141,29 @@
                     thin.value = lastcommand;
                 }
             });
+
+            
+            const data = myWindow?.params?.data;
+            console.log(data);
+
+            if (data?.include) {
+                if (data.include) {
+                    Object.assign(commands, data.include);
+                    let helpText = `<small>App commands included:</small><br>`;
+                    for (let cmd in data.include) {
+                        helpText += `- ${cmd}: ${data.include[cmd].desc}<br>`;
+                    }
+                    disp(helpText);
+                }
+            }
         }
 
         function disp(txt) {
             var newDiv = document.createElement("div");
             newDiv.className = "nic";
             newDiv.innerHTML = txt;
+            var lastChild = thing?.lastElementChild || null;
 
-            var lastChild = thing.lastElementChild;
             if (lastChild) {
                 thing.insertBefore(newDiv, lastChild.nextSibling);
             } else {
@@ -156,204 +172,152 @@
 
             var lineBreak = document.createElement("br");
             thing.insertBefore(lineBreak, newDiv);
+            if (cmdPresrvCase) {
             var ellipsis = document.createElement("span");
             ellipsis.innerText = curdir + " > " + cmdPresrvCase;
             thing.insertBefore(ellipsis, newDiv);
+            }
 
             thing.scrollTop = thing.scrollHeight;
         }
-
         var isProcRunning = false;
+
+        const commands = {
+            "help": {
+                desc: "Displays this help message",
+                action: () => {
+                    let helpText = `<h1>Nova CLI</h1><small>Available commands:</small><br>`;
+                    for (let cmd in commands) {
+                        helpText += `- ${cmd}: ${commands[cmd].desc}<br>`;
+                    }
+                    return(helpText);
+                }
+            },
+            "date": {
+                desc: "Displays the local date",
+                action: () => {
+                    return(`Current date is: ${new Date().toDateString()}`);
+                }
+            },
+            "time": {
+                desc: "Displays the local time",
+                action: () => {
+                    return(`Current time is: ${new Date().toLocaleTimeString()}`);
+                }
+            },
+            "battery": {
+                desc: "Displays battery information",
+                action: () => {
+                    navigator.getBattery().then(battery => {
+                        const level = (battery.level * 100).toFixed(2);
+                        const charging = battery.charging ? "Charging" : "Not Charging";
+                        return(`Battery Status: ${level}% (${charging})`);
+                    }).catch(error => {
+                        return("Error fetching battery status: " + error.message);
+                    });
+                }
+            },
+            "clientconfig": {
+                desc: "Displays client hardware and system information",
+                action: () => {
+                    if ("deviceMemory" in navigator && "hardwareConcurrency" in navigator) {
+                        const info = `
+                Platform: ${navigator.platform}<br>
+                User Agent: ${navigator.userAgent}<br>
+                Device Memory: ${navigator.deviceMemory} GB<br>
+                Hardware Concurrency: ${navigator.hardwareConcurrency}<br>
+                Screen Resolution: ${screen.width}x${screen.height}<br>
+                Color Depth: ${screen.colorDepth} bits
+                `;
+                        return(info);
+                    } else {
+                        return("Device information is not fully available.");
+                    }
+                }
+            },
+            "memory": {
+                desc: "Displays JavaScript memory usage",
+                action: () => {
+                    const total = (performance.memory.totalJSHeapSize / 1024 / 1024).toFixed(2);
+                    const used = (performance.memory.usedJSHeapSize / 1024 / 1024).toFixed(2);
+                    return(`Memory Usage: ${((used / total) * 100).toFixed(2)}% (${used}MB / ${total}MB)`);
+                }
+            },
+            "flashlight on": {
+                desc: "Turns the flashlight on",
+                action: () => {
+                    toggleFlashlight("on");
+                }
+            },
+            "flashlight off": {
+                desc: "Turns the flashlight off",
+                action: () => {
+                    toggleFlashlight("off");
+                }
+            },
+            "vibrate 500": {
+                desc: "Vibrates for 500ms",
+                action: () => {
+                    navigator.vibrate(500);
+                }
+            },
+            "vibrate 100": {
+                desc: "Vibrates for 100ms",
+                action: () => {
+                    navigator.vibrate(100);
+                }
+            },
+            "cd": {
+                desc: "Changes the current directory",
+                action: () => {
+                    let parts = cmdPresrvCase.split(" ");
+                    if (parts.length > 1) {
+                        curdir = parts.slice(1).join(" ");
+                        return ("Changed to: " + curdir);
+                    } else {
+                        return ("Current: " + curdir);
+                    }
+                }
+            },
+            "ls": {
+                desc: "Lists files in the current directory",
+                action: async () => {
+                    try {
+                        let files = await window.parent.getFileNamesByFolder(curdir);
+                        let output = files.length > 0
+                            ? files.map(file => `Name: '${file.name}' File ID: '${file.id}'<br>`).join("")
+                            : "No items in this directory.";
+                        return(output);
+                    } catch (error) {
+                        return("Error fetching data: " + error);
+                    }
+                }
+            }
+        };
 
         async function proc() {
             if (isProcRunning) return;
             isProcRunning = true;
-            let cmd = thin.value.toLowerCase();
-            cmdPresrvCase = thin.value;
-            console.log(thin.value)
-            lastcommand = thin.value;
+
+            cmdPresrvCase = thin.value.trim();
             thin.value = "";
 
-            if (cmd === "help") {
-                disp(`Available Commands:<br>
-- date: Get the current date.<br>
-- time: Get the current time.<br>
-- battery: Get battery info.<br>
-- nova: Nova Console<br>
-- device: Get device Info.<br>
-- cd [folder]: changes current folder to [folder].<br>
-- ls: list files from current folder.<br>
-`);
-            } else if (cmd === "date") {
-                const currentDate = new Date();
-                disp(`Current date is: ${currentDate.toDateString()}`);
-            } else if (cmd === "time") {
-                const currentTime = new Date();
-                disp(`Current time is: ${currentTime.toLocaleTimeString()}`);
-            } else if (cmd === "battery") {
-                navigator
-                    .getBattery()
-                    .then(function (battery) {
-                        const level = (battery.level * 100).toFixed(2); // Convert to percentage with two decimal places
-                        const charging = battery.charging ? "Charging" : "Not Charging";
+            let cmd = cmdPresrvCase.split(" ")[0].toLowerCase();
 
-                        const status = `Battery Status: ${level}% (${charging})`;
-
-                        disp(status);
-                    })
-                    .catch(function (error) {
-                        disp(
-                            "An error occurred while fetching battery status information: " +
-                            error.message
-                        );
-                    });
-            } else if (cmd === "device") {
-                // Check if the necessary properties are available
-                if ("deviceMemory" in navigator && "hardwareConcurrency" in navigator) {
-                    const platform = navigator.platform;
-                    const userAgent = navigator.userAgent;
-                    const deviceMemory = navigator.deviceMemory;
-                    const hardwareConcurrency = navigator.hardwareConcurrency;
-
-                    var deviceInfo = `
-      Platform: ${platform}<br>
-      User Agent: ${userAgent}<br>
-      Device Memory: ${deviceMemory} GB<br>
-      Hardware Concurrency: ${hardwareConcurrency}<br>
-    `;
-
-                    // Check if the performance API is available for FPS information
-                    if ("performance" in window && "now" in performance) {
-                        const frameTiming = performance.now();
-                        const fps = (100000 / frameTiming).toFixed(2); // Calculate FPS
-                        // Retrieve display information
-                        const screen = window.screen;
-                        const screenWidth = screen.width;
-                        const screenHeight = screen.height;
-                        const screenResolution = `${screenWidth}x${screenHeight}`;
-                        const colorDepth = screen.colorDepth;
-
-                        deviceInfo += `
-      Screen Resolution: ${screenResolution}<br>
-      Color Depth: ${colorDepth} bits
-    `;
-
-                        deviceInfo += `\nFrames Per Second (FPS): ${fps}`;
-                    }
-
-                    disp(deviceInfo);
+            try {
+                if (commands[cmd]) {
+                    disp(await commands[cmd].action());
                 } else {
-                    disp("Device information is not fully available on this device.");
+                    disp("Unknown command.");
                 }
-            } else if (cmd === "memory") {
-                const totalMemory = (
-                    performance.memory.totalJSHeapSize /
-                    1024 /
-                    1024
-                ).toFixed(2);
-                const usedMemory = (
-                    performance.memory.usedJSHeapSize /
-                    1024 /
-                    1024
-                ).toFixed(2);
-                const memoryUsagePercentage = ((usedMemory / totalMemory) * 100).toFixed(2);
-
-                disp(
-                    `Memory Usage: ${memoryUsagePercentage}% (${usedMemory}MB / ${totalMemory}MB)`
-                );
-            } else if (cmd == "flash on") {
-                toggleFlashlight("on");
-            } else if (cmd == "flash off") {
-                toggleFlashlight("off");
-            } else if (cmd == "vibrate 500") {
-                navigator.vibrate(500);
-            } else if (cmd == "vibrate 100") {
-                navigator.vibrate(100);
-            } else if (cmd.startsWith("nova")) {
-                let xx = cmdPresrvCase.slice(cmdPresrvCase.indexOf(" ") + 1);
-
-                (async () => {
-                    try {
-                        let match = xx.match(/^(\w+)\((.*)\)$/);
-                        let target, result;
-
-                        if (match) {
-                            let funcName = match[1];
-                            let rawArgs = match[2].trim();
-
-                            let args = rawArgs ? rawArgs.split(',').map(arg => {
-                                arg = arg.trim();
-                                if (/^["'].*["']$/.test(arg)) return arg.slice(1, -1);
-                                if (!isNaN(arg)) return Number(arg);
-                                if (arg.toLowerCase() === "true") return true;
-                                if (arg.toLowerCase() === "false") return false;
-                                if (arg.toLowerCase() === "null") return null;
-                                if (arg.toLowerCase() === "undefined") return undefined;
-                                return arg;
-                            }) : [];
-
-                            if (window.parent[funcName]) {
-                                target = window.parent[funcName];
-                                result = typeof target === 'function' ? await target(...args) : target;
-                            } else {
-                                throw new Error(`Function ${funcName} not found in parent window`);
-                            }
-                        } else {
-                            target = window.parent[xx];
-                            result = typeof target === 'function' ? await target() : target;
-                        }
-
-                        if (result instanceof Error) {
-                            disp(`Error: ${result.message}\nStack: ${result.stack}`);
-                        } else if (typeof result === 'function') {
-                            disp(`Function: ${result.name || 'anonymous'}\n${result.toString()}`);
-                        } else if (result instanceof Element) {
-                            disp(`DOM Element: <${result.tagName.toLowerCase()} id="${result.id}" class="${result.className}">`);
-                        } else if (typeof result === 'object' && result !== null) {
-                            disp(`<pre>${JSON.stringify(result, null, 2)}</pre>`);
-                        } else {
-                            disp(result);
-                        }
-                    } catch (err) {
-                        disp(`Exception: ${err.message}\nStack: ${err.stack}`);
-                    }
-                })();
-
-            } else if (cmd.startsWith("cd")) {
-                if (cmd == "cd") {
-                    disp("Current directory: " + curdir);
-                } else {
-                    let xx = cmdPresrvCase.slice(cmdPresrvCase.indexOf(" ") + 1);
-                    curdir = xx;
-                    disp("Changed to: " + curdir);
-                }
-            } else if (cmd == "pwd") {
-                disp("Current: " + curdir);
-            } else if (cmd == "ls") {
-                try {
-                    let files = await window.parent.getFileNamesByFolder(curdir);
-
-                    let i = ""
-                    if (files.length > 0) {
-
-                        files.forEach(item => {
-                            i += `Name: '${item.name}' File ID: '${item.id}'<br>`
-                        });
-                        disp(i)
-                    } else {
-                        disp("No items in this directory.");
-                    }
-                } catch (error) {
-                    disp("Error fetching data:", error);
-                }
-
-            } else {
-                disp("Unknown command.");
+            } catch (e) {
+                disp("Error executing command: " + e);
             }
 
-            console.log("proc end.")
             isProcRunning = false;
         }
+
+
 
         function ask(smth) {
             let x = prompt(smth);
@@ -405,7 +369,7 @@
             }
         }
 
-        
+
     </script>
 </body>
 

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Rotur extension for Nova CLI</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+        }
+    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+    Launching Nova CLI... Make sure you have it installed.
+    <script>
+        function greenflag() {
+            currentreqID = window.parent.genUID();
+            let appIdToOpen = window.parent.fileTypeAssociations['cli'][0] || null;
+            window.parent.openlaunchprotocol(appIdToOpen, {
+                "include": Object.fromEntries(
+                    Object.entries(window.parent.roturExtension).map(([key, func]) => [
+                        "rotur."+key,
+                        {
+                            desc: `Execute ${key}`,
+                            action: async (...args) => {
+                                try {
+                                    return (await func(...args));
+                                } catch (e) {
+                                    return (`Error: ` + e);
+                                }
+                            }
+                        }
+                    ])
+                )
+            }, currentreqID, myWindow.windowID);
+
+            function executeRoturCommand(command) {
+                const parts = command.match(/(?:[^\s"]+|"[^"]*")+/g) || [];
+                const functionName = parts[1];
+                const args = parts.slice(2).map(arg => arg.replace(/(^")|("$)/g, ""));
+
+                if (window.parent.roturExtension[functionName]) {
+                    window.parent.roturExtension[functionName](...args);
+                    return (`Called ${functionName} with args: ${args.join(", ")}`);
+                } else {
+                    return (`Error: ${functionName} is not a function in roturExtension`);
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>
