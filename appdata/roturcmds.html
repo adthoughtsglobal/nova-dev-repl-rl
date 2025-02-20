@@ -23,24 +23,38 @@
 <body>
     Launching Nova CLI... Make sure you have it installed.
     <script>
+        function formatFunctionName(name) {
+            return name
+                .replace(/([a-z])([A-Z])/g, '$1 $2')
+                .replace(/_/g, ' ')
+                .toLowerCase()
+                .replace(/\b\w/g, c => c.toUpperCase());
+        }
+
         function greenflag() {
+            const validFunctions = Object.getOwnPropertyNames(window.parent.roturExtension)
+                .filter(([_, func]) => typeof func === "function");
+
             currentreqID = window.parent.genUID();
             let appIdToOpen = window.parent.fileTypeAssociations['cli'][0] || null;
             window.parent.openlaunchprotocol(appIdToOpen, {
                 "include": Object.fromEntries(
-                    Object.entries(window.parent.roturExtension).map(([key, func]) => [
-                        "rotur."+key,
-                        {
-                            desc: `Execute ${key}`,
-                            action: async (...args) => {
-                                try {
-                                    return (await func(...args));
-                                } catch (e) {
-                                    return (`Error: ` + e);
+                    [
+                        ...Object.getOwnPropertyNames(window.parent.roturExtension),
+                        ...Object.getOwnPropertyNames(Object.getPrototypeOf(window.parent.roturExtension))
+                    ].filter(key => key !== "constructor")
+                        .map(key => {
+                            const value = window.parent.roturExtension[key];
+                            const isFunction = typeof value === 'function';
+
+                            return [
+                                "rotur." + key,
+                                {
+                                    desc: isFunction ? formatFunctionName(key) : `Get ${key.replace(/_/g, ' ')}`,
+                                    action: async () => isFunction ? window.parent.roturExtension(key)() : value
                                 }
-                            }
-                        }
-                    ])
+                            ];
+                        })
                 )
             }, currentreqID, myWindow.windowID);
 
