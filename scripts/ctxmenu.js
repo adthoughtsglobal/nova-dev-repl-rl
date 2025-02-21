@@ -21,6 +21,16 @@ window.fileActions = {
 		},
 		condition: () => true,
 	},
+	openLocation: {
+		icon: 'files',
+		label: 'Open file location',
+		action: async (itemuid) => {
+			let currentreqID = genUID();
+			let appIdToOpen = fileTypeAssociations['file'][0] || null;
+			openlaunchprotocol(appIdToOpen, { "opener": 'showFile', "id":itemuid }, currentreqID);
+		},
+		condition: () => true,
+	},
 	reinstall: {
 		icon: 'download',
 		label: 'Reinstall',

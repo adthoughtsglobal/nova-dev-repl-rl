@@ -1608,7 +1608,7 @@ async function genTaskBar() {
 				appShortcutDiv.className = "app-shortcut tooltip adock sizableuielement";
 
 				let lnkappidcatched = app.id;
-				if (mtpetxt(app.fileName) == "lnk") {
+				if (mtpetxt(app.name) == "lnk") {
 					// LNK file usage
 					app = await getFileById(app.id)
 					let z = JSON.parse(decodeBase64Content(app.content));
@@ -1628,7 +1628,7 @@ async function genTaskBar() {
 
 				var tooltisp = document.createElement("span");
 				tooltisp.className = "tooltiptext";
-				tooltisp.innerHTML = islnk ? basename(app.fileName) + `*` : basename(app.fileName);
+				tooltisp.innerHTML = islnk ? basename(app.name) + `*` : basename(app.name);
 				appShortcutDiv.appendChild(iconSpan);
 				appShortcutDiv.appendChild(tooltisp);
 				appbarelement.appendChild(appShortcutDiv);
