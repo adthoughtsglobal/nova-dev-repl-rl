@@ -96,12 +96,6 @@ function cuteee() {
 	document.body.appendChild(stylelement)
 }
 
-const originalFetch = window.fetch;
-window.fetch = async function (...args) {
-	console.log(...args);
-	return originalFetch.apply(this, args);
-};
-
 function scaleUIElements(scaleFactor) {
 	var elements = document.querySelectorAll('.scalableui');
 

@@ -169,6 +169,26 @@ function stringToPastelColor(str) {
     return `rgb(${pastelR}, ${pastelG}, ${pastelB})`;
   }
 
+  function stringToDarkPastelColor(str) {
+	if (!str) {
+		return `rgb(50,50,50)`;
+	}
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    
+    const r = (hash >> 24) & 0xFF;
+    const g = (hash >> 16) & 0xFF;
+    const b = (hash >> 8) & 0xFF;
+    
+    const darkPastelR = Math.max(50, r - 100);
+    const darkPastelG = Math.max(50, g - 100);
+    const darkPastelB = Math.max(50, b - 100);
+    
+    return `rgb(${darkPastelR}, ${darkPastelG}, ${darkPastelB})`;
+}
+
 function ptypext(str) {
 	try {
 		const parts = str.split('.');
@@ -200,7 +220,7 @@ function getRandomNothingQuote() {
 }
 
 function sysLog(heading, description) {
-	rllog(`%c${heading}%c${description}`,'color: white; background-color: #224d30; font-size: 0.5rem; padding: .2rem .6rem; margin-right: .5rem; border-radius: .5rem;','color: grey;',);
+	rllog(`%c${heading}%c${description}`,'color: white; background-color: '+stringToDarkPastelColor(heading)+'; font-size: 0.5rem; padding: .2rem .6rem; margin-right: .5rem; border-radius: .5rem;','color: grey;',);
 }
 
 const rllog = console.log;

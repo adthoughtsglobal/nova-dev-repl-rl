@@ -154,6 +154,8 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
         appsHistory = appsHistory.slice(-5);
     }
 
+    sysLog(title,`at ${appid}${(params) ? " opened with " + Object.keys(params).length + " params.": ""}`);
+
     let winuid = genUID();
     if (!winds[winuid]) { winds[winuid] = {} };
     winds[winuid].title = title;

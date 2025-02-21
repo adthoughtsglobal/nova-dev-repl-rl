@@ -265,35 +265,6 @@ class RoturExtension {
     }
   }
 
-  // buttons
-  openItemsDocs() {
-    window.open("https://github.com/RoturTW/main/wiki/Items")
-  }
-
-  openAccountDocs() {
-    window.open("https://github.com/RoturTW/main/wiki/Account-Keys")
-  }
-
-  openMailDocs() {
-    window.open("https://github.com/RoturTW/main/wiki/Rmail")
-  }
-
-  openFriendsDocs() {
-    window.open("https://github.com/RoturTW/main/wiki/Friends")
-  }
-
-  openStorageDocs() {
-    window.open("https://github.com/RoturTW/main/wiki/Data-Storage")
-  }
-
-  openCurrencyDocs() {
-    window.open("https://github.com/RoturTW/main/wiki/Currency")
-  }
-
-  openBadgesDocs() {
-    window.open("https://github.com/RoturTW/main/wiki/Badges")
-  }
-
   // main functions
 
   async connectToServer(args) {
@@ -475,7 +446,7 @@ class RoturExtension {
         if (packet.listener == "link_cfg") {
           this.client.room = packet.val;
           this.is_connected = true;
-          console.log("Connected!");
+          sysLog("RoturTW","is now connected");
           eventBusWorker.deliver({
             "type": "rotur",
             "event": "connected",
@@ -483,7 +454,7 @@ class RoturExtension {
           });
           if (!roturExtension.authenticated) {
             (async () => {
-            console.log("logging in")
+              sysLog("RoturTW",`Trying to log in`);
               let localroturdata = await window.getSetting("roturLink");
                 let targetun = JSON.parse(localroturdata).username;
                 let targetpass = JSON.parse(localroturdata).password;
@@ -585,7 +556,7 @@ class RoturExtension {
               this.connectToWebsocket();
               while (!this.is_connected) { }
               this.authenticated = true;
-              console.log("login success")
+              sysLog("RoturTW",`logged in as ${args.USERNAME}`);
               resolve(`Logged in as ${args.USERNAME}`);
             } else {
               this.authenticated = false;

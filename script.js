@@ -173,7 +173,9 @@ async function startup() {
 			updateTime();
 			setsrtpprgbr(80);
 			await checkdmode();
-			setsrtpprgbr(100)
+			setsrtpprgbr(90);
+			await genTaskBar();
+			setsrtpprgbr(100);
 			gid('startupterms').innerHTML = "Startup completed";
 			closeElementedis();
 			let fetchupdatedataver;
@@ -197,7 +199,6 @@ async function startup() {
 
 
 			await fetchDataAndUpdate();
-			await genTaskBar();
 			dod();
 			removeInvalidMagicStrings();
 			function startUpdateTime() {
@@ -241,14 +242,14 @@ async function registerDecryptWorker() {
 	if ('serviceWorker' in navigator && !decryptWorkerRegistered) {
 		await navigator.serviceWorker.register('novaCrypt.js')
 			.then(() => {
-				sysLog("EncDec Thread","is now running.");
+				sysLog("EncDec Thread", "is now running.");
 				decryptWorkerRegistered = true
 			})
 			.catch(err => console.error('Service Worker registration failed:', err));
 	}
 }
 document.addEventListener("DOMContentLoaded", async function () {
-	sysLog("DOM","Loaded");
+	sysLog("DOM", "Loaded");
 	let localupdatedataver = parseFloat(localStorage.getItem("updver"));
 	if (localupdatedataver <= 1.7) {
 		console.log("Preparing NovaOS2 switch.");
@@ -1607,9 +1608,9 @@ async function genTaskBar() {
 				appShortcutDiv.className = "app-shortcut tooltip adock sizableuielement";
 
 				let lnkappidcatched = app.id;
-				app = await getFileById(app.id)
 				if (mtpetxt(app.fileName) == "lnk") {
 					// LNK file usage
+					app = await getFileById(app.id)
 					let z = JSON.parse(decodeBase64Content(app.content));
 					app = await getFileById(z.open);
 					if (!app) {
@@ -1624,13 +1625,17 @@ async function genTaskBar() {
 
 				var iconSpan = document.createElement("span");
 				iconSpan.classList.add("appiconspan");
-				iconSpan.innerHTML = await getAppIcon(0, app.id, 0);
+
 				var tooltisp = document.createElement("span");
 				tooltisp.className = "tooltiptext";
 				tooltisp.innerHTML = islnk ? basename(app.fileName) + `*` : basename(app.fileName);
 				appShortcutDiv.appendChild(iconSpan);
 				appShortcutDiv.appendChild(tooltisp);
 				appbarelement.appendChild(appShortcutDiv);
+
+				getAppIcon(0, app.id, 0)
+					.then(icon => iconSpan.innerHTML = icon)
+					.catch(error => console.error(error));
 			});
 		} catch (err) { }
 		gid("novanav").style.display = "grid";
