@@ -173,7 +173,7 @@ nav [navobj] div {
 	display: flex;
 	justify-content: space-between;
 	margin-bottom: -1px;
-	border-radius: var(--sizing-border-radius) var(--sizing-border-radius) 0 0 ;
+	border-radius: var(--sizing-border-radius) var(--sizing-border-radius) 0 0;
 }
 
 .windowheader:active {
@@ -1127,7 +1127,7 @@ input#novamenusearchinp {
 }
 
 .transp4 {
-	transition: var(--time-action);
+	transition: .2s;
 	opacity: 0;
 	transform: translate(1rem, 1rem) scale(0.9);
 }
@@ -1281,13 +1281,13 @@ dialog#terminal {
 
 .ibtnsside button {
 	flex: 1;
-	padding: .2rem;
+	padding: 0 .8rem;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	border: 0;
 	background-color: transparent;
-	border-radius: .3rem;
+	border-radius: var(--sizing-border-radius);
 	color: var(--colors-text-normal);
 	width: 24px;
 	aspect-ratio: 1 / 1;

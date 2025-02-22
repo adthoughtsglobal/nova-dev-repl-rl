@@ -20,15 +20,57 @@
             align-items: center;
             height: 100%;
             background-color: black;
-            color: aquamarine;
+            font-family: Arial, Helvetica, sans-serif;
+            color: rgb(180, 127, 255);
             margin: 0;
         }
+
+        #doesntwork {
+            display: none;
+            background-color: #1f1f1f;
+    opacity: 0.8;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    width: 21rem;
+    color: white;
+        }
+
+        .taskbarloader {
+			width: 20px;
+			height: 20px;
+			border-radius: 50%;
+			display: inline-block;
+			border-top: 3px solid rgb(180, 127, 255);
+			border-right: 3px solid transparent;
+			box-sizing: border-box;
+			animation: slideIn .3s ease-out, rotation 1s linear infinite;
+		}
+
+		@keyframes rotation {
+			0% {
+				transform: rotate(0deg);
+			}
+
+			100% {
+				transform: rotate(360deg);
+			}
+		}
+
+        li {margin-bottom: 0.5rem;}
     </style>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 
 <body>
-    Launching Nova CLI... Make sure you have it installed.
+    <span class='taskbarloader' id='taskbarloaderprime'></span>
+    <div id="doesntwork">
+        <b>Operation failed</b>
+        <ul>
+            <li>Do you have Nova CLI installed and registered to manage cli requests on your system? If not, install it from the store app or re-install it.</li>
+            <li>Have you enabled and is logged into RoturTW in settings?</li>
+            <li>Are you using the most recent NovaOS version?</li>
+        </ul>
+    </div>
     <script>
         function formatFunctionName(name) {
             return name
@@ -39,6 +81,10 @@
         }
 
         function greenflag() {
+            setTimeout(() => {
+                document.querySelector('#taskbarloaderprime').remove();
+                document.getElementById("doesntwork").style.display = "block";
+            }, 3000)
             const validFunctions = Object.getOwnPropertyNames(Object.getPrototypeOf(window.parent.roturExtension))
                 .filter(key => typeof window.parent.roturExtension[key] === "function");
 

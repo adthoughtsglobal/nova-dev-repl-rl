@@ -24,11 +24,12 @@
 		}
 
 		#flap-mot {
-			display: block;
+			display: flex;
 			box-sizing: border-box;
 			overflow: hidden;
 			background-color: var(--colors-BG-normal);
-			height: calc(100% - 0px);
+			height: calc(100% - 5px);
+			flex-direction: column;
 		}
 
 		[flap-nav] y {
@@ -55,11 +56,6 @@
 			color: var(--colors-text-normal);
 			display: grid;
 			align-items: center;
-		}
-
-		.flappsearch {
-			width: 100%;
-			height: 100%;
 			display: flex;
 		}
 
@@ -947,7 +943,7 @@
 					Import</a>
 			</div>
 		</div>
-		<div style="height: calc(100% - 66px);">
+		<div style="flex: 1;">
 			<div class="themainstuff">
 				<div flap-sidenav id="flap-sidenav">
 					<div class="drivenav">
@@ -1266,7 +1262,7 @@
 			document.getElementById("flap-sidenav").style.width = `165px`
 		}
 		async function initializeFilesApp(defaultopenfold = false, method = undefined) {
-			
+
 			if (method == "showFile") {
 				currentPath = (await window.parent.getFileById(defaultopenfold)).path;
 				fileToSelect = defaultopenfold;
@@ -1399,6 +1395,7 @@
 		let cachedFiles = {}; // To store the cached files per folder
 
 		async function listFiles(folderName, gen) {
+			myWindow.titleElement.innerText = "Files";
 			const startTime = performance.now();
 			if (currentPath == folderName && gen) {
 				const previousFiles = cachedFiles[currentPath] || [];
@@ -1585,10 +1582,10 @@
 			fileElement.appendChild(flnameSpan);
 			fileElement.setAttribute("title", `${file.name}\nID: ${file.id}` || 'Folder');
 			fllist.appendChild(fileElement);
-			
-			if (fileToSelect) {
-				slfile(this, file.id);
+
+			if (fileToSelect && fileToSelect == file.id) {
 				fileToSelect = null;
+				slfile(fileElement, file.id);
 			}
 		}
 
@@ -1643,6 +1640,11 @@
 
 		async function slfile(y, z) {
 			let x = y;
+			y.scrollIntoView({
+				behavior: "smooth",
+				block: "nearest"
+			});
+
 			if (x.id === "slfile") {
 				if (x.getAttribute("unid") === null || x.getAttribute("unid") === "") {
 					let folderPath = x.querySelector(".flfrname").innerText.trim();

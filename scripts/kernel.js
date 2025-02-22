@@ -3,7 +3,7 @@ var dragging = false, remToPx = parseFloat(getComputedStyle(document.documentEle
 var novadotcsscache;
 
 async function openlaunchprotocol(appid, data, id, winuid) {
-    sysLog("OLP",`Opening "${data}" in "${appid}" for ${winuid || id || 'operation'}`);
+    sysLog("OLP", `Opening "${data}" in "${appid}" for ${winuid || id || 'operation'}`);
     let x = {
         "appid": appid,
         "data": data,
@@ -70,13 +70,14 @@ async function openfile(x) {
         say("<h1>Unable to open file</h1>File Error: " + error, "failed")
     }
 }
-function flwin(x) {
-    const winElement = x.parentElement.parentElement.parentElement.parentElement;
+function flwin(winElement, x) {
     winElement.classList.add("transp2");
+    const winuid = winElement.getAttribute("data-winuid");
 
-    const isFullScreen = x.innerHTML === "open_in_full";
+    console.log(542, winds[winuid]["visualState"])
+    const isFree = winds[winuid]["visualState"] != "fullscreen";
     const aspectRatio = winElement.getAttribute("data-aspectratio") || "9/6";
-    const sizeStyles = isFullScreen ?
+    const sizeStyles = isFree ?
         { width: 'calc(100% - 0px)', height: 'calc(100% - 57px)', left: '0', top: '0' } :
         calculateWindowSize(aspectRatio);
 
@@ -86,9 +87,9 @@ function flwin(x) {
         }
     }
 
-    x.innerHTML = isFullScreen ? "close_fullscreen" : "open_in_full";
+    x.innerHTML = isFree ? "close_fullscreen" : "open_in_full";
 
-    // winds[winuid]["visualState"] = "fullscreen";
+    isFree ? winds[winuid]["visualState"] = "fullscreen" : winds[winuid]["visualState"] = "free"
 
     setTimeout(() => {
         winElement.classList.remove("transp2");
@@ -154,107 +155,106 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
         appsHistory = appsHistory.slice(-5);
     }
 
-    sysLog(title,`at ${appid}${(params) ? " opened with " + Object.keys(params).length + " params.": ""}`);
+    sysLog(title, `at ${appid}${(params) ? " opened with " + Object.keys(params).length + " params." : ""}`);
 
     let winuid = genUID();
     if (!winds[winuid]) { winds[winuid] = {} };
     winds[winuid].title = title;
 
     var windowDiv = document.createElement("div");
-windowDiv.id = "window" + winuid;
-windowDiv.setAttribute("data-winuid", winuid);
-windowDiv.style.position = "absolute";
-windowDiv.style.border = "1px solid black";
+    windowDiv.id = "window" + winuid;
+    windowDiv.setAttribute("data-winuid", winuid);
+    windowDiv.style.position = "absolute";
 
-windowDiv.onclick = function () {
-    nowapp = title;
-    dewallblur();
-};
+    windowDiv.onclick = function () {
+        nowapp = title;
+        dewallblur();
+    };
 
-document.body.appendChild(windowDiv);
+    document.body.appendChild(windowDiv);
 
-var iframeOverlay = null;
+    var iframeOverlay = null;
 
-var resizers = [
-    { class: "resizer top-left", cursor: "nwse-resize", width: "10px", height: "10px", top: "-5px", left: "-5px" },
-    { class: "resizer top-right", cursor: "nesw-resize", width: "10px", height: "10px", top: "-5px", right: "-5px" },
-    { class: "resizer bottom-left", cursor: "nesw-resize", width: "10px", height: "10px", bottom: "-5px", left: "-5px" },
-    { class: "resizer bottom-right", cursor: "nwse-resize", width: "10px", height: "10px", bottom: "-5px", right: "-5px" },
-    { class: "resizer top", cursor: "ns-resize", width: "100%", height: "5px", top: "-5px" },
-    { class: "resizer bottom", cursor: "ns-resize", width: "100%", height: "5px", bottom: "-5px" },
-    { class: "resizer left", cursor: "ew-resize", width: "5px", height: "100%", left: "-5px" },
-    { class: "resizer right", cursor: "ew-resize", width: "5px", height: "100%", right: "-5px" }
-];
+    var resizers = [
+        { class: "resizer top-left", cursor: "nwse-resize", width: "10px", height: "10px", top: "-5px", left: "-5px" },
+        { class: "resizer top-right", cursor: "nesw-resize", width: "10px", height: "10px", top: "-5px", right: "-5px" },
+        { class: "resizer bottom-left", cursor: "nesw-resize", width: "10px", height: "10px", bottom: "-5px", left: "-5px" },
+        { class: "resizer bottom-right", cursor: "nwse-resize", width: "10px", height: "10px", bottom: "-5px", right: "-5px" },
+        { class: "resizer top", cursor: "ns-resize", width: "100%", height: "5px", top: "-5px" },
+        { class: "resizer bottom", cursor: "ns-resize", width: "100%", height: "5px", bottom: "-5px" },
+        { class: "resizer left", cursor: "ew-resize", width: "5px", height: "100%", left: "-5px" },
+        { class: "resizer right", cursor: "ew-resize", width: "5px", height: "100%", right: "-5px" }
+    ];
 
-resizers.forEach(resizer => {
-    var div = document.createElement("div");
-    div.className = resizer.class;
-    div.style.position = "absolute";
-    div.style.width = resizer.width;
-    div.style.height = resizer.height;
-    div.style.cursor = resizer.cursor;
-    div.style.background = "transparent";
+    resizers.forEach(resizer => {
+        var div = document.createElement("div");
+        div.className = resizer.class;
+        div.style.position = "absolute";
+        div.style.width = resizer.width;
+        div.style.height = resizer.height;
+        div.style.cursor = resizer.cursor;
+        div.style.background = "transparent";
 
-    if (resizer.top) div.style.top = resizer.top;
-    if (resizer.bottom) div.style.bottom = resizer.bottom;
-    if (resizer.left) div.style.left = resizer.left;
-    if (resizer.right) div.style.right = resizer.right;
+        if (resizer.top) div.style.top = resizer.top;
+        if (resizer.bottom) div.style.bottom = resizer.bottom;
+        if (resizer.left) div.style.left = resizer.left;
+        if (resizer.right) div.style.right = resizer.right;
 
-    windowDiv.appendChild(div);
+        windowDiv.appendChild(div);
 
-    div.addEventListener("mousedown", function (e) {
-        e.preventDefault();
-        var startX = e.clientX, startY = e.clientY;
-        var startWidth = windowDiv.offsetWidth, startHeight = windowDiv.offsetHeight;
-        var startLeft = windowDiv.offsetLeft, startTop = windowDiv.offsetTop;
+        div.addEventListener("mousedown", function (e) {
+            e.preventDefault();
+            var startX = e.clientX, startY = e.clientY;
+            var startWidth = windowDiv.offsetWidth, startHeight = windowDiv.offsetHeight;
+            var startLeft = windowDiv.offsetLeft, startTop = windowDiv.offsetTop;
 
-        iframeOverlay = document.createElement('div');
-        iframeOverlay.style.position = 'absolute';
-        iframeOverlay.style.top = 0;
-        iframeOverlay.style.left = 0;
-        iframeOverlay.style.width = '100%';
-        iframeOverlay.style.height = '100%';
-        iframeOverlay.style.zIndex = 999;
-        iframeOverlay.style.backgroundColor = 'transparent';
-        iframeOverlay.style.cursor = resizer.cursor;
-        document.body.appendChild(iframeOverlay);
+            iframeOverlay = document.createElement('div');
+            iframeOverlay.style.position = 'absolute';
+            iframeOverlay.style.top = 0;
+            iframeOverlay.style.left = 0;
+            iframeOverlay.style.width = '100%';
+            iframeOverlay.style.height = '100%';
+            iframeOverlay.style.zIndex = 999;
+            iframeOverlay.style.backgroundColor = 'transparent';
+            iframeOverlay.style.cursor = resizer.cursor;
+            document.body.appendChild(iframeOverlay);
 
-        function resizeMove(ev) {
-            var dx = ev.clientX - startX;
-            var dy = ev.clientY - startY;
+            function resizeMove(ev) {
+                var dx = ev.clientX - startX;
+                var dy = ev.clientY - startY;
 
-            if (resizer.class.includes("right")) windowDiv.style.width = startWidth + dx + "px";
-            if (resizer.class.includes("bottom")) windowDiv.style.height = startHeight + dy + "px";
-            if (resizer.class.includes("left")) {
-                windowDiv.style.width = startWidth - dx + "px";
-                windowDiv.style.left = startLeft + dx + "px";
-            }
-            if (resizer.class.includes("top")) {
-                windowDiv.style.height = startHeight - dy + "px";
-                windowDiv.style.top = startTop + dy + "px";
-            }
-        }
-
-        function stopResize(event) {
-            document.removeEventListener("mousemove", resizeMove);
-            document.removeEventListener("mouseup", stopResize);
-
-            if (iframeOverlay) {
-                document.body.removeChild(iframeOverlay);
-                iframeOverlay = null;
+                if (resizer.class.includes("right")) windowDiv.style.width = startWidth + dx + "px";
+                if (resizer.class.includes("bottom")) windowDiv.style.height = startHeight + dy + "px";
+                if (resizer.class.includes("left")) {
+                    windowDiv.style.width = startWidth - dx + "px";
+                    windowDiv.style.left = startLeft + dx + "px";
+                }
+                if (resizer.class.includes("top")) {
+                    windowDiv.style.height = startHeight - dy + "px";
+                    windowDiv.style.top = startTop + dy + "px";
+                }
             }
 
-            const mouseUpEvent = new MouseEvent('mouseup', {
-                clientX: event.clientX,
-                clientY: event.clientY,
-            });
-            windowDiv.dispatchEvent(mouseUpEvent);
-        }
+            function stopResize(event) {
+                document.removeEventListener("mousemove", resizeMove);
+                document.removeEventListener("mouseup", stopResize);
 
-        document.addEventListener("mousemove", resizeMove);
-        document.addEventListener("mouseup", stopResize);
+                if (iframeOverlay) {
+                    document.body.removeChild(iframeOverlay);
+                    iframeOverlay = null;
+                }
+
+                const mouseUpEvent = new MouseEvent('mouseup', {
+                    clientX: event.clientX,
+                    clientY: event.clientY,
+                });
+                windowDiv.dispatchEvent(mouseUpEvent);
+            }
+
+            document.addEventListener("mousemove", resizeMove);
+            document.addEventListener("mouseup", stopResize);
+        });
     });
-});
 
 
     nowapp = title;
@@ -327,7 +327,7 @@ resizers.forEach(resizer => {
     minimbtn.appendChild(minimSpan);
     minimbtn.onclick = function () {
         snappingconthide();
-        minim(minimSpan);
+        minim(windowDiv, winuid);
     };
 
     var flButton = document.createElement("button");
@@ -339,7 +339,7 @@ resizers.forEach(resizer => {
     flButton.appendChild(flSpan);
     flButton.onclick = function () {
         snappingconthide();
-        flwin(flSpan);
+        flwin(windowDiv, flSpan);
     };
 
     var closeButton = document.createElement("button");
@@ -524,7 +524,7 @@ resizers.forEach(resizer => {
         iframe.src = blobURL;
         if (!winds[winuid]) winds[winuid] = {};
         winds[winuid]["src"] = blobURL;
-        // winds[winuid]["visualState"] = "free";
+        winds[winuid]["visualState"] = "free";
 
         windowContent.appendChild(iframe);
 
@@ -603,7 +603,7 @@ async function checksnapping(x, event, winuid) {
         fulsapp = false;
 
 
-        // winds[winuid]["visualState"] = "free";
+        winds[winuid]["visualState"] = "free";
 
         setTimeout(() => {
             x.classList.remove("snapping");
@@ -619,7 +619,7 @@ async function checksnapping(x, event, winuid) {
         fulsapp = true;
         x.getElementsByClassName("flbtn")[0].innerHTML = "close_fullscreen";
 
-        // winds[winuid]["visualState"] = "fullScreen";
+        winds[winuid]["visualState"] = "fullScreen";
 
         setTimeout(() => {
             x.classList.remove("snapping");
@@ -636,7 +636,7 @@ async function checksnapping(x, event, winuid) {
         fulsapp = true;
         x.getElementsByClassName("flbtn")[0].innerHTML = "open_in_full";
 
-        // winds[winuid]["visualState"] = "snapped";
+        winds[winuid]["visualState"] = "snapped";
 
         setTimeout(() => {
             x.classList.remove("snapping");
@@ -646,7 +646,7 @@ async function checksnapping(x, event, winuid) {
         x.style = `right: 0; top: 0; width: calc(50% - 0px); height: calc(100% - ${navheight}px);`;
         fulsapp = true;
         x.getElementsByClassName("flbtn")[0].innerHTML = "open_in_full";
-        // winds[winuid]["visualState"] = "snapped";
+        winds[winuid]["visualState"] = "snapped";
         setTimeout(() => {
             x.classList.remove("snapping");
         }, 1000);
@@ -788,15 +788,30 @@ async function openapp(x, od, customtodo) {
     fetchDataAndSave(x);
 }
 
-function minim(x) {
-    x.parentElement.parentElement.parentElement.parentElement.classList.add("transp4")
+function minim(x, winuid) {
+    if (winds[winuid]["visualState"] == "minimized") {
+
+        gid('window' + winuid).style.display = "flex";
+        winds[winuid]["visualState"] = "free";
+    } else {
+        if (!x) {
+            x = gid('window' + winuid);
+        }
+        if (isWinOnTop('window' + winuid)) {
+
+            x.classList.add("transp4")
 
 
-    // winds[winuid]["visualState"] = "minimized";
+            winds[winuid]["visualState"] = "minimized";
+    
+            setTimeout(() => {
+                x.classList.remove("transp4")
+                x.style.display = "none";
+                nowapp = '';
+            }, 100);
+        } else {
+            putwinontop('window' + winuid)
+        }
+    }
 
-    setTimeout(() => {
-        x.parentElement.parentElement.parentElement.parentElement.classList.remove("transp4")
-        x.parentElement.parentElement.parentElement.parentElement.style.display = "none";
-        nowapp = '';
-    }, 700);
 }

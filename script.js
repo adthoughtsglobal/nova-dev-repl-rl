@@ -805,7 +805,12 @@ function putwinontop(x) {
 		document.getElementById(x).style.zIndex = 0;
 	}
 }
-
+function isWinOnTop(x) {
+    const ourKey = x.replace(/^window/, '');
+    const maxKey = Object.keys(winds).reduce((a, b) => (Number(winds[a].zIndex) > Number(winds[b].zIndex) ? a : b));
+    
+    return ourKey === maxKey;
+}
 
 function normalizeZIndexes(excludeWindowId = null) {
 	const windValues = Object.entries(winds)
@@ -1054,7 +1059,7 @@ async function loadtaskspanel() {
 
 		appShortcutDiv.addEventListener("click", function () {
 			putwinontop('window' + wid);
-			gid('window' + wid).style.display = "flex";
+			minim(0, wid);
 		});
 
 		let iconSpan = document.createElement("span");
