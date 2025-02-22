@@ -1,7 +1,5 @@
 function timeAgo(ms) {
-	if (!ms) {
-		return false;
-	}
+	if (!ms) return false;
 	let sec = Math.floor((Date.now() - ms) / 1000),
 		min = Math.floor(sec / 60),
 		hr = Math.floor(min / 60),
@@ -9,11 +7,11 @@ function timeAgo(ms) {
 		mo = Math.floor(day / 30),
 		yr = Math.floor(day / 365);
 	
-	return sec < 60 ? `${sec} seconds ago` :
-	       min < 60 ? `${min} minutes ago` :
-	       hr < 24 ? `${hr} hours ago` :
-	       day < 30 ? `${day} days ago` :
-	       mo < 12 ? `${mo} months ago` :
+	return sec < 60 ? `${sec} second${sec === 1 ? '' : 's'} ago` :
+	       min < 60 ? `${min} minute${min === 1 ? '' : 's'} ago` :
+	       hr < 24 ? `${hr} hour${hr === 1 ? '' : 's'} ago` :
+	       day < 30 ? `${day} day${day === 1 ? '' : 's'} ago` :
+	       mo < 12 ? `${mo} month${mo === 1 ? '' : 's'} ago` :
 	       yr === 1 ? `a year ago` :
 	       `${yr} years ago`;
 }
