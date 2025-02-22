@@ -10,11 +10,18 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Rotur extension for Nova CLI</title>
     <style>
+        html {
+            height: 100%;
+        }
+
         body {
             display: flex;
             justify-content: center;
             align-items: center;
-
+            height: 100%;
+            background-color: black;
+            color: aquamarine;
+            margin: 0;
         }
     </style>
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -32,8 +39,9 @@
         }
 
         function greenflag() {
-            const validFunctions = Object.getOwnPropertyNames(window.parent.roturExtension)
-                .filter(([_, func]) => typeof func === "function");
+            const validFunctions = Object.getOwnPropertyNames(Object.getPrototypeOf(window.parent.roturExtension))
+                .filter(key => typeof window.parent.roturExtension[key] === "function");
+
 
             currentreqID = window.parent.genUID();
             let appIdToOpen = window.parent.fileTypeAssociations['cli'][0] || null;
@@ -51,12 +59,13 @@
                                 "rotur." + key,
                                 {
                                     desc: isFunction ? formatFunctionName(key) : `Get ${key.replace(/_/g, ' ')}`,
-                                    action: async () => isFunction ? window.parent.roturExtension(key)() : value
+                                    action: async () => isFunction ? window.parent.roturExtension[key]().bind(window.parent.roturExtension) : value
                                 }
                             ];
                         })
                 )
-            }, currentreqID, myWindow.windowID);
+            }
+                , currentreqID, myWindow.windowID);
 
             function executeRoturCommand(command) {
                 const parts = command.match(/(?:[^\s"]+|"[^"]*")+/g) || [];
@@ -70,6 +79,8 @@
                     return (`Error: ${functionName} is not a function in roturExtension`);
                 }
             }
+
+            myWindow.close();
         }
     </script>
 </body>

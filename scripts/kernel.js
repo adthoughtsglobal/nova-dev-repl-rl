@@ -161,12 +161,101 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
     winds[winuid].title = title;
 
     var windowDiv = document.createElement("div");
-    windowDiv.id = "window" + winuid;
-    windowDiv.setAttribute("data-winuid", winuid);
-    windowDiv.onclick = function () {
-        nowapp = title;
-        dewallblur();
-    };
+windowDiv.id = "window" + winuid;
+windowDiv.setAttribute("data-winuid", winuid);
+windowDiv.style.position = "absolute";
+windowDiv.style.border = "1px solid black";
+
+windowDiv.onclick = function () {
+    nowapp = title;
+    dewallblur();
+};
+
+document.body.appendChild(windowDiv);
+
+var iframeOverlay = null;
+
+var resizers = [
+    { class: "resizer top-left", cursor: "nwse-resize", width: "10px", height: "10px", top: "-5px", left: "-5px" },
+    { class: "resizer top-right", cursor: "nesw-resize", width: "10px", height: "10px", top: "-5px", right: "-5px" },
+    { class: "resizer bottom-left", cursor: "nesw-resize", width: "10px", height: "10px", bottom: "-5px", left: "-5px" },
+    { class: "resizer bottom-right", cursor: "nwse-resize", width: "10px", height: "10px", bottom: "-5px", right: "-5px" },
+    { class: "resizer top", cursor: "ns-resize", width: "100%", height: "5px", top: "-5px" },
+    { class: "resizer bottom", cursor: "ns-resize", width: "100%", height: "5px", bottom: "-5px" },
+    { class: "resizer left", cursor: "ew-resize", width: "5px", height: "100%", left: "-5px" },
+    { class: "resizer right", cursor: "ew-resize", width: "5px", height: "100%", right: "-5px" }
+];
+
+resizers.forEach(resizer => {
+    var div = document.createElement("div");
+    div.className = resizer.class;
+    div.style.position = "absolute";
+    div.style.width = resizer.width;
+    div.style.height = resizer.height;
+    div.style.cursor = resizer.cursor;
+    div.style.background = "transparent";
+
+    if (resizer.top) div.style.top = resizer.top;
+    if (resizer.bottom) div.style.bottom = resizer.bottom;
+    if (resizer.left) div.style.left = resizer.left;
+    if (resizer.right) div.style.right = resizer.right;
+
+    windowDiv.appendChild(div);
+
+    div.addEventListener("mousedown", function (e) {
+        e.preventDefault();
+        var startX = e.clientX, startY = e.clientY;
+        var startWidth = windowDiv.offsetWidth, startHeight = windowDiv.offsetHeight;
+        var startLeft = windowDiv.offsetLeft, startTop = windowDiv.offsetTop;
+
+        iframeOverlay = document.createElement('div');
+        iframeOverlay.style.position = 'absolute';
+        iframeOverlay.style.top = 0;
+        iframeOverlay.style.left = 0;
+        iframeOverlay.style.width = '100%';
+        iframeOverlay.style.height = '100%';
+        iframeOverlay.style.zIndex = 999;
+        iframeOverlay.style.backgroundColor = 'transparent';
+        iframeOverlay.style.cursor = resizer.cursor;
+        document.body.appendChild(iframeOverlay);
+
+        function resizeMove(ev) {
+            var dx = ev.clientX - startX;
+            var dy = ev.clientY - startY;
+
+            if (resizer.class.includes("right")) windowDiv.style.width = startWidth + dx + "px";
+            if (resizer.class.includes("bottom")) windowDiv.style.height = startHeight + dy + "px";
+            if (resizer.class.includes("left")) {
+                windowDiv.style.width = startWidth - dx + "px";
+                windowDiv.style.left = startLeft + dx + "px";
+            }
+            if (resizer.class.includes("top")) {
+                windowDiv.style.height = startHeight - dy + "px";
+                windowDiv.style.top = startTop + dy + "px";
+            }
+        }
+
+        function stopResize(event) {
+            document.removeEventListener("mousemove", resizeMove);
+            document.removeEventListener("mouseup", stopResize);
+
+            if (iframeOverlay) {
+                document.body.removeChild(iframeOverlay);
+                iframeOverlay = null;
+            }
+
+            const mouseUpEvent = new MouseEvent('mouseup', {
+                clientX: event.clientX,
+                clientY: event.clientY,
+            });
+            windowDiv.dispatchEvent(mouseUpEvent);
+        }
+
+        document.addEventListener("mousemove", resizeMove);
+        document.addEventListener("mouseup", stopResize);
+    });
+});
+
 
     nowapp = title;
     dewallblur();

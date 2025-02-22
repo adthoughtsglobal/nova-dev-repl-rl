@@ -219,12 +219,19 @@ function getRandomNothingQuote() {
 	return nothingquotes[Math.floor(Math.random() * nothingquotes.length)]
 }
 
+var sysLogHeading;
 function sysLog(heading, description) {
-	rllog(`%c${heading}%c${description}`,'color: white; background-color: '+stringToDarkPastelColor(heading)+'; font-size: 0.5rem; padding: .2rem .6rem; margin-right: .5rem; border-radius: .5rem;','color: grey;',);
+	if (sysLogHeading == heading){
+		rllog(`%c.%c${description}`,'background-color: '+stringToDarkPastelColor(heading)+'; color: '+stringToDarkPastelColor(heading)+'; font-weight:bolder; padding:0 4px; margin-right: .5rem; border-radius: .5rem;','color: grey;',);
+	} else {
+		rllog(`%c${heading}%c${description}`,'color: white; background-color: '+stringToDarkPastelColor(heading)+'; font-size: 0.5rem; padding: .2rem .6rem; margin-right: .5rem; border-radius: .5rem;','color: grey;',);
+	}
+	sysLogHeading = heading;
 }
 
 const rllog = console.log;
 console.log = function (...args) {
+	sysLogHeading = null;
 	const stack = new Error().stack;
 	const caller = stack.split('\n')[2].trim();
 	const match = caller.match(/at (\S+)/);

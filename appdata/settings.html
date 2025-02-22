@@ -216,7 +216,7 @@
 
 		supportb a[okay] {
 			background: transparent;
-			color: white;
+			color: inherit;
 		}
 
 		supportb a:hover {
@@ -365,7 +365,7 @@
 
 		[setting][type="advsetnav"] .advseticon {
 			padding: 0.5rem;
-			background: #2f2f2f;
+			background: var(--colors-BG-normal);
 			border-radius: var(--sizing-border-radius);
 			display: flex;
 			align-items: center;
@@ -691,6 +691,7 @@
 			align-items: center;
 			flex: 1;
 			padding: var(--sizing-normal);
+			color: inherit;
 			border-radius: var(--sizing-border-radius);
 		}
 
@@ -707,6 +708,7 @@
 		.btngrpelem button {
 			background-color: transparent;
 			padding: 0;
+			color: var(--colors-text-section);
 		}
 
 		.btngrpelem button i {
@@ -780,7 +782,7 @@
 					display: flex;
 					justify-content: space-between;
 					align-items: center;
-					padding: 0.1rem var(--sizing-normal);
+					padding: 4px 10px;
 					background: var(--colors-BG-section);
 					color: var(--colors-text-section);
 					border-radius: var(--sizing-normal);

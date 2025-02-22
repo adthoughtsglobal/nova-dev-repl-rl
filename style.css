@@ -136,10 +136,10 @@ nav [navobj] div {
 	border-radius: var(--sizing-border-radius);
 	font-size: var(--font-size-normal);
 	padding: 0px;
-	overflow: hidden;
+	overflow: visible;
 	box-shadow: 0px 5px 1rem 1px #000000b0;
 	animation: appshow 0.5s 1;
-	resize: both;
+	resize: none;
 	display: flex;
 	flex-direction: column;
 	gap: 0;
@@ -173,6 +173,7 @@ nav [navobj] div {
 	display: flex;
 	justify-content: space-between;
 	margin-bottom: -1px;
+	border-radius: var(--sizing-border-radius) var(--sizing-border-radius) 0 0 ;
 }
 
 .windowheader:active {
@@ -182,6 +183,8 @@ nav [navobj] div {
 .windowcontent {
 	box-sizing: border-box;
 	flex: 1;
+	overflow: hidden;
+	border-radius: 0 0 var(--sizing-border-radius) var(--sizing-border-radius);
 }
 
 .windowloader {
@@ -192,6 +195,7 @@ nav [navobj] div {
 	display: grid;
 	transition: .5s;
 	background: var(--colors-BG-normal);
+	backdrop-filter: blur(1rem);
 	justify-content: center;
 	align-content: center;
 	color: #748c9b;
@@ -438,6 +442,7 @@ nav [navobj] div {
 
 .modal button:focus {
 	background: var(--colors-BG-highlighted);
+	color: var(--colors-text-high);
 }
 
 .modal .notbn {
