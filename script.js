@@ -922,7 +922,6 @@ async function extractAndRegisterCapabilities(appId, content) {
 	}
 }
 async function registerApp(appId, capabilities) {
-	notify(await getFileNameByID(appId) + " installed", "Registering complete.", "NovaOS System")
 	for (let fileType of capabilities) {
 		if (!fileTypeAssociations[fileType]) {
 			fileTypeAssociations[fileType] = [];
@@ -932,6 +931,7 @@ async function registerApp(appId, capabilities) {
 		}
 	}
 	await setSetting('fileTypeAssociations', fileTypeAssociations);
+	notify(await getFileNameByID(appId) + " installed", "Registered " + capabilities.toString(), "NovaOS System")
 }
 async function cleanupInvalidAssociations() {
 	const validAppIds = await getAllValidAppIds();
@@ -1417,7 +1417,7 @@ function displayTimeLeft(seconds) {
 	document.getElementById('sleeptimer').textContent = display;
 }
 
-function notify(title, description, appname) {
+function notify(title = "Notification", description = "There is a notification", appname = "unknown") {
 	if (document.getElementById("notification").style.display == "block") {
 		document.getElementById("notification").style.display = "none";
 		setTimeout(notify(title, description, appname), 500)

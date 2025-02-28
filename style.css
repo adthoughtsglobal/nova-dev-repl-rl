@@ -1076,7 +1076,7 @@ input#novamenusearchinp {
 	background: var(--colors-BG-normal);
 	border-radius: var(--sizing-border-radius);
 	padding: 10px;
-	bottom: 61px;
+    bottom: 70px;
 	box-shadow: 0 1rem 2rem rgb(0 0 0 / 77%);
 	display: none;
 	animation: notifpull var(--time-action);
@@ -1109,6 +1109,8 @@ input#novamenusearchinp {
 	font-size: var(--font-size-small);
 	margin: 3px 0;
 	opacity: 0.7;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 
 .snapping {
