@@ -973,10 +973,17 @@ async function createFile(folderName, fileName, type, content, metadata = {}) {
         return null;
     }
     async function handleFile(folder, folderName, fileNameWithExtension, base64data, type, metadata) {
-        if (base64data == "" || !base64data) {
-            base64data = `data:${await getMimeType(type)};base64,`
+        if (!base64data) {
+            base64data = `data:${await getMimeType(type)};base64,`;
         }
+        
         metadata.datetime = getfourthdimension();
+        
+        const extIndex = fileNameWithExtension.lastIndexOf(".");
+        if (extIndex !== -1) {
+            fileNameWithExtension = fileNameWithExtension.slice(0, extIndex) + fileNameWithExtension.slice(extIndex).toLowerCase();
+        }
+    
         if (type === "app" || fileNameWithExtension.endsWith(".app")) {
             const appData = await getFileByPath(`Apps/${fileNameWithExtension}`);
             if (appData) {
@@ -985,6 +992,7 @@ async function createFile(folderName, fileName, type, content, metadata = {}) {
                 return appData.id || null;
             }
         }
+    
         const existingFile = Object.values(folder).find(file => file.fileName === fileNameWithExtension);
         if (existingFile) {
             await updateFile(folderName, existingFile.id, { metadata, content: base64data, fileName: fileNameWithExtension, type });
@@ -993,7 +1001,7 @@ async function createFile(folderName, fileName, type, content, metadata = {}) {
             const uid = genUID();
             memory.root[folderName] = folder;
             folder[fileNameWithExtension] = { id: uid, type, metadata };
-
+    
             if (fileNameWithExtension.endsWith(".app")) extractAndRegisterCapabilities(uid, base64data);
             await ctntMgr.set(uid, base64data);
             await setdb("handling file: " + fileNameWithExtension);
@@ -1005,7 +1013,7 @@ async function createFile(folderName, fileName, type, content, metadata = {}) {
             });
             return uid;
         }
-    }
+    }    
 }
 async function createFolder(folderNames, folderData) {
     try {
