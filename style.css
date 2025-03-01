@@ -649,6 +649,7 @@ nav [navobj] div {
 	color: var(--colors-text-normal);
 	word-break: normal;
 	text-align: center;
+	animation: appop 0.2s;
 	border-radius: 0.3rem;
 	padding: 2px;
 	position: absolute;

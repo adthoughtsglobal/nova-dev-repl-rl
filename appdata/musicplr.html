@@ -22,11 +22,12 @@
 		}
 
 		body {
-			height: calc(100% - 0px);
+			height: calc(100%);
 			font-family: "Poppins", sans-serif;
 			margin: 0;
 			background: #101010;
 			color: white;
+			overflow: hidden;
 		}
 
 		.pagebody {
@@ -202,6 +203,8 @@
 			padding: 1rem;
 			background: #34343445;
 			backdrop-filter: blur(0.8rem);
+			display: flex;
+			flex-direction: column;
 		}
 
 		.queuewinnav {
@@ -251,6 +254,7 @@
 			background: #1f1f1f;
 			margin: 0.3rem 0;
 			border-radius: 0.5rem;
+			flex: 1;
 		}
 
 		.detailswid {
@@ -282,6 +286,12 @@
 			align-items: center;
 			justify-items: center;
 			text-shadow: 0 0 1rem black;
+		}
+
+		div#tracklist {
+			flex: 1;
+			overflow: hidden;
+			overflow-y: auto;
 		}
 
 		.ArtistName {
@@ -747,59 +757,6 @@
 			else pauseTrack();
 		}
 
-		function playTrack() {
-			if (curr_track.readyState >= 2) {
-				curr_track.play()
-					.then(() => {
-						initAudioAnalyser();
-
-						function getAudioData() {
-							analyser.getByteFrequencyData(dataArray);
-
-							const volume = dataArray.reduce((sum, value) => sum + value, 0) / bufferLength;
-							const lowFrequency = dataArray[10];
-							const highFrequency = dataArray[bufferLength - 1];
-							const speedFactor = (lowFrequency + highFrequency) / 255;
-
-							return { volume, speedFactor };
-						}
-
-						function animate() {
-							ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-							const { volume, speedFactor } = getAudioData();
-
-							const additionalParticles = Math.floor(volume / 10);
-							if (particlesArray.length < baseNumParticles + additionalParticles) {
-								initParticles(additionalParticles);
-							}
-
-							particlesArray.forEach(particle => {
-								particle.update(volume / 255, speedFactor);
-								particle.draw();
-							});
-
-							removeOldParticles();
-
-							requestAnimationFrame(animate);
-						}
-
-						initParticles(baseNumParticles);
-						animate();
-
-						isPlaying = true;
-						playpause_btn.innerHTML = `<span class="material-symbols-rounded">
-                        pause_circle
-                    </span>`;
-						console.log('Playback started successfully.');
-					})
-					.catch(error => {
-						console.error('Error playing track:', error);
-					});
-			} else {
-				console.error('curr_track is not defined or is invalid.');
-			}
-		}
 
 		function pauseTrack() {
 			curr_track.pause();
@@ -878,8 +835,8 @@
 		}
 
 
-
-		function theskibidiscan() {
+		async function theskibidiscan() {
+			var skibiditracks = 0;
 			const musicExtensions = ['mp3', 'wav', 'flac', 'mpeg'];
 
 			const scanFolders = async (folder, basePath = '') => {
@@ -904,9 +861,8 @@
 				};
 
 				const processFile = async (fileContent, fileInfo, filename) => {
-
-					await new Promise(resolve => setTimeout(resolve, 0));
-					readthefile(fileContent, fileInfo, filename);
+					skibiditracks++
+					await readthefile(fileContent, fileInfo, filename);
 				};
 
 				const processFolder = async (folder, basePath = '') => {
@@ -915,7 +871,9 @@
 						if (key.endsWith('/')) {
 							filePromises.push(processFolder(folder[key], `${basePath}${key}`));
 						} else if (isMusicFile(key)) {
-							filePromises.push(processFile(window.parent.memory.contentpool[folder[key].id], folder[key], key));
+							console.log(key, folder[key])
+							let fileContentSave = await window.parent.getFileById(folder[key].id);
+							filePromises.push(processFile(fileContentSave), folder[key], key);
 						}
 					}
 					await Promise.all(filePromises);
@@ -925,13 +883,12 @@
 			};
 
 
-			scanFolders(window.parent.memory.tree);
+			await scanFolders(window.parent.memory.root);
 
 			primaryalert.close();
 			primaryalert.style.display = "none";
-			if (Object.keys(track_list).length == 0) {
+			if (skibiditracks == 0) {
 				window.parent.say("There aren't any readable audio files in your files. Try again.", "failed");
-				myWindow.close();
 			}
 		}
 
@@ -950,103 +907,194 @@
 			return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
 		}
 		const canvas = document.getElementById('particleCanvas');
-		const ctx = canvas.getContext('2d');
+const ctx = canvas.getContext('2d');
 
-		canvas.width = window.innerWidth;
-		canvas.height = window.innerHeight;
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
 
-		let particlesArray = [];
-		let baseNumParticles = 25;
+let particlesArray = [];
+let baseNumParticles = 50;
+let maxParticles = 200;
 
-		class Particle {
-			constructor() {
-				this.reset();
-			}
+function playTrack() {
+    if (curr_track.readyState >= 2) {
+        curr_track.play()
+            .then(() => {
+                initAudioAnalyser();
 
-			reset() {
-				this.x = Math.random() * canvas.width;
-				this.y = Math.random() * canvas.height;
-				this.size = Math.random() * 1 + 1;
-				this.speedX = 0;
-				this.speedY = 0;
-				this.baseSize = 1;
-				this.lifespan = Math.random() * 200 + 30;
-				this.opacity = 0;
-				this.maxOpacity = Math.random() * 0.7 + 0.3;
-				this.fadeIn = true;
-			}
+                let beatThreshold = 1.2;
+                let energyHistory = new Array(60).fill(0);
+                let beatDecay = 0.95;
 
-			update(volume, speedFactor) {
-				this.x += this.speedX * speedFactor;
-				this.y += this.speedY * speedFactor;
+                function getAudioData() {
+                    analyser.getByteFrequencyData(dataArray);
 
-				if (this.x > canvas.width) this.x = 0;
-				if (this.x < 0) this.x = canvas.width;
-				if (this.y > canvas.height) this.y = 0;
-				if (this.y < 0) this.y = canvas.height;
+                    const bassStart = 2;
+                    const bassEnd = 20;
+                    let bassEnergy = dataArray.slice(bassStart, bassEnd).reduce((sum, v) => sum + v, 0) / (bassEnd - bassStart);
 
-				this.size = this.baseSize + volume * 25;
+                    const highStart = bufferLength - 20;
+                    const highEnd = bufferLength;
+                    let highEnergy = dataArray.slice(highStart, highEnd).reduce((sum, v) => sum + v, 0) / (highEnd - highStart);
 
-				if (this.fadeIn) {
-					this.opacity += 0.02;
-					if (this.opacity >= this.maxOpacity) {
-						this.fadeIn = false;
-					}
-				} else {
-					this.lifespan -= 1;
-					if (this.lifespan <= 0) {
-						this.opacity -= 0.02;
-					}
-				}
+                    let totalEnergy = dataArray.reduce((sum, value) => sum + value, 0) / bufferLength;
 
-				if (this.opacity <= 0) {
-					this.reset();
-				}
-			}
+                    let avgEnergy = energyHistory.reduce((sum, e) => sum + e, 0) / energyHistory.length;
+                    let beatDetected = bassEnergy > avgEnergy * beatThreshold;
 
-			draw() {
-				ctx.fillStyle = `rgba(30, 30, 30, ${this.opacity})`;
-				ctx.beginPath();
-				ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-				ctx.closePath();
-				ctx.fill();
-			}
-		}
+                    energyHistory.shift();
+                    energyHistory.push(bassEnergy);
 
-		function initParticles(num) {
-			for (let i = 0; i < num; i++) {
-				particlesArray.push(new Particle());
-			}
-		}
+                    return { totalEnergy, beatDetected, bassEnergy, highEnergy };
+                }
 
-		function removeOldParticles() {
-			particlesArray = particlesArray.filter(particle => particle.opacity > 0);
-		}
+                function animate() {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-		let audioContext;
-		let analyser;
-		let audioSource;
-		let bufferLength;
-		let dataArray;
+                    const { totalEnergy, beatDetected, bassEnergy, highEnergy } = getAudioData();
 
-		function initAudioAnalyser() {
-			if (!audioContext) {
-				audioContext = new (window.AudioContext || window.webkitAudioContext)();
-				analyser = audioContext.createAnalyser();
-				analyser.fftSize = 256;
-				bufferLength = analyser.frequencyBinCount;
-				dataArray = new Uint8Array(bufferLength);
+                    if (beatDetected) {
+                        let newParticles = Math.floor(bassEnergy / 10); 
+                        initParticles(newParticles);
+                    }
 
-				audioSource = audioContext.createMediaElementSource(curr_track);
-				audioSource.connect(analyser);
-				analyser.connect(audioContext.destination);
-			}
-		}
+                    particlesArray.forEach(particle => {
+                        particle.update(totalEnergy / 255, bassEnergy, highEnergy, beatDetected);
+                        particle.draw();
+                    });
 
-		window.addEventListener('resize', function () {
-			canvas.width = window.innerWidth;
-			canvas.height = window.innerHeight;
-		});
+                    removeOldParticles();
+                    maintainBaseParticles();
+
+                    requestAnimationFrame(animate);
+                }
+
+                initParticles(baseNumParticles);
+                animate();
+
+                isPlaying = true;
+                playpause_btn.innerHTML = `<span class="material-symbols-rounded">
+                    pause_circle
+                </span>`;
+                console.log('Playback started successfully.');
+            })
+            .catch(error => {
+                console.error('Error playing track:', error);
+            });
+    } else {
+        console.error('curr_track is not defined or is invalid.');
+    }
+}
+
+class Particle {
+    constructor() {
+        this.reset();
+    }
+
+    reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 2 + 5;
+        this.velocityX = (Math.random() - 0.5) * 0.5;
+        this.velocityY = (Math.random() - 0.5) * 0.5;
+        this.baseSize = 1;
+        this.lifespan = Math.random() * 100 + 50;
+        this.opacity = 0;
+        this.maxOpacity = Math.random() * 0.5 + 0.5;
+        this.fadeIn = true;
+    }
+
+    update(volume, bassEnergy, highEnergy, beatDetected) {
+        this.velocityX *= 0.99;
+        this.velocityY *= 0.99;
+
+        if (beatDetected) {
+            this.velocityX += (Math.random() - 0.5) * bassEnergy * 0.01;
+            this.velocityY += (Math.random() - 0.5) * bassEnergy * 0.01;
+        }
+
+        this.velocityY -= highEnergy * 0.005;
+
+        this.x += this.velocityX;
+        this.y += this.velocityY;
+
+        if (this.x > canvas.width) this.x = 0;
+        if (this.x < 0) this.x = canvas.width;
+        if (this.y > canvas.height) this.y = 0;
+        if (this.y < 0) this.y = canvas.height;
+
+        this.size = this.baseSize + volume * 10;
+
+        if (this.fadeIn) {
+            this.opacity += 0.02;
+            if (this.opacity >= this.maxOpacity) {
+                this.fadeIn = false;
+            }
+        } else {
+            this.lifespan -= 1;
+            if (this.lifespan <= 0) {
+                this.opacity -= 0.02;
+            }
+        }
+
+        if (this.opacity <= 0) {
+            this.reset();
+        }
+    }
+
+    draw() {
+        ctx.fillStyle = `rgba(30, 30, 30, ${this.opacity})`;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.closePath();
+        ctx.fill();
+    }
+}
+
+function initParticles(num) {
+    for (let i = 0; i < num; i++) {
+        if (particlesArray.length < maxParticles) {
+            particlesArray.push(new Particle());
+        }
+    }
+}
+
+function removeOldParticles() {
+    particlesArray = particlesArray.filter(particle => particle.opacity > 0);
+}
+
+function maintainBaseParticles() {
+    if (particlesArray.length < baseNumParticles) {
+        let needed = baseNumParticles - particlesArray.length;
+        initParticles(needed);
+    }
+}
+
+let audioContext;
+let analyser;
+let audioSource;
+let bufferLength;
+let dataArray;
+
+function initAudioAnalyser() {
+    if (!audioContext) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        analyser = audioContext.createAnalyser();
+        analyser.fftSize = 256;
+        bufferLength = analyser.frequencyBinCount;
+        dataArray = new Uint8Array(bufferLength);
+
+        audioSource = audioContext.createMediaElementSource(curr_track);
+        audioSource.connect(analyser);
+        analyser.connect(audioContext.destination);
+    }
+}
+
+window.addEventListener('resize', function () {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+});
+
 	</script>
 </body>
 

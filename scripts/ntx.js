@@ -19,13 +19,13 @@ var novatx = {
         createFile: (id) => {
             return "file data: " + id;
         },
-        UpdateFile: (id) => {
+        updateFile: (id) => {
             return "file data: " + id;
         },
         removeFile: (id) => {
             return "file data: " + id;
         },
-        MoveFile: (id) => {
+        moveFile: (id) => {
             return "file data: " + id;
         }
     },
@@ -102,7 +102,7 @@ var novatx = {
         }
     },
     "sysUI": {
-        Justconfirm: (id) => {
+        justconfirm: (id) => {
             return "file data: " + id;
         },
         showDropdownModal: (id) => {
@@ -112,6 +112,9 @@ var novatx = {
             return "file data: " + id;
         },
         say: (id) => {
+            return "file data: " + id;
+        },
+        createWindow: (id) => {
             return "file data: " + id;
         }
     },
