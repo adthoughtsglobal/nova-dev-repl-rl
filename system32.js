@@ -484,40 +484,15 @@ async function getdbWithDefault(databaseName, storeName, key, defaultValue) {
 }
 
 // settings
+const settingsTaskQueue = [];
+let isProcessingTask = false;
 
-const defaultPreferences = {
-    "defFileLayout": "List",
-    "wsnapping": true,
-    "smartsearch": true,
-    "CamImgFormat": "WEBP",
-    "defSearchEngine": "Bing",
-    "darkMode": true,
-    "simpleMode": true
-};
+async function processTask() {
+    if (isProcessingTask) return;
+    isProcessingTask = true;
 
-async function ensurePreferencesFileExists() {
-    await updateMemoryData();
-    try {
-        memory.root["System/"] = memory.root["System/"] || {};
-
-        if (!memory.root["System/"]["preferences.json"]) {
-
-            const dataUri = `data:application/json;base64,${btoa(JSON.stringify(defaultPreferences))}`;
-            await createFile("System/", "preferences.json", false, dataUri);
-        }
-    } catch (err) {
-        console.log("Error ensuring preferences file exists", err);
-    }
-}
-const settingsQueue = [];
-let isProcessingQueue = false;
-
-async function processsetQueue() {
-    if (isProcessingQueue) return;
-    isProcessingQueue = true;
-
-    while (settingsQueue.length > 0) {
-        const { action, resolve, reject } = settingsQueue.shift();
+    while (settingsTaskQueue.length > 0) {
+        const { action, resolve, reject } = settingsTaskQueue.shift();
         try {
             const result = await action();
             resolve(result);
@@ -526,114 +501,155 @@ async function processsetQueue() {
         }
     }
 
-    isProcessingQueue = false;
+    isProcessingTask = false;
+
+    // Ensure new enqueued tasks get processed
+    if (settingsTaskQueue.length > 0) processTask();
 }
 
-function enqueueAction(action) {
+function enqueueTask(action) {
     return new Promise((resolve, reject) => {
-        settingsQueue.push({ action, resolve, reject });
-        if (!isProcessingQueue) processsetQueue();
+        settingsTaskQueue.push({ action, resolve, reject });
+        if (!isProcessingTask) processTask();
     });
 }
 
-async function getSetting(key) {
-    return enqueueAction(async () => {
+const defaultFileData = {
+    "System/preferences.json": {
+        "defFileLayout": "List",
+        "wsnapping": true,
+        "smartsearch": true,
+        "CamImgFormat": "WEBP",
+        "defSearchEngine": "Bing",
+        "darkMode": true,
+        "simpleMode": true
+    }
+};
+
+async function ensureFileExists(dirPath = "System/", fileName = "preferences.json") {
+    console.log("Checking file existence:", dirPath, fileName);
+    await updateMemoryData();
+    try {
+        const fullPath = `${dirPath}${fileName}`;
+        memory.root[dirPath] = memory.root[dirPath] || {};
+
+        if (!memory.root[dirPath][fileName]) {
+            const defaultData = defaultFileData[fullPath] || {};
+            const fileDataUri = `data:application/json;base64,${btoa(JSON.stringify(defaultData))}`;
+            await createFile(dirPath, fileName, false, fileDataUri);
+        }
+    } catch (err) {
+        console.log(`Error ensuring file ${fileName} exists in ${dirPath}`, err);
+    }
+}
+
+async function getSetting(settingKey, fileName = "preferences.json", dirPath = "System/") {
+    return enqueueTask(async () => {
         try {
-            if (!memory) {
-                console.error("Memory is not available.");
+            await ensureFileExists(dirPath, fileName);
+            const fileContent = memory.root[dirPath][fileName];
+
+            if (!fileContent) {
+                console.error(`File ${fileName} is missing in memory.`);
                 return null;
             }
 
-            await ensurePreferencesFileExists();
-            const content = memory.root["System/"]["preferences.json"];
-            if (!content) {
-                console.error("Preferences file is missing in memory.");
+            const base64Data = await ctntMgr.get(fileContent.id);
+            if (!base64Data) {
+                console.error(`Failed to fetch content for ${fileName}`);
                 return null;
             }
 
-            const base64Content = await ctntMgr.get(content.id);
-            if (!base64Content) {
-                console.error("Failed to fetch content from content manager.");
-                return null;
-            }
-
-            const preferences = JSON.parse(decodeBase64Content(base64Content));
-
-            return preferences[key];
+            const fileSettings = JSON.parse(decodeBase64Content(base64Data));
+            return fileSettings[settingKey] !== undefined ? fileSettings[settingKey] : null;
         } catch (error) {
-            console.error("Error in getSetting:", error);
+            console.error(`Error in getSetting for ${fileName}:`, error);
             return null;
         }
     });
 }
 
+async function setSetting(settingKey, settingValue, fileName = "preferences.json", dirPath = "System/") {
+    return enqueueTask(async () => {
+        try {
+            await ensureFileExists(dirPath, fileName);
+            const fileContent = memory.root[dirPath][fileName];
+            let fileSettings = {};
 
-async function setSetting(key, value) {
-    return enqueueAction(async () => {
-        if (!memory) return;
-        await ensurePreferencesFileExists();
-        const content = memory.root["System/"]["preferences.json"];
-        let preferences = {};
+            if (fileContent) {
+                const existingBase64Data = await ctntMgr.get(fileContent.id);
+                const decodedSettings = decodeBase64Content(existingBase64Data);
+                fileSettings = JSON.parse(decodedSettings);
+            }
 
-        if (content) {
-            const existingContent = await ctntMgr.get(content.id);
-            const decodedContent = decodeBase64Content(existingContent);
-            preferences = JSON.parse(decodedContent);
+            fileSettings[settingKey] = settingValue;
+            const newBase64Data = `data:application/json;base64,${btoa(JSON.stringify(fileSettings))}`;
+            await ctntMgr.set(fileContent.id, newBase64Data);
+
+            await setdb(`set setting ${settingKey} in ${fileName}`);
+            eventBusWorker.deliver({
+                type: "settings",
+                event: "set",
+                file: fileName,
+                key: settingKey
+            });
+        } catch (error) {
+            console.error(`Error in setSetting for ${fileName}:`, error);
         }
-
-        preferences[key] = value;
-        const newContent = `data:application/json;base64,${btoa(JSON.stringify(preferences))}`;
-        await ctntMgr.set(content.id, newContent);
-        await setdb("set setting " + key);
-        eventBusWorker.deliver({
-            type: "settings",
-            event: "set",
-            key: key
-        });
     });
 }
 
-async function resetSettings() {
-    try {
-        if (!memory) return;
-        await ensurePreferencesFileExists();
-        const content = memory.root["System/"]["preferences.json"];
+async function removeSetting(settingKey, fileName = "preferences.json", dirPath = "System/") {
+    return enqueueTask(async () => {
+        try {
+            await ensureFileExists(dirPath, fileName);
+            const fileContent = memory.root[dirPath][fileName];
 
-        const newContent = `data:application/json;base64,${btoa(JSON.stringify(defaultPreferences))}`;
-        await ctntMgr.set(content.id,newContent);
+            if (!fileContent) return;
 
-        await setdb("reset settings");
-        eventBusWorker.deliver({
-            "type": "settings",
-            "event": "reset"
-        });
-    } catch (error) {
-        console.log("Error resetting settings", error);
-    }
-}
-async function remSetting(key) {
-    await updateMemoryData();
-    try {
-        if (memory.root["System/"] && memory.root["System/"]["preferences.json"]) {
-            const content = memory.root["System/"]["preferences.json"];
-            let preferences = JSON.parse(decodeBase64Content(await ctntMgr.get(content.id)));
-            if (preferences[key]) {
-                delete preferences[key];
+            let fileSettings = JSON.parse(decodeBase64Content(await ctntMgr.get(fileContent.id)));
 
-                const newContent = `data:application/json;base64,${btoa(JSON.stringify(preferences))}`;
-                await ctntMgr.set(content.id,newContent);
+            if (fileSettings[settingKey] !== undefined) {
+                delete fileSettings[settingKey];
 
-                await setdb("remove setting");
+                const updatedBase64Data = `data:application/json;base64,${btoa(JSON.stringify(fileSettings))}`;
+                await ctntMgr.set(fileContent.id, updatedBase64Data);
+
+                await setdb(`remove setting ${settingKey} in ${fileName}`);
                 eventBusWorker.deliver({
-                    "type": "settings",
-                    "event": "remove",
-                    "key": key
+                    type: "settings",
+                    event: "remove",
+                    file: fileName,
+                    key: settingKey
                 });
             }
+        } catch (error) {
+            console.error(`Error removing setting from ${fileName}:`, error);
         }
-    } catch (error) {
-        console.log("Error removing settings", error);
-    }
+    });
+}
+
+async function resetSettings(fileName = "preferences.json", dirPath = "System/") {
+    return enqueueTask(async () => {
+        try {
+            await ensureFileExists(dirPath, fileName);
+            const fullPath = `${dirPath}${fileName}`;
+            const defaultData = defaultFileData[fullPath] || {};
+
+            const resetBase64Data = `data:application/json;base64,${btoa(JSON.stringify(defaultData))}`;
+            const fileContent = memory.root[dirPath][fileName];
+            await ctntMgr.set(fileContent.id, resetBase64Data);
+
+            await setdb(`reset settings in ${fileName}`);
+            eventBusWorker.deliver({
+                type: "settings",
+                event: "reset",
+                file: fileName
+            });
+        } catch (error) {
+            console.error(`Error resetting settings in ${fileName}:`, error);
+        }
+    });
 }
 
 // memory management

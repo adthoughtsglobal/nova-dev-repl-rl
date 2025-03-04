@@ -158,7 +158,7 @@ async function startup() {
 	let localupdatedataverstring = parseFloat(localStorage.getItem("updver"));
 	if (localupdatedataverstring <= 1.7 || !localupdatedataverstring) {
 		console.log("Preparing NovaOS2 switch.");
-		gid("versionswitcher").showModal();
+		gid("versionswitcher")?.showModal();
 		return;
 	}
 
@@ -253,7 +253,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 	let localupdatedataver = parseFloat(localStorage.getItem("updver"));
 	if (localupdatedataver <= 1.7) {
 		console.log("Preparing NovaOS2 switch.");
-		gid("versionswitcher").showModal();
+		gid("versionswitcher")?.showModal();
 		return;
 	}
 	const searchInput5342 = document.querySelector('#novamenusearchinp');
@@ -1127,7 +1127,7 @@ async function initialiseOS() {
 
 	setdb().then(async function () {
 		await saveMagicStringInLocalStorage(password);
-		await ensurePreferencesFileExists()
+		await ensureFileExists()
 			.then(async () => await installdefaultapps())
 			.then(async () => getFileNamesByFolder("Apps"))
 			.then(async (fileNames) => {
