@@ -217,6 +217,7 @@ async function startup() {
 				cleanupInvalidAssociations();
 			}
 			await loadFileTypeAssociations();
+			await ensureAllSettingsFilesExist();
 			const end = performance.now();
 
 			rllog(

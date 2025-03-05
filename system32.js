@@ -503,7 +503,7 @@ async function processTask() {
 
     isProcessingTask = false;
 
-    // Ensure new enqueued tasks get processed
+    // Ensure any newly enqueued tasks are processed
     if (settingsTaskQueue.length > 0) processTask();
 }
 
@@ -515,6 +515,8 @@ function enqueueTask(action) {
 }
 
 const defaultFileData = {
+    "System/appManager/defaults.json": {},
+    "System/appManager/appData.json": {},
     "System/preferences.json": {
         "defFileLayout": "List",
         "wsnapping": true,
@@ -526,20 +528,19 @@ const defaultFileData = {
     }
 };
 
-async function ensureFileExists(dirPath = "System/", fileName = "preferences.json") {
-    console.log("Checking file existence:", dirPath, fileName);
+async function ensureFileExists(dirPath, fileName) {
     await updateMemoryData();
     try {
-        const fullPath = `${dirPath}${fileName}`;
-        memory.root[dirPath] = memory.root[dirPath] || {};
+        if (!memory.root[dirPath]) memory.root[dirPath] = {}; // Ensure directory exists
 
         if (!memory.root[dirPath][fileName]) {
+            const fullPath = `${dirPath}${fileName}`;
             const defaultData = defaultFileData[fullPath] || {};
             const fileDataUri = `data:application/json;base64,${btoa(JSON.stringify(defaultData))}`;
             await createFile(dirPath, fileName, false, fileDataUri);
         }
     } catch (err) {
-        console.log(`Error ensuring file ${fileName} exists in ${dirPath}`, err);
+        console.error(`Error ensuring file ${fileName} exists in ${dirPath}:`, err);
     }
 }
 
@@ -648,6 +649,49 @@ async function resetSettings(fileName = "preferences.json", dirPath = "System/")
             });
         } catch (error) {
             console.error(`Error resetting settings in ${fileName}:`, error);
+        }
+    });
+}
+
+async function resetAllSettings() {
+    return enqueueTask(async () => {
+        try {
+            for (const fullPath in defaultFileData) {
+                const lastSlashIndex = fullPath.lastIndexOf("/");
+                const dirPath = fullPath.substring(0, lastSlashIndex + 1);
+                const fileName = fullPath.substring(lastSlashIndex + 1);
+                const defaultData = defaultFileData[fullPath] || {};
+
+                const resetBase64Data = `data:application/json;base64,${btoa(JSON.stringify(defaultData))}`;
+                const fileContent = memory.root[dirPath]?.[fileName];
+
+                if (fileContent) {
+                    await ctntMgr.set(fileContent.id, resetBase64Data);
+                    await setdb(`reset settings in ${fileName}`);
+                    eventBusWorker.deliver({
+                        type: "settings",
+                        event: "reset",
+                        file: fileName
+                    });
+                }
+            }
+        } catch (error) {
+            console.error("Error resetting all settings files:", error);
+        }
+    });
+}
+
+async function ensureAllSettingsFilesExist() {
+    return enqueueTask(async () => {
+        try {
+            for (const fullPath in defaultFileData) {
+                const lastSlashIndex = fullPath.lastIndexOf("/");
+                const dirPath = fullPath.substring(0, lastSlashIndex + 1);
+                const fileName = fullPath.substring(lastSlashIndex + 1);
+                await ensureFileExists(dirPath, fileName);
+            }
+        } catch (error) {
+            console.error("Error ensuring all settings files exist:", error);
         }
     });
 }
