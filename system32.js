@@ -515,8 +515,9 @@ function enqueueTask(action) {
 }
 
 const defaultFileData = {
-    "System/appManager/defaults.json": {},
-    "System/appManager/appData.json": {},
+    "System/appManager/defaults.json": {
+        "hi": "hello"
+    },
     "System/preferences.json": {
         "defFileLayout": "List",
         "wsnapping": true,
@@ -527,28 +528,28 @@ const defaultFileData = {
         "simpleMode": true
     }
 };
-
-async function ensureFileExists(dirPath, fileName) {
+async function ensureFileExists(fileName = "preferences.json", dirPath = "System/") {
     await updateMemoryData();
     try {
-        if (!memory.root[dirPath]) memory.root[dirPath] = {}; // Ensure directory exists
+        await createFolder(dirPath);
 
-        if (!memory.root[dirPath][fileName]) {
+        if (!memory.root[dirPath]?.[fileName]) {
             const fullPath = `${dirPath}${fileName}`;
             const defaultData = defaultFileData[fullPath] || {};
             const fileDataUri = `data:application/json;base64,${btoa(JSON.stringify(defaultData))}`;
-            await createFile(dirPath, fileName, false, fileDataUri);
+            await createFile(dirPath, fileName, "json", fileDataUri);
         }
     } catch (err) {
         console.error(`Error ensuring file ${fileName} exists in ${dirPath}:`, err);
     }
 }
 
+
 async function getSetting(settingKey, fileName = "preferences.json", dirPath = "System/") {
     return enqueueTask(async () => {
         try {
-            await ensureFileExists(dirPath, fileName);
-            const fileContent = memory.root[dirPath][fileName];
+            await ensureFileExists(fileName, dirPath);
+            const fileContent = memory.root[dirPath]?.[fileName];
 
             if (!fileContent) {
                 console.error(`File ${fileName} is missing in memory.`);
@@ -573,14 +574,15 @@ async function getSetting(settingKey, fileName = "preferences.json", dirPath = "
 async function setSetting(settingKey, settingValue, fileName = "preferences.json", dirPath = "System/") {
     return enqueueTask(async () => {
         try {
-            await ensureFileExists(dirPath, fileName);
-            const fileContent = memory.root[dirPath][fileName];
+            await ensureFileExists(fileName, dirPath);
+            const fileContent = memory.root[dirPath]?.[fileName];
             let fileSettings = {};
 
             if (fileContent) {
                 const existingBase64Data = await ctntMgr.get(fileContent.id);
-                const decodedSettings = decodeBase64Content(existingBase64Data);
-                fileSettings = JSON.parse(decodedSettings);
+                if (existingBase64Data) {
+                    fileSettings = JSON.parse(decodeBase64Content(existingBase64Data));
+                }
             }
 
             fileSettings[settingKey] = settingValue;
@@ -603,8 +605,8 @@ async function setSetting(settingKey, settingValue, fileName = "preferences.json
 async function removeSetting(settingKey, fileName = "preferences.json", dirPath = "System/") {
     return enqueueTask(async () => {
         try {
-            await ensureFileExists(dirPath, fileName);
-            const fileContent = memory.root[dirPath][fileName];
+            await ensureFileExists(fileName, dirPath);
+            const fileContent = memory.root[dirPath]?.[fileName];
 
             if (!fileContent) return;
 
@@ -633,12 +635,12 @@ async function removeSetting(settingKey, fileName = "preferences.json", dirPath 
 async function resetSettings(fileName = "preferences.json", dirPath = "System/") {
     return enqueueTask(async () => {
         try {
-            await ensureFileExists(dirPath, fileName);
+            await ensureFileExists(fileName, dirPath);
             const fullPath = `${dirPath}${fileName}`;
             const defaultData = defaultFileData[fullPath] || {};
 
             const resetBase64Data = `data:application/json;base64,${btoa(JSON.stringify(defaultData))}`;
-            const fileContent = memory.root[dirPath][fileName];
+            const fileContent = memory.root[dirPath]?.[fileName];
             await ctntMgr.set(fileContent.id, resetBase64Data);
 
             await setdb(`reset settings in ${fileName}`);
@@ -688,7 +690,7 @@ async function ensureAllSettingsFilesExist() {
                 const lastSlashIndex = fullPath.lastIndexOf("/");
                 const dirPath = fullPath.substring(0, lastSlashIndex + 1);
                 const fileName = fullPath.substring(lastSlashIndex + 1);
-                await ensureFileExists(dirPath, fileName);
+                await ensureFileExists(fileName, dirPath);
             }
         } catch (error) {
             console.error("Error ensuring all settings files exist:", error);
@@ -989,29 +991,31 @@ async function updateFile(folderName, fileId, newData) {
         console.error("Error updating file:", error);
     }
 }
-
-function createFolderStructure(folderName) {
-    let parts = folderName.split('/');
-    let current = memory.root;
-    for (let part of parts) {
-        part += '/';
-        if (!current[part]) {
-            current[part] = {};
-
-        }
-        current = current[part];
-    }
-    return current;
-}
 async function createFile(folderName, fileName, type, content, metadata = {}) {
-    console.log("creating: ", fileName)
+    console.log("creating: ", fileName, " in ", folderName);
+
     folderName = folderName.endsWith('/') ? folderName : folderName + '/';
     const fileNameWithExtension = fileName.includes('.') ? fileName : `${fileName}.${type || ''}`.trim();
     if (!fileNameWithExtension) return null;
+
     type = type || fileNameWithExtension.split('.').pop();
+
     await updateMemoryData();
-    if (!folderExists(folderName)) await createFolder(folderName);
-    const folder = memory.root[folderName] || {};
+
+    // Ensure folder exists by calling createFolder
+    await createFolder(folderName);  // Ensure this folder is created without redundancy
+
+    const parts = folderName.split('/').filter(Boolean);
+    let current = memory.root;
+
+    for (const part of parts) {
+        const folderKey = part + '/';
+        if (!current[folderKey]) {
+            current[folderKey] = {};
+        }
+        current = current[folderKey];
+    }
+
 
     try {
         let base64data = isBase64(content) ? content : '';
@@ -1022,28 +1026,29 @@ async function createFile(folderName, fileName, type, content, metadata = {}) {
             reader.readAsDataURL(blob);
             reader.onloadend = async function () {
                 base64data = reader.result;
-                await handleFile(folder, folderName, fileNameWithExtension, base64data, type, metadata);
-            };
+                await handleFile(current, folderName, fileNameWithExtension, base64data, type, metadata);
 
+            };
         } else {
-            await handleFile(folder, folderName, fileNameWithExtension, base64data, type, metadata);
+            await handleFile(current, folderName, fileNameWithExtension, base64data, type, metadata);
         }
     } catch (error) {
         console.error("Error in createFile:", error);
         return null;
     }
+
     async function handleFile(folder, folderName, fileNameWithExtension, base64data, type, metadata) {
         if (!base64data) {
             base64data = `data:${await getMimeType(type)};base64,`;
         }
-        
+
         metadata.datetime = getfourthdimension();
-        
+
         const extIndex = fileNameWithExtension.lastIndexOf(".");
         if (extIndex !== -1) {
             fileNameWithExtension = fileNameWithExtension.slice(0, extIndex) + fileNameWithExtension.slice(extIndex).toLowerCase();
         }
-    
+        // Handle the app file separately if needed
         if (type === "app" || fileNameWithExtension.endsWith(".app")) {
             const appData = await getFileByPath(`Apps/${fileNameWithExtension}`);
             if (appData) {
@@ -1052,16 +1057,17 @@ async function createFile(folderName, fileName, type, content, metadata = {}) {
                 return appData.id || null;
             }
         }
-    
+
         const existingFile = Object.values(folder).find(file => file.fileName === fileNameWithExtension);
         if (existingFile) {
             await updateFile(folderName, existingFile.id, { metadata, content: base64data, fileName: fileNameWithExtension, type });
             return existingFile.id;
         } else {
             const uid = genUID();
-            memory.root[folderName] = folder;
+            // This prevents overwriting the root with a misplaced folder reference
+memory.root = { ...memory.root }; 
             folder[fileNameWithExtension] = { id: uid, type, metadata };
-    
+
             if (fileNameWithExtension.endsWith(".app")) extractAndRegisterCapabilities(uid, base64data);
             await ctntMgr.set(uid, base64data);
             await setdb("handling file: " + fileNameWithExtension);
@@ -1073,32 +1079,57 @@ async function createFile(folderName, fileName, type, content, metadata = {}) {
             });
             return uid;
         }
-    }    
+    }
+} const createFolderQueue = [];
+let isProcessingCreateFolderQueue = false;
+async function createFolder(folderNames, folderData = {}) {
+    return new Promise((resolve, reject) => {
+        createFolderQueue.push({ folderNames, folderData, resolve, reject });
+        processCreateFolderQueue();
+    });
 }
-async function createFolder(folderNames, folderData) {
+
+async function processCreateFolderQueue() {
+    if (isProcessingCreateFolderQueue || createFolderQueue.length === 0) {
+        return;
+    }
+
+    isProcessingCreateFolderQueue = true;
+    const { folderNames, folderData, resolve, reject } = createFolderQueue.shift();
+
     try {
         await updateMemoryData();
-        if (typeof folderNames === 'string') {
-            folderNames = [folderNames];
-        } else if (!(folderNames instanceof Set || Array.isArray(folderNames))) {
-            throw new Error('folderNames should be a Set or a string');
-        }
-        folderNames = Array.from(folderNames);
-        for (const folderName of folderNames) {
-            const parts = folderName.replace(/\/$/, '').split('/');
+
+        let folderList = Array.isArray(folderNames) || folderNames instanceof Set
+            ? Array.from(folderNames)
+            : [folderNames];
+
+        for (const folderName of folderList) {
+            const parts = folderName.split('/').filter(Boolean);
             let current = memory.root;
-            for (const part of parts) {
-                const folderKey = part + '/';
-                current[folderKey] = current[folderKey] || {};
+
+            let folderExists = true;
+            for (let i = 0; i < parts.length; i++) {
+                const folderKey = parts[i] + '/';
+
+                if (!current[folderKey]) {
+                    folderExists = false;
+                    current[folderKey] = {};
+                }
 
                 current = current[folderKey];
             }
+
+            if (folderExists) {
+                resolve(true);
+                return;
+            }
         }
+
         const insertData = (target, data) => {
             for (const key in data) {
                 if (typeof data[key] === 'object' && data[key] !== null) {
                     target[key] = target[key] || {};
-
                     insertData(target[key], data[key]);
                 } else {
                     target[key] = data[key];
@@ -1108,16 +1139,26 @@ async function createFolder(folderNames, folderData) {
 
         insertData(memory.root, folderData);
         await setdb("making folders");
+
         eventBusWorker.deliver({
-            "type": "memory",
-            "event": "update",
-            "id": "createFolder",
-            "key": folderNames
+            type: "memory",
+            event: "update",
+            id: "createFolder",
+            key: folderList,
         });
+
+        resolve();
     } catch (error) {
         console.error("Error creating folders and data:", error);
+        reject(error);
+    } finally {
+        isProcessingCreateFolderQueue = false;
+        processCreateFolderQueue();
     }
 }
+
+
+
 
 // other
 
@@ -1137,42 +1178,42 @@ async function crashScreen(err) {
 
 const handlers = {
     "user.getPermissions": (message) => {
-      const { permissions } = message.data;
-      return {
-        grantedPermissions: permissions.filter((perm) => perm !== "restricted"),
-        deniedPermissions: permissions.filter((perm) => perm === "restricted"),
-      };
+        const { permissions } = message.data;
+        return {
+            grantedPermissions: permissions.filter((perm) => perm !== "restricted"),
+            deniedPermissions: permissions.filter((perm) => perm === "restricted"),
+        };
     },
     "system.getStatus": () => {
-      return { status: "online", uptime: "48 hours" };
+        return { status: "online", uptime: "48 hours" };
     },
     "app.saveData": (message) => {
-      const { data } = message.data;
-      return { success: true, savedData: data };
+        const { data } = message.data;
+        return { success: true, savedData: data };
     },
-  };
-  
-  function validateMessageSchema(message) {
+};
+
+function validateMessageSchema(message) {
     if (
-      typeof message !== "object" ||
-      message === null ||
-      typeof message.transactionId !== "string" ||
-      typeof message.action !== "string" ||
-      typeof message.data !== "object" ||
-      message.data === null
+        typeof message !== "object" ||
+        message === null ||
+        typeof message.transactionId !== "string" ||
+        typeof message.action !== "string" ||
+        typeof message.data !== "object" ||
+        message.data === null
     ) {
-      throw new Error("Invalid message format");
+        throw new Error("Invalid message format");
     }
-  }
-  
-  function parseMessage(message) {
+}
+
+function parseMessage(message) {
     try {
-      const parsedMessage = typeof message === "string" ? JSON.parse(message) : message;
-      validateMessageSchema(parsedMessage);
-      const actionHandler = handlers[parsedMessage.action];
-      if (!actionHandler) throw new Error(`No handler defined for action: ${parsedMessage.action}`);
-      return actionHandler(parsedMessage);
+        const parsedMessage = typeof message === "string" ? JSON.parse(message) : message;
+        validateMessageSchema(parsedMessage);
+        const actionHandler = handlers[parsedMessage.action];
+        if (!actionHandler) throw new Error(`No handler defined for action: ${parsedMessage.action}`);
+        return actionHandler(parsedMessage);
     } catch (error) {
-      return { error: error.message };
+        return { error: error.message };
     }
-  }
+}

@@ -1128,7 +1128,7 @@ async function initialiseOS() {
 
 	setdb().then(async function () {
 		await saveMagicStringInLocalStorage(password);
-		await ensureFileExists()
+		await ensureAllSettingsFilesExist()
 			.then(async () => await installdefaultapps())
 			.then(async () => getFileNamesByFolder("Apps"))
 			.then(async (fileNames) => {

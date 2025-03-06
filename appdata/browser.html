@@ -167,9 +167,9 @@
 			flex: 1;
 			text-overflow: ellipsis;
 			white-space: nowrap;
-    font-size: 10px;
-    opacity: 0.5;
-    padding: 0.2rem;
+			font-size: 10px;
+			opacity: 0.5;
+			padding: 0.2rem;
 		}
 
 		.tabcontent {
@@ -239,7 +239,7 @@
 			font-size: 1rem !important;
 		}
 	</style>
-	
+
 </head>
 
 <body>
@@ -425,15 +425,31 @@
 			}
 			openCity(lasttab, 'wincs' + nowtab)
 		}
-
 		let navigationTimer = null;
 
 		function safeNavigateIframe(iframe, newSrc) {
-			if (navigationTimer) {
-				clearTimeout(navigationTimer);
-			}
-			navigationTimer = setTimeout(() => {
-				iframe.src = newSrc;
+			if (navigationTimer) clearTimeout(navigationTimer);
+
+			navigationTimer = setTimeout(async () => {
+				try {
+					const response = await fetch(newSrc);
+					let html = await response.text();
+
+					// Rewrite URLs to be absolute (so sub-resources still work)
+					html = html.replace(/(src|href)=["']([^"']+)["']/g, (match, attr, url) => {
+						if (!url.startsWith('http') && !url.startsWith('//')) {
+							return `${attr}="${new URL(url, newSrc).href}"`;
+						}
+						return match;
+					});
+
+					// Convert to a Blob and load in iframe
+					const blob = new Blob([html], { type: 'text/html' });
+					iframe.src = URL.createObjectURL(blob);
+
+				} catch (error) {
+					console.error("Failed to fetch iframe content:", error);
+				}
 			}, 100);
 		}
 
@@ -451,7 +467,6 @@
 			};
 
 			const SANDBOX = [
-				"allow-same-origin",
 				"allow-scripts",
 				"allow-forms",
 				"allow-modals",
@@ -475,14 +490,14 @@
 			bf.setAttribute("frameborder", 0);
 
 			bf.onload = () => {
-					if (src) {
-						if (bf.src !== src) {
-							safeNavigateIframe(bf, src)
-						}
-					} else {
-						safeNavigateIframe(bf, "https://adthoughtsglobal.github.io/NovaOS/newtab.html");
+				if (src) {
+					if (bf.src !== src) {
+						safeNavigateIframe(bf, src)
 					}
-					bf.onload = null;
+				} else {
+					safeNavigateIframe(bf, "https://adthoughtsglobal.github.io/NovaOS/newtab.html");
+				}
+				bf.onload = null;
 			};
 
 			if (typeof tabhistory !== 'undefined' && typeof src !== 'undefined') {
