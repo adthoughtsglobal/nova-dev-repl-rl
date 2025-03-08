@@ -350,7 +350,13 @@
 		function makeMenu(items) {
 			const dropdownMenu = document.getElementById("flamenu");
 			dropdownMenu.innerHTML = "";
+			let bannedActions = [
+				"Reinstall"
+			]
 			items.forEach(item => {
+				if (bannedActions.includes((item.label))) {
+					return;
+				}
 				const menuItem = document.createElement('div');
 				menuItem.innerHTML = `<span class="material-symbols-rounded">${item.icon || ""}</span>
         <span class=" tooltiptext">${item.label}</span>`;

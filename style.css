@@ -573,7 +573,7 @@ nav [navobj] div {
 	text-align: left;
 	display: grid;
 	flex: 1;
-	width: calc(100% - var(--sizing-normal));
+    width: calc(100% - 1rem);
 	margin: auto;
 	grid-template-columns: repeat(auto-fill, minmax(80px, 85px));
 	justify-items: center;
@@ -2219,9 +2219,9 @@ div#toastdiv {
 }
 
 #snappingIndicator div {
-	background-color: var(--colors-BG-sub);
+	background-color: white;
 	border-radius: .5rem;
-	border: 2px solid var(--color-BG-sub);
+	border: 2px solid var(--colors-BG-highlighted);
 	transition: .2s ease-out;
 }
 

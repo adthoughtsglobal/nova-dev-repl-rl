@@ -508,7 +508,6 @@ async function openn() {
 	}
 
 	gid("appdmod").showModal();
-	scaleUIElements(await getSetting("UISizing"));
 }
 async function loadrecentapps() {
 	gid("serrecentapps").innerHTML = ``
@@ -570,7 +569,6 @@ async function loadrecentapps() {
 		appShortcutDiv.appendChild(tooltisp);
 		gid("serrecentapps").appendChild(appShortcutDiv);
 	})).then(async () => {
-		scaleUIElements(await getSetting("UISizing"));
 
 		gid("novamenusearchinp").focus();
 	}).catch((error) => {
@@ -709,7 +707,6 @@ async function dod() {
 		console.error(error)
 	}
 
-	scaleUIElements(await getSetting("UISizing"))
 }
 function closeElementedis() {
 	var element = document.getElementById("edison");
@@ -769,6 +766,7 @@ async function getAppIcon(content, id, lazy = 0) {
 		const iconContent = await withTimeout(getMetaTagContent(content, 'nova-icon', true));
 		if (iconContent && containsSmallSVGElement(iconContent)) {
 			appicns[id] = iconContent;
+			setSetting(id, iconContent, "registry.json", "System/appManager/")
 			return iconContent;
 		}
 	} catch (err) {
@@ -807,10 +805,10 @@ function putwinontop(x) {
 	}
 }
 function isWinOnTop(x) {
-    const ourKey = x.replace(/^window/, '');
-    const maxKey = Object.keys(winds).reduce((a, b) => (Number(winds[a].zIndex) > Number(winds[b].zIndex) ? a : b));
-    
-    return ourKey === maxKey;
+	const ourKey = x.replace(/^window/, '');
+	const maxKey = Object.keys(winds).reduce((a, b) => (Number(winds[a].zIndex) > Number(winds[b].zIndex) ? a : b));
+
+	return ourKey === maxKey;
 }
 
 function normalizeZIndexes(excludeWindowId = null) {
@@ -1479,14 +1477,12 @@ function displayToast(text, duration) {
 
 		document.getElementById("toastdiv").onclick = function () {
 			document.getElementById("toastdiv").classList.add('closeEffect');
-			setTimeout(function () {
-				document.getElementById("toastdiv").style.display = "none";
-				toastInProgress = false;
-				if (toastQueue.length > 0) {
-					const nextToast = toastQueue.shift();
-					displayToast(nextToast.text, nextToast.duration);
-				}
-			}, 200);
+			document.getElementById("toastdiv").style.display = "none";
+			toastInProgress = false;
+			if (toastQueue.length > 0) {
+				const nextToast = toastQueue.shift();
+				displayToast(nextToast.text, nextToast.duration);
+			}
 		};
 
 		setTimeout(function () {

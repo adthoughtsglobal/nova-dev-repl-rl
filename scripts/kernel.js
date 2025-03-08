@@ -1,4 +1,4 @@
-var dragging = false, remToPx = parseFloat(getComputedStyle(document.documentElement).fontSize), navheight;;
+var dragging = false, remToPx = parseFloat(getComputedStyle(document.documentElement).fontSize), navheight;
 
 var novadotcsscache;
 
@@ -409,10 +409,6 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
                     if (!novaIncludes || !novaIncludes.length) return;
 
                     if (novaIncludes.includes('nova.css')) {
-                        if (!novadotcsscache) {
-                            const response = await fetch('nova.css');
-                            novadotcsscache = await response.text();
-                        }
                         const novadotcss = novadotcsscache;
 
                         const computedStyles = getComputedStyle(document.body);

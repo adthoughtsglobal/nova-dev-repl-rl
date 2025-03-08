@@ -9,42 +9,6 @@ function updateNavSize() {
 	navheight = navheight + (0.3 * remToPx);
 }
 
-async function checkdmode() {
-	const uiSizing = await getSetting("UISizing");
-
-	if (uiSizing === 1) scaleUIElements(uiSizing);
-
-	const themeColors = await getSetting("themeColors");
-	if (!themeColors) return;
-
-	Object.entries(themeColors).forEach(([variableName, colorValue]) => {
-		document.documentElement.style.setProperty(variableName, colorValue);
-	});
-}
-
-const setStyle = (element, styles) => {
-	if (element) {
-		Object.assign(element.style, styles);
-	}
-};
-
-const applyStyles = (elements, styles) => {
-	elements.forEach(element => setStyle(element, styles));
-};
-
-function switchtheme(theme, simplicity) {
-	const currentStyles = styles[theme][simplicity];
-
-	applyStyles(document.querySelectorAll('[navobj]'), currentStyles.flodiv);
-	setStyle(document.querySelector('#appdmod'), currentStyles.appdmod);
-	setStyle(document.querySelector('#searchwindow'), currentStyles.appdmod);
-	setStyle(document.querySelector('.searchinputcont'), currentStyles.searchinpe);
-	setStyle(document.querySelector('#strtsearcontbtn'), currentStyles.searchnbtn);
-	setStyle(document.querySelector('#bobthedropdown'), currentStyles.bob);
-
-	const novaic = document.querySelector('#novaic');
-	if (novaic) novaic.style.fill = currentStyles.novaic.fill;
-}
 
 // more stuff
 function isDark(hexColor) {
@@ -94,14 +58,6 @@ function cuteee() {
 }
 `
 	document.body.appendChild(stylelement)
-}
-
-function scaleUIElements(scaleFactor) {
-	var elements = document.querySelectorAll('.scalableui');
-
-	elements.forEach(function (element) {
-		element.style.zoom = scaleFactor;
-	});
 }
 
 async function checkAndRunFromURL() {
@@ -216,21 +172,47 @@ async function logoutofrtr() {
 	roturExtension.disconnect();
 }
 
+// themes
+async function checkdmode() {
+    if (!novadotcsscache) {
+        const response = await fetch('nova.css');
+        novadotcsscache = await response.text();
+    }
 
-function applyThemeNonVisual(data, doc) {
-	saveColorsNonVisual(data.colors, doc, data);
+    const themeColors = await getSetting("themeColors") || {};
+    applyTheme(themeColors, document);
 }
 
-function saveColorsNonVisual(colors, doc, data) {
-	const colorsToSave = {};
-	for (const variableName in colors) {
-		colorsToSave[variableName] = colors[variableName];
+function applyThemeNonVisual(data, doc) {
+    applyTheme(data.colors, doc);
+    if (data.wallpaper) window.top.makewall(data.wallpaper);
+    window.top.setSetting("themeColors", data.colors);
+}
 
-		window.top.document.documentElement.style.setProperty(variableName, colors[variableName]);
-		if (data.wallpaper)
-			window.top.makewall(data.wallpaper);
+function applyTheme(colors, doc) {
+    const cssVars = Object.fromEntries(
+        [...novadotcsscache.matchAll(/(--[\w-]+):\s*([^;]+)/g)].map(([_, key, value]) => [key, value.trim()])
+    );
 
-		doc.documentElement.style.setProperty(variableName, colors[variableName]);
-	}
-	window.top.setSetting("themeColors", colorsToSave);
+    const textColor = colors["--colors-text-normal"] ?? cssVars["--colors-text-normal"];
+    const textSelectors = [
+        "--colors-text-section",
+        "--colors-text-sub",
+        "--colors-text-high"
+    ];
+
+    const colorsToApply = {};
+
+    for (const variableName in cssVars) {
+        let colorValue = colors[variableName] ?? cssVars[variableName];
+
+        if (textSelectors.includes(variableName)) {
+            colorValue = textColor;
+        }
+
+        colorsToApply[variableName] = colorValue;
+
+        window.top.document.documentElement.style.setProperty(variableName, colorValue);
+        doc.documentElement.style.setProperty(variableName, colorValue);
+    }
 }

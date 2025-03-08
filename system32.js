@@ -515,8 +515,7 @@ function enqueueTask(action) {
 }
 
 const defaultFileData = {
-    "System/appManager/defaults.json": {
-        "hi": "hello"
+    "System/appManager/registry.json": {
     },
     "System/preferences.json": {
         "defFileLayout": "List",
@@ -529,11 +528,21 @@ const defaultFileData = {
     }
 };
 async function ensureFileExists(fileName = "preferences.json", dirPath = "System/") {
+    console.log("ensuring", fileName, dirPath);
     await updateMemoryData();
     try {
-        await createFolder(dirPath);
+        const pathParts = dirPath.split('/').filter(Boolean);
+        let currentPath = memory.root;
 
-        if (!memory.root[dirPath]?.[fileName]) {
+        for (let part of pathParts) {
+            part += "/"
+            if (!currentPath[part]) {
+                currentPath[part] = {};
+            }
+            currentPath = currentPath[part];
+        }
+
+        if (!currentPath[fileName]) {
             const fullPath = `${dirPath}${fileName}`;
             const defaultData = defaultFileData[fullPath] || {};
             const fileDataUri = `data:application/json;base64,${btoa(JSON.stringify(defaultData))}`;
@@ -544,13 +553,23 @@ async function ensureFileExists(fileName = "preferences.json", dirPath = "System
     }
 }
 
-
 async function getSetting(settingKey, fileName = "preferences.json", dirPath = "System/") {
     return enqueueTask(async () => {
         try {
             await ensureFileExists(fileName, dirPath);
-            const fileContent = memory.root[dirPath]?.[fileName];
+            const pathParts = dirPath.split('/').filter(Boolean);
+            let currentPath = memory.root;
 
+            for (let part of pathParts) {
+                part += "/"
+                if (!currentPath[part]) {
+                    console.error(`Folder ${part} not found in memory.`);
+                    return null;
+                }
+                currentPath = currentPath[part];
+            }
+
+            const fileContent = currentPath[fileName];
             if (!fileContent) {
                 console.error(`File ${fileName} is missing in memory.`);
                 return null;
@@ -575,7 +594,19 @@ async function setSetting(settingKey, settingValue, fileName = "preferences.json
     return enqueueTask(async () => {
         try {
             await ensureFileExists(fileName, dirPath);
-            const fileContent = memory.root[dirPath]?.[fileName];
+            const pathParts = dirPath.split('/').filter(Boolean);
+            let currentPath = memory.root;
+
+            for (let part of pathParts) {
+                part += "/"
+                if (!currentPath[part]) {
+                    console.error(`Folder ${part} not found in memory.`);
+                    return;
+                }
+                currentPath = currentPath[part];
+            }
+
+            const fileContent = currentPath[fileName];
             let fileSettings = {};
 
             if (fileContent) {
@@ -606,7 +637,19 @@ async function removeSetting(settingKey, fileName = "preferences.json", dirPath 
     return enqueueTask(async () => {
         try {
             await ensureFileExists(fileName, dirPath);
-            const fileContent = memory.root[dirPath]?.[fileName];
+            const pathParts = dirPath.split('/').filter(Boolean);
+            let currentPath = memory.root;
+
+            for (let part of pathParts) {
+                part += "/"
+                if (!currentPath[part]) {
+                    console.error(`Folder ${part} not found in memory.`);
+                    return;
+                }
+                currentPath = currentPath[part];
+            }
+
+            const fileContent = currentPath[fileName];
 
             if (!fileContent) return;
 
@@ -640,7 +683,19 @@ async function resetSettings(fileName = "preferences.json", dirPath = "System/")
             const defaultData = defaultFileData[fullPath] || {};
 
             const resetBase64Data = `data:application/json;base64,${btoa(JSON.stringify(defaultData))}`;
-            const fileContent = memory.root[dirPath]?.[fileName];
+            const pathParts = dirPath.split('/').filter(Boolean);
+            let currentPath = memory.root;
+
+            for (let part of pathParts) {
+                part += "/"
+                if (!currentPath[part]) {
+                    console.error(`Folder ${part} not found in memory.`);
+                    return;
+                }
+                currentPath = currentPath[part];
+            }
+
+            const fileContent = currentPath[fileName];
             await ctntMgr.set(fileContent.id, resetBase64Data);
 
             await setdb(`reset settings in ${fileName}`);
@@ -654,6 +709,7 @@ async function resetSettings(fileName = "preferences.json", dirPath = "System/")
         }
     });
 }
+
 
 async function resetAllSettings() {
     return enqueueTask(async () => {
@@ -1065,7 +1121,7 @@ async function createFile(folderName, fileName, type, content, metadata = {}) {
         } else {
             const uid = genUID();
             // This prevents overwriting the root with a misplaced folder reference
-memory.root = { ...memory.root }; 
+            memory.root = { ...memory.root };
             folder[fileNameWithExtension] = { id: uid, type, metadata };
 
             if (fileNameWithExtension.endsWith(".app")) extractAndRegisterCapabilities(uid, base64data);
