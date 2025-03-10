@@ -2718,7 +2718,7 @@
 				async function savewallpap() {
 					var newurl = document.getElementById("wallpaperurl");
 					await window.parent.setSetting("wall", newurl.value);
-					setTimeout(() => { window.parent.dod() }, 1000)
+					setTimeout(() => { window.parent.genDesktop() }, 1000)
 
 				}
 				var prevCityBtn = null;

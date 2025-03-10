@@ -528,7 +528,6 @@ const defaultFileData = {
     }
 };
 async function ensureFileExists(fileName = "preferences.json", dirPath = "System/") {
-    console.log("ensuring", fileName, dirPath);
     await updateMemoryData();
     try {
         const pathParts = dirPath.split('/').filter(Boolean);

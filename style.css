@@ -280,7 +280,7 @@ nav [navobj] div {
 }
 
 .app-shortcut:hover {
-	background-color: var(--colors-BG-section);
+	background-color: #ffffff17;
 }
 
 .app-shortcut:active {

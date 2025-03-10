@@ -237,3 +237,18 @@ console.log = function (...args) {
 	const style = 'font-size: 0.8em; color:grey;';
 	rllog(`%c${source}\n`, style, ...args);
 };
+
+const debounceMap = new Map();
+
+function debounce(func, delay = 300) {
+    return async function (...args) {
+        const key = func.name;
+        if (debounceMap.has(key)) {
+            clearTimeout(debounceMap.get(key));
+        }
+        debounceMap.set(key, setTimeout(async () => {
+            debounceMap.delete(key);
+            await func(...args);
+        }, delay));
+    };
+}

@@ -199,7 +199,7 @@ async function startup() {
 
 
 			await fetchDataAndUpdate();
-			dod();
+			genDesktop();
 			removeInvalidMagicStrings();
 			function startUpdateTime() {
 				let now = new Date();
@@ -639,75 +639,7 @@ function updateBattery() {
 		console.log("Battery Error: " + error);
 	});
 }
-async function dod() {
-	let x;
-	try {
-		gid("desktop").innerHTML = ``;
-		let y = await getFileNamesByFolder("Desktop");
-		let dropZone = document.getElementById("desktop");
-		dropZone.addEventListener('dragover', (event) => {
-			event.preventDefault();
-		});
-		dropZone.addEventListener('drop', async (event) => {
-			event.preventDefault();
-			const unid = event.dataTransfer.getData("Text");
-			await moveFileToFolder(unid, "Desktop/");
-			dod()
-		});
-		dropZone.addEventListener('dragend', (event) => {
-			event.preventDefault();
-		});
-		y.forEach(async function (app) {
-			var appShortcutDiv = document.createElement("div");
-			appShortcutDiv.className = "app-shortcut sizableuielement";
-			appShortcutDiv.setAttribute("unid", app.id || '');
-			app = await getFileById(app.id);
-			let islnk = false;
-			if (mtpetxt(app.fileName) == "lnk") {
-				let z = JSON.parse(decodeBase64Content(app.content));
-				app = await getFileById(z.open);
-				islnk = true;
-			}
-			appShortcutDiv.setAttribute("draggable", true);
-			appShortcutDiv.setAttribute("ondragstart", "dragfl(event, this)");
-			appShortcutDiv.addEventListener("click", () => openfile(app.id));
-			appShortcutDiv.setAttribute("unid", app.id);
-			var iconSpan = document.createElement("span");
 
-			iconSpan.classList.add("appiconspan");
-			getAppIcon(app.content, app.id).then((icon) => {
-				iconSpan.innerHTML = `${icon}`;
-			})
-			var nameSpan = document.createElement("span");
-			nameSpan.className = "appname";
-			nameSpan.textContent = islnk ? basename(app.fileName) + `*` : basename(app.fileName);
-			appShortcutDiv.appendChild(iconSpan);
-			appShortcutDiv.appendChild(nameSpan);
-			gid("desktop").appendChild(appShortcutDiv);
-		});
-		x = await getSetting("wall");
-		if (x != undefined && x != '' && x != ' ') {
-			let unshrinkbsfX;
-			if (x.startsWith("http")) {
-				unshrinkbsfX = x;
-			} else {
-				unshrinkbsfX = await getFileById(x);
-				unshrinkbsfX = unshrinkbsfX.content;
-			}
-			setbgimagetourl(unshrinkbsfX);
-		}
-		document.getElementById("bgimage").onerror = async function (event) {
-			console.log("wallpaper error", event)
-			setbgimagetourl(novaFeaturedImage);
-			if (await getSetting("wall")) {
-				remSetting("wall");
-			}
-		};
-	} catch (error) {
-		console.error(error)
-	}
-
-}
 function closeElementedis() {
 	var element = document.getElementById("edison");
 	element.classList.add("closeEffect");
@@ -1564,7 +1496,7 @@ function runAsWasm(content) {
 	div.appendChild(script);
 	openwindow("Nova Wasm Runner", div.innerHTML);
 }
-async function genTaskBar() {
+async function realgenTaskBar() {
 	gid("novanav").style.display = "none";
 	var appbarelement = document.getElementById("dock")
 	appbarelement.innerHTML = "<span class='taskbarloader' id='taskbarloaderprime'></span>";
@@ -1644,6 +1576,79 @@ async function genTaskBar() {
 		document.querySelector('#taskbarloaderprime').remove();
 	}
 }
+async function realgenDesktop() {
+	let x;
+	try {
+		gid("desktop").innerHTML = ``;
+		let y = await getFileNamesByFolder("Desktop");
+		let dropZone = document.getElementById("desktop");
+		dropZone.addEventListener('dragover', (event) => {
+			event.preventDefault();
+		});
+		dropZone.addEventListener('drop', async (event) => {
+			event.preventDefault();
+			const unid = event.dataTransfer.getData("Text");
+			await moveFileToFolder(unid, "Desktop/");
+			genDesktop()
+		});
+		dropZone.addEventListener('dragend', (event) => {
+			event.preventDefault();
+		});
+		y.forEach(async function (app) {
+			var appShortcutDiv = document.createElement("div");
+			appShortcutDiv.className = "app-shortcut sizableuielement";
+			appShortcutDiv.setAttribute("unid", app.id || '');
+			app = await getFileById(app.id);
+			let islnk = false;
+			if (mtpetxt(app.fileName) == "lnk") {
+				let z = JSON.parse(decodeBase64Content(app.content));
+				app = await getFileById(z.open);
+				islnk = true;
+			}
+			appShortcutDiv.setAttribute("draggable", true);
+			appShortcutDiv.setAttribute("ondragstart", "dragfl(event, this)");
+			appShortcutDiv.addEventListener("click", () => openfile(app.id));
+			appShortcutDiv.setAttribute("unid", app.id);
+			var iconSpan = document.createElement("span");
+
+			iconSpan.classList.add("appiconspan");
+			getAppIcon(app.content, app.id).then((icon) => {
+				iconSpan.innerHTML = `${icon}`;
+			})
+			var nameSpan = document.createElement("span");
+			nameSpan.className = "appname";
+			nameSpan.textContent = islnk ? basename(app.fileName) + `*` : basename(app.fileName);
+			appShortcutDiv.appendChild(iconSpan);
+			appShortcutDiv.appendChild(nameSpan);
+			gid("desktop").appendChild(appShortcutDiv);
+		});
+		x = await getSetting("wall");
+		if (x != undefined && x != '' && x != ' ') {
+			let unshrinkbsfX;
+			if (x.startsWith("http")) {
+				unshrinkbsfX = x;
+			} else {
+				unshrinkbsfX = await getFileById(x);
+				unshrinkbsfX = unshrinkbsfX.content;
+			}
+			setbgimagetourl(unshrinkbsfX);
+		}
+		document.getElementById("bgimage").onerror = async function (event) {
+			console.log("wallpaper error", event)
+			setbgimagetourl(novaFeaturedImage);
+			if (await getSetting("wall")) {
+				remSetting("wall");
+			}
+		};
+	} catch (error) {
+		console.error(error)
+	}
+
+}
+
+const genTaskBar = debounce(realgenTaskBar, 500);
+const genDesktop = debounce(realgenDesktop, 500);
+
 async function opensearchpanel(preset = "") {
 
 	gid("seapppreview").style.display = "none";
@@ -1729,7 +1734,7 @@ async function setandinitnewuser() {
 	gid('loginmod').close();
 }
 async function novarefresh() {
-	dod();
+	genDesktop();
 	genTaskBar();
 	cleanupInvalidAssociations();
 	checkdmode();
