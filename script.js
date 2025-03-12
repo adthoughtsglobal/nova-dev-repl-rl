@@ -698,7 +698,6 @@ async function getAppIcon(content, id, lazy = 0) {
 		const iconContent = await withTimeout(getMetaTagContent(content, 'nova-icon', true));
 		if (iconContent && containsSmallSVGElement(iconContent)) {
 			appicns[id] = iconContent;
-			setSetting(id, iconContent, "registry.json", "System/appManager/")
 			return iconContent;
 		}
 	} catch (err) {

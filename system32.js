@@ -515,7 +515,7 @@ function enqueueTask(action) {
 }
 
 const defaultFileData = {
-    "System/appManager/registry.json": {
+    "System/permissions.json": {
     },
     "System/preferences.json": {
         "defFileLayout": "List",
@@ -934,6 +934,16 @@ async function remfolder(folderPath) {
                 return;
             }
         }
+        async function removeAllFiles(folder) {
+            for (const [name, content] of Object.entries(folder)) {
+                if (name.endsWith('/')) {
+                    await removeAllFiles(content);
+                } else if (content.id) {
+                    ctntMgr.remove(content.id);
+                }
+            }
+        }
+        await removeAllFiles(current);
         if (parent && key) {
             delete parent[key];
             console.log(`Folder Eliminated: "${folderPath}"`);
@@ -952,6 +962,7 @@ async function remfolder(folderPath) {
         console.error("Error removing folder:", error);
     }
 }
+
 async function updateFile(folderName, fileId, newData) {
     await updateMemoryData();
 

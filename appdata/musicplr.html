@@ -699,7 +699,6 @@
 			currentreqID = window.parent.genUID();
 			let appIdToOpen = window.parent.fileTypeAssociations['file'][0] || null;
 			window.parent.openlaunchprotocol(appIdToOpen, { "opener": 'any', "dir": "Downloads/" }, currentreqID, myWindow.windowID);
-			primaryalert.close();
 			primaryalert.style.display = "none"
 		}
 
@@ -885,10 +884,11 @@
 
 			await scanFolders(window.parent.memory.root);
 
-			primaryalert.close();
-			primaryalert.style.display = "none";
 			if (skibiditracks == 0) {
 				window.parent.say("There aren't any readable audio files in your files. Try again.", "failed");
+			} else {
+				primaryalert.close();
+				primaryalert.style.display = "none";
 			}
 		}
 

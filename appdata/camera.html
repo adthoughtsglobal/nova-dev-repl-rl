@@ -82,7 +82,7 @@
         }
 
 
-        #stopwatch-btn {
+        button#stopwatch-btn {
             gap: 0.3rem;
             display: none;
         }
@@ -222,15 +222,16 @@
                 <option value="10">10s</option>
             </select>
             
-            <button id="stopwatch-btn"><span class="recording-blinker">
-
-            </span> <span id="recording-stopwatch">00:00</span></button>
+            <button id="stopwatch-btn">
+                <span class="recording-blinker"></span> 
+                <span id="recording-stopwatch">00:00</span>
+            </button>
         </div>
 
         <button class="captoolbtn" id="photo-btn" onclick="capture(this)">
             <span class="material-symbols-rounded">camera</span>
         </button>
-        <button class="captoolbtn" id="video-btn">
+        <button class="captoolbtn" id="video-btn" onclick="startRecording(this)">
             <span class="material-symbols-rounded">videocam</span>
         </button>
         <button class="captoolbtn" id="pause-btn" style="display: none;">
@@ -248,7 +249,7 @@
         let recordedChunks = [];
         let isRecording = false;
         let isPaused = false;
-        let originalText = '';
+        let originalText = '', obj;
 
         async function getVideoSources() {
             const devices = await navigator.mediaDevices.enumerateDevices();
@@ -370,7 +371,6 @@
         function greenflag() {
             startCamera();
 
-            document.getElementById("video-btn").addEventListener("click", startRecording);
             document.getElementById("pause-btn").addEventListener("click", function () {
                 if (isPaused) {
                     resumeRecording();
@@ -382,7 +382,8 @@
 
         }
 
-        function startRecording() {
+        function startRecording(obj1) {
+            obj = obj1;
             if (!currentStream) {
                 console.error("No active stream to record.");
                 return;
@@ -512,7 +513,8 @@
             return dataUrl;
         }
 
-        async function capture(obj) {
+        async function capture(obj1) {
+            obj = obj1;
             const video = document.getElementById('video');
             originalText = obj.innerHTML;
             obj.innerHTML = "...";
