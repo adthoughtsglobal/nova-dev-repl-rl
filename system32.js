@@ -632,7 +632,7 @@ async function setSetting(settingKey, settingValue, fileName = "preferences.json
     });
 }
 
-async function removeSetting(settingKey, fileName = "preferences.json", dirPath = "System/") {
+async function remSetting(settingKey, fileName = "preferences.json", dirPath = "System/") {
     return enqueueTask(async () => {
         try {
             await ensureFileExists(fileName, dirPath);
