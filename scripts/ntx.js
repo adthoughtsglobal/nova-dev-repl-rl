@@ -2,7 +2,7 @@
 
 class NTXSession {
     constructor() {
-        "fileGet" = {
+        this.fileGet = {
             byId: (id) => {
                 return "file data: " + id;
             },
@@ -16,7 +16,7 @@ class NTXSession {
                 return "file data: " + id;
             }
         };
-        "fileSet" = {
+        this.fileSet = {
             createFile: (id) => {
                 return "file data: " + id;
             },
@@ -30,7 +30,7 @@ class NTXSession {
                 return "file data: " + id;
             }
         };
-        "dir" = {
+        this.dir = {
             getFolderNames: (id) => {
                 return "file data: " + id;
             },
@@ -41,12 +41,12 @@ class NTXSession {
                 return "file data: " + id;
             }
         };
-        "olp" = {
+        this.olp = {
             openFile: (id) => {
                 return "file data: " + id;
             }
         };
-        "ctntMgr" = {
+        this.ctntMgr = {
             get: (id) => {
                 return "file data: " + id;
             },
@@ -57,7 +57,7 @@ class NTXSession {
                 return "file data: " + id;
             }
         };
-        "settings" = {
+        this.settings = {
             get: (id) => {
                 return "file data: " + id;
             },
@@ -74,7 +74,7 @@ class NTXSession {
                 return "file data: " + id;
             }
         };
-        "accounts" = {
+        this.accounts = {
             removeUser: (id) => {
                 return "file data: " + id;
             },
@@ -94,7 +94,7 @@ class NTXSession {
                 return "file data: " + id;
             }
         };
-        "apps" = {
+        this.apps = {
             getIcon: (id) => {
                 return "file data: " + id;
             },
@@ -102,7 +102,7 @@ class NTXSession {
                 return "file data: " + id;
             }
         };
-        "sysUI" = {
+        this.sysUI = {
             justconfirm: (id) => {
                 return "file data: " + id;
             },

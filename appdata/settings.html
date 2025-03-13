@@ -35,6 +35,11 @@
 			max-width: 25vw;
 			min-width: 100px;
 			padding-bottom: 3rem;
+			display: flex;
+			flex-direction: column;
+			padding: 2px;
+			gap: 0.2rem;
+			transition: .3s ease-out;
 		}
 
 		.tab::after {
@@ -67,14 +72,20 @@
 			opacity: 0.8;
 		}
 
-		.tab button {
+
+		.btnlike {
 			color: inherit;
-			display: block;
-			border: 2px solid transparent;
+			width: calc(100% - 10px);
+			flex-shrink: 0;
+			border-radius: var(--sizing-border-radius);
+		}
+
+		.tab button {
 			background-color: transparent;
 			padding: 4px 7px;
+			border: 2px solid transparent;
+			display: block;
 			width: calc(100% - 10px);
-			margin: 2px;
 			border-radius: var(--sizing-border-radius);
 			outline: none;
 			text-align: left;
@@ -607,13 +618,19 @@
 		}
 
 		@media only screen and (max-width: 600px) {
-			.tab button {
+			.tab .btnlike {
 				width: 38px;
 			}
 
 			.tab {
-				min-width: 49px;
+				width: 42px;
 				flex-grow: 0;
+				overflow: hidden;
+				min-width: 0;
+			}
+
+			#navSearch {
+				display: none;
 			}
 		}
 
@@ -746,32 +763,94 @@
 		.settingName {
 			flex: 1;
 		}
+
+		.searchInputSec {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			background-color: var(--colors-BG-section);
+			padding: 2px 5px;
+			gap: 0.3rem;
+			border-radius: 0.5rem;
+			width: calc(100% - 10px);
+			margin-bottom: 0.3rem;
+		}
+
+		.searchInputSec input {
+			background-color: transparent;
+			color: var(--colors-text-normal);
+			outline: 0;
+			border: 0;
+			min-width: 0;
+			padding: 0.3rem;
+			text-overflow: ellipsis;
+		}
+
+		.searchInputSec i.material-symbols-rounded {
+			font-size: 20px;
+			margin-right: 5px;
+			opacity: 0.7;
+		}
+
+		div#searchResults {
+			background-color: var(--colors-BG-section);
+			display: flex;
+			flex-direction: column;
+			gap: 0.3rem;
+			overflow: hidden;
+		}
+
+		.searchResult {
+			display: flex;
+			flex-direction: column;
+			padding: .2rem 0.5rem;
+		}
+
+		.searchResult:hover {
+			background-color: var(--colors-BG-sub);
+		}
+
+		.searchResult small {
+			all: revert;
+			font-size: 30%;
+			opacity: .8;
+			font-family: 'IBM Plex Sans';
+			font-weight: 200;
+		}
 	</style>
 </head>
 
 <body>
 	<container>
 		<div class="tab">
-
-			<button class="tablinks" onclick="openCity(event, 'system')" id="defaultOpen"><i
-					class="material-symbols-rounded">settings</i> System</button>
-			<button class="tablinks" onclick="openCity(event, 'defaults'); defs5(); defs2(); defs3()"><i
+			<div id="navSearch">
+				<div class="searchInputSec btnlike">
+					<input id="searchInput" placeholder="Search settings..." spellcheck="none" autocomplete="off">
+					<i class="material-symbols-rounded">search</i>
+				</div>
+				<div id="searchResults" class="btnlike"></div>
+			</div>
+			<button class="tablinks btnlike" windowopener="System" onclick="openCity(event, 'system')"
+				id="defaultOpen"><i class="material-symbols-rounded">settings</i> System</button>
+			<button class="tablinks btnlike" windowopener="Preferences"
+				onclick="openCity(event, 'defaults'); defs5(); defs2(); defs3()"><i
 					class="material-symbols-rounded">tune</i> Preferences</button>
-			<button class="tablinks" onclick="openCity(event, 'exp'); defs();"><i
+			<button class="tablinks btnlike" windowopener="Display" onclick="openCity(event, 'exp'); defs();"><i
 					class="material-symbols-rounded">monitor</i>
 				Display</button>
-			<button class="tablinks" onclick="openCity(event, 'password')"><i
+			<button class="tablinks btnlike" windowopener="User" onclick="openCity(event, 'password')"><i
 					class="material-symbols-rounded">person</i>
 				User</button>
-			<button class="tablinks" onclick="openCity(event, 'network');"><i
+			<button class="tablinks btnlike" windowopener="Networking" onclick="openCity(event, 'network');"><i
 					class="material-symbols-rounded">language</i>
 				Network</button>
-			<button class="tablinks" onclick="openCity(event, 'lclstgsc'); lclstgsc();"><i
-					class="material-symbols-rounded">manage_search</i>
+			<button class="tablinks btnlike" windowopener="Data Manager"
+				onclick="openCity(event, 'lclstgsc'); lclstgsc();"><i class="material-symbols-rounded">manage_search</i>
 				Data Manager</button>
-			<button class="tablinks" onclick="openCity(event, 'defaultappsforfiles');
+			<button class="tablinks btnlike" windowopener="Defaults" onclick="openCity(event, 'defaultappsforfiles');
 				rldfltyptable();"><i class="material-symbols-rounded">open_in_browser</i> Defaults</button>
-			<button class="tablinks" onclick="openCity(event, 'about')"><i class="material-symbols-rounded">info</i>
+			<button class="tablinks btnlike" windowopener="About" onclick="openCity(event, 'about')"><i
+					class="material-symbols-rounded">info</i>
 				About</button>
 
 		</div>
@@ -1058,7 +1137,7 @@
 			<h1>System</h1>
 
 			<segr>
-				<div setting type="advsetnav" onclick="openCity(event, 'storage');">
+				<div setting type="advsetnav" windowopener="Storage" onclick="openCity(event, 'storage');">
 					<i class="material-symbols-rounded advseticon">storage</i>
 					<div class="advsetnavbtnprt">
 						<div>
@@ -1070,7 +1149,7 @@
 							</span></button>
 					</div>
 				</div>
-				<div setting type="advsetnav" onclick="openCity(event, 'battery');">
+				<div setting type="advsetnav" windowopener="Battery" onclick="openCity(event, 'battery');">
 					<i class="material-symbols-rounded advseticon">battery_full</i>
 					<div class="advsetnavbtnprt">
 						<div>
@@ -1082,7 +1161,7 @@
 							</span></button>
 					</div>
 				</div>
-				<div setting type="advsetnav" onclick="openCity(event, 'devices');">
+				<div setting type="advsetnav" windowopener="Devices" onclick="openCity(event, 'devices');">
 					<i class="material-symbols-rounded advseticon">devices</i>
 					<div class="advsetnavbtnprt">
 						<div>
@@ -1098,7 +1177,7 @@
 			<h1>Processes</h1>
 
 			<segr>
-				<div setting type="advsetnav" onclick="openCity(event, 'activity'); taskmg()">
+				<div setting type="advsetnav" windowopener="Activity" onclick="openCity(event, 'activity'); taskmg()">
 					<i class="material-symbols-rounded advseticon">poll</i>
 					<div class="advsetnavbtnprt">
 						<div>
@@ -1110,7 +1189,8 @@
 							</span></button>
 					</div>
 				</div>
-				<div setting type="advsetnav" onclick="openCity(event, 'perform'); updateFPS()">
+				<div setting type="advsetnav" windowopener="Performance"
+					onclick="openCity(event, 'perform'); updateFPS()">
 					<i class="material-symbols-rounded advseticon">speed</i>
 					<div class="advsetnavbtnprt">
 						<div>
@@ -2018,7 +2098,7 @@
 		<div id="network" class="tabcontent">
 			<h1>Networking</h1>
 			<segr>
-				<div setting onclick="openCity(event, 'rotursets'); loaduprtour()">
+				<div setting windowopener="Rotur" onclick="openCity(event, 'rotursets'); loaduprtour()">
 					<div class="settingName"><b>RoturTW</b>
 						<p>Configure RoturTW networking</p>
 					</div>
@@ -2394,7 +2474,7 @@
 						</g>
 					</svg>
 				</div>
-				<div setting onclick="openCity(event, 'advancedthemesets');">
+				<div setting windowopener="Advanced theme" onclick="openCity(event, 'advancedthemesets');">
 					<div class="settingName"><b>Advanced theme settings</b>
 						<p>Configure UI Colors, visuals...</p>
 					</div>
@@ -2789,6 +2869,112 @@
 
 			</script>
 	</container>
+	<script>
+		var navigation = {
+			"System": {
+				"Storage": ["storage", "erase", "device", "saved", "files", "memory"],
+				"Battery": ["charge", "power", "battery", "plug"],
+				"Devices": ["devices", "ports", "input", "output", "keyboard", "webcam"],
+				"Activity": ["apps", "running", "process", "task", "tskmgr", "activity"],
+				"Performance": ["fps", "performance", "speed", "load", "graph", "activity", "chart"]
+			},
+			"Preferences": {
+				"Preferences": ["smart search", "control", "focus mode", "save as", "search engine", "time", "reset", "offline"]
+			},
+			"Display": {
+				"Display": ["copy", "theme", "paste", "colors", "wallpaper", "desktop", "customiz"],
+				"Advanced theme": ["colors", "visuals", "advanced theme", "more theme", "custom"],
+			},
+			"Networking": {
+				"Rotur": ["rotur"]
+			},
+			"Defaults": {
+				"Defaults": ["default", "apps", "opener", "open with"]
+			},
+			"About": {
+				"About": ["version", "credits", "pay", "membership", "support"]
+			},
+		}
+
+		function searchNavigation(input) {
+			input = input.toLowerCase();
+			let results = [];
+			let seen = new Set(); // Track unique entries
+
+			for (const category in navigation) {
+				const categorySimilarity = window.parent.calculateSimilarity(input, category);
+				if (categorySimilarity > 0.3) {
+					const key = `${category.toLowerCase()}||null||${category.toLowerCase()}`;
+					if (!seen.has(key)) {
+						results.push({ category, subcategory: null, keyword: category, similarity: categorySimilarity });
+						seen.add(key);
+					}
+				}
+
+				for (const subcategory in navigation[category]) {
+					const subcategorySimilarity = window.parent.calculateSimilarity(input, subcategory);
+					if (subcategorySimilarity > 0.3) {
+						const key = `${category.toLowerCase()}||${subcategory.toLowerCase()}||${subcategory.toLowerCase()}`;
+						if (!seen.has(key)) {
+							results.push({ category, subcategory, keyword: subcategory, similarity: subcategorySimilarity });
+							seen.add(key);
+						}
+					}
+
+					for (const keyword of navigation[category][subcategory]) {
+						const keywordSimilarity = window.parent.calculateSimilarity(input, keyword);
+						if (keywordSimilarity > 0.3) {
+							const key = `${category.toLowerCase()}||${subcategory.toLowerCase()}||${keyword.toLowerCase()}`;
+							if (!seen.has(key)) {
+								results.push({ category, subcategory, keyword, similarity: keywordSimilarity });
+								seen.add(key);
+							}
+						}
+					}
+				}
+			}
+
+			results.sort((a, b) => b.similarity - a.similarity);
+			return results;
+		}
+
+
+
+		document.getElementById("searchInput").addEventListener("input", function () {
+			const input = this.value.trim();
+			const results = searchNavigation(input);
+
+			const resultsContainer = document.getElementById("searchResults");
+			resultsContainer.innerHTML = "";
+
+			results.forEach(result => {
+				const item = document.createElement("div");
+				item.classList.add("searchResult")
+				item.innerHTML = `<small>${result.category} ></small><span>${result.subcategory}</span>`;
+				item.addEventListener("click", () => openDesig(result.category, result.subcategory));
+				resultsContainer.appendChild(item);
+			});
+		});
+
+		document.getElementById("searchInput").addEventListener("keypress", function (event) {
+			if (event.key === "Enter") {
+				const results = searchNavigation(this.value.trim());
+				if (results.length > 0) {
+					openDesig(results[0].category, results[0].subcategory);
+				}
+			}
+		});
+
+		function openDesig(category, subcategory) {
+			const element = document.querySelector(`[windowopener="${subcategory}"]`);
+			if (element) {
+				element.click();
+			} else {
+				console.warn(`No windowopener found for category: ${category}`);
+			}
+		}
+
+	</script>
 </body>
 
 </html>
