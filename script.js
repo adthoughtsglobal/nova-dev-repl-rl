@@ -11,7 +11,7 @@ var batteryLevel, winds = {}, rp, flwint = true, contentpool = {}, memory = {}, 
 	"gallery",
 	"browser",
 	"studio"
-], timeFormat, timetypecondition = true;
+], timeFormat, timetypecondition = true, genTaskBar, genDesktop;
 
 function setbgimagetourl(x) {
 	const bgImage = document.getElementById('bgimage');
@@ -249,168 +249,7 @@ async function registerDecryptWorker() {
 			.catch(err => console.error('Service Worker registration failed:', err));
 	}
 }
-document.addEventListener("DOMContentLoaded", async function () {
-	sysLog("DOM", "Loaded");
-	let localupdatedataver = parseFloat(localStorage.getItem("updver"));
-	if (localupdatedataver <= 1.7) {
-		console.log("Preparing NovaOS2 switch.");
-		gid("versionswitcher")?.showModal();
-		return;
-	}
-	const searchInput5342 = document.querySelector('#novamenusearchinp');
-	let keyHeld = false;
 
-	searchInput5342.addEventListener('keydown', () => {
-		keyHeld = true;
-	});
-
-	searchInput5342.addEventListener('keyup', (e) => {
-		if (keyHeld) {
-			keyHeld = false;
-			opensearchpanel(searchInput5342.value);
-			gid('appdmod').close();
-			searchInput5342.value = "";
-		}
-	});
-	const scriptSources = [
-		"scripts/html2canvas.js",
-		"scripts/fflate.js",
-		"scripts/kernel.js",
-		"scripts/rotur.js",
-		"scripts/ctxmenu.js",
-		"scripts/edgecases.js",
-		"scripts/ntx.js",
-		"scripts/scripties.js"
-	];
-
-	const loadScripts = async () => {
-		let prog = 10;
-		setsrtpprgbr(prog);
-		const increment = 40 / scriptSources.length;
-
-		for (const src of scriptSources) {
-			await new Promise((resolve, reject) => {
-				const script = document.createElement('script');
-				script.src = src;
-				script.onload = resolve;
-				script.onerror = reject;
-				document.body.appendChild(script);
-			});
-			prog += increment;
-			setsrtpprgbr(prog);
-		}
-
-		setsrtpprgbr(40);
-	};
-
-	await loadScripts();
-
-	setbgimagetourl(novaFeaturedImage);
-
-	gid("nowrunninapps").style.display = "none";
-	gid('seprw-openb').onclick = function () {
-		gid('searchside').style.flexGrow = 1;
-	}
-
-	function startfunctions() {
-		registerDecryptWorker();
-		updateBattery();
-		navigator.getBattery().then(function (battery) {
-			battery.addEventListener('levelchange', updateBattery);
-		});
-
-		makedialogclosable('appdmod');
-
-
-		// hotkeys
-		document.addEventListener('keydown', function (event) {
-			if (event.ctrlKey && (event.key === 'f' || event.keyCode === 70)) {
-				event.preventDefault();
-				openapp('files', 1);
-			}
-			if (event.ctrlKey && (event.key === 's')) {
-				event.preventDefault();
-				openapp('settings', 1);
-			}
-		});
-		document.addEventListener('keydown', function (event) {
-			if (event.key === 'Escape') {
-				var appdmod = document.getElementById('appdmod');
-				if (appdmod && appdmod.open) {
-					appdmod.close();
-				}
-			}
-		});
-		document.addEventListener('keydown', function (event) {
-			if (event.ctrlKey && event.key === '/') {
-				event.preventDefault();
-				opensearchpanel();
-			}
-		});
-		document.addEventListener('keydown', function (event) {
-			if (event.ctrlKey && event.key === ' ') {
-				event.preventDefault();
-				openn();
-			}
-		});
-
-
-		makedialogclosable('searchwindow');
-		prepareArrayToSearch();
-
-		onstartup.push(async () => {
-			if (location.origin != 'http://127.0.0.1:3000' && location.origin != 'https://adthoughtsglobal.github.io') {
-				say("You are on an <b style='color:red;'>unsafe</b> copy of NovaOS. Do not use this.", "failed");
-			}
-			edgecases();
-
-			if (detectIE()) {
-				issues = `<li><b>HTMLDialogElement Not supported: </b> We have taken some efforts to fix this for you.</li>
-				<li><b>Internet explorer detected: </b> i dunno what to say ;-;</li>`;
-				say(cantusetext + issues + caniuse2 + `<br><b>Anyway, it is so interesting why you still use explorer.</b>`, "failed");
-				badlaunch = true;
-			}
-		});
-	}
-
-	await startfunctions();
-
-	gid("versionswitcher")?.remove();
-	gid("novanav").style.display = "none";
-	async function waitForNonNull() {
-		const startTime = Date.now();
-		const maxWaitTime = 3000;
-		while (Date.now() - startTime < maxWaitTime) {
-			const result = await updateMemoryData();
-			if (result !== null) {
-				return result;
-			}
-			await new Promise(resolve => setTimeout(resolve, 100));
-		}
-		return null;
-	}
-	waitForNonNull().then(async (result) => {
-		checkAndRunFromURL();
-		gid('startupterms').innerHTML = "<span>Checking database...</span>";
-		try {
-			if (result || result == 3) {
-				await showloginmod();
-			} else {
-				await cleanupram();
-				CurrentUsername = 'Admin';
-				await initialiseOS();
-			}
-		} catch (error) {
-			console.error('Error in database operations:', error);
-		}
-	});
-
-	var bgImage = document.getElementById("bgimage");
-	bgImage.addEventListener("click", function () {
-		nowapp = '';
-		dewallblur();
-	});
-});
 
 function updateTime() {
 	const now = new Date();
@@ -465,7 +304,7 @@ async function openn() {
 			if (existingAppIds.has(app.id)) return;
 
 			var appShortcutDiv = document.createElement("div");
-			appShortcutDiv.className = "app-shortcut tooltip sizableuielement";
+			appShortcutDiv.className = "app-shortcut ctxAvail tooltip sizableuielement";
 			appShortcutDiv.setAttribute("unid", app.id || '');
 			appShortcutDiv.dataset.appId = app.id;
 			appShortcutDiv.addEventListener("click", () => openfile(app.id));
@@ -525,7 +364,7 @@ async function loadrecentapps() {
 			return
 		}
 		var appShortcutDiv = document.createElement("div");
-		appShortcutDiv.className = "app-shortcut tooltip sizableuielement";
+		appShortcutDiv.className = "app-shortcut ctxAvail tooltip sizableuielement";
 		appShortcutDiv.setAttribute("unid", app.id || '');
 		appShortcutDiv.addEventListener("click", () => openapp(app.name, app.id));
 		var iconSpan = document.createElement("span");
@@ -983,7 +822,7 @@ async function loadtaskspanel() {
 		let wid = key.slice(-12);
 
 		let appShortcutDiv = document.createElement("biv");
-		appShortcutDiv.className = "app-shortcut tooltip adock sizableuielement";
+		appShortcutDiv.className = "app-shortcut ctxAvail tooltip adock sizableuielement";
 		appShortcutDiv.setAttribute("unid", key.id || '');
 		appShortcutDiv.dataset.key = key;
 
@@ -1538,7 +1377,7 @@ async function realgenTaskBar() {
 				appShortcutDiv.setAttribute("draggable", true);
 				appShortcutDiv.setAttribute("ondragstart", "dragfl(event, this)");
 				appShortcutDiv.setAttribute("unid", app.id || '');
-				appShortcutDiv.className = "app-shortcut tooltip adock sizableuielement";
+				appShortcutDiv.className = "app-shortcut ctxAvail tooltip adock sizableuielement";
 
 				let lnkappidcatched = app.id;
 				if (mtpetxt(app.name) == "lnk") {
@@ -1595,7 +1434,7 @@ async function realgenDesktop() {
 		});
 		y.forEach(async function (app) {
 			var appShortcutDiv = document.createElement("div");
-			appShortcutDiv.className = "app-shortcut sizableuielement";
+			appShortcutDiv.className = "app-shortcut ctxAvail sizableuielement";
 			appShortcutDiv.setAttribute("unid", app.id || '');
 			app = await getFileById(app.id);
 			let islnk = false;
@@ -1645,11 +1484,7 @@ async function realgenDesktop() {
 
 }
 
-const genTaskBar = debounce(realgenTaskBar, 500);
-const genDesktop = debounce(realgenDesktop, 500);
-
 async function opensearchpanel(preset = "") {
-
 	gid("seapppreview").style.display = "none";
 	if (appsHistory.length > 0) {
 		gid("partrecentapps").style.display = "block";
@@ -1665,7 +1500,10 @@ async function opensearchpanel(preset = "") {
 	if (window.innerWidth > 500) {
 		gid("strtsear").focus()
 	}
-	gid("strtsear").value = preset;
+	if (typeof preset === "string") {
+		gid("strtsear").value = preset;
+	}
+		
 	loadrecentapps();
 	displayNotifications();
 	gid('searchwindow').showModal();
@@ -1744,3 +1582,170 @@ function launchbios() {
 	document.getElementById('novasetupusernamedisplay').innerText = CurrentUsername;
 	document.getElementById('bios').showModal();
 }
+
+document.addEventListener("DOMContentLoaded", async function () {
+	sysLog("DOM", "Loaded");
+
+	genTaskBar = debounce(realgenTaskBar, 500);
+	genDesktop = debounce(realgenDesktop, 500);
+
+	let localupdatedataver = parseFloat(localStorage.getItem("updver"));
+	if (localupdatedataver <= 1.7) {
+		console.log("Preparing NovaOS2 switch.");
+		gid("versionswitcher")?.showModal();
+		return;
+	}
+	const searchInput5342 = document.querySelector('#novamenusearchinp');
+	let keyHeld = false;
+
+	searchInput5342.addEventListener('keydown', () => {
+		keyHeld = true;
+	});
+
+	searchInput5342.addEventListener('keyup', (e) => {
+		if (keyHeld) {
+			keyHeld = false;
+			opensearchpanel(searchInput5342.value);
+			gid('appdmod').close();
+			searchInput5342.value = "";
+		}
+	});
+	const scriptSources = [
+		"scripts/html2canvas.js",
+		"scripts/fflate.js",
+		"scripts/kernel.js",
+		"scripts/rotur.js",
+		"scripts/ctxmenu.js",
+		"scripts/edgecases.js",
+		"scripts/ntx.js",
+		"scripts/scripties.js"
+	];
+
+	const loadScripts = async () => {
+		let prog = 10;
+		setsrtpprgbr(prog);
+		const increment = 40 / scriptSources.length;
+
+		for (const src of scriptSources) {
+			await new Promise((resolve, reject) => {
+				const script = document.createElement('script');
+				script.src = src;
+				script.onload = resolve;
+				script.onerror = reject;
+				document.body.appendChild(script);
+			});
+			prog += increment;
+			setsrtpprgbr(prog);
+		}
+
+		setsrtpprgbr(40);
+	};
+
+	await loadScripts();
+
+	setbgimagetourl(novaFeaturedImage);
+
+	gid("nowrunninapps").style.display = "none";
+	gid('seprw-openb').onclick = function () {
+		gid('searchside').style.flexGrow = 1;
+	}
+
+	function startfunctions() {
+		registerDecryptWorker();
+		updateBattery();
+		navigator.getBattery().then(function (battery) {
+			battery.addEventListener('levelchange', updateBattery);
+		});
+
+		makedialogclosable('appdmod');
+
+
+		// hotkeys
+		document.addEventListener('keydown', function (event) {
+			if (event.ctrlKey && (event.key === 'f' || event.keyCode === 70)) {
+				event.preventDefault();
+				openapp('files', 1);
+			}
+			if (event.ctrlKey && (event.key === 's')) {
+				event.preventDefault();
+				openapp('settings', 1);
+			}
+		});
+		document.addEventListener('keydown', function (event) {
+			if (event.key === 'Escape') {
+				var appdmod = document.getElementById('appdmod');
+				if (appdmod && appdmod.open) {
+					appdmod.close();
+				}
+			}
+		});
+		document.addEventListener('keydown', function (event) {
+			if (event.ctrlKey && event.key === '/') {
+				event.preventDefault();
+				opensearchpanel();
+			}
+		});
+		document.addEventListener('keydown', function (event) {
+			if (event.ctrlKey && event.key === ' ') {
+				event.preventDefault();
+				openn();
+			}
+		});
+
+
+		makedialogclosable('searchwindow');
+		prepareArrayToSearch();
+
+		onstartup.push(async () => {
+			if (location.origin != 'http://127.0.0.1:3000' && location.origin != 'https://adthoughtsglobal.github.io') {
+				say("You are on an <b style='color:red;'>unsafe</b> copy of NovaOS. Do not use this.", "failed");
+			}
+			edgecases();
+
+			if (detectIE()) {
+				issues = `<li><b>HTMLDialogElement Not supported: </b> We have taken some efforts to fix this for you.</li>
+				<li><b>Internet explorer detected: </b> i dunno what to say ;-;</li>`;
+				say(cantusetext + issues + caniuse2 + `<br><b>Anyway, it is so interesting why you still use explorer.</b>`, "failed");
+				badlaunch = true;
+			}
+		});
+	}
+
+	await startfunctions();
+
+	gid("versionswitcher")?.remove();
+	gid("novanav").style.display = "none";
+	async function waitForNonNull() {
+		const startTime = Date.now();
+		const maxWaitTime = 3000;
+		while (Date.now() - startTime < maxWaitTime) {
+			const result = await updateMemoryData();
+			if (result !== null) {
+				return result;
+			}
+			await new Promise(resolve => setTimeout(resolve, 100));
+		}
+		return null;
+	}
+	waitForNonNull().then(async (result) => {
+		checkAndRunFromURL();
+		gid('startupterms').innerHTML = "<span>Checking database...</span>";
+		try {
+			if (result || result == 3) {
+				await showloginmod();
+			} else {
+				await cleanupram();
+				CurrentUsername = 'Admin';
+				await initialiseOS();
+			}
+		} catch (error) {
+			console.error('Error in database operations:', error);
+		}
+	});
+
+	var bgImage = document.getElementById("bgimage");
+	bgImage.addEventListener("click", function () {
+		nowapp = '';
+		dewallblur();
+	});
+});

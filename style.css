@@ -1396,12 +1396,14 @@ dialog#terminal {
 }
 
 #notiflist {
-	overflow-y: auto;
+    overflow: hidden;
+    overflow-y: auto;
 	width: 100%;
 	padding: 0.5rem;
 	box-sizing: border-box;
 	scroll-snap-type: y mandatory;
 	scroll-behavior: smooth;
+    overflow: hidden;
 }
 
 .notiflistnav {

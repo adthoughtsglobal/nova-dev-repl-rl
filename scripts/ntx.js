@@ -3,8 +3,8 @@
 class NTXSession {
     constructor() {
         this.fileGet = {
-            byId: (id) => {
-                return "file data: " + id;
+            byId: async (...args) => {
+                return await getFileById(...args);
             },
             nameById: (id) => {
                 return "file data: " + id;

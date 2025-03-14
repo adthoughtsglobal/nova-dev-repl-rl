@@ -147,3 +147,7 @@ p {
 		filter: opacity(100%);
 	}
 }
+
+.material-symbols-rounded {
+	font-weight: 200 !important;
+}

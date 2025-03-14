@@ -82,6 +82,11 @@ async function getMenuItems(target) {
 			{ icon: 'power', label: 'Nova setup', action: () => launchbios() },
 		];
 	}
+	if (target.classList.contains('windowheader')) {
+		return [
+			{ icon: 'Close', label: target.parentElement.getAttribute("data-winuid"), action: () => 0}
+		];
+	}
 	return [
 		{ label: 'Inspect', action: () => console.log('Inspect clicked') },
 	];
@@ -197,7 +202,7 @@ document.addEventListener('contextmenu', async (event) => {
 
 	contextMenu = createContextMenu(event);
 	contextMenu.innerHTML = '';
-	const targetElement = event.target.closest('.app-shortcut, .file, #desktop');
+	const targetElement = event.target.closest('.ctxAvail');
 	const menuItems = await getMenuItems(targetElement);
 
 	menuItems.slice(0, 4).forEach(item => {

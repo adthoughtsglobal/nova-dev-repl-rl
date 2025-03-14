@@ -273,7 +273,7 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
 
     var windowHeader = document.createElement("div");
     windowHeader.id = "window" + winuid + "header";
-    windowHeader.classList += "windowheader";
+    windowHeader.classList += "windowheader ctxAvail";
     let windowdataspan = document.createElement("div");
     windowdataspan.classList += "windowdataspan";
     windowdataspan.innerHTML = ic != null ? ic : "";
@@ -448,6 +448,18 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
 
                     if (novaIncludes.includes('contextMenu')) {
                         fetch('scripts/ctxmenu.js')
+                            .then(response => response.text())
+                            .then(scriptContent => {
+                                const scriptBlob = new Blob([scriptContent], { type: 'application/javascript' });
+                                const scriptUrl = URL.createObjectURL(scriptBlob);
+                                const script = document.createElement('script');
+                                script.src = scriptUrl;
+                                iframe.contentDocument.body.appendChild(script);
+                            });
+                    }
+
+                    if (novaIncludes.includes('ntx')) {
+                        fetch('scripts/ntx.js')
                             .then(response => response.text())
                             .then(scriptContent => {
                                 const scriptBlob = new Blob([scriptContent], { type: 'application/javascript' });
@@ -799,7 +811,7 @@ function minim(x, winuid) {
 
 
             winds[winuid]["visualState"] = "minimized";
-    
+
             setTimeout(() => {
                 x.classList.remove("transp4")
                 x.style.display = "none";

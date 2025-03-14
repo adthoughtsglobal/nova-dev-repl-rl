@@ -456,9 +456,11 @@ class RoturExtension {
             (async () => {
               sysLog("RoturTW",`Trying to log in`);
               let localroturdata = await window.getSetting("roturLink");
+              if (localroturdata) {
                 let targetun = JSON.parse(localroturdata).username;
                 let targetpass = JSON.parse(localroturdata).password;
                 await roturExtension.login({ USERNAME: targetun, PASSWORD: targetpass });
+              }
             })()
           }
           resolve();
