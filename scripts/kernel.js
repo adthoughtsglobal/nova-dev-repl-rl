@@ -125,26 +125,12 @@ function calculateWindowSize(aspectratio) {
 
 const snappingDivs = document.querySelectorAll('#snappingIndicator div');
 
-function onMouseMove(event) {
-    snappingDivs.forEach(div => {
-        const rect = div.getBoundingClientRect();
-        const isHovered =
-            event.clientX >= rect.left &&
-            event.clientX <= rect.right &&
-            event.clientY >= rect.top &&
-            event.clientY <= rect.bottom;
-
-        div.style.opacity = isHovered ? 0.8 : 0.2;
-    });
-}
-
 function snappingconthide() {
     let snappingIndicator = document.getElementById('snappingIndicator');
     snappingIndicator.style.transition = "opacity 0.2s";
     snappingIndicator.style.opacity = "0";
     setTimeout(() => {
         snappingIndicator.style.display = "none";
-        document.removeEventListener('mousemove', onMouseMove);
     }, 200);
 }
 
@@ -239,6 +225,7 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
                 document.removeEventListener("mousemove", resizeMove);
                 document.removeEventListener("mouseup", stopResize);
 
+                snappingconthide()
                 if (iframeOverlay) {
                     document.body.removeChild(iframeOverlay);
                     iframeOverlay = null;
@@ -305,16 +292,42 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
         snappingconthide();
     });
 
-    windowDiv.addEventListener("mousedown", function () {
+    windowHeader.addEventListener("mousedown", function (event) {
         putwinontop('window' + winuid);
         winds[winuid].zIndex = windowDiv.style.zIndex;
+    
+        let holdStart = Date.now();
+        let offsetX = event.clientX - windowDiv.getBoundingClientRect().left;
+        let offsetY = event.clientY - windowDiv.getBoundingClientRect().top;
+    
+        function onMouseMove(event) {
+            if (Date.now() - holdStart >= 500) {
+                snappingIndicator.style.opacity = "0.8";
+                document.getElementById('snappingIndicator').style.display = "block";
+            }
+    
+            windowDiv.style.left = event.clientX - offsetX + "px";
+            windowDiv.style.top = event.clientY - offsetY + "px";
+    
+            snappingDivs.forEach(div => {
+                const rect = div.getBoundingClientRect();
+                const isHovered =
+                    event.clientX >= rect.left &&
+                    event.clientX <= rect.right &&
+                    event.clientY >= rect.top &&
+                    event.clientY <= rect.bottom;
+    
+                div.style.opacity = isHovered ? 0.8 : 0.2;
+            });
+        }
+    
+        document.addEventListener("mousemove", onMouseMove);
+    
+        document.addEventListener("mouseup", function () {
+            document.removeEventListener("mousemove", onMouseMove);
+        }, { once: true });
+    });    
 
-        setTimeout(() => {
-            document.addEventListener('mousemove', onMouseMove);
-            snappingIndicator.style.opacity = "1";
-            document.getElementById('snappingIndicator').style.display = "block";
-        }, 200);
-    });
 
     var ibtnsside = document.createElement("div");
     ibtnsside.classList += "ibtnsside";
