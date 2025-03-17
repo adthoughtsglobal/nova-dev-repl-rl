@@ -1088,33 +1088,36 @@ async function createFile(folderName, fileName, type, content, metadata = {}) {
         if (!base64data) {
             const mimeType = type ? `${type}` : 'application/octet-stream';
             const blob = new Blob([content], { type: mimeType });
-            const reader = new FileReader();
-            reader.readAsDataURL(blob);
-            reader.onloadend = async function () {
-                base64data = reader.result;
-                await handleFile(current, folderName, fileNameWithExtension, base64data, type, metadata);
-
-            };
+    
+            const arrayBuffer = await blob.arrayBuffer();
+            const binary = new Uint8Array(arrayBuffer);
+            let binaryString = '';
+            for (let i = 0; i < binary.length; i++) {
+                binaryString += String.fromCharCode(binary[i]);
+            }
+            base64data = `data:${mimeType};base64,` + btoa(binaryString);
+    
+            await handleFile(current, folderName, fileNameWithExtension, base64data, type, metadata);
         } else {
             await handleFile(current, folderName, fileNameWithExtension, base64data, type, metadata);
         }
     } catch (error) {
         console.error("Error in createFile:", error);
         return null;
-    }
+    }    
 
     async function handleFile(folder, folderName, fileNameWithExtension, base64data, type, metadata) {
         if (!base64data) {
             base64data = `data:${await getMimeType(type)};base64,`;
         }
-
+    
         metadata.datetime = getfourthdimension();
-
+    
         const extIndex = fileNameWithExtension.lastIndexOf(".");
         if (extIndex !== -1) {
             fileNameWithExtension = fileNameWithExtension.slice(0, extIndex) + fileNameWithExtension.slice(extIndex).toLowerCase();
         }
-        // Handle the app file separately if needed
+    
         if (type === "app" || fileNameWithExtension.endsWith(".app")) {
             const appData = await getFileByPath(`Apps/${fileNameWithExtension}`);
             if (appData) {
@@ -1123,18 +1126,17 @@ async function createFile(folderName, fileName, type, content, metadata = {}) {
                 return appData.id || null;
             }
         }
-
+    
         const existingFile = Object.values(folder).find(file => file.fileName === fileNameWithExtension);
         if (existingFile) {
             await updateFile(folderName, existingFile.id, { metadata, content: base64data, fileName: fileNameWithExtension, type });
+            folder[fileNameWithExtension] = { id: existingFile.id, type, metadata };
             return existingFile.id;
         } else {
             const uid = genUID();
-            // This prevents overwriting the root with a misplaced folder reference
             memory.root = { ...memory.root };
             folder[fileNameWithExtension] = { id: uid, type, metadata };
-
-            if (fileNameWithExtension.endsWith(".app")) extractAndRegisterCapabilities(uid, base64data);
+    
             await ctntMgr.set(uid, base64data);
             await setdb("handling file: " + fileNameWithExtension);
             eventBusWorker.deliver({
@@ -1146,6 +1148,7 @@ async function createFile(folderName, fileName, type, content, metadata = {}) {
             return uid;
         }
     }
+    
 } const createFolderQueue = [];
 let isProcessingCreateFolderQueue = false;
 async function createFolder(folderNames, folderData = {}) {

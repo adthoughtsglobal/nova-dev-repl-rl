@@ -839,71 +839,64 @@
 				if (files.length === 0) return;
 
 				const workerCode = `
-    onmessage = function(event) {
-      const file = event.data.file;
-      const chunkSize = event.data.chunkSize;
-      const delay = event.data.delay;
-      const fileReader = new FileReader();
-      let offset = 0;
+onmessage = function(event) {
+    const file = event.data.file;
+    const chunkSize = event.data.chunkSize;
+    const delay = event.data.delay;
+    let offset = 0;
 
-      function readNextChunk() {
-        const chunk = file.slice(offset, offset + chunkSize);
-        fileReader.readAsArrayBuffer(chunk);
-      }
-
-      fileReader.onload = async function(e) {
-        postMessage({ chunk: e.target.result, offset: offset });
-
-        offset += chunkSize;
-        if (offset < file.size) {
-          setTimeout(readNextChunk, delay); // Delay between chunks
-        } else {
-          postMessage({ done: true });
+    function arrayBufferToBase64(buffer) {
+        let binary = '';
+        const bytes = new Uint8Array(buffer);
+        for (let i = 0; i < bytes.length; i++) {
+            binary += String.fromCharCode(bytes[i]);
         }
-      };
+        return btoa(binary);
+    }
 
-      readNextChunk();
-    };
-  `;
+    function readNextChunk() {
+        const chunk = file.slice(offset, offset + chunkSize);
+        const reader = new FileReader();
+
+        reader.onload = function(e) {
+            const base64Chunk = arrayBufferToBase64(e.target.result);
+            postMessage({ chunk: base64Chunk });
+            offset += chunkSize;
+            if (offset < file.size) {
+                setTimeout(readNextChunk, delay);
+            } else {
+                postMessage({ done: true });
+            }
+        };
+
+        reader.readAsArrayBuffer(chunk);
+    }
+
+    readNextChunk();
+};
+`;
+
 
 				const workerBlob = new Blob([workerCode], { type: 'application/javascript' });
 
 				async function processFile(file, chunkSize, delay) {
 					return new Promise((resolve) => {
 						const worker = new Worker(URL.createObjectURL(workerBlob));
-						const combinedChunks = [];
+						let base64Content = '';
 
 						worker.onmessage = async function (event) {
 							if (event.data.done) {
-								const combined = new Blob(combinedChunks, { type: file.type });
-								const reader = new FileReader();
-
-								reader.onload = async function (e) {
-									let content = e.target.result;
-									const type = file.type || 'txt';
-									const folderName = 'Downloads/';
-									const metadata = { "via": "imported" };
-
-									// Convert raw text to base64 if content is not in a specific format
-									const isFormatSpecific = content.startsWith("data:");
-									if (!isFormatSpecific) {
-										content = btoa(content);
-									}
-
-									await window.parent.createFile(folderName, window.parent.basename(file.name), mtpetxt(type), content, metadata);
-
-									resolve();
-								};
-
-								reader.readAsDataURL(combined);
+								await window.parent.createFile('Downloads/', file.name, 'txt', base64Content, { "via": "imported" });
+								resolve();
 							} else {
-								combinedChunks.push(event.data.chunk);
+								base64Content += event.data.chunk;
 							}
 						};
 
 						worker.postMessage({ file, chunkSize, delay });
 					});
 				}
+
 				const chunkSize = 1024 * 1024; // 1MB chunks
 				const delay = 100; // 100ms delay between chunks
 
