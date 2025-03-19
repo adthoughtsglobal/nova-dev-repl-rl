@@ -112,6 +112,8 @@
 			padding: 4px 9px;
 			animation: fa 0.5s;
 			border-radius: 11px;
+			box-shadow: 0 14px 0px -10px inset limegreen;
+			padding-top: 12px;
 			background: var(--colors-BG-section);
 			color: var(--colors-text-normal);
 			border: 2px solid transparent;
@@ -291,22 +293,38 @@
 			border-radius: 10px;
 			overflow: hidden;
 			margin: 10px;
-			box-shadow: 0 3px 10px 5px #121212;
+			background: var(--colors-BG-section);
+			padding: 9px;
+			display: flex;
+			flex-direction: row;
+			gap: 0.8rem;
 		}
 
-		#featured img {
-			object-position: center;
-			object-fit: contain;
-			width: 100%;
+		#featured h1 {
+			margin: 0;
+			margin-bottom: 10px;
 		}
 
 		#featured button {
-			background: #62778b;
+			background: rgba(225, 225, 255, 0.2);
 			border: none;
-			color: var(--colors-text-normal);
-			padding: 7px 10px;
+			color: var(--colors-text-high);
+			padding: 0.5rem 1rem;
 			border-radius: 5px;
-			width: 50%;
+			display: flex;
+			align-items: center;
+			flex-direction: row;
+			width: fit-content;
+		}
+
+		img#featuredImg {
+			object-fit: cover;
+			flex: 1;
+			width: 0;
+		}
+
+		#featuredcontent {
+			flex: 1;
 		}
 
 		#installer {
@@ -657,6 +675,16 @@
 	<div class="mains">
 		<div id="searchresults"></div>
 		<div id="appsmode" class="openablewin">
+			<div id="featured">
+				<img id="featuredImg" src="https://i.ibb.co/j9Ycj5Y5/image.png">
+				<div id="featuredcontent">
+					<h1 id="featuredappname">App name</h1>
+					<span class="appby" id="featuredappby">App author</span>
+					<p id="featuredappdesc">App description</p>
+					<button id="featuredappcta"><span>View</span><i
+							class="material-symbols-rounded">arrow_forward</i></button>
+				</div>
+			</div>
 			<div id="sugapps">
 				:( unexpected error
 			</div>
@@ -918,8 +946,6 @@
 
 		function renderSections() {
 			document.getElementById("sugapps").innerHTML = `
-        <small>Featured</small>
-        <div id="featured-section" class="section"></div>
         <small>For NovaOS</small>
         <div id="nova-section" class="section"></div>
         <small>Apps</small>
@@ -937,8 +963,13 @@
 
 				const appDiv = createAppDiv(appName, appDetails, vdevs, featured);
 
-				if (featured.includes(appName)) {
-					document.getElementById("featured-section").appendChild(appDiv);
+				if (featured.appName == appName) {
+					document.getElementById("featuredappname").innerText = appName;
+					document.getElementById("featuredappby").innerText = appDetails.by;
+					document.getElementById("featuredappdesc").innerText = appDetails.desc;
+					document.getElementById("featuredImg").src = featured.img;
+					document.getElementById("featured").setAttribute("onclick", `openappinstr('${appName}', ${JSON.stringify(appDetails)})`);
+					document.getElementById("featured").style.backgroundImage = `radial-gradient(circle at 0% 0%, ${appDetails.th}, var(--colors-BG-section))`;
 				} else if (appDetails.by === "adthoughtsglobal") {
 					document.getElementById("nova-section").appendChild(appDiv);
 				} else {
@@ -952,9 +983,7 @@
 			appDiv.className = 'app';
 			appDiv.setAttribute("onclick", `openappinstr('${appName}', ${JSON.stringify(appDetails)})`);
 
-			appDiv.addEventListener('mouseenter', () => applyHoverStyle(appDiv, appDetails));
-			appDiv.addEventListener('mouseleave', () => resetHoverStyle(appDiv));
-
+			appDiv.style.boxShadow = `0 14px 0px -10px inset ${appDetails.th}`;
 			const appfesDiv = document.createElement('div');
 			appfesDiv.className = 'appfes';
 			appfesDiv.id = "appfes-" + appName;
@@ -981,24 +1010,6 @@
 			appDiv.appendChild(p);
 
 			return appDiv;
-		}
-
-		function applyHoverStyle(appDiv, appDetails) {
-			const shadowColor = appDetails.th;
-			appDiv.style.borderRight = `2px solid ${rotateHue(shadowColor, 25)}`;
-			appDiv.style.borderBottom = `2px solid ${rotateHue(shadowColor, 25)}`;
-			appDiv.style.borderTop = `2px solid ${shadowColor}`;
-			appDiv.style.borderLeft = `2px solid ${shadowColor}`;
-		}
-
-		function resetHoverStyle(appDiv) {
-			appDiv.style.border = '2px solid transparent';
-		}
-
-		function rotateHue(color, degrees) {
-			const hslColor = tinycolor(color).toHsl();
-			hslColor.h += degrees;
-			return tinycolor(hslColor).toRgbString();
 		}
 
 		function populateDefaultApps(defaultApps) {

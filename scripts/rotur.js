@@ -559,6 +559,7 @@ class RoturExtension {
               while (!this.is_connected) { }
               this.authenticated = true;
               sysLog("RoturTW",`logged in as ${args.USERNAME}`);
+              notify(`Logged in as ${args.USERNAME}`, "You can use Rotur supported apps now.", "RoturTW")
               resolve(`Logged in as ${args.USERNAME}`);
             } else {
               this.authenticated = false;
