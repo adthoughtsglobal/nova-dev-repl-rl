@@ -404,6 +404,18 @@ flitem > flexpar {
                     navigator.vibrate(100);
                 }
             },
+            "nova": {
+                desc: "Run nova commands",
+                action: () => {
+                    let parts = cmdPresrvCase.split(" ");
+                    if (parts.length > 1) {
+                        curdir =() => parts.slice(1).join(" ");
+                        return ("Running " + curdir);
+                    } else {
+                        return ("Current: " + curdir);
+                    }
+                }
+            },
             "cd": {
                 desc: "Changes the current directory",
                 action: () => {

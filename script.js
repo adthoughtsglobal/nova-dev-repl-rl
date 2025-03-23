@@ -178,6 +178,8 @@ async function startup() {
 			setsrtpprgbr(100);
 			gid('startupterms').innerHTML = "Startup completed";
 			closeElementedis();
+			genDesktop();
+			
 			let fetchupdatedataver;
 			async function fetchDataAndUpdate() {
 				let fetchupdatedata = await fetch("versions.json");
@@ -199,7 +201,6 @@ async function startup() {
 
 
 			await fetchDataAndUpdate();
-			genDesktop();
 			removeInvalidMagicStrings();
 			function startUpdateTime() {
 				let now = new Date();
@@ -1335,7 +1336,8 @@ function runAsWasm(content) {
 	openwindow("Nova Wasm Runner", div.innerHTML);
 }
 async function realgenTaskBar() {
-	gid("novanav").style.display = "none";
+	gid("dock").style.display = "none";
+	gid("novanav").style.display = "grid";
 	var appbarelement = document.getElementById("dock")
 	appbarelement.innerHTML = "<span class='taskbarloader' id='taskbarloaderprime'></span>";
 	if (appbarelement) {
@@ -1405,12 +1407,12 @@ async function realgenTaskBar() {
 				appShortcutDiv.appendChild(tooltisp);
 				appbarelement.appendChild(appShortcutDiv);
 
-				getAppIcon(0, app.id, 0)
+				await getAppIcon(0, app.id, 0)
 					.then(icon => iconSpan.innerHTML = icon)
 					.catch(error => console.error(error));
 			});
+			gid("dock").style.display = "flex";
 		} catch (err) { }
-		gid("novanav").style.display = "grid";
 		document.querySelector('#taskbarloaderprime').remove();
 	}
 }

@@ -915,10 +915,10 @@
 
 		}
 
-		function greenflag() {
+		async function greenflag() {
 
 			initializeLoader();
-			fetchAppData().then(appData => {
+			await fetchAppData().then(appData => {
 				renderSections();
 				populateApps(appData);
 				populateDefaultApps(window.parent.defAppsList);
@@ -937,8 +937,8 @@
 			document.getElementById("sugapps").innerHTML = `<div class="loader"></div>`;
 		}
 
-		function fetchAppData() {
-			return fetch('https://adthoughtsglobal.github.io/Nova-Store/db/database.json')
+		async function fetchAppData() {
+			return await fetch('https://adthoughtsglobal.github.io/Nova-Store/db/database.json')
 				.then(response => {
 					if (!response.ok) throw new Error('Network response was not ok');
 					return response.json();
@@ -953,7 +953,7 @@
         <div id="apps-section" class="section"></div>`;
 		}
 
-		function populateApps(data) {
+		async function populateApps(data) {
 			const vdevs = data.vdevs;
 			const featured = data.featured;
 

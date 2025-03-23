@@ -78,6 +78,7 @@ nav .flodiv {
 	background: transparent;
 	padding: 1px;
 	margin-bottom: 0.3rem;
+    animation: pop .5s cubic-bezier(0, 0, 0, 0.94);
 }
 
 nav [navobj] {
@@ -90,7 +91,6 @@ nav [navobj] {
 	gap: var(--spacing-normal);
 	align-items: center;
 	flex-direction: row;
-	animation: pop var(--time-action);
 	transition: flex-basis var(--time-action), width var(--time-action), opacity var(--time-action);
 	width: fit-content;
 	min-width: 1.8rem;
@@ -2250,9 +2250,9 @@ div#toastdiv {
 	top: calc(3% - 0px);
 }
 
-.mmic {
-	transform: scale(.7);
-	fill: var(--colors-text-normal);
+.app-shortcut svg.mmic {
+    fill: var(--colors-text-normal);
+    height: 20px;
 }
 
 .searchbtnac {

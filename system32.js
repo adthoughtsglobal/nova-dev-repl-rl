@@ -1226,9 +1226,6 @@ async function processCreateFolderQueue() {
     }
 }
 
-
-
-
 // other
 
 function dragfl(ev, obj) {
