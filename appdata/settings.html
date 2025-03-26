@@ -910,6 +910,24 @@
 					align-items: center;
 					opacity: 0.5;
 				}
+
+				.datasmall {
+					margin-bottom: 0.5rem;
+					display: flex;
+					flex-direction: row;
+					gap: 1rem;
+					padding: 1rem;
+				}
+
+				.datasmall svg {
+
+					height: 41px;
+					width: 51px;
+				}
+
+				.datasmall p {
+					margin: 0;
+				}
 			</style>
 			<h1>Data Manager</h1>
 			<div class="datamangernav">
@@ -2112,8 +2130,39 @@
 			<h1><span class="material-symbols-rounded advancedsetsbackbtn" onclick="openCity(event, 'network');">
 					arrow_back
 				</span> RoturTW</h1>
-			<small style="margin-bottom: 0.5rem;">Rotur is a cloudlink based standard for packet based communications,
-				generally for Web OSs.</small>
+
+			<small class="datasmall">
+				<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+					width="72.15155" height="77.27406" viewBox="0,0,72.15155,77.27406">
+					<g transform="translate(-205.63971,-145.93894)">
+						<g fill="none" stroke="#ffffff" stroke-miterlimit="10">
+							<path
+								d="M271.76738,162.48658c-1.56574,7.72768 -6.59373,13.23063 -11.23034,12.29118c-4.63661,-0.93945 -7.12603,-7.96553 -5.56029,-15.69321c1.56574,-7.72768 6.59373,-13.23062 11.23033,-12.29117c4.6366,0.93945 7.12604,7.96552 5.56029,15.6932z"
+								stroke-width="1.5" stroke-linecap="butt" />
+							<path
+								d="M268.31257,153.78799c6.4411,4.54761 9.45069,11.3671 6.72212,15.23176c-2.72857,3.86465 -10.16204,3.31101 -16.60314,-1.2366c-6.44109,-4.54761 -9.45069,-11.36711 -6.72212,-15.23176c2.72857,-3.86465 10.16204,-3.31101 16.60314,1.2366z"
+								stroke-width="1.5" stroke-linecap="butt" />
+							<path
+								d="M260.27472,152.79926c7.3512,-2.85103 14.69724,-1.58666 16.40786,2.82405c1.71062,4.41072 -2.86197,10.29753 -10.21316,13.14857c-7.3512,2.85103 -14.69725,1.58666 -16.40787,-2.82406c-1.71062,-4.41072 2.86198,-10.29753 10.21317,-13.14856z"
+								stroke-width="1.5" stroke-linecap="butt" />
+							<path d="M226.99148,171.93219l-2.10561,21.19353" stroke-width="4" stroke-linecap="round" />
+							<path
+								d="M219.18696,162.92221c-1.6795,-5.93099 1.76702,-12.10051 7.69801,-13.78c5.93099,-1.6795 12.1005,1.76702 13.78,7.69801c1.6795,5.93099 -1.76701,12.10051 -7.698,13.78c-5.93099,1.6795 -12.10051,-1.76702 -13.78,-7.69801z"
+								stroke-width="4" stroke-linecap="butt" />
+							<path
+								d="M227.42097,182.76548c0,0 5.93325,1.53335 9.01212,1.81865c3.20345,0.29684 14.32959,-3.595 14.32959,-3.595"
+								stroke-width="4" stroke-linecap="round" />
+							<path d="M227.41405,176.6532l15.63596,-2.81655" stroke-width="4" stroke-linecap="round" />
+							<path
+								d="M207.63971,207.0706c0,0 7.29154,-2.24498 9.76022,-4.11516c3.09166,-2.34213 7.34491,-8.84304 7.34491,-8.84304c0,0 4.43312,10.81318 4.48466,14.70392c0.06742,5.08906 -11.65489,12.39669 -11.65489,12.39669"
+								stroke-width="4" stroke-linecap="round" />
+						</g>
+					</g>
+				</svg>
+
+				<p>Rotur is a cloudlink based standard for packet based communications,
+				generally for Web OSs.</p>
+			</small>
 			<div id="rotursettings">
 				<h1>Account</h1>
 				<segr id="rtrinitspace">

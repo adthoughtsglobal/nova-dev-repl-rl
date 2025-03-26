@@ -1,123 +1,59 @@
-// Nova Transaction Exchange System
-
 class NTXSession {
     constructor() {
+        const wrapAsync = (fn) => async (...args) => await fn(...args);
+
         this.fileGet = {
-            byId: async (...args) => {
-                return await getFileById(...args);
-            },
-            nameById: (id) => {
-                return "file data: " + id;
-            },
-            detailsById: (id) => {
-                return "file data: " + id;
-            },
-            byPath: (id) => {
-                return "file data: " + id;
-            }
+            byId: wrapAsync(getFileById),
+            nameById: wrapAsync(getFileNameByID),
+            detailsById: wrapAsync(getFileDetailsByID),
+            byPath: wrapAsync(getFileByPath)
         };
         this.fileSet = {
-            createFile: (id) => {
-                return "file data: " + id;
-            },
-            updateFile: (id) => {
-                return "file data: " + id;
-            },
-            removeFile: (id) => {
-                return "file data: " + id;
-            },
-            moveFile: (id) => {
-                return "file data: " + id;
-            }
+            createFile: wrapAsync(createFile),
+            updateFile: wrapAsync(updateFile),
+            removeFile: wrapAsync(remfile),
+            moveFile: wrapAsync(moveFileToFolder)
         };
         this.dir = {
-            getFolderNames: (id) => {
-                return "file data: " + id;
-            },
-            remove: (id) => {
-                return "file data: " + id;
-            },
-            create: (id) => {
-                return "file data: " + id;
-            }
+            getFolderNames: wrapAsync(getFolderNames),
+            remove: wrapAsync(remfolder),
+            create: wrapAsync(createFolder)
         };
         this.olp = {
-            openFile: (id) => {
-                return "file data: " + id;
-            }
+            openFile: wrapAsync(openFile)
         };
         this.ctntMgr = {
-            get: (id) => {
-                return "file data: " + id;
-            },
-            set: (id) => {
-                return "file data: " + id;
-            },
-            remove: (id) => {
-                return "file data: " + id;
-            }
+            get: wrapAsync(ctntMgr.get),
+            set: wrapAsync(ctntMgr.set),
+            remove: wrapAsync(ctntMgr.remove)
         };
         this.settings = {
-            get: (id) => {
-                return "file data: " + id;
-            },
-            set: (id) => {
-                return "file data: " + id;
-            },
-            remove: (id) => {
-                return "file data: " + id;
-            },
-            resetAll: (id) => {
-                return "file data: " + id;
-            },
-            ensurePreferencesFile: (id) => {
-                return "file data: " + id;
-            }
+            get: wrapAsync(getSetting),
+            set: wrapAsync(setSetting),
+            remove: wrapAsync(remSetting),
+            resetAll: wrapAsync(resetAllSettings),
+            ensurePreferencesFile: wrapAsync(ensureAllSettingsFilesExist)
         };
         this.accounts = {
-            removeUser: (id) => {
-                return "file data: " + id;
-            },
-            removeInvalidMagicStrings: (id) => {
-                return "file data: " + id;
-            },
-            changePassword: (id) => {
-                return "file data: " + id;
-            },
-            getPassword: (id) => {
-                return "file data: " + id;
-            },
-            getAllUsers: (id) => {
-                return "file data: " + id;
-            },
-            getUsername: (id) => {
-                return "file data: " + id;
-            }
+            removeUser: wrapAsync(removeUser),
+            removeInvalidMagicStrings: wrapAsync(removeInvalidMagicStrings),
+            changePassword: wrapAsync(checkPassword),
+            getPassword: wrapAsync(password),
+            getAllUsers: wrapAsync(getallusers),
+            getUsername: wrapAsync(CurrentUsername)
         };
         this.apps = {
-            getIcon: (id) => {
-                return "file data: " + id;
-            },
-            getPerms: (id) => {
-                return "file data: " + id;
-            }
+            getIcon: wrapAsync(getAppIcon),
+            getPerms: wrapAsync(getPerms)
         };
         this.sysUI = {
-            justconfirm: (id) => {
-                return "file data: " + id;
-            },
-            showDropdownModal: (id) => {
-                return "file data: " + id;
-            },
-            ask: (id) => {
-                return "file data: " + id;
-            },
-            say: (id) => {
-                return "file data: " + id;
-            },
-            createWindow: (id) => {
-                return "file data: " + id;
-            }
-        }
+            confirm: wrapAsync(justConfirm),
+            dropdown: wrapAsync(showDropdownModal),
+            ask: wrapAsync(ask),
+            say: wrapAsync(say),
+            createWindow: wrapAsync(createWindow)
+        };
     }
 }
+
+const ntxWrapper = new NTXSession();
