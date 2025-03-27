@@ -59,7 +59,6 @@ Object.defineProperty(window, 'nowapp', {
 	},
 	set(value) {
 		_nowapp = value;
-		dewallblur()
 	}
 });
 
@@ -1115,17 +1114,6 @@ function containsSmallSVGElement(str) {
 	var svgRegex = /^<svg\s*[^>]*>[\s\S]*<\/svg>$/i;
 	return svgRegex.test(str) && str.length <= 5000;
 }
-async function dewallblur() {
-	if (!await getSetting("focusMode")) {
-		gid("bgimage").style.filter = "blur(0px)";
-		return;
-	}
-	if (nowapp != "" && nowapp != undefined) {
-		gid("bgimage").style.filter = "blur(5px)";
-	} else {
-		gid("bgimage").style.filter = "blur(0px)";
-	}
-}
 let countdown, countdown2;
 function startTimer(minutes) {
 	document.getElementById("sleepbtns").style.display = "none";
@@ -1748,6 +1736,5 @@ document.addEventListener("DOMContentLoaded", async function () {
 	var bgImage = document.getElementById("bgimage");
 	bgImage.addEventListener("click", function () {
 		nowapp = '';
-		dewallblur();
 	});
 });

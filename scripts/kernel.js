@@ -154,7 +154,6 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
 
     windowDiv.onclick = function () {
         nowapp = title;
-        dewallblur();
     };
 
     document.body.appendChild(windowDiv);
@@ -245,7 +244,6 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
 
 
     nowapp = title;
-    dewallblur();
     windowDiv.classList += "window";
 
     const isitmob = matchMedia('(pointer: coarse)').matches;
@@ -362,9 +360,6 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
     closeSpan.textContent = "close";
     closeButton.appendChild(closeSpan);
     closeButton.onclick = function () {
-        setTimeout(function () {
-            dewallblur();
-        }, 500);
         clwin("window" + winuid);
         loadtaskspanel();
     };
@@ -522,6 +517,27 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
             document.addEventListener('mousedown', function(event) {
                 window.parent.postMessage({ type: 'iframeClick', iframeId: '${winuid}' }, '*');
             });
+            class NtxSession {
+    constructor() {
+        this.transactionIdCounter = 0;
+    }
+
+    generateTransactionId() {
+        return \`txn_\${Date.now()}_\${this.transactionIdCounter++}\`;
+    }
+
+    send(action, ...params) {
+        const message = {
+            transactionId: this.generateTransactionId(),
+            action,
+            params
+        };
+        window.parent.postMessage(message, "*");
+    }
+}
+
+const ntxSession = new NtxSession();
+
         `;
             iframe.contentDocument.body.appendChild(script);
 
