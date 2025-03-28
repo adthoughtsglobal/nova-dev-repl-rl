@@ -1544,7 +1544,7 @@
 		<div id="defaultappsforfiles" class="tabcontent">
 			<h1>Defaults</h1>
 			<style>
-				#appfileassos {
+				#defaultappsforfiles {
 					svg {
 						height: 1.5rem;
 						max-width: 1.5rem;
@@ -1584,19 +1584,20 @@
 						justify-content: flex-start;
 					}
 
-					.file-type-cell {
+					/* Apply styles to both method handlers & file types */
+					.type-cell {
 						font-size: var(--font-size-normal);
-					}
-
-					.file-type-header,
-					.file-type-cell {
 						flex: 1;
 						border-right: 1px solid #353535;
 						padding-left: 16px;
 					}
 
-					.default-app-header,
-					.default-app-cell {
+					.type-header {
+						flex: 1 !important;
+					}
+
+					.header-cell,
+					.handler-cell {
 						flex: 2;
 						padding-left: 16px;
 						display: flex;
@@ -1609,7 +1610,6 @@
 					}
 
 					.subapps {
-
 						.material-symbols-rounded {
 							color: var(--colors-text-normal);
 							opacity: 0.5;
@@ -1618,109 +1618,135 @@
 							margin-right: var(--sizing-normal);
 						}
 					}
-
-
 				}
+
 
 				.themestoreopner {
 					height: 2rem;
 					margin-top: 5px;
 				}
 			</style>
-			<button onclick="rldfltyptable()" style="margin-bottom: var(--sizing-normal);">Reload Table</button>
-			<div id="appfileassos">
+			<button onclick="rldfltyptable()" style="margin-bottom: var(--sizing-normal);">Reload Tables</button>
+			<small>Default Handlers are apps that provide support for different methods and file types. You can change a
+				default handler by clicking on its icon.</small>
+			<h3>Method Handlers</h3>
+			<div id="appmethodhandles"></div>
 
-			</div>
+			<h3>File Type Providers</h3>
+			<div id="appfileassos"></div>
+
 			<script>
-				var currentreqID, replaceableapp, clickedRowId;
+				var currentreqID, replaceableHandler, clickedRowId;
 
 				async function rldfltyptable() {
-					document.getElementById('appfileassos').innerHTML = "<span class='taskbarloader' id='taskbarloaderprime'></span>";
-					const fileAssociations = window.parent.fileTypeAssociations;
+					document.getElementById('appmethodhandles').innerHTML = "<span class='taskbarloader' id='taskbarloader-methods'></span>";
+					document.getElementById('appfileassos').innerHTML = "<span class='taskbarloader' id='taskbarloader-files'></span>";
 
-					async function createTable(fileAssociations) {
+					const associations = window.parent.fileTypeAssociations;
+
+					async function createTable(data, typeLabel, handlerLabel) {
 						const table = document.createElement('div');
 						table.className = 'table';
 
+						// Header row
 						const headerRow = document.createElement('div');
 						headerRow.className = 'header-row';
 
-						const fileTypeHeader = document.createElement('div');
-						fileTypeHeader.className = 'header-cell file-type-header';
-						fileTypeHeader.textContent = 'File Types';
+						const typeHeader = document.createElement('div');
+						typeHeader.className = 'header-cell type-header';
+						typeHeader.textContent = typeLabel;
 
-						const defaultAppHeader = document.createElement('div');
-						defaultAppHeader.className = 'header-cell default-app-header';
-						defaultAppHeader.textContent = 'Apps';
+						const handlerHeader = document.createElement('div');
+						handlerHeader.className = 'header-cell handler-header';
+						handlerHeader.textContent = handlerLabel;
 
-						headerRow.appendChild(fileTypeHeader);
-						headerRow.appendChild(defaultAppHeader);
+						headerRow.appendChild(typeHeader);
+						headerRow.appendChild(handlerHeader);
 						table.appendChild(headerRow);
 
-						for (const [extension, apps] of Object.entries(fileAssociations)) {
+						for (const [type, handlers] of Object.entries(data)) {
 							const row = document.createElement('div');
 							row.className = 'row';
-							row.id = `row-${extension}`;
+							row.id = `row-${type}`;
 
-							const fileTypeCell = document.createElement('div');
-							fileTypeCell.className = 'cell file-type-cell';
-							fileTypeCell.textContent = extension;
+							const typeCell = document.createElement('div');
+							typeCell.className = 'cell type-cell';
+							typeCell.textContent = type;
 
-							const defaultAppCell = document.createElement('div');
-							defaultAppCell.className = 'cell default-app-cell';
-							defaultAppCell.innerHTML = await window.parent.getAppIcon(0, apps[0], true);
-							defaultAppCell.onclick = () => {
-								replaceableapp = apps[0];
+							const handlerCell = document.createElement('div');
+							handlerCell.className = 'cell handler-cell';
+							handlerCell.title = handlers[0];
+							handlerCell.innerHTML = await window.parent.getAppIcon(0, handlers[0], true);
+							handlerCell.onclick = () => {
+								replaceableHandler = handlers[0];
 								currentreqID = window.parent.genUID();
-								clickedRowId = row.id; // Store the clicked row's ID
-								let appIdToOpen = window.parent.fileTypeAssociations['file'][0] || null;
+								clickedRowId = row.id;
+
+								let appIdToOpen = handlers[0] || null;
 								window.parent.openlaunchprotocol(appIdToOpen, { "opener": "app", "dir": "Apps/" }, currentreqID, myWindow.windowID);
 							};
 
-							row.appendChild(fileTypeCell);
-							row.appendChild(defaultAppCell);
+							row.appendChild(typeCell);
+							row.appendChild(handlerCell);
 							table.appendChild(row);
 						}
 
-						if (!Object.entries(fileAssociations).length) {
+						if (!Object.keys(data).length) {
 							table.innerHTML = '';
-							const idkspan = document.createElement("span");
-							idkspan.style.opacity = "0.5"
-							idkspan.innerText = window.parent.getRandomNothingQuote();
-							table.appendChild(idkspan);
+							const emptySpan = document.createElement("span");
+							emptySpan.style.opacity = "0.5";
+							emptySpan.innerText = window.parent.getRandomNothingQuote();
+							table.appendChild(emptySpan);
 						}
 
 						return table;
 					}
-					const table = await createTable(fileAssociations);
-					document.getElementById('appfileassos').appendChild(table);
-					document.querySelector('#taskbarloaderprime').remove();
+
+					// Separate methods and file types
+					const methods = {};
+					const fileTypes = {};
+					for (const [key, value] of Object.entries(associations)) {
+						if (key.startsWith('.')) {
+							fileTypes[key] = value;
+						} else {
+							methods[key] = value;
+						}
+					}
+
+					// Generate tables and insert them
+					const methodTable = await createTable(methods, 'Methods', 'Handlers');
+					const fileTable = await createTable(fileTypes, 'File Types', 'Apps');
+
+					document.getElementById('appmethodhandles').appendChild(methodTable);
+					document.getElementById('appfileassos').appendChild(fileTable);
+
+					document.querySelector('#taskbarloader-methods').remove();
+					document.querySelector('#taskbarloader-files').remove();
 				}
 
+
 				window.addEventListener('message', async (event) => {
-					const fileAssociations = window.parent.fileTypeAssociations;
-					if (event.data.action === 'loadlocalfile') {
-						if (event.data.id === myWindow.windowID) {
-							let targetAppId = replaceableapp;
-							let newAppId = event.data.returned;
+					if (event.data.action === 'loadlocalfile' && event.data.id === myWindow.windowID) {
+						let targetHandler = replaceableHandler;
+						let newHandler = event.data.returned;
 
-							for (let key in fileAssociations) {
-								if (fileAssociations.hasOwnProperty(key)) {
-									fileAssociations[key] = fileAssociations[key].map(appId => appId === targetAppId ? newAppId : appId);
-								}
+						for (let key in window.parent.fileTypeAssociations) {
+							if (window.parent.fileTypeAssociations.hasOwnProperty(key)) {
+								window.parent.fileTypeAssociations[key] = window.parent.fileTypeAssociations[key].map(handler => handler === targetHandler ? newHandler : handler);
 							}
-							await window.parent.setSetting('fileTypeAssociations', fileAssociations);
+						}
+						await window.parent.setSetting('fileTypeAssociations', window.parent.fileTypeAssociations);
 
-							// Update the icon in only the clicked row
-							const row = document.getElementById(clickedRowId);
-							if (row) {
-								const defaultAppCell = row.querySelector('.default-app-cell');
-								defaultAppCell.innerHTML = await window.parent.getAppIcon(0, newAppId, true);
-							}
+						// Update only the clicked row
+						const row = document.getElementById(clickedRowId);
+						if (row) {
+							const handlerCell = row.querySelector('.handler-cell');
+							handlerCell.innerHTML = await window.parent.getAppIcon(0, newHandler, true);
 						}
 					}
 				});
 			</script>
+
 		</div>
 
 		<div id="password" class="tabcontent">

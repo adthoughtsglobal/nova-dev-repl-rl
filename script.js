@@ -178,7 +178,7 @@ async function startup() {
 			gid('startupterms').innerHTML = "Startup completed";
 			closeElementedis();
 			genDesktop();
-			
+
 			let fetchupdatedataver;
 			async function fetchDataAndUpdate() {
 				let fetchupdatedata = await fetch("versions.json");
@@ -813,7 +813,10 @@ async function loadtaskspanel() {
 		let element = appbarelement.querySelector(`[data-key='${key}']`);
 		element.classList.add("closeEffect");
 		setTimeout(function () {
-			if (element) appbarelement.removeChild(element);
+			try {
+				if (element) appbarelement.removeChild(element);
+
+			} catch (e) { }
 		}, 500);
 	});
 
@@ -1493,7 +1496,7 @@ async function opensearchpanel(preset = "") {
 	if (typeof preset === "string") {
 		gid("strtsear").value = preset;
 	}
-		
+
 	loadrecentapps();
 	displayNotifications();
 	gid('searchwindow').showModal();
@@ -1642,13 +1645,14 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 	function startfunctions() {
 		registerDecryptWorker();
-		updateBattery();
-		navigator.getBattery().then(function (battery) {
-			battery.addEventListener('levelchange', updateBattery);
-		});
+		try {
+			updateBattery();
+			navigator.getBattery().then(function (battery) {
+				battery.addEventListener('levelchange', updateBattery);
+			});
+		} catch (e) { }
 
 		makedialogclosable('appdmod');
-
 
 		// hotkeys
 		document.addEventListener('keydown', function (event) {

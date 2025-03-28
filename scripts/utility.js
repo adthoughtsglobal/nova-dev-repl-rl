@@ -188,10 +188,7 @@ function stringToPastelColor(str) {
 }
 
 function ptypext(str) {
-	try {
-		const parts = str.split('.');
-		return parts.length > 1 ? parts.pop() : '';
-	} catch { }
+	return mtpetxt(str);
 }
 
 function toTitleCase(str) {

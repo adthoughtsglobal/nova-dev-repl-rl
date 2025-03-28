@@ -6,7 +6,7 @@ class NTXSession {
         this.fileGet = {
             byId: wrapAsync(getFileById),
             nameById: wrapAsync(getFileNameByID),
-            // detailsById: wrapAsync(getFileDetailsByID),
+            detailsById: wrapAsync(findFileDetails),
             byPath: wrapAsync(getFileByPath)
         };
         this.fileSet = {
@@ -50,6 +50,26 @@ class NTXSession {
             say: wrapAsync(say),
             createWindow: wrapAsync(openwindow)
         };
+        this.utility = {
+            timeAgo,
+            genUID,
+            isBase64,
+            isElement,
+            decodeBase64Content,
+            getTime: getfourthdimension,
+            getBaseFileType: getbaseflty,
+            getBaseName: basename,
+            markdownToHTML,
+            stringToPastelColor,
+            stringToDarkPastelColor,
+            toTitleCase,
+            getRandomNothingQuote,
+            debounce
+        }
+        this.system = {
+            ercache,
+            sysLog
+        }
     }
 }
 

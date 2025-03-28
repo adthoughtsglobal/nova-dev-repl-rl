@@ -293,20 +293,20 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
     windowHeader.addEventListener("mousedown", function (event) {
         putwinontop('window' + winuid);
         winds[winuid].zIndex = windowDiv.style.zIndex;
-    
+
         let holdStart = Date.now();
         let offsetX = event.clientX - windowDiv.getBoundingClientRect().left;
         let offsetY = event.clientY - windowDiv.getBoundingClientRect().top;
-    
+
         function onMouseMove(event) {
             if (Date.now() - holdStart >= 500) {
                 snappingIndicator.style.opacity = "0.8";
                 document.getElementById('snappingIndicator').style.display = "block";
             }
-    
+
             windowDiv.style.left = event.clientX - offsetX + "px";
             windowDiv.style.top = event.clientY - offsetY + "px";
-    
+
             snappingDivs.forEach(div => {
                 const rect = div.getBoundingClientRect();
                 const isHovered =
@@ -314,17 +314,17 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
                     event.clientX <= rect.right &&
                     event.clientY >= rect.top &&
                     event.clientY <= rect.bottom;
-    
+
                 div.style.opacity = isHovered ? 0.8 : 0.2;
             });
         }
-    
+
         document.addEventListener("mousemove", onMouseMove);
-    
+
         document.addEventListener("mouseup", function () {
             document.removeEventListener("mousemove", onMouseMove);
         }, { once: true });
-    });    
+    });
 
 
     var ibtnsside = document.createElement("div");
@@ -466,18 +466,6 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
                             });
                     }
 
-                    if (novaIncludes.includes('ntx')) {
-                        fetch('scripts/ntx.js')
-                            .then(response => response.text())
-                            .then(scriptContent => {
-                                const scriptBlob = new Blob([scriptContent], { type: 'application/javascript' });
-                                const scriptUrl = URL.createObjectURL(scriptBlob);
-                                const script = document.createElement('script');
-                                script.src = scriptUrl;
-                                iframe.contentDocument.body.appendChild(script);
-                            });
-                    }
-
                     if (novaIncludes.includes('material-symbols-rounded')) {
                         const style = document.createElement('style');
                         style.innerHTML = `
@@ -517,9 +505,25 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
             document.addEventListener('mousedown', function(event) {
                 window.parent.postMessage({ type: 'iframeClick', iframeId: '${winuid}' }, '*');
             });
-            class NtxSession {
+           class NTXSession {
     constructor() {
         this.transactionIdCounter = 0;
+        this.pendingRequests = {};
+
+        window.addEventListener("message", (event) => {
+            if (event.data.transactionId && (event.data.result || event.data.error)) {
+                const { transactionId, result, error, success } = event.data;
+                
+                if (this.pendingRequests[transactionId]) {
+                    if (success) {
+                        this.pendingRequests[transactionId].resolve(result);
+                    } else {
+                        this.pendingRequests[transactionId].reject(error);
+                    }
+                    delete this.pendingRequests[transactionId];
+                }
+            }
+        });
     }
 
     generateTransactionId() {
@@ -527,18 +531,54 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
     }
 
     send(action, ...params) {
-        const message = {
-            transactionId: this.generateTransactionId(),
-            action,
-            params
-        };
-        window.parent.postMessage(message, "*");
+        return new Promise((resolve, reject) => {
+            const transactionId = this.generateTransactionId();
+            this.pendingRequests[transactionId] = { resolve, reject };
+
+            window.parent.postMessage({ transactionId, action, params }, "*");
+        });
     }
 }
 
-const ntxSession = new NtxSession();
-
         `;
+
+            window.addEventListener("message", async function (event) {
+                if (event.data.type === "iframeClick" && event.data.iframeId === winuid) {
+                    putwinontop("window" + winuid);
+                    winds[winuid].zIndex = windowDiv.style.zIndex;
+                } else if (event.data.transactionId && event.data.action) {
+                    handleNtxSessionMessage(event);
+                }
+            });
+
+            async function handleNtxSessionMessage(event) {
+                const message = event.data;
+                console.log("Received message from iframe:", message);
+
+                try {
+                    const [namespace, method] = message.action.split(".");
+                    if (ntxWrapper[namespace] && typeof ntxWrapper[namespace][method] === "function") {
+                        const result = await ntxWrapper[namespace][method](...message.params);
+
+                        event.source.postMessage({
+                            transactionId: message.transactionId,
+                            result,
+                            success: true
+                        }, event.origin);
+                    } else {
+                        throw new Error(`Invalid NTX action: ${message.action}`);
+                    }
+                } catch (error) {
+                    console.error("Error handling NTX message:", error);
+
+                    event.source.postMessage({
+                        transactionId: message.transactionId,
+                        error: error.message,
+                        success: false
+                    }, event.origin);
+                }
+            }
+
             iframe.contentDocument.body.appendChild(script);
 
             let greenflagResult;
@@ -565,12 +605,6 @@ const ntxSession = new NtxSession();
 
         windowContent.appendChild(iframe);
 
-        window.addEventListener('message', function (event) {
-            if (event.data.type === 'iframeClick' && event.data.iframeId === winuid) {
-                putwinontop('window' + winuid);
-                winds[winuid].zIndex = windowDiv.style.zIndex;
-            }
-        });
     }
 
     nowwindow = 'window' + winuid;

@@ -104,8 +104,10 @@
 
 	<script>
 
-		var disp;
+		var disp, ntxSession;
 		async function greenflag() {
+			ntxSession = new NTXSession();
+			console.log(50, ntxSession)
 			try {
 				if (myWindow.params.appid == myWindow.appID) {
 					openfile(myWindow.params.data)
@@ -115,9 +117,10 @@
 			}
 		} 
 		async function openfile(fileID) {
+			console.log(25, ntxSession)
 			document.getElementById("nomedia").close();
 			disp = document.getElementById("displays");
-			var file = await window.parent.getFileById(fileID);
+			var file = await ntxSession.send("fileGet.byId", fileID);
 
 			if (file && file.content) {
 				document.getElementById("tils").innerText = file.fileName;
@@ -128,14 +131,14 @@
 				let blob = dataURItoBlob(base64Content, mimeType);
 				let fileURL = URL.createObjectURL(blob);
 
-				if (window.parent.getbaseflty(file.fileName) === "image") {
+				if (ntxSession.send("utility.getBaseFileType", file.fileName) === "image") {
 					disp.innerHTML = `<img id="thedisplay" alt="Image Preview" src="${fileURL}">`;
-				} else if (window.parent.getbaseflty(file.fileName) === "music") {
+				} else if (ntxSession.send("utility.getBaseFileType", file.fileName) === "music") {
 					disp.innerHTML = `<audio controls id="thedisplay">
                 <source src="${fileURL}" type="${mimeType}">
                 Your browser does not support the audio tag.
             </audio>`;
-				} else if (window.parent.getbaseflty(file.fileName) === "video") {
+				} else if (ntxSession.send("utility.getBaseFileType", file.fileName) === "video") {
 					disp.innerHTML = `<video controls id="thedisplay">
                 <source src="${fileURL}" type="${mimeType}">
                 Your browser does not support the video tag.
