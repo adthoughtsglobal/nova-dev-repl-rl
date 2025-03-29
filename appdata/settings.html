@@ -1750,6 +1750,13 @@
 		</div>
 
 		<div id="password" class="tabcontent">
+			<h1>User</h1>
+			<segr>
+				<div setting class="spread">
+					<b id="userstatsi">Signed in as Admin</b>
+					<button onclick="window.parent.logoutofnova()">Sign Out</button>
+				</div>
+			</segr>
 			<h1>Password</h1>
 			<segr>
 				<style>
@@ -1771,10 +1778,6 @@
 				<div setting id="changpassthingy" class="spread">
 					<b id="passstat"></b>
 					<button onclick="chstpass()">Continue</button>
-				</div>
-				<div setting class="spread">
-					<b id="userstatsi">Signed in as Admin</b>
-					<button onclick="window.parent.logoutofnova()">Sign Out</button>
 				</div>
 			</segr>
 			<script>
@@ -2192,6 +2195,11 @@
 						loaduprtour()
 					}
 					function loaduprtour() {
+						window.parent.say(`<ol>
+							<li>RoturTW is a third party service that offers various services using their api.</li> 
+							<li>NovaOS supports rotur as a service.</li> 
+							<li>We do not endorse this service and is by no means related or confined to NovaOS or its terms.</li> 
+							<li>Contact rotur.dev for further enquiry on this service.</li></ol>`)
 						const roturExtension = window.parent.roturExtension;
 
 						if (roturExtension && roturExtension.loggedIn()) {

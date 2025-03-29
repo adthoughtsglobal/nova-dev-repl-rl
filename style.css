@@ -77,7 +77,6 @@ nav .flodiv {
 	border-radius: var(--sizing-border-radius);
 	background: transparent;
 	padding: 1px;
-	margin-bottom: 0.3rem;
     animation: pop .5s cubic-bezier(0, 0, 0, 0.94);
 }
 

@@ -1,21 +1,20 @@
 let dbCache = null;
 let cryptoKeyCache = null;
 const key = 'dataStore';
-async function openDB(databaseName, version) {
+
+async function openDB(CurrentUsername = "Admin", version) {
     return new Promise((resolve, reject) => {
-        const request = indexedDB.open(databaseName, version);
+        const request = indexedDB.open(CurrentUsername, version);
 
         request.onupgradeneeded = (event) => {
             const db = event.target.result;
-            const contentStoreName = `${CurrentUsername}-contentpool`;
-            const memoryStoreName = `${CurrentUsername}-memory`;
 
-            if (!db.objectStoreNames.contains(contentStoreName)) {
-                db.createObjectStore(contentStoreName, { keyPath: 'key' });
+            if (!db.objectStoreNames.contains('contentpool')) {
+                db.createObjectStore('contentpool', { keyPath: 'key' });
             }
 
-            if (!db.objectStoreNames.contains(memoryStoreName)) {
-                db.createObjectStore(memoryStoreName, { keyPath: 'key' });
+            if (!db.objectStoreNames.contains('memory')) {
+                db.createObjectStore('memory', { keyPath: 'key' });
             }
         };
 
@@ -23,13 +22,13 @@ async function openDB(databaseName, version) {
         request.onerror = (event) => reject(event.target.error);
     });
 }
+
 async function flushDB(value) {
-    if (!dbCache) dbCache = await openDB(databaseName, 1);
+    if (!dbCache) dbCache = await openDB(CurrentUsername, 1);
     if (!cryptoKeyCache) cryptoKeyCache = await getKey(password);
 
-    const memoryStore = `${CurrentUsername}-memory`;
-    const transaction = dbCache.transaction(memoryStore, 'readwrite');
-    const store = transaction.objectStore(memoryStore);
+    const transaction = dbCache.transaction('memory', 'readwrite');
+    const store = transaction.objectStore('memory');
     const request = store.put({ key: 'memory', memory: value.memory });
 
     return new Promise((resolve, reject) => {
@@ -37,13 +36,13 @@ async function flushDB(value) {
         request.onerror = () => reject(request.error);
     });
 }
+
 async function getdb() {
-    if (!dbCache) dbCache = await openDB(databaseName, 1);
+    if (!dbCache) dbCache = await openDB(CurrentUsername, 1);
     if (!cryptoKeyCache) cryptoKeyCache = await getKey(password);
 
-    const memoryStore = `${CurrentUsername}-memory`;
-    const transaction = dbCache.transaction(memoryStore, 'readonly');
-    const store = transaction.objectStore(memoryStore);
+    const transaction = dbCache.transaction('memory', 'readonly');
+    const store = transaction.objectStore('memory');
     const request = store.get('memory');
 
     return new Promise((resolve, reject) => {
@@ -56,7 +55,7 @@ async function getdb() {
 }
 
 function setdb(x) {
-    console.log("flushing... ", x)
+    console.log("flushing... ", x);
     const value = {
         memory: { ...memory }
     };
@@ -64,6 +63,7 @@ function setdb(x) {
     return flushDB(value)
         .catch(error => console.error("Error during setdb execution:", error));
 }
+
 let requestQueue = [];
 let isProcessing = false;
 
@@ -93,13 +93,13 @@ async function enqueueRequest(action, args) {
         processQueue();
     });
 }
+
 async function getFileContents(id) {
-    if (!dbCache) dbCache = await openDB(databaseName, 1);
+    if (!dbCache) dbCache = await openDB(CurrentUsername, 1);
     if (!cryptoKeyCache) cryptoKeyCache = await getKey(password);
 
-    const contentStore = `${CurrentUsername}-contentpool`;
-    const transaction = dbCache.transaction(contentStore, 'readonly');
-    const store = transaction.objectStore(contentStore);
+    const transaction = dbCache.transaction('contentpool', 'readonly');
+    const store = transaction.objectStore('contentpool');
     const request = store.get(id);
 
     return new Promise((resolve, reject) => {
@@ -118,14 +118,14 @@ async function getFileContents(id) {
         request.onerror = () => reject(request.error);
     });
 }
+
 async function setFileContents(id, content) {
-    if (!dbCache) dbCache = await openDB(databaseName, 1);
+    if (!dbCache) dbCache = await openDB(CurrentUsername, 1);
     if (!cryptoKeyCache) cryptoKeyCache = await getKey(password);
 
     const encryptedContent = await encryptData(cryptoKeyCache, compressString(content));
-    const contentStore = `${CurrentUsername}-contentpool`;
-    const transaction = dbCache.transaction(contentStore, 'readwrite');
-    const store = transaction.objectStore(contentStore);
+    const transaction = dbCache.transaction('contentpool', 'readwrite');
+    const store = transaction.objectStore('contentpool');
     const request = store.put({ key: id, value: encryptedContent });
 
     return new Promise((resolve, reject) => {
@@ -133,12 +133,12 @@ async function setFileContents(id, content) {
         request.onerror = () => reject(request.error);
     });
 }
-async function removeFileContents(id) {
-    if (!dbCache) dbCache = await openDB(databaseName, 1);
 
-    const contentStore = `${CurrentUsername}-contentpool`;
-    const transaction = dbCache.transaction(contentStore, 'readwrite');
-    const store = transaction.objectStore(contentStore);
+async function removeFileContents(id) {
+    if (!dbCache) dbCache = await openDB(CurrentUsername, 1);
+
+    const transaction = dbCache.transaction('contentpool', 'readwrite');
+    const store = transaction.objectStore('contentpool');
     const request = store.delete(id);
 
     return new Promise((resolve, reject) => {
@@ -146,7 +146,6 @@ async function removeFileContents(id) {
         request.onerror = () => reject(request.error);
     });
 }
-
 
 const ctntMgr = {
     async get(id) {

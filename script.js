@@ -898,6 +898,7 @@ async function initialiseOS() {
 	};
 
 	setdb().then(async function () {
+		console.log("mgstr saved")
 		await saveMagicStringInLocalStorage(password);
 		await ensureAllSettingsFilesExist()
 			.then(async () => await installdefaultapps())

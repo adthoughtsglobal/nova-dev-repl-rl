@@ -1,4 +1,4 @@
-var databaseName = 'trojencat';
+
 var CurrentUsername = 'Admin';
 var password = "nova";
 const encoder = new TextEncoder();
@@ -160,23 +160,24 @@ async function decryptData(key, encryptedData) {
 }
 
 async function erdbsfull(x) {
-    if (x == "nowarning" || await justConfirm("Are you really sure?", "Removing all the users data includes your settings, files, and other data. Click cancel keep it.")) {
+    if (x === "nowarning" || await justConfirm("Are you really sure?", "Removing all the users' data includes your settings, files, and other data. Click cancel to keep it.")) {
         localStorage.removeItem('todo');
-        localStorage.removeItem('magicString');
+        localStorage.removeItem('magicStrings');
         localStorage.removeItem('updver');
         localStorage.removeItem('qsets');
-        let indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB || window.shimIndexedDB;
-        let dbName = 'trojencat';
-        let deleteRequest = indexedDB.deleteDatabase(dbName);
+
+        const indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB || window.shimIndexedDB;
+        const deleteRequest = indexedDB.deleteDatabase(CurrentUsername);
+
         deleteRequest.onsuccess = () => location.reload();
         deleteRequest.onerror = deleteRequest.onblocked = () => location.reload();
-    };
-
+    }
 }
+
 async function removeUser(username = CurrentUsername) {
     const key = 'dataStore';
     try {
-        const db = await openDB(databaseName, 1, {
+        const db = await openDB(CurrentUsername, 1, {
             upgrade(db) {
                 if (!db.objectStoreNames.contains(key)) {
                     db.createObjectStore(key, { keyPath: 'CurrentUsername' });
@@ -309,7 +310,7 @@ async function changePassword(oldPassword, newPassword) {
         const newKey = await getKey(newPassword);
 
         if (!dbCache) {
-            dbCache = await openDB(databaseName, 1);
+            dbCache = await openDB(CurrentUsername, 1);
         }
 
         const transaction = dbCache.transaction('dataStore', 'readonly');
@@ -397,22 +398,14 @@ async function checkPassword(password) {
 }
 async function getallusers() {
     try {
-        const db = await openDB(databaseName, 1);
-        const users = [];
-
-        for (let i = 0; i < db.objectStoreNames.length; i++) {
-            const storeName = db.objectStoreNames[i];
-            if (storeName.endsWith('-memory')) {
-                users.push(storeName.replace('-memory', ''));
-            }
-        }
-
-        return users;
+        const magicStrings = JSON.parse(localStorage.getItem('magicStrings')) || {};
+        return Object.keys(magicStrings);
     } catch (error) {
-        console.error("Error in getallusers function:", error);
+        console.error("Error in getAllUsers function:", error);
         throw error;
     }
 }
+
 
 
 // memory collector
@@ -460,9 +453,9 @@ function parseEscapedJsonString(escapedString) {
         return null;
     }
 }
-async function getdbWithDefault(databaseName, storeName, key, defaultValue) {
+async function getdbWithDefault(CurrentUsername, storeName, key, defaultValue) {
     try {
-        const db = await ensureObjectStore(databaseName, storeName);
+        const db = await ensureObjectStore(CurrentUsername, storeName);
         const transaction = db.transaction([storeName], 'readonly');
         const store = transaction.objectStore(storeName);
         return new Promise((resolve, reject) => {
@@ -1088,7 +1081,7 @@ async function createFile(folderName, fileName, type, content, metadata = {}) {
         if (!base64data) {
             const mimeType = type ? `${type}` : 'application/octet-stream';
             const blob = new Blob([content], { type: mimeType });
-    
+
             const arrayBuffer = await blob.arrayBuffer();
             const binary = new Uint8Array(arrayBuffer);
             let binaryString = '';
@@ -1096,7 +1089,7 @@ async function createFile(folderName, fileName, type, content, metadata = {}) {
                 binaryString += String.fromCharCode(binary[i]);
             }
             base64data = `data:${mimeType};base64,` + btoa(binaryString);
-    
+
             await handleFile(current, folderName, fileNameWithExtension, base64data, type, metadata);
         } else {
             await handleFile(current, folderName, fileNameWithExtension, base64data, type, metadata);
@@ -1104,20 +1097,20 @@ async function createFile(folderName, fileName, type, content, metadata = {}) {
     } catch (error) {
         console.error("Error in createFile:", error);
         return null;
-    }    
+    }
 
     async function handleFile(folder, folderName, fileNameWithExtension, base64data, type, metadata) {
         if (!base64data) {
             base64data = `data:${await getMimeType(type)};base64,`;
         }
-    
+
         metadata.datetime = getfourthdimension();
-    
+
         const extIndex = fileNameWithExtension.lastIndexOf(".");
         if (extIndex !== -1) {
             fileNameWithExtension = fileNameWithExtension.slice(0, extIndex) + fileNameWithExtension.slice(extIndex).toLowerCase();
         }
-    
+
         if (type === "app" || fileNameWithExtension.endsWith(".app")) {
             const appData = await getFileByPath(`Apps/${fileNameWithExtension}`);
             if (appData) {
@@ -1126,7 +1119,7 @@ async function createFile(folderName, fileName, type, content, metadata = {}) {
                 return appData.id || null;
             }
         }
-    
+
         const existingFile = Object.values(folder).find(file => file.fileName === fileNameWithExtension);
         if (existingFile) {
             await updateFile(folderName, existingFile.id, { metadata, content: base64data, fileName: fileNameWithExtension, type });
@@ -1136,7 +1129,7 @@ async function createFile(folderName, fileName, type, content, metadata = {}) {
             const uid = genUID();
             memory.root = { ...memory.root };
             folder[fileNameWithExtension] = { id: uid, type, metadata };
-    
+
             await ctntMgr.set(uid, base64data);
             await setdb("handling file: " + fileNameWithExtension);
             eventBusWorker.deliver({
@@ -1148,7 +1141,7 @@ async function createFile(folderName, fileName, type, content, metadata = {}) {
             return uid;
         }
     }
-    
+
 } const createFolderQueue = [];
 let isProcessingCreateFolderQueue = false;
 async function createFolder(folderNames, folderData = {}) {
