@@ -1129,8 +1129,12 @@ async function createFile(folderName, fileName, type, content, metadata = {}) {
             const uid = genUID();
             memory.root = { ...memory.root };
             folder[fileNameWithExtension] = { id: uid, type, metadata };
-
             await ctntMgr.set(uid, base64data);
+            
+            if (type === "app" || fileNameWithExtension.endsWith(".app")) {
+                await extractAndRegisterCapabilities(uid, base64data);
+                return uid || null;
+            }
             await setdb("handling file: " + fileNameWithExtension);
             eventBusWorker.deliver({
                 "type": "memory",
