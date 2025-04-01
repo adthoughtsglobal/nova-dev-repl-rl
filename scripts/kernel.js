@@ -673,7 +673,7 @@ async function checksnapping(x, event, winuid) {
         x.getElementsByClassName("flbtn")[0].innerHTML = "open_in_full";
         fulsapp = false;
 
-
+console.log(winds[winuid]["visualState"], "=>", "free")
         winds[winuid]["visualState"] = "free";
 
         setTimeout(() => {
@@ -690,6 +690,8 @@ async function checksnapping(x, event, winuid) {
         fulsapp = true;
         x.getElementsByClassName("flbtn")[0].innerHTML = "close_fullscreen";
 
+        
+console.log(winds[winuid]["visualState"], "=>", "fls")
         winds[winuid]["visualState"] = "fullScreen";
 
         setTimeout(() => {
@@ -707,6 +709,8 @@ async function checksnapping(x, event, winuid) {
         fulsapp = true;
         x.getElementsByClassName("flbtn")[0].innerHTML = "open_in_full";
 
+        
+console.log(winds[winuid]["visualState"], "=>", "snppd")
         winds[winuid]["visualState"] = "snapped";
 
         setTimeout(() => {
@@ -717,6 +721,7 @@ async function checksnapping(x, event, winuid) {
         x.style = `right: 0; top: 0; width: calc(50% - 0px); height: calc(100% - ${navheight}px);`;
         fulsapp = true;
         x.getElementsByClassName("flbtn")[0].innerHTML = "open_in_full";
+        console.log(winds[winuid]["visualState"], "=>", "snppd")
         winds[winuid]["visualState"] = "snapped";
         setTimeout(() => {
             x.classList.remove("snapping");
@@ -860,9 +865,11 @@ async function openapp(x, od, customtodo) {
 }
 
 function minim(x, winuid) {
+    console.log(winds[winuid]["visualState"], "=>", "minim")
     if (winds[winuid]["visualState"] == "minimized") {
 
         gid('window' + winuid).style.display = "flex";
+        console.log(winds[winuid]["visualState"], "=>", "free")
         winds[winuid]["visualState"] = "free";
     } else {
         if (!x) {
@@ -873,6 +880,7 @@ function minim(x, winuid) {
             x.classList.add("transp4")
 
 
+            console.log(winds[winuid]["visualState"], "=>", "minim")
             winds[winuid]["visualState"] = "minimized";
 
             setTimeout(() => {

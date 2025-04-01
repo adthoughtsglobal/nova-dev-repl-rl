@@ -252,7 +252,7 @@ nav [navobj] div {
 	overflow: hidden;
 	padding: 0;
 	display: flex;
-	border-radius: var(--sizing-border-radius);
+	border-radius: 5px;
 	justify-content: center;
 }
 

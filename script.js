@@ -1116,7 +1116,7 @@ function calculateSimilarity(string1, string2) {
 }
 function containsSmallSVGElement(str) {
 	var svgRegex = /^<svg\s*[^>]*>[\s\S]*<\/svg>$/i;
-	return svgRegex.test(str) && str.length <= 5000;
+	return svgRegex.test(str) && str.length <= 10000;
 }
 let countdown, countdown2;
 function startTimer(minutes) {
