@@ -142,18 +142,6 @@ draggableTimeDiv.addEventListener('dragstart', (e) => {
 	e.dataTransfer.setData('text/plain', getReadableTimestamp());
 });
 
-document.querySelectorAll('.tooltip.smoothtltp').forEach(tooltip => {
-	tooltip.addEventListener('mousemove', (e) => {
-		const tooltipText = tooltip.querySelector('.tooltiptext');
-		const moveX = e.offsetX * 0.3;
-		const moveY = e.offsetY * 0.3;
-		tooltipText.style.transform = `translate(${moveX}px, ${moveY}px)`;
-	});
-	tooltip.addEventListener('mouseleave', () => {
-		tooltip.querySelector('.tooltiptext').style.transform = 'translate(0, 0)';
-	});
-});
-
 async function qsetsRefresh() {
 	return await updateMemoryData();
 }

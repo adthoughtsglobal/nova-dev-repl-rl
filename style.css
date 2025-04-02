@@ -77,17 +77,18 @@ nav .flodiv {
 	border-radius: var(--sizing-border-radius);
 	background: transparent;
 	padding: 1px;
-    animation: pop .5s cubic-bezier(0, 0, 0, 0.94);
+	animation: pop .5s cubic-bezier(0, 0, 0, 0.94);
+    gap: var(--spacing-normal);
+    margin-bottom: var(--spacing-normal);
 }
 
 nav [navobj] {
-	padding: var(--spacing-normal);
-	margin: calc(var(--spacing-gap) / 2);
+	padding: 3px;
 	border-radius: var(--sizing-border-radius);
 	background-color: var(--colors-BG-normal);
 	display: flex;
 	justify-content: center;
-	gap: var(--spacing-normal);
+	gap: 3px;
 	align-items: center;
 	flex-direction: row;
 	transition: flex-basis var(--time-action), width var(--time-action), opacity var(--time-action);
@@ -223,7 +224,6 @@ nav [navobj] div {
 	background-color: transparent;
 	border-radius: var(--sizing-border-radius);
 	padding: 10px;
-	margin: 5px;
 	cursor: pointer;
 	width: 70px;
 	animation: pop var(--time-action);
@@ -572,7 +572,7 @@ nav [navobj] div {
 	text-align: left;
 	display: grid;
 	flex: 1;
-    width: calc(100% - 1rem);
+	width: calc(100% - 1rem);
 	margin: auto;
 	grid-template-columns: repeat(auto-fill, minmax(80px, 85px));
 	justify-items: center;
@@ -632,6 +632,16 @@ nav [navobj] div {
 	display: none;
 }
 
+@keyframes tooltipAnim {
+	0% {
+		opacity: 0;
+	}
+
+	100% {
+		opacity: 1;
+	}
+}
+
 .tooltip {
 	position: relative;
 	display: flex;
@@ -648,23 +658,21 @@ nav [navobj] div {
 	color: var(--colors-text-normal);
 	word-break: normal;
 	text-align: center;
-	animation: appop 0.2s;
 	border-radius: 0.3rem;
 	padding: 2px;
 	position: absolute;
 	z-index: 1;
-	bottom: 110%;
+	bottom: 130%;
 	left: 50%;
-	margin-left: -39px;
+	margin-left: -40px;
 	font-size: var(--font-size-normal);
-	opacity: 0;
 	transition: opacity 0.3s ease-out;
 	box-shadow: 0 3px 1rem var(--colors-BG-normal) 9e;
 }
 
 .tooltip:hover .tooltiptext {
 	visibility: visible;
-	opacity: 1;
+	animation: tooltipAnim 0.2s;
 }
 
 #bios {
@@ -1076,7 +1084,7 @@ input#novamenusearchinp {
 	background: var(--colors-BG-normal);
 	border-radius: var(--sizing-border-radius);
 	padding: 10px;
-    bottom: 70px;
+	bottom: 70px;
 	box-shadow: 0 1rem 2rem rgb(0 0 0 / 77%);
 	display: none;
 	animation: notifpull var(--time-action);
@@ -1109,8 +1117,8 @@ input#novamenusearchinp {
 	font-size: var(--font-size-small);
 	margin: 3px 0;
 	opacity: 0.7;
-    text-overflow: ellipsis;
-    overflow: hidden;
+	text-overflow: ellipsis;
+	overflow: hidden;
 }
 
 .snapping {
@@ -1202,17 +1210,17 @@ codeblock {
 }
 
 .adock {
-	padding: 2px;
+	padding: 0px;
 	margin: 0;
-	width: fit-content;
-	width: -moz-fit-content;
 	display: flex;
 	justify-content: center;
-	height: calc(100% - 5px);
+	height: 39px;
+	width: 39px;
+	aspect-ratio: 1 / 1;
 }
 
 .adock .tooltiptext {
-	transform: translateY(-25px) scale(0.9) translateX(-4px) !important;
+	transform: translateY(-42px) !important;
 }
 
 dialog iframe {
@@ -1395,14 +1403,14 @@ dialog#terminal {
 }
 
 #notiflist {
-    overflow: hidden;
-    overflow-y: auto;
+	overflow: hidden;
+	overflow-y: auto;
 	width: 100%;
 	padding: 0.5rem;
 	box-sizing: border-box;
 	scroll-snap-type: y mandatory;
 	scroll-behavior: smooth;
-    overflow: hidden;
+	overflow: hidden;
 }
 
 .notiflistnav {
@@ -2250,8 +2258,8 @@ div#toastdiv {
 }
 
 .app-shortcut svg.mmic {
-    fill: var(--colors-text-normal);
-    height: 20px;
+	fill: var(--colors-text-normal);
+	height: 20px;
 }
 
 .searchbtnac {

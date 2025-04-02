@@ -115,7 +115,7 @@
 			} catch (error) {
 				document.getElementById("nomedia").showModal()
 			}
-		} 
+		}
 		async function openfile(fileID) {
 			document.getElementById("nomedia").close();
 			disp = document.getElementById("displays");
@@ -153,7 +153,7 @@
 		}
 
 
-		function dataURItoBlob(dataURI, mimeType) {
+		function dataURItoBlob(dataURI, mimeType = 'application/octet-stream') {
 			let byteCharacters = atob(dataURI.split(',')[1]);
 			let byteArrays = [];
 
@@ -169,10 +169,11 @@
 			return new Blob(byteArrays, { type: mimeType });
 		}
 
+
 		async function openfromfiles() {
 			currentreqID = await ntxSession.send("fileGet.genUID");
-			let appIdToOpen = await ntxSession.send("fileGet.getHandlers")[0] || null;; 
-			
+			let appIdToOpen = await ntxSession.send("fileGet.getHandlers")[0] || null;;
+
 			await ntxSession.send("olp.launch", appIdToOpen, { "opener": "any", "dir": "/" }, currentreqID, myWindow.windowID)
 		}
 
