@@ -43,7 +43,9 @@ class NTXSession {
         this.apps = {
             getIcon: wrapAsync(getAppIcon),
             // getPerms: wrapAsync(getPerms),
-            getHandlers: wrapAsync(fileTypeAssociations)
+            getHandlers: function() {
+                return fileTypeAssociations;
+            }
         };
         this.sysUI = {
             confirm: wrapAsync(justConfirm),
@@ -53,25 +55,27 @@ class NTXSession {
             createWindow: wrapAsync(openwindow)
         };
         this.utility = {
-            timeAgo,
-            genUID,
-            isBase64,
-            isElement,
-            decodeBase64Content,
+            timeAgo: timeAgo,
+            genUID: genUID,
+            isBase64: isBase64,
+            isElement: isElement,
+            decodeBase64Content: decodeBase64Content,
             getTime: getfourthdimension,
             getBaseFileType: getbaseflty,
             getBaseName: basename,
-            markdownToHTML,
-            stringToPastelColor,
-            stringToDarkPastelColor,
-            toTitleCase,
-            getRandomNothingQuote,
-            debounce
-        }
+            markdownToHTML: markdownToHTML,
+            getMimeType: getMimeType,
+            stringToPastelColor: stringToPastelColor,
+            stringToDarkPastelColor: stringToDarkPastelColor,
+            toTitleCase: toTitleCase,
+            getRandomNothingQuote: getRandomNothingQuote,
+            debounce: debounce,
+            mtpetxt:mtpetxt
+        };
         this.system = {
-            ercache,
-            sysLog
-        }
+            ercache: ercache,
+            sysLog: sysLog
+        };
     }
 }
 

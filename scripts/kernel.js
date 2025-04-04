@@ -499,88 +499,117 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
                 }
             }
 
+            if (!iframe.contentDocument.querySelector("#ntxScript")) {
+                const script = document.createElement("script");
+                script.id = "ntxScript";
+                script.innerHTML = `
+        document.addEventListener('mousedown', function(event) {
+            const winuid = myWindow.windowID;
+            window.parent.postMessage({ type: 'iframeClick', iframeId: winuid }, '*');
+        });
 
-            const script = document.createElement('script');
-            script.innerHTML = `
-            document.addEventListener('mousedown', function(event) {
-                window.parent.postMessage({ type: 'iframeClick', iframeId: '${winuid}' }, '*');
-            });
-           class NTXSession {
-    constructor() {
-        this.transactionIdCounter = 0;
-        this.pendingRequests = {};
+        class NTXSession {
+            constructor() {
+                this.transactionIdCounter = 0;
+                this.pendingRequests = {};
 
-        window.addEventListener("message", (event) => {
-            if (event.data.transactionId && (event.data.result || event.data.error)) {
-                const { transactionId, result, error, success } = event.data;
-                
-                if (this.pendingRequests[transactionId]) {
-                    if (success) {
-                        this.pendingRequests[transactionId].resolve(result);
-                    } else {
-                        this.pendingRequests[transactionId].reject(error);
+                window.addEventListener("message", (event) => {
+                    if (event.data.transactionId && (event.data.result || event.data.error)) {
+                        const { transactionId, result, error, success } = event.data;
+                        
+                        if (this.pendingRequests[transactionId]) {
+                            if (success) {
+                                this.pendingRequests[transactionId].resolve(result);
+                            } else {
+                                this.pendingRequests[transactionId].reject(error);
+                            }
+                            delete this.pendingRequests[transactionId];
+                        }
                     }
-                    delete this.pendingRequests[transactionId];
-                }
+                });
             }
-        });
-    }
 
-    generateTransactionId() {
-        return \`txn_\${Date.now()}_\${this.transactionIdCounter++}\`;
-    }
+            generateTransactionId() {
+                return \`txn_\${Date.now()}_\${this.transactionIdCounter++}\`;
+            }
 
-    send(action, ...params) {
-        return new Promise((resolve, reject) => {
-            const transactionId = this.generateTransactionId();
-            this.pendingRequests[transactionId] = { resolve, reject };
+            send(action, ...params) {
+                return new Promise((resolve, reject) => {
+                    const transactionId = this.generateTransactionId();
+                    this.pendingRequests[transactionId] = { resolve, reject };
 
-            window.parent.postMessage({ transactionId, action, params }, "*");
-        });
-    }
-}
+                    const winuid = myWindow.windowID;
 
-        `;
+                    window.parent.postMessage({ 
+                        transactionId, 
+                        action, 
+                        params, 
+                        iframeId: winuid
+                    }, "*");
+                });
+            }
+        }
+    `;
+                function attachWindowMessageListener(winuidfr) {
+                    if (!winuidfr) return;
 
-            window.addEventListener("message", async function (event) {
-                if (event.data.type === "iframeClick" && event.data.iframeId === winuid) {
-                    putwinontop("window" + winuid);
-                    winds[winuid].zIndex = windowDiv.style.zIndex;
-                } else if (event.data.transactionId && event.data.action) {
-                    handleNtxSessionMessage(event);
+                    if (window._messageListeners?.[winuidfr]) {
+                        window.removeEventListener("message", window._messageListeners[winuidfr]);
+                    }
+
+                    function handleMessage(event) {
+                        if (!event.data || event.data.iframeId !== winuidfr) return;
+
+                        if (event.data.type === "iframeClick") {
+                            putwinontop("window" + winuidfr);
+                            winds[winuidfr].zIndex = document.querySelector(`[data-winuid="${winuidfr}"]`).style.zIndex;
+                        } else if (event.data.transactionId && event.data.action) {
+                            handleNtxSessionMessage(event);
+                        }
+                    }
+
+                    window.addEventListener("message", handleMessage);
+
+                    if (!window._messageListeners) {
+                        window._messageListeners = {};
+                    }
+                    window._messageListeners[winuidfr] = handleMessage;
                 }
-            });
 
-            async function handleNtxSessionMessage(event) {
-                const message = event.data;
-                console.log("Received message from iframe:", message);
+                // Make sure to attach listener using the correct winuid
+                attachWindowMessageListener(windowDiv.getAttribute("data-winuid"));
 
-                try {
-                    const [namespace, method] = message.action.split(".");
-                    if (ntxWrapper[namespace] && typeof ntxWrapper[namespace][method] === "function") {
-                        const result = await ntxWrapper[namespace][method](...message.params);
+
+                async function handleNtxSessionMessage(event) {
+                    const message = event.data;
+
+                    try {
+                        const [namespace, method] = message.action.split(".");
+                        if (ntxWrapper[namespace] && typeof ntxWrapper[namespace][method] === "function") {
+                            const result = await ntxWrapper[namespace][method](...message.params);
+
+                            event.source.postMessage({
+                                transactionId: message.transactionId,
+                                result,
+                                success: true
+                            }, event.origin);
+                        } else {
+                            throw new Error(`Invalid NTX action: ${message.action}`);
+                        }
+                    } catch (error) {
+                        console.error("Error handling NTX message:", error);
 
                         event.source.postMessage({
                             transactionId: message.transactionId,
-                            result,
-                            success: true
+                            error: error.message,
+                            success: false
                         }, event.origin);
-                    } else {
-                        throw new Error(`Invalid NTX action: ${message.action}`);
                     }
-                } catch (error) {
-                    console.error("Error handling NTX message:", error);
-
-                    event.source.postMessage({
-                        transactionId: message.transactionId,
-                        error: error.message,
-                        success: false
-                    }, event.origin);
                 }
+
+
+                iframe.contentDocument.body.appendChild(script);
             }
-
-            iframe.contentDocument.body.appendChild(script);
-
             let greenflagResult;
             try {
                 greenflagResult = iframe.contentWindow.greenflag();
@@ -673,7 +702,7 @@ async function checksnapping(x, event, winuid) {
         x.getElementsByClassName("flbtn")[0].innerHTML = "open_in_full";
         fulsapp = false;
 
-console.log(winds[winuid]["visualState"], "=>", "free")
+        console.log(winds[winuid]["visualState"], "=>", "free")
         winds[winuid]["visualState"] = "free";
 
         setTimeout(() => {
@@ -690,8 +719,8 @@ console.log(winds[winuid]["visualState"], "=>", "free")
         fulsapp = true;
         x.getElementsByClassName("flbtn")[0].innerHTML = "close_fullscreen";
 
-        
-console.log(winds[winuid]["visualState"], "=>", "fls")
+
+        console.log(winds[winuid]["visualState"], "=>", "fls")
         winds[winuid]["visualState"] = "fullScreen";
 
         setTimeout(() => {
@@ -709,8 +738,8 @@ console.log(winds[winuid]["visualState"], "=>", "fls")
         fulsapp = true;
         x.getElementsByClassName("flbtn")[0].innerHTML = "open_in_full";
 
-        
-console.log(winds[winuid]["visualState"], "=>", "snppd")
+
+        console.log(winds[winuid]["visualState"], "=>", "snppd")
         winds[winuid]["visualState"] = "snapped";
 
         setTimeout(() => {

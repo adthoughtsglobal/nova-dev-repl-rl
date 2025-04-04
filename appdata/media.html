@@ -118,57 +118,81 @@
 		}
 		async function openfile(fileID) {
 			document.getElementById("nomedia").close();
-			disp = document.getElementById("displays");
-			var file = await ntxSession.send("fileGet.byId", fileID);
+			let disp = document.getElementById("displays");
+			let file = await window.parent.getFileById(fileID);
+
+			console.log("File Data:", file, fileID);
 
 			if (file && file.content) {
 				document.getElementById("tils").innerText = file.fileName;
-				const base64Content = file.content;
-				console.log(5392, base64Content)
-				const extension = file.fileName.split('.').pop().toLowerCase();
-				const mimeType = await window.parent.getMimeType(extension) || "application/octet-stream";
+				var base64Content = file.content;
+				let fileType = await window.parent.getbaseflty(file.fileName);
+				let mimeType = (await window.parent.getMimeType(window.parent.mtpetxt(file.fileName))) || "application/octet-stream";
+				console.log(45, base64Content)
 
-				let blob = dataURItoBlob(base64Content, mimeType);
-				let fileURL = URL.createObjectURL(blob);
+				if (!base64Content.startsWith("data:")) {
+					let base64Body = base64Content.includes(",") ? base64Content.split(",")[1] : base64Content;
+					base64Content = `data:${mimeType};base64,${base64Body}`;
+				}
+				console.log("Fixed Content Type:", base64Content);
 
-				if (await ntxSession.send("utility.getBaseFileType", file.fileName) === "image") {
-					disp.innerHTML = `<img id="thedisplay" alt="Image Preview" src="${fileURL}">`;
-				} else if (await ntxSession.send("utility.getBaseFileType", file.fileName) === "music") {
-					disp.innerHTML = `<audio controls id="thedisplay">
-                <source src="${fileURL}" type="${mimeType}">
+
+				if (fileType === "image") {
+					disp.innerHTML = `<img id="thedisplay" alt="Nova" src="">`;
+					document.getElementById("thedisplay").src = base64Content;
+				} else if (fileType === "music") {
+					disp.innerHTML = `<audio controls>
+                <source src="" id="thedisplay">
                 Your browser does not support the audio tag.
             </audio>`;
-				} else if (await ntxSession.send("utility.getBaseFileType", file.fileName) === "video") {
-					disp.innerHTML = `<video controls id="thedisplay">
-                <source src="${fileURL}" type="${mimeType}">
+					document.getElementById("thedisplay").src = base64Content;
+					document.getElementById("thedisplay").type = mimeType;
+				} else if (fileType === "video") {
+					disp.innerHTML = `<video controls width="400" height="300" id="thedisplay">
+                <source src="" id="thesource">
                 Your browser does not support the video tag.
             </video>`;
 
+					let blob = dataURItoBlob(base64Content, mimeType);
+					let videoURL = URL.createObjectURL(blob);
 					let videoElement = document.getElementById("thedisplay");
-					playBase64Chunks(videoElement, fileURL);
+					videoElement.innerHTML = ""; // 🟢 Remove existing sources
+					let sourceElement = document.createElement("source");
+					sourceElement.src = videoURL;
+					sourceElement.type = mimeType;
+
+					videoElement.appendChild(sourceElement); // 🟢 Re-add the source
+					videoElement.load();
+					videoElement.play().catch(err => console.error("Video play error:", err));
 				} else {
-					disp.innerHTML = `<p>Unsupported file type. <a href="${fileURL}" download="${file.fileName}">Download file</a></p>`;
+					disp.innerHTML = `<p id="thedisplay">Cannot display this file. Open it in the files app.</p>`;
 				}
+			} else {
+				console.error("File not found or has no content.");
 			}
 		}
 
-
-		function dataURItoBlob(dataURI, mimeType = 'application/octet-stream') {
-			let byteCharacters = atob(dataURI.split(',')[1]);
-			let byteArrays = [];
-
-			for (let i = 0; i < byteCharacters.length; i += 512) {
-				let slice = byteCharacters.slice(i, i + 512);
-				let byteNumbers = new Array(slice.length);
-				for (let j = 0; j < slice.length; j++) {
-					byteNumbers[j] = slice.charCodeAt(j);
-				}
-				byteArrays.push(new Uint8Array(byteNumbers));
+		function dataURItoBlob(dataURI, mimeType) {
+			let byteString = atob(dataURI.split(',')[1]);
+			let ab = new ArrayBuffer(byteString.length);
+			let ia = new Uint8Array(ab);
+			for (let i = 0; i < byteString.length; i++) {
+				ia[i] = byteString.charCodeAt(i);
 			}
-
-			return new Blob(byteArrays, { type: mimeType });
+			console.log(93472, mimeType);
+			return new Blob([ab], { type: mimeType });
 		}
 
+
+		window.addEventListener('message', async (event) => {
+
+			if (event.data.action === 'loadlocalfile') {
+				if (event.data.id === myWindow.windowID) {
+					let newAppId = event.data.returned;
+					openfile(newAppId);
+				}
+			}
+		});
 
 		async function openfromfiles() {
 			currentreqID = await ntxSession.send("fileGet.genUID");

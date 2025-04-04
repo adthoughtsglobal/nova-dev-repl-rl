@@ -10,7 +10,6 @@
     <meta name="nova-icon"
         content="<svg version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='57.21726' height='53.37052' viewBox='0,0,57.21726,53.37052'><g transform='translate(-215.45983,-153.31474)'><g stroke-miterlimit='10'><path d='M254.6466,206.68526c-14.65005,0 -22.64245,0 -31.19188,0c-3.93291,0 -7.99489,-3.7648 -7.99489,-7.48016c0,-8.34913 0,-23.64486 0,-38.57587c0,-4.48523 2.71767,-7.31449 7.04825,-7.31449c14.78957,0 23.25719,0 31.6652,0c3.72796,0 7.50974,3.02922 7.50974,7.78782c0,15.14952 0,29.84053 0,38.10254c0,3.71536 -2.71404,7.48016 -7.03641,7.48016z' fill='#ffdebc' stroke='none' stroke-width='NaN' stroke-linecap='butt'/><path d='M225.10625,164.87812h26.375' fill='none' stroke='#c99a6c' stroke-width='5' stroke-linecap='round'/><path d='M225.10625,172.62813h26.375' fill='none' stroke='#c99a6c' stroke-width='5' stroke-linecap='round'/><path d='M224.98125,181.25313h26.375' fill='none' stroke='#c99a6c' stroke-width='5' stroke-linecap='round'/><path d='M224.98125,189.00313h26.375' fill='none' stroke='#c99a6c' stroke-width='5' stroke-linecap='round'/><path d='M224.85625,197.25313h26.375' fill='none' stroke='#c99a6c' stroke-width='5' stroke-linecap='round'/><g stroke='none' stroke-width='0' stroke-linecap='butt'><path d='M250.79377,185.94946l12.41538,-21.74351l9.46245,5.40299l-12.41538,21.74351z' fill='#ffa954'/><path d='M255.63115,188.72855l12.41538,-21.74351l4.63056,2.64402l-12.41538,21.74351z' fill='#915a23'/><path d='M250.8449,185.97866l9.40654,5.37106l-9.70103,6.30471z' fill='#915a23'/><path d='M250.66975,191.88131l4.75372,2.71434l-4.90254,3.18617z' fill='#241709'/></g></g></g></svg>">
     <style>
-
         ::selection {
             background-color: #727272;
             color: #ffffff;
@@ -78,6 +77,7 @@
             font-size: .7rem;
 
         }
+
         .dark-mode .navbutton {
             background-color: #1f1f1f;
         }
@@ -85,7 +85,6 @@
         nav button:hover {
             background: var(--colors-BG-highlighted);
         }
-
     </style>
     <script src="https://cdn.jsdelivr.net/npm/mime-db@1.52.0/db.json"></script>
 
@@ -102,55 +101,56 @@
     <textarea id="thedisplay" spellcheck="false" onkeyup="sbtn.innerHTML = '*Save'"
         placeholder="Click Open to open a file from your files app."></textarea>
 
-        <script>
-            var mode = "new";
-            var currentfile = {};
-            var currentMime = 'text/plain';
-            var currentreqID = null;
+    <script>
+        var mode = "new";
+        var currentfile = {};
+        var currentMime = 'text/plain';
+        var currentreqID = null;
 
-            function openfromfiles() {
-                document.getElementById("thedisplay").value = "Waiting for you to open a file...";
-                currentreqID = window.parent.genUID();
-                let appIdToOpen = window.parent.fileTypeAssociations['file'][0] || null;
-                window.parent.openlaunchprotocol(appIdToOpen, { "opener":'any', "dir": "Downloads/" }, currentreqID, myWindow.windowID);
-            }
+        var ntxSession;
+        async function openfromfiles() {
+            document.getElementById("thedisplay").value = "Waiting for you to open a file...";
+            currentreqID = await ntxSession.send("utility.genUID");
+            let appIdToOpen = (await ntxSession.send("apps.getHandlers"))["file"][0] || null;
+            await ntxSession.send("olp.launch", appIdToOpen, { "opener": 'any', "dir": "Downloads/" }, currentreqID, myWindow.windowID);
+        }
 
-            window.addEventListener('message', async (event) => {
-                if (event.data.action === 'loadlocalfile') {
-                    if (event.data.id === myWindow.windowID) {
-                        const file = await window.parent.getFileById(event.data.returned);
-                        readthefile(file);
-                    }
+        window.addEventListener('message', async (event) => {
+            if (event.data.action === 'loadlocalfile') {
+                if (event.data.id === myWindow.windowID) {
+                    const file = await ntxSession.send("fileGet.byId", event.data.returned);
+                    readthefile(file);
                 }
-            });
+            }
+        });
 
-            async function savetx() {
-                sbtn.innerHTML = '* Saving';
+        async function savetx() {
+            sbtn.innerHTML = '* Saving';
 
-                const content = document.getElementById("thedisplay").value;
-                const encodedContent = btoa(content);
+            const content = document.getElementById("thedisplay").value;
+            const encodedContent = btoa(content);
 
-                if (mode === "edit") {
+            if (mode === "edit") {
                 const dataUri = `data:${currentMime};base64,${encodedContent}`;
-                    await window.parent.updateFile(currentfile.path, currentfile.id, {
-                        metadata: currentfile.metadata,
-                        content: dataUri,
-                        fileName: currentfile.fileName
-                    });
-                } else {
-                    const dataUri = `data:text/plain;base64,${encodedContent}`;
-                    let y = await window.parent.ask("Enter a file name:", "untitled.txt");
-                    window.parent.createFile("Documents", y, false, dataUri);
-                }
-
-                sbtn.innerHTML = 'Save';
-                mode = "edit";
+                await ntxSession.send("fileSet.updateFile", currentfile.path, currentfile.id, {
+                    metadata: currentfile.metadata,
+                    content: dataUri,
+                    fileName: currentfile.fileName
+                });
+            } else {
+                const dataUri = `data:text/plain;base64,${encodedContent}`;
+                let y = await ntxSession.send("sysUI.ask", "Enter a file name:", "untitled.txt");
+                await ntxSession.send("fileSet.createFile", "Documents", y, false, dataUri);
             }
 
-            function toggleDarkMode() {
-                document.body.classList.toggle('dark-mode');
-                document.querySelector('textarea').classList.toggle('dark-mode');
-            }
+            sbtn.innerHTML = 'Save';
+            mode = "edit";
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            document.querySelector('textarea').classList.toggle('dark-mode');
+        }
 
         function jsonFromDataURI(dataURI) {
             const splitDataURI = dataURI.split(',');
@@ -185,7 +185,7 @@
                     formattedCode += char + ' '.repeat(level * 4);
                 } else if (char === '}' || char === ']') {
                     level--;
-                    formattedCode = formattedCode.trimEnd() + '\n' + ' '.repeat(level * 4) + char;
+                    formattedCode = formattedCode.trimEnd() + '' + ' '.repeat(level * 4) + char;
                 } else {
                     formattedCode += char;
                 }
@@ -196,6 +196,7 @@
 
 
         async function greenflag() {
+            ntxSession = new NTXSession();
             var sbtn = document.getElementById("sbtn");
             var disp = document.getElementById("thedisplay")
             disp.focus()
@@ -205,20 +206,18 @@
                 if (myWindow.params.appid == myWindow.appID) {
                     document.getElementById("thedisplay").value = "Loading...";
                     defile = myWindow.params.data;
-                    const file = await window.parent.getFileById(defile);
+                    const file = await ntxSession.send("fileGet.byId", defile);
                     readthefile(file)
 
                 } else {
                     document.getElementById("thedisplay").value = "";
                 }
-            } catch (error) {
-                console.error("Error parsing todo JSON:", error);
-            }
+            } catch (e) {}
 
         }
 
 
-        function readthefile(file) {
+        async function readthefile(file) {
             currentfile = file;
             mode = "edit";
             const mimePrefix = file.content.match(/^data:([^;]+);base64,/i);
@@ -229,19 +228,19 @@
                 file.content = file.content.replace(/^data:([^;]+);base64,/i, '');
                 processFileContent(file);
             } else {
-                const extension = window.parent.mtpetxt(file.fileName);
-                window.parent.getMimeType(extension).then(mimeType => {
+                const extension = await ntxSession.send("utility.mtpetxt", file.fileName);
+                await ntxSession.send("utility.getMimeType", extension).then(mimeType => {
                     file.type = mimeType || 'application/octet-stream';
                     processFileContent(file);
                 });
             }
         }
 
-        function processFileContent(file) {
-            file.content = window.parent.decodeBase64Content(file.content);
+        async function processFileContent(file) {
+            file.content = await ntxSession.send("utility.decodeBase64Content", file.content);
 
             if (file.content == undefined) {
-                window.parent.say("Currupted file", "Your file is having no reader data.")
+                await ntxSession.send("sysUI.say", "Currupted file", "Your file is having no reader data.")
 
                 myWindow.titleElement.innerText = file.fileName;
                 document.getElementById("thedisplay").value = file.content;

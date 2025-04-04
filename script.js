@@ -1611,8 +1611,8 @@ document.addEventListener("DOMContentLoaded", async function () {
 		"scripts/rotur.js",
 		"scripts/ctxmenu.js",
 		"scripts/edgecases.js",
-		"scripts/ntx.js",
-		"scripts/scripties.js"
+		"scripts/scripties.js",
+		"scripts/ntx.js"
 	];
 
 	const loadScripts = async () => {

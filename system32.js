@@ -1051,59 +1051,44 @@ async function updateFile(folderName, fileId, newData) {
     }
 }
 async function createFile(folderName, fileName, type, content, metadata = {}) {
-    console.log("creating: ", fileName, " in ", folderName);
+    console.log("creating:", fileName, "in", folderName);
 
     folderName = folderName.endsWith('/') ? folderName : folderName + '/';
     const fileNameWithExtension = fileName.includes('.') ? fileName : `${fileName}.${type || ''}`.trim();
     if (!fileNameWithExtension) return null;
 
-    type = type || fileNameWithExtension.split('.').pop();
+    const ext = fileNameWithExtension.split('.').pop().toLowerCase();
+    const mimeType = await getMimeType(ext);
 
     await updateMemoryData();
-
-    // Ensure folder exists by calling createFolder
-    await createFolder(folderName);  // Ensure this folder is created without redundancy
+    await createFolder(folderName);
 
     const parts = folderName.split('/').filter(Boolean);
     let current = memory.root;
-
     for (const part of parts) {
         const folderKey = part + '/';
-        if (!current[folderKey]) {
-            current[folderKey] = {};
-        }
+        if (!current[folderKey]) current[folderKey] = {};
         current = current[folderKey];
     }
-
 
     try {
         let base64data = isBase64(content) ? content : '';
         if (!base64data) {
-            const mimeType = type ? `${type}` : 'application/octet-stream';
             const blob = new Blob([content], { type: mimeType });
-
             const arrayBuffer = await blob.arrayBuffer();
             const binary = new Uint8Array(arrayBuffer);
             let binaryString = '';
-            for (let i = 0; i < binary.length; i++) {
-                binaryString += String.fromCharCode(binary[i]);
-            }
+            for (let i = 0; i < binary.length; i++) binaryString += String.fromCharCode(binary[i]);
             base64data = `data:${mimeType};base64,` + btoa(binaryString);
-
-            await handleFile(current, folderName, fileNameWithExtension, base64data, type, metadata);
-        } else {
-            await handleFile(current, folderName, fileNameWithExtension, base64data, type, metadata);
         }
+
+        return await handleFile(current, folderName, fileNameWithExtension, base64data, type, metadata);
     } catch (error) {
         console.error("Error in createFile:", error);
         return null;
     }
 
     async function handleFile(folder, folderName, fileNameWithExtension, base64data, type, metadata) {
-        if (!base64data) {
-            base64data = `data:${await getMimeType(type)};base64,`;
-        }
-
         metadata.datetime = getfourthdimension();
 
         const extIndex = fileNameWithExtension.lastIndexOf(".");
@@ -1111,7 +1096,7 @@ async function createFile(folderName, fileName, type, content, metadata = {}) {
             fileNameWithExtension = fileNameWithExtension.slice(0, extIndex) + fileNameWithExtension.slice(extIndex).toLowerCase();
         }
 
-        if (type === "app" || fileNameWithExtension.endsWith(".app")) {
+        if (ext === "app") {
             const appData = await getFileByPath(`Apps/${fileNameWithExtension}`);
             if (appData) {
                 await updateFile("Apps/", appData.id, { metadata, content: base64data, fileName: fileNameWithExtension, type });
@@ -1130,23 +1115,21 @@ async function createFile(folderName, fileName, type, content, metadata = {}) {
             memory.root = { ...memory.root };
             folder[fileNameWithExtension] = { id: uid, type, metadata };
             await ctntMgr.set(uid, base64data);
-            
-            if (type === "app" || fileNameWithExtension.endsWith(".app")) {
+
+            if (ext === "app") {
                 await extractAndRegisterCapabilities(uid, base64data);
                 return uid || null;
             }
+
             await setdb("handling file: " + fileNameWithExtension);
-            eventBusWorker.deliver({
-                "type": "memory",
-                "event": "update",
-                "id": "updateFile",
-                "key": folderName
-            });
+            eventBusWorker.deliver({ type: "memory", event: "update", id: "updateFile", key: folderName });
             return uid;
         }
     }
+}
 
-} const createFolderQueue = [];
+
+const createFolderQueue = [];
 let isProcessingCreateFolderQueue = false;
 async function createFolder(folderNames, folderData = {}) {
     return new Promise((resolve, reject) => {
