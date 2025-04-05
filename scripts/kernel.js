@@ -576,7 +576,6 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
                     window._messageListeners[winuidfr] = handleMessage;
                 }
 
-                // Make sure to attach listener using the correct winuid
                 attachWindowMessageListener(windowDiv.getAttribute("data-winuid"));
 
 

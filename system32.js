@@ -1059,6 +1059,7 @@ async function createFile(folderName, fileName, type, content, metadata = {}) {
 
     const ext = fileNameWithExtension.split('.').pop().toLowerCase();
     const mimeType = await getMimeType(ext);
+    const baseFileType = await getbaseflty(fileNameWithExtension);
 
     await updateMemoryData();
     await createFolder(folderName);
@@ -1072,23 +1073,25 @@ async function createFile(folderName, fileName, type, content, metadata = {}) {
     }
 
     try {
-        let base64data = isBase64(content) ? content : '';
-        if (!base64data) {
+        let fileData = content;
+
+        // Skip base64 encoding for media files (image, video, audio)
+        if (!isBase64(content) && baseFileType !== "image" && baseFileType !== "video" && baseFileType !== "music" && baseFileType !== "audio") {
             const blob = new Blob([content], { type: mimeType });
             const arrayBuffer = await blob.arrayBuffer();
             const binary = new Uint8Array(arrayBuffer);
             let binaryString = '';
             for (let i = 0; i < binary.length; i++) binaryString += String.fromCharCode(binary[i]);
-            base64data = `data:${mimeType};base64,` + btoa(binaryString);
+            fileData = `data:${mimeType};base64,` + btoa(binaryString);
         }
 
-        return await handleFile(current, folderName, fileNameWithExtension, base64data, type, metadata);
+        return await handleFile(current, folderName, fileNameWithExtension, fileData, type, metadata);
     } catch (error) {
         console.error("Error in createFile:", error);
         return null;
     }
 
-    async function handleFile(folder, folderName, fileNameWithExtension, base64data, type, metadata) {
+    async function handleFile(folder, folderName, fileNameWithExtension, contentData, type, metadata) {
         metadata.datetime = getfourthdimension();
 
         const extIndex = fileNameWithExtension.lastIndexOf(".");
@@ -1099,25 +1102,25 @@ async function createFile(folderName, fileName, type, content, metadata = {}) {
         if (ext === "app") {
             const appData = await getFileByPath(`Apps/${fileNameWithExtension}`);
             if (appData) {
-                await updateFile("Apps/", appData.id, { metadata, content: base64data, fileName: fileNameWithExtension, type });
-                await extractAndRegisterCapabilities(appData.id, base64data);
+                await updateFile("Apps/", appData.id, { metadata, content: contentData, fileName: fileNameWithExtension, type });
+                await extractAndRegisterCapabilities(appData.id, contentData);
                 return appData.id || null;
             }
         }
 
         const existingFile = Object.values(folder).find(file => file.fileName === fileNameWithExtension);
         if (existingFile) {
-            await updateFile(folderName, existingFile.id, { metadata, content: base64data, fileName: fileNameWithExtension, type });
+            await updateFile(folderName, existingFile.id, { metadata, content: contentData, fileName: fileNameWithExtension, type });
             folder[fileNameWithExtension] = { id: existingFile.id, type, metadata };
             return existingFile.id;
         } else {
             const uid = genUID();
             memory.root = { ...memory.root };
             folder[fileNameWithExtension] = { id: uid, type, metadata };
-            await ctntMgr.set(uid, base64data);
+            await ctntMgr.set(uid, contentData);
 
             if (ext === "app") {
-                await extractAndRegisterCapabilities(uid, base64data);
+                await extractAndRegisterCapabilities(uid, contentData);
                 return uid || null;
             }
 
