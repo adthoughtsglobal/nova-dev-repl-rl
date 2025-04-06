@@ -67,6 +67,7 @@ nav {
 	justify-content: center;
 	align-items: center;
 	height: fit-content;
+    padding: var(--spacing-normal);
 }
 
 nav .flodiv {
@@ -79,7 +80,6 @@ nav .flodiv {
 	padding: 1px;
 	animation: pop .5s cubic-bezier(0, 0, 0, 0.94);
     gap: var(--spacing-normal);
-    margin-bottom: var(--spacing-normal);
 }
 
 nav [navobj] {

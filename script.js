@@ -1330,6 +1330,17 @@ function runAsWasm(content) {
 async function realgenTaskBar() {
 	gid("dock").style.display = "none";
 	gid("novanav").style.display = "grid";
+	
+	// nav theme
+	var NovNavCtrl = await getSetting("NovNavCtrl")
+	if (NovNavCtrl.bg) {
+		gid("novanav").style.backgroundColor = "transparent";
+	} else {
+		gid("novanav").style.backgroundColor = "var(--colors-BG-normal)";
+	}
+
+	gid("novanav").style.justifyContent = NovNavCtrl.align;
+
 	var appbarelement = document.getElementById("dock")
 	appbarelement.innerHTML = "<span class='taskbarloader' id='taskbarloaderprime'></span>";
 	if (appbarelement) {

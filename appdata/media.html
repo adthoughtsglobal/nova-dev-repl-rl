@@ -177,10 +177,7 @@
 			}
 		}
 
-
-
 		window.addEventListener('message', async (event) => {
-
 			if (event.data.action === 'loadlocalfile') {
 				if (event.data.id === myWindow.windowID) {
 					let newAppId = event.data.returned;
