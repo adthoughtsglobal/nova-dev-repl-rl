@@ -70,31 +70,6 @@ async function openfile(x) {
         say("<h1>Unable to open file</h1>File Error: " + error, "failed")
     }
 }
-function flwin(winElement, x) {
-    winElement.classList.add("transp2");
-    const winuid = winElement.getAttribute("data-winuid");
-
-    console.log(542, winds[winuid]["visualState"])
-    const isFree = winds[winuid]["visualState"] != "fullscreen";
-    const aspectRatio = winElement.getAttribute("data-aspectratio") || "9/6";
-    const sizeStyles = isFree ?
-        { width: 'calc(100% - 0px)', height: 'calc(100% - 57px)', left: '0', top: '0' } :
-        calculateWindowSize(aspectRatio);
-
-    for (const [key, value] of Object.entries(sizeStyles)) {
-        if (winElement.style[key] !== value) {
-            winElement.style[key] = value;
-        }
-    }
-
-    x.innerHTML = isFree ? "close_fullscreen" : "open_in_full";
-
-    isFree ? winds[winuid]["visualState"] = "fullscreen" : winds[winuid]["visualState"] = "free"
-
-    setTimeout(() => {
-        winElement.classList.remove("transp2");
-    }, 1000);
-}
 
 
 function calculateWindowSize(aspectratio) {
@@ -338,7 +313,7 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
     minimbtn.appendChild(minimSpan);
     minimbtn.onclick = function () {
         snappingconthide();
-        minim(windowDiv, winuid);
+        minim(winuid);
     };
 
     var flButton = document.createElement("button");
@@ -350,7 +325,7 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
     flButton.appendChild(flSpan);
     flButton.onclick = function () {
         snappingconthide();
-        flwin(windowDiv, flSpan);
+        flwin(windowDiv);
     };
 
     var closeButton = document.createElement("button");
@@ -653,6 +628,45 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
     putwinontop('window' + winuid);
     loadtaskspanel();
 }
+function resetWindow(id) {
+    console.log("resetting" ,id)
+    const x = document.getElementById("window"+id);
+    x.classList.add("snapping");
+
+    const aspectRatio = x.getAttribute("data-aspectratio") || "9/6";
+    const sizeStyles = calculateWindowSize(aspectRatio);
+
+    Object.assign(x.style, sizeStyles);
+    x.getElementsByClassName("flbtn")[0].innerHTML = "open_in_full";
+    fulsapp = false;
+
+    console.log(winds[id]["visualState"], "=>", "free");
+    winds[id]["visualState"] = "free";
+
+    setTimeout(() => {
+        x.classList.remove("snapping");
+    }, 1000);
+}
+
+function maximizeWindow(id) {
+    console.log("maxing" ,id)
+    const x = document.getElementById("window"+id);
+    x.classList.add("snapping");
+    x.style.width = "calc(100% - 0px)";
+    x.style.height = "calc(100% - " + navheight + "px)";
+    x.style.top = "0";
+    x.style.left = "0";
+    fulsapp = true;
+    x.getElementsByClassName("flbtn")[0].innerHTML = "close_fullscreen";
+
+    console.log(winds[id]["visualState"], "=>", "fls");
+    winds[id]["visualState"] = "fullScreen";
+
+    setTimeout(() => {
+        x.classList.remove("snapping");
+    }, 1000);
+}
+
 async function checksnapping(x, event, winuid) {
     updateNavSize();
     const logData = {
@@ -691,56 +705,20 @@ async function checksnapping(x, event, winuid) {
     logData.widthVW = widthVW;
     logData.heightVH = heightVH;
 
-    const resetWindow = () => {
-        x.classList.add("snapping");
-
-        const aspectRatio = x.getAttribute("data-aspectratio") || "9/6";
-        const sizeStyles = calculateWindowSize(aspectRatio);
-
-        Object.assign(x.style, sizeStyles);
-        x.getElementsByClassName("flbtn")[0].innerHTML = "open_in_full";
-        fulsapp = false;
-
-        console.log(winds[winuid]["visualState"], "=>", "free")
-        winds[winuid]["visualState"] = "free";
-
-        setTimeout(() => {
-            x.classList.remove("snapping");
-        }, 1000);
-    };
-
-    const maximizeWindow = () => {
-        x.classList.add("snapping");
-        x.style.width = "calc(100% - 0px)";
-        x.style.height = "calc(100% - " + navheight + "px)";
-        x.style.top = "0";
-        x.style.left = "0";
-        fulsapp = true;
-        x.getElementsByClassName("flbtn")[0].innerHTML = "close_fullscreen";
-
-
-        console.log(winds[winuid]["visualState"], "=>", "fls")
-        winds[winuid]["visualState"] = "fullScreen";
-
-        setTimeout(() => {
-            x.classList.remove("snapping");
-        }, 1000);
-    };
-
-    if (fulsapp) resetWindow();
+    if (fulsapp) {
+        resetWindow(winuid);
+        return;
+    }
 
     if (logData.cursorY < VHInPixels || (logData.viewportHeight - logData.cursorY) < VHInPixels) {
-        maximizeWindow();
+        maximizeWindow(winuid);
     } else if (logData.cursorX < VWInPixels) {
         x.classList.add("snapping");
         x.style = `left: 0; top: 0; width: calc(50% - 0px); height: calc(100% - ${navheight}px);`;
         fulsapp = true;
         x.getElementsByClassName("flbtn")[0].innerHTML = "open_in_full";
-
-
-        console.log(winds[winuid]["visualState"], "=>", "snppd")
+        console.log(winds[winuid]["visualState"], "=>", "snppd");
         winds[winuid]["visualState"] = "snapped";
-
         setTimeout(() => {
             x.classList.remove("snapping");
         }, 1000);
@@ -749,14 +727,14 @@ async function checksnapping(x, event, winuid) {
         x.style = `right: 0; top: 0; width: calc(50% - 0px); height: calc(100% - ${navheight}px);`;
         fulsapp = true;
         x.getElementsByClassName("flbtn")[0].innerHTML = "open_in_full";
-        console.log(winds[winuid]["visualState"], "=>", "snppd")
+        console.log(winds[winuid]["visualState"], "=>", "snppd");
         winds[winuid]["visualState"] = "snapped";
         setTimeout(() => {
             x.classList.remove("snapping");
         }, 1000);
     }
-
 }
+
 function dragElement(elmnt) {
     var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
     var iframeOverlay = null;
@@ -892,33 +870,48 @@ async function openapp(x, od, customtodo) {
     fetchDataAndSave(x);
 }
 
-function minim(x, winuid) {
-    console.log(winds[winuid]["visualState"], "=>", "minim")
-    if (winds[winuid]["visualState"] == "minimized") {
+function minim(winuid) {
+    const x = gid('window' + winuid);
+    console.log(winds[winuid]["visualState"], "=>", "minim");
 
-        gid('window' + winuid).style.display = "flex";
-        console.log(winds[winuid]["visualState"], "=>", "free")
+    if (winds[winuid]["visualState"] === "minimized") {
+        x.style.display = "flex";
+        console.log(winds[winuid]["visualState"], "=>", "free");
         winds[winuid]["visualState"] = "free";
     } else {
-        if (!x) {
-            x = gid('window' + winuid);
-        }
         if (isWinOnTop('window' + winuid)) {
-
-            x.classList.add("transp4")
-
-
-            console.log(winds[winuid]["visualState"], "=>", "minim")
+            x.classList.add("transp4");
+            console.log(winds[winuid]["visualState"], "=>", "minim");
             winds[winuid]["visualState"] = "minimized";
 
             setTimeout(() => {
-                x.classList.remove("transp4")
+                x.classList.remove("transp4");
                 x.style.display = "none";
                 nowapp = '';
             }, 100);
         } else {
-            putwinontop('window' + winuid)
+            putwinontop('window' + winuid);
         }
     }
+}
 
+function flwin(winElement) {
+    winElement.classList.add("transp2");
+    const winuid = winElement.getAttribute("data-winuid");
+    const flbtn = winElement.getElementsByClassName("flbtn")[0];
+
+    console.log(542, winds[winuid]["visualState"]); // "fullscreen"
+    const isFree = winds[winuid]["visualState"] != "fullscreen"; // false
+
+    if (isFree) {
+        maximizeWindow(winuid); // this runs
+        flbtn.innerHTML = "close_fullscreen";
+    } else {
+        resetWindow(winuid); // this should run right?
+        flbtn.innerHTML = "open_in_full";
+    }
+
+    setTimeout(() => {
+        winElement.classList.remove("transp2");
+    }, 1000);
 }

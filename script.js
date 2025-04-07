@@ -831,7 +831,7 @@ async function loadtaskspanel() {
 
 		appShortcutDiv.addEventListener("click", function () {
 			putwinontop('window' + wid);
-			minim(0, wid);
+			minim(wid);
 		});
 
 		let iconSpan = document.createElement("span");
