@@ -239,6 +239,7 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
     windowdataspan.innerHTML = ic != null ? ic : "";
     let windowtitlespan = document.createElement("div");
     windowtitlespan.classList.add("title")
+    windowtitlespan.id = "window" + winuid + "titlespan";
     windowtitlespan.innerHTML += toTitleCase(basename(title));
     windowdataspan.appendChild(windowtitlespan);
     windowHeader.appendChild(windowdataspan);
@@ -368,12 +369,194 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
             windowLoader.appendChild(loaderdiv);
         }
 
+        const computedStyles = getComputedStyle(document.body);
+        const variables = {
+            '--font-size-small': computedStyles.getPropertyValue('--font-size-small'),
+            '--font-size-normal': computedStyles.getPropertyValue('--font-size-normal'),
+            '--font-size-big': computedStyles.getPropertyValue('--font-size-big'),
+            '--colors-BG-normal': computedStyles.getPropertyValue('--colors-BG-normal'),
+            '--colors-BG-sub': computedStyles.getPropertyValue('--colors-BG-sub'),
+            '--colors-BG-section': computedStyles.getPropertyValue('--colors-BG-section'),
+            '--colors-BG-highlighted': computedStyles.getPropertyValue('--colors-BG-highlighted'),
+            '--colors-text-section': computedStyles.getPropertyValue('--colors-text-section'),
+            '--colors-text-normal': computedStyles.getPropertyValue('--colors-text-normal'),
+            '--colors-text-sub': computedStyles.getPropertyValue('--colors-text-sub'),
+            '--colors-text-high': computedStyles.getPropertyValue('--colors-text-high'),
+            '--sizing-border-radius': computedStyles.getPropertyValue('--sizing-border-radius'),
+            '--sizing-normal': computedStyles.getPropertyValue('--sizing-normal'),
+            '--sizing-nano': computedStyles.getPropertyValue('--sizing-nano'),
+            '--vw': computedStyles.getPropertyValue('--vw'),
+            '--vh': computedStyles.getPropertyValue('--vh'),
+            '--font-size-default': computedStyles.getPropertyValue('--font-size-default')
+        };
+
+        let styleBlock = '';
+        if (contentString.includes("nova-include") && getMetaTagContent(contentString, 'nova-include')?.includes('nova.css')) {
+            const updatedCss = novadotcsscache.replace(/:root\s*{([^}]*)}/, (match, declarations) => {
+                let updated = declarations.trim();
+                for (const [key, val] of Object.entries(variables)) {
+                    const regex = new RegExp(`(${key}\\s*:\\s*).*?;`, 'g');
+                    updated = updated.replace(regex, `$1${val.trim()};`);
+                }
+                return `:root { ${updated} }`;
+            });
+            styleBlock += `<style>${updatedCss}</style>`;
+        }
+
+        if (contentString.includes("nova-include") && getMetaTagContent(contentString, 'nova-include')?.includes('material-symbols-rounded')) {
+            styleBlock += `
+    <style>
+    @font-face {
+        font-family: 'Material Symbols Rounded';
+        font-style: normal;
+        src: url("${location.href}libs/MaterialSymbolsRounded.woff2") format('woff2');
+    }
+    .material-symbols-rounded {
+        font-family: 'Material Symbols Rounded';
+        font-weight: normal;
+        font-style: normal;
+        font-size: 24px;
+        line-height: 1;
+        display: inline-block;
+        white-space: nowrap;
+        direction: ltr;
+        -webkit-font-smoothing: antialiased;
+    }
+    </style>`;
+        }
+
+        let ctxScript = '';
+        if (contentString.includes("nova-include") && getMetaTagContent(contentString, 'nova-include')?.includes('contextMenu')) {
+            ctxScript = await fetch('scripts/ctxmenu.js').then(res => res.text());
+        }
+
+
+        async function handleNtxSessionMessage(event) {
+            const message = event.data;
+
+            try {
+                const [namespace, method] = message.action.split(".");
+                if (ntxWrapper[namespace] && typeof ntxWrapper[namespace][method] === "function") {
+                    const result = await ntxWrapper[namespace][method](...message.params);
+
+                    event.source.postMessage({
+                        transactionId: message.transactionId,
+                        result,
+                        success: true
+                    }, event.origin);
+                } else {
+                    throw new Error(`Invalid NTX action: ${message.action}`);
+                }
+            } catch (error) {
+                console.error("Error handling NTX message:", error);
+
+                event.source.postMessage({
+                    transactionId: message.transactionId,
+                    error: error.message,
+                    success: false
+                }, event.origin);
+            }
+        }
+
+        const ntxScript = `
+    <script>
+    document.addEventListener('mousedown', function(event) {
+        const winuid = myWindow.windowID;
+        window.parent.postMessage({ type: 'iframeClick', iframeId: winuid }, '*');
+    });
+    
+    class NTXSession {
+        constructor() {
+            this.transactionIdCounter = 0;
+            this.pendingRequests = {};
+            window.addEventListener("message", (event) => {
+                if (event.data.transactionId && (event.data.result || event.data.error)) {
+                    const { transactionId, result, error, success } = event.data;
+                    if (this.pendingRequests[transactionId]) {
+                        success ? this.pendingRequests[transactionId].resolve(result)
+                                : this.pendingRequests[transactionId].reject(error);
+                        delete this.pendingRequests[transactionId];
+                    }
+                }
+            });
+        }
+    
+        generateTransactionId() {
+            return \`txn_\${Date.now()}_\${this.transactionIdCounter++}\`;
+        }
+    
+        send(action, ...params) {
+            return new Promise((resolve, reject) => {
+                const transactionId = this.generateTransactionId();
+                this.pendingRequests[transactionId] = { resolve, reject };
+                const winuid = myWindow.windowID;
+                window.parent.postMessage({ transactionId, action, params, iframeId: winuid }, "*");
+            });
+        }
+    }
+    </script>`;
+
+        const fullBlobHTML = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+    <meta charset="utf-8">
+    ${styleBlock}
+    </head>
+    <body>
+    ${contentString}
+    ${ctxScript ? `<script>${ctxScript}</script>` : ''}
+    ${ntxScript}
+    <script>
+
+window.parent.postMessage({
+    type: "iframeReady",
+    windowID: "${winuid}",
+    element: "${windowDiv.id}",
+    titleElement: "${windowtitlespan.id}"
+}, "*");
+</script>
+
+
+    </body>
+    </html>`;
+
+        const blob = new Blob([fullBlobHTML], { type: 'text/html' });
+        const blobURL = URL.createObjectURL(blob);
+
         iframe = document.createElement("iframe");
-        const blobURL = URL.createObjectURL(new Blob([contentString], { type: 'text/html' }));
+        // iframe.setAttribute("sandbox", "allow-scripts");
+        iframe.src = blobURL;
+        windowContent.appendChild(iframe);
+        function attachWindowMessageListener(winuidfr) {
+            if (!winuidfr) return;
 
-        iframe.onload = async () => {
-            iframeReferences[winuid] = iframe.contentWindow;
+            if (window._messageListeners?.[winuidfr]) {
+                window.removeEventListener("message", window._messageListeners[winuidfr]);
+            }
 
+            function handleMessage(event) {
+
+                if (!event.data || event.data.iframeId !== winuidfr) return;
+
+                if (event.data.type === "iframeClick") {
+                    putwinontop("window" + winuidfr);
+                    winds[winuidfr].zIndex = document.querySelector(`[data-winuid="${winuidfr}"]`).style.zIndex;
+                } else if (event.data.transactionId && event.data.action) {
+                    handleNtxSessionMessage(event);
+                }
+
+            }
+
+            window.addEventListener("message", handleMessage);
+
+            if (!window._messageListeners) {
+                window._messageListeners = {};
+            }
+            window._messageListeners[winuidfr] = handleMessage;
+        }
+        iframeReferences[winuid] = iframe.contentWindow;
+        iframe.onload = () => {
             iframe.contentWindow.myWindow = {
                 element: windowDiv,
                 eventBusWorker,
@@ -385,205 +568,8 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
                 windowID: winuid,
                 ...(params && { params })
             };
-
-            if (contentString.includes("nova-include")) {
-                try {
-                    const novaIncludes = getMetaTagContent(contentString, 'nova-include');
-                    if (!novaIncludes || !novaIncludes.length) return;
-
-                    if (novaIncludes.includes('nova.css')) {
-                        const novadotcss = novadotcsscache;
-
-                        const computedStyles = getComputedStyle(document.body);
-                        const variables = {
-                            '--font-size-small': computedStyles.getPropertyValue('--font-size-small'),
-                            '--font-size-normal': computedStyles.getPropertyValue('--font-size-normal'),
-                            '--font-size-big': computedStyles.getPropertyValue('--font-size-big'),
-                            '--colors-BG-normal': computedStyles.getPropertyValue('--colors-BG-normal'),
-                            '--colors-BG-sub': computedStyles.getPropertyValue('--colors-BG-sub'),
-                            '--colors-BG-section': computedStyles.getPropertyValue('--colors-BG-section'),
-                            '--colors-BG-highlighted': computedStyles.getPropertyValue('--colors-BG-highlighted'),
-                            '--colors-text-section': computedStyles.getPropertyValue('--colors-text-section'),
-                            '--colors-text-normal': computedStyles.getPropertyValue('--colors-text-normal'),
-                            '--colors-text-sub': computedStyles.getPropertyValue('--colors-text-sub'),
-                            '--colors-text-high': computedStyles.getPropertyValue('--colors-text-high'),
-                            '--sizing-border-radius': computedStyles.getPropertyValue('--sizing-border-radius'),
-                            '--sizing-normal': computedStyles.getPropertyValue('--sizing-normal'),
-                            '--sizing-nano': computedStyles.getPropertyValue('--sizing-nano'),
-                            '--vw': computedStyles.getPropertyValue('--vw'),
-                            '--vh': computedStyles.getPropertyValue('--vh'),
-                            '--font-size-default': computedStyles.getPropertyValue('--font-size-default'),
-                        };
-
-                        const updatedCssText = novadotcss.replace(/:root\s*{([^}]*)}/, (match, declarations) => {
-                            let updatedDeclarations = declarations.trim();
-                            for (const [variable, value] of Object.entries(variables)) {
-                                const regex = new RegExp(`(${variable}\\s*:\\s*).*?;`, 'g');
-                                updatedDeclarations = updatedDeclarations.replace(regex, `$1${value.trim()};`);
-                            }
-                            return `:root { ${updatedDeclarations} }`;
-                        });
-
-                        const style = document.createElement('style');
-                        style.textContent = updatedCssText;
-                        iframe.contentDocument.head.appendChild(style);
-                    }
-
-                    if (novaIncludes.includes('contextMenu')) {
-                        fetch('scripts/ctxmenu.js')
-                            .then(response => response.text())
-                            .then(scriptContent => {
-                                const scriptBlob = new Blob([scriptContent], { type: 'application/javascript' });
-                                const scriptUrl = URL.createObjectURL(scriptBlob);
-                                const script = document.createElement('script');
-                                script.src = scriptUrl;
-                                iframe.contentDocument.body.appendChild(script);
-                            });
-                    }
-
-                    if (novaIncludes.includes('material-symbols-rounded')) {
-                        const style = document.createElement('style');
-                        style.innerHTML = `
-                                @font-face {
-	font-family: 'Material Symbols Rounded';
-	font-style: normal;
-	src: url("${location.href}libs/MaterialSymbolsRounded.woff2") format('woff2');
-}
-    
-.material-symbols-rounded {
-	font-family: 'Material Symbols Rounded';
-	font-weight: normal;
-	font-style: normal;
-	font-size: 24px;
-	line-height: 1;
-	letter-spacing: normal;
-	text-transform: none;
-	display: inline-block;
-	white-space: nowrap;
-	word-wrap: normal;
-	direction: ltr;
-	-webkit-font-smoothing: antialiased;
-}
-`;
-                        iframe.contentDocument.body.appendChild(style);
-
-                    }
-
-                } catch (error) {
-                    console.error('Error fetching or injecting nova things:', error);
-                }
-            }
-
-            if (!iframe.contentDocument.querySelector("#ntxScript")) {
-                const script = document.createElement("script");
-                script.id = "ntxScript";
-                script.innerHTML = `
-        document.addEventListener('mousedown', function(event) {
-            const winuid = myWindow.windowID;
-            window.parent.postMessage({ type: 'iframeClick', iframeId: winuid }, '*');
-        });
-
-        class NTXSession {
-            constructor() {
-                this.transactionIdCounter = 0;
-                this.pendingRequests = {};
-
-                window.addEventListener("message", (event) => {
-                    if (event.data.transactionId && (event.data.result || event.data.error)) {
-                        const { transactionId, result, error, success } = event.data;
-                        
-                        if (this.pendingRequests[transactionId]) {
-                            if (success) {
-                                this.pendingRequests[transactionId].resolve(result);
-                            } else {
-                                this.pendingRequests[transactionId].reject(error);
-                            }
-                            delete this.pendingRequests[transactionId];
-                        }
-                    }
-                });
-            }
-
-            generateTransactionId() {
-                return \`txn_\${Date.now()}_\${this.transactionIdCounter++}\`;
-            }
-
-            send(action, ...params) {
-                return new Promise((resolve, reject) => {
-                    const transactionId = this.generateTransactionId();
-                    this.pendingRequests[transactionId] = { resolve, reject };
-
-                    const winuid = myWindow.windowID;
-
-                    window.parent.postMessage({ 
-                        transactionId, 
-                        action, 
-                        params, 
-                        iframeId: winuid
-                    }, "*");
-                });
-            }
-        }
-    `;
-                function attachWindowMessageListener(winuidfr) {
-                    if (!winuidfr) return;
-
-                    if (window._messageListeners?.[winuidfr]) {
-                        window.removeEventListener("message", window._messageListeners[winuidfr]);
-                    }
-
-                    function handleMessage(event) {
-                        if (!event.data || event.data.iframeId !== winuidfr) return;
-
-                        if (event.data.type === "iframeClick") {
-                            putwinontop("window" + winuidfr);
-                            winds[winuidfr].zIndex = document.querySelector(`[data-winuid="${winuidfr}"]`).style.zIndex;
-                        } else if (event.data.transactionId && event.data.action) {
-                            handleNtxSessionMessage(event);
-                        }
-                    }
-
-                    window.addEventListener("message", handleMessage);
-
-                    if (!window._messageListeners) {
-                        window._messageListeners = {};
-                    }
-                    window._messageListeners[winuidfr] = handleMessage;
-                }
-
-                attachWindowMessageListener(windowDiv.getAttribute("data-winuid"));
-
-
-                async function handleNtxSessionMessage(event) {
-                    const message = event.data;
-
-                    try {
-                        const [namespace, method] = message.action.split(".");
-                        if (ntxWrapper[namespace] && typeof ntxWrapper[namespace][method] === "function") {
-                            const result = await ntxWrapper[namespace][method](...message.params);
-
-                            event.source.postMessage({
-                                transactionId: message.transactionId,
-                                result,
-                                success: true
-                            }, event.origin);
-                        } else {
-                            throw new Error(`Invalid NTX action: ${message.action}`);
-                        }
-                    } catch (error) {
-                        console.error("Error handling NTX message:", error);
-
-                        event.source.postMessage({
-                            transactionId: message.transactionId,
-                            error: error.message,
-                            success: false
-                        }, event.origin);
-                    }
-                }
-
-
-                iframe.contentDocument.body.appendChild(script);
-            }
+            attachWindowMessageListener(winuid);
+            
             let greenflagResult;
             try {
                 greenflagResult = iframe.contentWindow.greenflag();
@@ -592,28 +578,22 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
                     console.warn(e);
                 }
             }
-
-            if (windowLoader) {
-                windowLoader.classList.add("transp5");
-                setTimeout(() => {
-                    windowLoader.remove();
-                }, 700);
-            }
         };
 
-        iframe.src = blobURL;
         if (!winds[winuid]) winds[winuid] = {};
         winds[winuid]["src"] = blobURL;
         winds[winuid]["visualState"] = "free";
-
-        windowContent.appendChild(iframe);
-
     }
+
 
     nowwindow = 'window' + winuid;
     windowDiv.appendChild(windowHeader);
     windowDiv.appendChild(windowContent);
     windowDiv.appendChild(windowLoader);
+    if (windowLoader) {
+        windowLoader.classList.add("transp5");
+        setTimeout(() => windowLoader.remove(), 700);
+    }
 
     document.body.appendChild(windowDiv);
 
@@ -629,8 +609,8 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
     loadtaskspanel();
 }
 function resetWindow(id) {
-    console.log("resetting" ,id)
-    const x = document.getElementById("window"+id);
+    console.log("resetting", id)
+    const x = document.getElementById("window" + id);
     x.classList.add("snapping");
 
     const aspectRatio = x.getAttribute("data-aspectratio") || "9/6";
@@ -649,8 +629,8 @@ function resetWindow(id) {
 }
 
 function maximizeWindow(id) {
-    console.log("maxing" ,id)
-    const x = document.getElementById("window"+id);
+    console.log("maxing", id)
+    const x = document.getElementById("window" + id);
     x.classList.add("snapping");
     x.style.width = "calc(100% - 0px)";
     x.style.height = "calc(100% - " + navheight + "px)";

@@ -118,11 +118,11 @@
 		}
 		async function openfile(fileID) {
 			let disp = document.getElementById("displays");
-			let file = await window.parent.getFileById(fileID);
+			let file = await ntxSession.send("getFile.byId", fileID);
 			if (file && file.content) {
 				document.getElementById("tils").innerText = file.fileName;
-				let fileType = await window.parent.getbaseflty(file.fileName);
-				let mimeType = (await window.parent.getMimeType(window.parent.mtpetxt(file.fileName))) || "application/octet-stream";
+				let fileType = await ntxSession.send("utility.getBaseFileType", file.fileName);
+				let mimeType = (await ntxSession.send("utility.getMimeType", await ntxSession.send("utility.mtpetxt", file.fileName))) || "application/octet-stream";
 				console.log(41, file.content)
 				let blob;
 

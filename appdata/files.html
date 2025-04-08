@@ -1341,6 +1341,7 @@
 		let cachedFiles = {}; // To store the cached files per folder
 
 		async function listFiles(folderName, gen) {
+			console.log(myWindow.titleElement)
 			myWindow.titleElement.innerText = "Files";
 			const startTime = performance.now();
 			if (currentPath == folderName && gen) {

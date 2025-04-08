@@ -1332,6 +1332,8 @@ async function realgenTaskBar() {
 	gid("novanav").style.display = "grid";
 	
 	// nav theme
+	try {
+		
 	var NovNavCtrl = await getSetting("NovNavCtrl")
 	if (NovNavCtrl.bg) {
 		gid("novanav").style.backgroundColor = "transparent";
@@ -1340,6 +1342,7 @@ async function realgenTaskBar() {
 	}
 
 	gid("novanav").style.justifyContent = NovNavCtrl.align;
+	} catch (e) {}
 
 	var appbarelement = document.getElementById("dock")
 	appbarelement.innerHTML = "<span class='taskbarloader' id='taskbarloaderprime'></span>";
