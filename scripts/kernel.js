@@ -590,10 +590,6 @@ window.parent.postMessage({
     windowDiv.appendChild(windowHeader);
     windowDiv.appendChild(windowContent);
     windowDiv.appendChild(windowLoader);
-    if (windowLoader) {
-        windowLoader.classList.add("transp5");
-        setTimeout(() => windowLoader.remove(), 700);
-    }
 
     document.body.appendChild(windowDiv);
 
@@ -603,6 +599,10 @@ window.parent.postMessage({
     windowDiv.style.zIndex = maxWindValue + 1;
 
     loadIframeContent(windowLoader, windowContent);
+    if (windowLoader) {
+        windowLoader.classList.add("transp5");
+        setTimeout(() => windowLoader.remove(), 700);
+    }
 
     dragElement(windowDiv);
     putwinontop('window' + winuid);

@@ -113,18 +113,31 @@ async function getKey(password) {
         ["encrypt", "decrypt"]
     );
 }
+
 async function encryptData(key, data) {
     const iv = window.crypto.getRandomValues(new Uint8Array(12));
+    let encoded;
+
+    if (typeof data === 'string') {
+        encoded = encoder.encode(data);
+    } else if (data instanceof Blob) {
+        encoded = new Uint8Array(await data.arrayBuffer());
+    } else if (data instanceof Uint8Array || ArrayBuffer.isView(data)) {
+        encoded = data;
+    } else {
+        throw new Error("Unsupported data type for encryption");
+    }
+
     const encrypted = await window.crypto.subtle.encrypt(
         { name: "AES-GCM", iv },
         key,
-        encoder.encode(data)
+        encoded
     );
+
     return {
         iv: Array.from(iv),
         data: Array.from(new Uint8Array(encrypted))
     };
-
 }
 
 let decryptWorkerRegistered = false;
@@ -132,6 +145,7 @@ async function decryptData(key, encryptedData) {
     if ('serviceWorker' in navigator && !navigator.serviceWorker.controller && !decryptWorkerRegistered) {
         await registerDecryptWorker();
     }
+
     return new Promise(async (resolve, reject) => {
         if (navigator.serviceWorker.controller) {
             const handler = (event) => {
@@ -151,7 +165,15 @@ async function decryptData(key, encryptedData) {
                 const iv = new Uint8Array(encryptedData.iv);
                 const data = new Uint8Array(encryptedData.data);
                 const decrypted = await crypto.subtle.decrypt({ name: "AES-GCM", iv }, key, data);
-                resolve(new TextDecoder().decode(decrypted));
+
+                let result;
+                try {
+                    result = new TextDecoder().decode(decrypted);
+                } catch {
+                    result = new Uint8Array(decrypted);
+                }
+
+                resolve(result);
             } catch (error) {
                 reject('Incorrect password or corrupted data');
             }
@@ -1076,8 +1098,7 @@ async function createFile(folderName, fileName, type, content, metadata = {}) {
     try {
         let fileData = content;
 
-        // Skip base64 encoding for media files (image, video, audio)
-        if (!isBase64(content) && baseFileType !== "image" && baseFileType !== "video" && baseFileType !== "music" && baseFileType !== "audio") {
+        if (!(content instanceof Blob) && !isBase64(content) && !["image", "video", "music", "audio"].includes(baseFileType)) {
             const blob = new Blob([content], { type: mimeType });
             const arrayBuffer = await blob.arrayBuffer();
             const binary = new Uint8Array(arrayBuffer);

@@ -1239,75 +1239,6 @@
 					</div>
 				</div>
 			</segr>
-			<segr>
-
-				<script>
-					async function erdbs() {
-						if (!confirm("Erase Device? \nThis will remove all data, including every user's files, folders, apps, permissions, cache and everything.\n\nWould you like to Clear your device?")) {
-							return;
-						}
-						window.parent.erdbsfull();
-					}
-					async function erdbsur() {
-						if (!confirm("Remove User? \nThis will remove your data, including your files, folders, apps, permissions, cache and everything.\n\nWould you like to Clear your account?")) {
-							return;
-						}
-						window.parent.removeUser();
-					}
-
-				</script>
-
-				<div class="buttongrp">
-					<div class="btngrpelem">
-						<button onclick="erdbsur()">
-							<span class="material-symbols-rounded">
-								person_remove
-							</span>
-						</button>
-						<b>Remove user</b>
-					</div>
-					<div class="divider"></div>
-					<div class="btngrpelem">
-						<button onclick="erdbs()">
-							<span class="material-symbols-rounded">
-								delete_sweep
-							</span>
-						</button>
-						<b>Erase device</b>
-					</div>
-					<div class="divider"></div>
-					<div class="btngrpelem">
-						<button onclick="window.parent.ercache()">
-
-							<span class="material-symbols-rounded">
-								delete_history
-							</span>
-						</button>
-						<b>Reset cache</b>
-					</div>
-				</div>
-
-			</segr>
-			<segr>
-				<script>
-					async function updefapps(elem) {
-						try {
-							elem.innerHTML = "Installing...";
-							await window.parent.installdefaultapps();
-							elem.innerHTML = "Update again";
-						} catch (error) {
-							console.error("Error updating default apps:", error);
-						}
-					}
-
-				</script>
-				<div setting>
-					<div class="settingName"><b>Update Default Apps</b>
-						<p>Update or reinstall deleted or corrupted versions of default apps.</p>
-					</div>
-					<button style="margin-top: 5px;float: right;" onclick="updefapps(this)">Update</button>
-				</div>
-			</segr>
 		</div>
 
 		<div id="defaults" class="tabcontent">
@@ -1625,6 +1556,35 @@
 					height: 2rem;
 					margin-top: 5px;
 				}
+
+				.usedetssys {
+					display: flex;
+					flex-direction: column;
+					gap: .2em;
+				}
+
+				.pfp {
+					background-image: linear-gradient(45deg, #4b2e58, #383e55);
+    aspect-ratio: 1 / 1;
+    height: 80px;
+    border-radius: .5rem;
+}
+
+.usercard {
+    margin: 1em 0;
+    display: flex
+;
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 1em;
+}
+
+span.userrole {
+    opacity: .5;
+}
+b#userstatsi {
+    font-size: 2em;
+}
 			</style>
 			<button onclick="rldfltyptable()" style="margin-bottom: var(--sizing-normal);">Reload Tables</button>
 			<small>Default Handlers are apps that provide support for different methods and file types. You can change a
@@ -1750,11 +1710,79 @@
 		</div>
 
 		<div id="password" class="tabcontent">
-			<h1>User</h1>
-			<segr>
-				<div setting class="spread">
+			<div class="usercard">
+				<div class="pfp"></div>
+				<div class="usedetssys">
 					<b id="userstatsi">Signed in as Admin</b>
-					<button onclick="window.parent.logoutofnova()">Sign Out</button>
+					<span class="userrole">Administrator</span>
+				</div>
+			</div>
+
+			<script>
+				async function erdbs() {
+					if (!confirm("Erase Device? \nThis will remove all data, including every user's files, folders, apps, permissions, cache and everything.\n\nWould you like to Clear your device?")) {
+						return;
+					}
+					window.parent.erdbsfull();
+				}
+				async function erdbsur() {
+					if (!confirm("Remove User? \nThis will remove your data, including your files, folders, apps, permissions, cache and everything.\n\nWould you like to Clear your account?")) {
+						return;
+					}
+					window.parent.removeUser();
+				}
+
+			</script>
+<segr>
+			<div class="buttongrp">
+				<div class="btngrpelem">
+					<button onclick="erdbsur()">
+						<span class="material-symbols-rounded">
+							person_remove
+						</span>
+					</button>
+					<b>Remove user</b>
+				</div>
+				<div class="divider"></div>
+				<div class="btngrpelem">
+					<button onclick="erdbs()">
+						<span class="material-symbols-rounded">
+							delete_sweep
+						</span>
+					</button>
+					<b>Erase device</b>
+				</div>
+				<div class="divider"></div>
+				<div class="btngrpelem">
+					<button onclick="window.parent.logoutofnova()">
+
+						<span class="material-symbols-rounded">
+							logout
+						</span>
+					</button>
+					<b>Log out</b>
+				</div>
+			</div>
+
+			</segr>
+			<segr>
+				<script>
+					async function updefapps(elem) {
+						try {
+							elem.innerHTML = "Installing...";
+							await window.parent.installdefaultapps();
+							elem.innerHTML = "Update again";
+						} catch (error) {
+							console.error("Error updating default apps:", error);
+						}
+					}
+
+				</script>
+				<div setting>
+					<div class="settingName"><b>Update Default Apps</b>
+						<p>Update or reinstall deleted or corrupted versions of default apps.</p>
+					</div>
+					<button style="margin-top: 5px;float: right;" onclick="updefapps(this)">Update</button>
 				</div>
 			</segr>
 			<h1>Password</h1>
@@ -1781,7 +1809,7 @@
 				</div>
 			</segr>
 			<script>
-				document.getElementById("userstatsi").innerHTML = 'Signed in as ' + window.parent.CurrentUsername;
+				document.getElementById("userstatsi").innerHTML = window.parent.CurrentUsername;
 				if (window.parent.password == 'nova') {
 					document.getElementById("passstat").innerHTML = "Set a password for your device:";
 				} else {

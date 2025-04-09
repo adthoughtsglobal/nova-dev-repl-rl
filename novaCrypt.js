@@ -12,8 +12,13 @@ self.addEventListener('message', async (event) => {
                 data
             );
 
-            const decoder = new TextDecoder();
-            const result = decoder.decode(decrypted);
+            let result;
+            try {
+                const decoder = new TextDecoder();
+                result = decoder.decode(decrypted);
+            } catch {
+                result = decrypted;
+            }
 
             event.source.postMessage({
                 type: 'decrypted',

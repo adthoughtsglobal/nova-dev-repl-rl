@@ -106,8 +106,16 @@ async function getFileContents(id) {
         request.onsuccess = async () => {
             if (request.result) {
                 try {
-                    const decryptedContent = await decryptData(cryptoKeyCache, request.result.value);
-                    resolve(decompressString(decryptedContent));
+                    const decrypted = await decryptData(cryptoKeyCache, request.result.value);
+                    if (typeof decrypted === 'string') {
+                        try {
+                            resolve(decompressString(decrypted));
+                        } catch {
+                            resolve(decrypted);
+                        }
+                    } else {
+                        resolve(decrypted);
+                    }
                 } catch (error) {
                     reject(error);
                 }
@@ -119,20 +127,25 @@ async function getFileContents(id) {
     });
 }
 
+
 async function setFileContents(id, content) {
     if (!dbCache) dbCache = await openDB(CurrentUsername, 1);
     if (!cryptoKeyCache) cryptoKeyCache = await getKey(password);
 
-    const encryptedContent = await encryptData(cryptoKeyCache, compressString(content));
+    const dataToStore = content instanceof Blob
+        ? await encryptData(cryptoKeyCache, content)
+        : await encryptData(cryptoKeyCache, compressString(content));
+
     const transaction = dbCache.transaction('contentpool', 'readwrite');
     const store = transaction.objectStore('contentpool');
-    const request = store.put({ key: id, value: encryptedContent });
+    const request = store.put({ key: id, value: dataToStore });
 
     return new Promise((resolve, reject) => {
         request.onsuccess = resolve;
         request.onerror = () => reject(request.error);
     });
 }
+
 
 async function removeFileContents(id) {
     if (!dbCache) dbCache = await openDB(CurrentUsername, 1);

@@ -831,40 +831,50 @@
 			}
 
 			async function fupit() {
-				document.getElementById("fupibu").innerHTML = "Importing...";
-				const fileInput = document.getElementById('filupin');
-				const files = fileInput.files;
-				if (files.length === 0) return;
+    document.getElementById("fupibu").innerHTML = "Importing...";
+    const fileInput = document.getElementById('filupin');
+    const files = fileInput.files;
+    if (files.length === 0) return;
 
-				for (let i = 0; i < files.length; i++) {
-					const file = files[i];
-					const fileType = await window.parent.getbaseflty(file.name);
+    for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const fileType = await window.parent.getbaseflty(file.name);
 
-					if (fileType === "image" || fileType === "audio" || fileType === "video") {
-						// For media files, we base64 encode them for storage
-						const content = await readFileAsBase64(file);
-						await window.parent.createFile('Downloads/', file.name, '', content, { "via": "imported" });
-					} else {
-						// Non-media files directly base64-encoded
-						const content = await readFileAsBase64(file);
-						await window.parent.createFile('Downloads/', file.name, '', content, { "via": "imported" });
-					}
-				}
+        let content;
+        if (["image", "audio", "video", "music"].includes(fileType)) {
+            content = file;
+        } else {
+            content = await readFileAsBase64(file);
+        }
 
-				document.getElementById("fupibu").innerHTML = "File(s) Saved, Close";
-				document.getElementById("fupibu").onclick = function () {
-					document.getElementById("upmod").close();
-				};
-			}
+        await window.parent.createFile('Downloads/', file.name, '', content, { via: "imported" });
+    }
+
+    document.getElementById("fupibu").innerHTML = "File(s) Saved, Close";
+    document.getElementById("fupibu").onclick = function () {
+        document.getElementById("upmod").close();
+    };
+}
+
 
 			function readFileAsBase64(file) {
 				return new Promise((resolve, reject) => {
 					const reader = new FileReader();
-					reader.onload = () => resolve(reader.result); // Return base64 string
+					reader.onload = () => resolve(reader.result);
 					reader.onerror = reject;
-					reader.readAsDataURL(file); // Read file as base64
+					reader.readAsDataURL(file);
 				});
 			}
+
+			function readFileAsBlob(file) {
+				return new Promise((resolve, reject) => {
+					const reader = new FileReader();
+					reader.onload = () => resolve(new Blob([reader.result], { type: file.type }));
+					reader.onerror = reject;
+					reader.readAsArrayBuffer(file);
+				});
+			}
+
 
 			async function makefolderhuh() {
 				let x = await window.parent.ask("Enter your Folder Name:", currentPath);
