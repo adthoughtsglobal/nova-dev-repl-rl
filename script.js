@@ -239,16 +239,6 @@ async function startup() {
 		} catch (err) { console.error("startup error:", err); }
 	})
 }
-async function registerDecryptWorker() {
-	if ('serviceWorker' in navigator && !decryptWorkerRegistered) {
-		await navigator.serviceWorker.register('novaCrypt.js')
-			.then(() => {
-				sysLog("EncDec Thread", "is now running.");
-				decryptWorkerRegistered = true
-			})
-			.catch(err => console.error('Service Worker registration failed:', err));
-	}
-}
 
 
 function updateTime() {
@@ -1659,7 +1649,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 	}
 
 	function startfunctions() {
-		registerDecryptWorker();
 		try {
 			updateBattery();
 			navigator.getBattery().then(function (battery) {

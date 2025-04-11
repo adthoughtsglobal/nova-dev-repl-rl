@@ -32,12 +32,11 @@
 			flex-grow: 2;
 			height: calc(100% - 10px);
 			overflow-y: auto;
-			max-width: 25vw;
+			max-width: 200px;
+			width: 25vw;
 			min-width: 100px;
-			padding-bottom: 3rem;
 			display: flex;
 			flex-direction: column;
-			padding: 2px;
 			gap: 0.2rem;
 			transition: .3s ease-out;
 		}
@@ -812,7 +811,7 @@
 
 		.searchResult small {
 			all: revert;
-			font-size: 30%;
+			font-size: small;
 			opacity: .8;
 			font-family: 'IBM Plex Sans';
 			font-weight: 200;
@@ -1239,6 +1238,23 @@
 					</div>
 				</div>
 			</segr>
+
+			<h3>Related settings</h3>
+
+			<segr>
+				<div setting type="advsetnav" windowopener="User" onclick="openCity(event, 'password')">
+					<i class="material-symbols-rounded advseticon">person</i>
+					<div class="advsetnavbtnprt">
+						<div>
+							<b>User</b>
+							<p>Manage the current user...</p>
+						</div>
+						<button class="advancedsetsredbtn"><span class="material-symbols-rounded">
+								chevron_right
+							</span></button>
+					</div>
+				</div>
+			</segr>
 		</div>
 
 		<div id="defaults" class="tabcontent">
@@ -1551,7 +1567,6 @@
 					}
 				}
 
-
 				.themestoreopner {
 					height: 2rem;
 					margin-top: 5px;
@@ -1564,27 +1579,44 @@
 				}
 
 				.pfp {
-					background-image: linear-gradient(45deg, #4b2e58, #383e55);
-    aspect-ratio: 1 / 1;
-    height: 80px;
-    border-radius: .5rem;
-}
+					background-image: linear-gradient(45deg, #4b4b4b 50%, #1f1f1f 30%);
+					aspect-ratio: 1 / 1;
+					height: 80px;
+					border-radius: .5rem;
+					display: inline-flex;
+					justify-content: center;
+					align-items: center;
+				}
 
-.usercard {
-    margin: 1em 0;
-    display: flex
-;
-    flex-direction: row;
-    justify-content: flex-start;
-    gap: 1em;
-}
+				.usercard {
+					margin: 1em 0;
+					display: flex;
+					flex-direction: row;
+					justify-content: flex-start;
+					gap: 1em;
+				}
 
-span.userrole {
-    opacity: .5;
-}
-b#userstatsi {
-    font-size: 2em;
-}
+				span.userrole {
+					opacity: .5;
+				}
+
+				b#userstatsi {
+					font-size: 2em;
+				}
+
+				.pfp span {
+					padding: .3em;
+					background: rgba(225, 225, 225, .2);
+					border-radius: 2em;
+					opacity: 0;
+					font-size: 1.3em;
+					transition: .2s ease-out;
+					cursor: pointer;
+				}
+
+				.pfp:hover span {
+					opacity: 1;
+				}
 			</style>
 			<button onclick="rldfltyptable()" style="margin-bottom: var(--sizing-normal);">Reload Tables</button>
 			<small>Default Handlers are apps that provide support for different methods and file types. You can change a
@@ -1711,7 +1743,11 @@ b#userstatsi {
 
 		<div id="password" class="tabcontent">
 			<div class="usercard">
-				<div class="pfp"></div>
+				<div class="pfp" onclick="window.parent.say('Public shared storage unavailable for the moment.')">
+					<span class="material-symbols-rounded">
+						edit
+					</span>
+				</div>
 				<div class="usedetssys">
 					<b id="userstatsi">Signed in as Admin</b>
 					<span class="userrole">Administrator</span>
@@ -1733,36 +1769,36 @@ b#userstatsi {
 				}
 
 			</script>
-<segr>
-			<div class="buttongrp">
-				<div class="btngrpelem">
-					<button onclick="erdbsur()">
-						<span class="material-symbols-rounded">
-							person_remove
-						</span>
-					</button>
-					<b>Remove user</b>
-				</div>
-				<div class="divider"></div>
-				<div class="btngrpelem">
-					<button onclick="erdbs()">
-						<span class="material-symbols-rounded">
-							delete_sweep
-						</span>
-					</button>
-					<b>Erase device</b>
-				</div>
-				<div class="divider"></div>
-				<div class="btngrpelem">
-					<button onclick="window.parent.logoutofnova()">
+			<segr>
+				<div class="buttongrp">
+					<div class="btngrpelem">
+						<button onclick="erdbsur()">
+							<span class="material-symbols-rounded">
+								person_remove
+							</span>
+						</button>
+						<b>Remove user</b>
+					</div>
+					<div class="divider"></div>
+					<div class="btngrpelem">
+						<button onclick="erdbs()">
+							<span class="material-symbols-rounded">
+								delete_sweep
+							</span>
+						</button>
+						<b>Erase device</b>
+					</div>
+					<div class="divider"></div>
+					<div class="btngrpelem">
+						<button onclick="window.parent.logoutofnova()">
 
-						<span class="material-symbols-rounded">
-							logout
-						</span>
-					</button>
-					<b>Log out</b>
+							<span class="material-symbols-rounded">
+								logout
+							</span>
+						</button>
+						<b>Log out</b>
+					</div>
 				</div>
-			</div>
 
 			</segr>
 			<segr>
@@ -3039,6 +3075,9 @@ b#userstatsi {
 			},
 			"Networking": {
 				"Rotur": ["rotur"]
+			},
+			"User": {
+				"User": ["user"]
 			},
 			"Data manager": {
 				"Data manager": ["Data", "saved", "edit"]

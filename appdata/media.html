@@ -118,7 +118,7 @@
 		}
 		async function openfile(fileID) {
 			let disp = document.getElementById("displays");
-			let file = await ntxSession.send("getFile.byId", fileID);
+			let file = await ntxSession.send("fileGet.byId", fileID);
 			if (file && file.content) {
 				document.getElementById("tils").innerText = file.fileName;
 				let fileType = await ntxSession.send("utility.getBaseFileType", file.fileName);

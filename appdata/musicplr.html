@@ -712,44 +712,44 @@
 		});
 
 		function readthefile(filethings, fileName = 'Unknown Title') {
-			const base64String = filethings.content.split(',')[1];
-			const binaryString = atob(base64String);
-			const bytes = new Uint8Array(binaryString.length);
+			const blob = filethings.content;
 
-			for (let i = 0; i < binaryString.length; i++) {
-				bytes[i] = binaryString.charCodeAt(i);
-			}
+			const reader = new FileReader();
+			reader.onload = function (event) {
+				const arrayBuffer = event.target.result;
 
+				jsmediatags.read(new Blob([arrayBuffer], { type: 'application/octet-binary' }), {
+					onSuccess: function (tag) {
+						const metadata = tag.tags;
+						const trackName = metadata.title || fileName;
+						const artistName = metadata.artist || 'Unknown Artist';
+						const albumName = metadata.album || 'Unknown Album';
 
-			const blob = new Blob([bytes.buffer], { type: 'application/octet-binary' });
+						track_list[trackName] = {
+							artist: artistName,
+							fileRef: filethings
+						};
 
+						console.log('Updated track list:', track_list);
 
-			jsmediatags.read(blob, {
-				onSuccess: function (tag) {
-					const metadata = tag.tags;
-					const trackName = metadata.title || fileName;
-					const artistName = metadata.artist || 'Unknown Artist';
-					const albumName = metadata.album || 'Unknown Album';
-
-
-					track_list[trackName] = {
-						artist: artistName,
-						fileRef: filethings
-					};
-
-					console.log('Updated track list:', track_list);
-
-
-					renderQueue();
-					if (Object.keys(track_list).length === 1) {
-						playFirstTrack();
+						renderQueue();
+						if (Object.keys(track_list).length === 1) {
+							playFirstTrack();
+						}
+					},
+					onError: function (error) {
+						console.error("Error reading metadata: ", error);
 					}
-				},
-				onError: function (error) {
-					console.error("Error reading metadata: ", error);
-				}
-			});
+				});
+			};
+
+			reader.onerror = function (error) {
+				console.error("Error reading blob: ", error);
+			};
+
+			reader.readAsArrayBuffer(blob);
 		}
+
 
 		function playpauseTrack() {
 			if (!isPlaying) playTrack();

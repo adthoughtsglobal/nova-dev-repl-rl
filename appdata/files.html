@@ -831,30 +831,31 @@
 			}
 
 			async function fupit() {
-    document.getElementById("fupibu").innerHTML = "Importing...";
-    const fileInput = document.getElementById('filupin');
-    const files = fileInput.files;
-    if (files.length === 0) return;
+				document.getElementById("fupibu").innerHTML = "Importing...";
+				const fileInput = document.getElementById('filupin');
+				const files = fileInput.files;
+				if (files.length === 0) return;
 
-    for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        const fileType = await window.parent.getbaseflty(file.name);
+				for (let i = 0; i < files.length; i++) {
+					const file = files[i];
+					const fileType = await window.parent.getbaseflty(file.name);
 
-        let content;
-        if (["image", "audio", "video", "music"].includes(fileType)) {
-            content = file;
-        } else {
-            content = await readFileAsBase64(file);
-        }
+					let content;
+					if (["image", "audio", "video", "music"].includes(fileType)) {
+						content = file;
+					} else {
+						content = await readFileAsBase64(file);
+					}
 
-        await window.parent.createFile('Downloads/', file.name, '', content, { via: "imported" });
-    }
+					console.log(4534785, content)
+					await window.parent.createFile('Downloads/', file.name, '', content, { via: "imported" });
+				}
 
-    document.getElementById("fupibu").innerHTML = "File(s) Saved, Close";
-    document.getElementById("fupibu").onclick = function () {
-        document.getElementById("upmod").close();
-    };
-}
+				document.getElementById("fupibu").innerHTML = "File(s) Saved, Close";
+				document.getElementById("fupibu").onclick = function () {
+					document.getElementById("upmod").close();
+				};
+			}
 
 
 			function readFileAsBase64(file) {
