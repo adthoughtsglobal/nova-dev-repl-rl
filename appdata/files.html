@@ -840,12 +840,7 @@
 					const file = files[i];
 					const fileType = await window.parent.getbaseflty(file.name);
 
-					let content;
-					if (["image", "audio", "video", "music"].includes(fileType)) {
-						content = file;
-					} else {
-						content = await readFileAsBase64(file);
-					}
+					let content = await readFileAsBase64(file);
 
 					console.log(4534785, content)
 					await window.parent.createFile('Downloads/', file.name, '', content, { via: "imported" });

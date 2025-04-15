@@ -113,16 +113,7 @@ async function getFileContents(id) {
                     }
 
                     const decrypted = await decryptData(cryptoKeyCache, value);
-
-                    if (typeof decrypted === 'string') {
-                        try {
-                            resolve(decompressString(decrypted));
-                        } catch {
-                            resolve(decrypted);
-                        }
-                    } else {
-                        resolve(decrypted);
-                    }
+                    resolve(decompressString(decrypted));
                 } catch (error) {
                     reject(error);
                 }
@@ -140,12 +131,7 @@ async function setFileContents(id, content) {
 
     let dataToStore, encrypted = true;
 
-    if (content instanceof Blob) {
-        dataToStore = content;
-        encrypted = false;
-    } else {
-        dataToStore = await encryptData(cryptoKeyCache, compressString(content));
-    }
+    dataToStore = await encryptData(cryptoKeyCache, compressString(content));
 
     const transaction = dbCache.transaction('contentpool', 'readwrite');
     const store = transaction.objectStore('contentpool');
