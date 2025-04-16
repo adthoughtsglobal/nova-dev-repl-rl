@@ -556,7 +556,7 @@ window.parent.postMessage({
             window._messageListeners[winuidfr] = handleMessage;
         }
         iframeReferences[winuid] = iframe.contentWindow;
-        iframe.onload = () => {
+        iframe.onload = async () => {
             iframe.contentWindow.myWindow = {
                 element: windowDiv,
                 eventBusWorker,
@@ -572,7 +572,7 @@ window.parent.postMessage({
             
             let greenflagResult;
             try {
-                greenflagResult = iframe.contentWindow.greenflag();
+                greenflagResult = await iframe.contentWindow.greenflag();
             } catch (e) {
                 if (!e.message.includes("greenflag")) {
                     console.warn(e);
@@ -587,9 +587,9 @@ window.parent.postMessage({
 
 
     nowwindow = 'window' + winuid;
+    windowDiv.appendChild(windowLoader);
     windowDiv.appendChild(windowHeader);
     windowDiv.appendChild(windowContent);
-    windowDiv.appendChild(windowLoader);
 
     document.body.appendChild(windowDiv);
 
@@ -598,10 +598,10 @@ window.parent.postMessage({
     const maxWindValue = Math.max(...windValues);
     windowDiv.style.zIndex = maxWindValue + 1;
 
-    loadIframeContent(windowLoader, windowContent);
+    await loadIframeContent(windowLoader, windowContent);
     if (windowLoader) {
         windowLoader.classList.add("transp5");
-        setTimeout(() => windowLoader.remove(), 700);
+        setTimeout(() => windowLoader.remove(), 300);
     }
 
     dragElement(windowDiv);
