@@ -53,9 +53,11 @@
 			flex-grow: 10 !important;
 			text-align: center !important;
 			color: var(--colors-text-normal);
-			display: grid;
 			align-items: center;
 			display: flex;
+			flex-direction: row;
+			flex-wrap: nowrap;
+			justify-content: flex-start;
 		}
 
 		div#filetools {
@@ -67,15 +69,14 @@
 			width: fit-content;
 			text-align: center;
 			background-color: var(--colors-BG-section);
+			border: 1px solid #ffffff0c;
 			color: var(--colors-text-section);
 			display: flex;
 			justify-content: center;
 			align-items: center;
-			border: none;
 			overflow: hidden;
 			border-radius: var(--sizing-border-radius);
 			margin: 0.1rem;
-			min-width: 65px;
 		}
 
 		.navbfobtns {
@@ -92,7 +93,8 @@
 			width: 0;
 			overflow-y: auto;
 			min-width: 120px;
-			background: var(--colors-BG-section);
+			background-color: var(--colors-BG-section);
+			border: 1px solid #ffffff0c;
 			color: var(--colors-text-section);
 			padding-bottom: 50px;
 			display: flex;
@@ -122,6 +124,7 @@
 			opacity: 70%;
 			flex-direction: row;
 			background-color: var(--colors-BG-section);
+			border: 1px solid #ffffff0c;
 			color: var(--colors-text-section);
 			border-radius: var(--sizing-border-radius);
 			padding: 3px 0px;
@@ -144,7 +147,8 @@
 		}
 
 		.file {
-			background: var(--colors-BG-section);
+			background-color: var(--colors-BG-section);
+			border: 1px solid #ffffff0c;
 			color: var(--colors-text-section);
 			user-select: none;
 			border-radius: var(--sizing-border-radius);
@@ -343,7 +347,8 @@
 
 		[flap-fl-bottomnav] {
 			padding: 5px 7px;
-			background: var(--colors-BG-section);
+			background-color: var(--colors-BG-section);
+			border: 1px solid #ffffff0c;
 			color: var(--colors-text-section);
 			border-radius: var(--sizing-border-radius);
 			transition: .3s ease-out;
@@ -351,32 +356,25 @@
 			width: calc(100% - 25px);
 		}
 
-		input[type="file"] {
-			outline: none;
-			width: 252px;
-			margin: auto;
-			display: block;
+		.upload-box {
+			border: 2px dashed #ffffff30;
+			background: var(--colors-BG-sub);
+			padding: 40px;
+			text-align: center;
+			width: auto;
+			cursor: pointer;
 			position: relative;
-			overflow: auto;
-			font-size: 10px;
+			border-radius: var(--sizing-border-radius);
 		}
 
-		input[type="file"]::file-selector-button {
-			width: 135px;
-			color: transparent;
+		.upload-box a {
+			color: white;
+			text-decoration: underline;
+			cursor: pointer;
 		}
 
-		/* Faked label styles and icon */
-		input[type="file"]::before {
-			position: absolute;
-			pointer-events: none;
-			top: 7px;
-			left: 16px;
-			filter: brightness(200%);
-			height: 20px;
-			width: 20px;
-			content: "";
-			background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230964B0'%3E%3Cpath d='M18 15v3H6v-3H4v3c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-3h-2zM7 9l1.41 1.41L11 7.83V16h2V7.83l2.59 2.58L17 9l-5-5-5 5z'/%3E%3C/svg%3E");
+		input[type="file"] {
+			display: none;
 		}
 
 		button {
@@ -389,51 +387,23 @@
 			cursor: pointer;
 		}
 
-		input[type="file"]::after {
-			position: absolute;
-			pointer-events: none;
-			top: 8px;
-			left: 41px;
-			color: white;
-			content: "Upload Files";
-			font-size: 12px;
-		}
-
-		input[type="file"]::file-selector-button {
-			border-radius: 4px;
-			padding: 0 16px;
-			height: 40px;
-			cursor: pointer;
-			border-radius: 5px;
-			background-color: #2f2f2f;
-			border: 1px solid rgba(0, 0, 0, 0.16);
-			box-shadow: 0px 1px 0px rgba(0, 0, 0, 0.05);
-			margin-right: 16px;
-			transition: background-color 200ms;
-		}
-
-		/* file upload button hover state */
-		input[type="file"]::file-selector-button:hover {
-			background-color: #3f3f3f;
-		}
-
-		/* file upload button active state */
-		input[type="file"]::file-selector-button:active {
-			background-color: grey;
-		}
-
 		dialog::backdrop {
-			backdrop-filter: blur(13px);
+			background: transparent;
+			animation: pop .3s ease-out;
+			backdrop-filter: contrast(0.5) brightness(.2);
+		}
+
+		dialog {
+			animation: pop .2s;
 		}
 
 		#upmod {
-			border: 1px solid grey;
-			background: #1f1f1f;
+			background: var(--colors-BG-section);
 			color: white;
 			border-radius: 10px;
 			padding: 25px;
-			animation: pop .2s;
 			text-align: center;
+			border: 1px solid #ffffff0c;
 		}
 
 		#upmod [cv] {
@@ -450,7 +420,7 @@
 		@keyframes pop {
 			0% {
 				opacity: 0;
-				transform: translate(10px, -10px) scale(0.9);
+				transform: translateY(10px);
 			}
 
 			100% {
@@ -522,22 +492,12 @@
 			display: inline-block;
 		}
 
-		.flappsearch {
-			padding: 0.1rem;
-			display: flex;
-			flex-direction: row;
-			flex-wrap: nowrap;
-			justify-content: flex-start;
-		}
-
 		.dropup-content {
 			display: flex;
 			flex-direction: row;
 			align-items: flex-start;
 			border-radius: 5px;
 			overflow: auto;
-			gap: 5px;
-			padding: 0 0.3rem;
 		}
 
 		/* Links inside the dropup */
@@ -547,8 +507,6 @@
 			display: flex;
 			flex-direction: column;
 			cursor: pointer;
-			width: fit-content;
-			transform: scale(0.75) !important;
 			animation: poprs .2s ease-out;
 			white-space: nowrap;
 			text-overflow: ellipsis;
@@ -556,6 +514,8 @@
 			display: flex;
 			flex-direction: column;
 			opacity: 0.7;
+			font-size: 11px;
+			padding: 0.3rem .5rem;
 		}
 
 		a.dropdownerthebob.disabled {
@@ -567,19 +527,17 @@
 		}
 
 		a.dropdownerthebob span {
-			font-size: 24px !important;
-			border-radius: 2px;
+			font-size: 20px !important;
 			opacity: 0.7;
 			color: var(--colors-text-section);
 		}
 
-		/* Change color of dropup links on hover */
-		.dropup-content a:hover {
+		a.dropdownerthebob:hover {
 			opacity: 1;
 			color: var(--colors-text-section);
+			background-color: var(--colors-BG-sub);
 		}
 
-		/* Change the background color of the dropup button when the dropup content is shown */
 		.dropup:hover .dropbtn {
 			background-color: #393939;
 		}
@@ -732,11 +690,12 @@
 			font-family: inherit;
 			color: white;
 			border-radius: 0;
-			background: var(--colors-BG-section);
+			background-color: var(--colors-BG-section);
+			border: 1px solid #ffffff0c;
 			color: var(--colors-text-section);
 			border: none;
 			width: 0;
-			outline: none;
+			border: none;
 		}
 
 		#choosefile button {
@@ -748,6 +707,32 @@
 			background: var(--colors-BG-sub);
 			border: none;
 			width: fit-content;
+		}
+
+		div#moretoolsdropdwn {
+			position: absolute;
+			top: 50px;
+			display: flex;
+			flex-direction: column;
+			background: var(--colors-BG-section);
+			border-radius: var(--sizing-border-radius);
+			right: 80px;
+			z-index: 99;
+			box-shadow: 0 3px 10px #0000008a;
+			border: 1px solid #ffffff0c;
+			overflow: hidden;
+		}
+
+		div#moretoolsdropdwn a.dropdownerthebob {
+			flex-direction: row;
+			gap: .5em;
+			padding: .5em .8em;
+		}
+
+		#file-info {
+			margin-top: 10px;
+			font-size: small;
+			opacity: 0.5;
 		}
 	</style>
 	<script src="https://unpkg.com/interactjs/dist/interact.min.js"></script>
@@ -814,10 +799,66 @@
 			margin-bottom: 13px;
 		">Import your files</span>
 			<small cv><span class="material-symbols-rounded im">lock</span>Files won't leave your device.</small>
-			<input type="file" id="filupin" multiple /><br>
-			<button onclick="fupit()" id="fupibu">
-				Import These
-			</button>
+			<div class="upload-box" id="drop-area">
+				Drop files or <a id="file-select">Select them</a>
+				<div id="file-info"></div>
+				<input type="file" id="filupin" multiple>
+			</div>
+
+			<script>
+				const dropArea = document.getElementById('drop-area');
+				const fileInput = document.getElementById('filupin');
+				const fileSelect = document.getElementById('file-select');
+
+				fileSelect.addEventListener('click', () => {
+					fileInput.click();
+				});
+
+				dropArea.addEventListener('dragover', (e) => {
+					e.preventDefault();
+					dropArea.style.borderColor = '#007bff';
+				});
+
+				dropArea.addEventListener('dragleave', () => {
+					dropArea.style.borderColor = '#999';
+				});
+
+				dropArea.addEventListener('drop', (e) => {
+					e.preventDefault();
+					dropArea.style.borderColor = '#999';
+
+					if (e.dataTransfer.files.length > 0) {
+						const dataTransfer = new DataTransfer();
+						for (const file of e.dataTransfer.files) {
+							dataTransfer.items.add(file);
+						}
+						fileInput.files = dataTransfer.files;
+						handleFiles(fileInput.files);
+					}
+				});
+
+				fileInput.addEventListener('change', () => {
+					handleFiles(fileInput.files);
+				});
+
+				const info = document.getElementById('file-info');
+				function handleFiles(files) {
+					if (files.length === 1) {
+						info.textContent = `${files[0].name}`;
+					} else if (files.length > 1) {
+						info.textContent = `${files.length} files`;
+					} else {
+						info.textContent = 'None selected';
+					}
+				}
+				info.textContent = 'None selected';
+			</script>
+			<div class="btncont">
+				<button onclick="document.getElementById('upmod').close()" class="cancel">Close</button>
+				<button onclick="fupit()" id="fupibu">
+					Import
+				</button>
+			</div>
 		</div>
 		<script>
 			const dbChangeEvent = new Event('dbchange');
@@ -841,11 +882,9 @@
 					console.log(4534785, content)
 					await window.parent.createFile('Downloads/', file.name, '', content, { via: "imported" });
 				}
+				upmd();
 
-				document.getElementById("fupibu").innerHTML = "File(s) Saved, Close";
-				document.getElementById("fupibu").onclick = function () {
-					document.getElementById("upmod").close();
-				};
+				document.getElementById("fupibu").innerHTML = "File(s) Saved";
 			}
 
 
@@ -867,7 +906,6 @@
 				});
 			}
 
-
 			async function makefolderhuh() {
 				let x = await window.parent.ask("Enter your Folder Name:", currentPath);
 				window.parent.createFolder(x);
@@ -885,6 +923,7 @@
 				<div id="filetools">
 
 				</div>
+				<div id="moretoolsdropdwn"></div>
 			</div>
 			<div class="nowid" onclick="upmd()">
 				<a class="dropdownerthebob"><span class="material-symbols-rounded " id="ogrefreshbtn">download</span>
@@ -933,39 +972,42 @@
 	<style>
 		inpg {
 			display: block;
-			max-width: calc(100% - 30px);
-			width: 300px;
-			margin: auto;
+			width: 100%;
+			margin: 0;
 		}
 
-		#makefiledia {
+		.classydialog {
 			max-width: 80%;
 			min-height: 50px;
 			max-height: 80vh;
 			min-width: 300px;
+			width: 40%;
 			padding: 1rem 0rem;
 			padding-top: 0.7rem;
 			border: none;
-			background: var(--colors-BG-section);
+			background-color: var(--colors-BG-section);
+			border: 1px solid #ffffff0c;
 			color: var(--colors-text-section);
 			border-radius: var(--sizing-border-radius);
 			box-shadow: 0 0 10px #00000057;
+			padding: 1rem;
 		}
 
-		#makefiledia input,
-		#makefiledia textarea {
+		.classydialog input,
+		.classydialog textarea {
 			display: block;
-			width: calc(100% - 20px);
+			width: 100%;
 			background: #101010;
 			color: white;
 			padding: 7px 10px;
 			border: 1px solid #2f2f2f;
 			border-radius: 5px;
-			outline: none;
+			border: none;
 			resize: none;
+			width: calc(100% - 20px);
 		}
 
-		#makefiledia label {
+		.classydialog label {
 			text-transform: capitalize;
 			font-weight: normal;
 			opacity: 0.8;
@@ -974,6 +1016,7 @@
 		}
 
 		.makefilediv {
+			width: 100%;
 			height: 100%;
 		}
 
@@ -989,27 +1032,21 @@
 			width: 70%;
 		}
 
-		.makefilediv .btncont {
+		.btncont {
 			display: flex;
-			width: calc(100% - 2rem);
 			flex-direction: row;
-			margin: 0 1rem;
 			gap: 0.5rem;
+			margin-top: 0.5rem;
 		}
 
 		.btncont button {
 			flex: 1;
 			margin: auto;
 			display: block;
-			margin-top: 10px;
-			background: #4d7297;
+			background: var(--colors-BG-highlighted);
 		}
 
 		.btncont button.cancel {
-			flex: 1;
-			margin: auto;
-			display: block;
-			margin-top: 10px;
 			background: #272727;
 		}
 
@@ -1092,7 +1129,7 @@
 			}
 		}
 	</style>
-	<dialog id="makefiledia">
+	<dialog id="makefiledia" class="classydialog">
 		<div class="makefilediv">
 			<inpg>
 				<label>New File: </label>
@@ -1105,7 +1142,18 @@
 			</div>
 		</div>
 	</dialog>
-
+	<dialog id="makefoldia" class="classydialog">
+		<div class="makefilediv">
+			<inpg>
+				<label>New Folder: </label>
+				<input id="makfolname" value="" placeholder="Folder path">
+			</inpg>
+			<div class="btncont">
+				<button onclick="document.getElementById('makefoldia').close()" class="cancel">Cancel</button>
+				<button onclick="createfol()">Create</button>
+			</div>
+		</div>
+	</dialog>
 	<script>
 		function liststuff() {
 			$(function () {
@@ -1158,6 +1206,12 @@
 					document.getElementById('makefiledia').close();
 					window.parent.notify("Created file", "File " + fname + " created at " + currentPath, "Files");
 				});
+		}
+
+		
+		async function createfol() {
+			let fname = document.getElementById("makfolname").value;
+			window.parent.createFolder(fname);
 		}
 
 		var dropZone = document.getElementById("flap-mot");
@@ -1390,6 +1444,9 @@
 				const dropupContentDiv = document.createElement("div");
 				dropupContentDiv.className = "dropup-content";
 
+				const moreToolsDiv = document.getElementById("moretoolsdropdwn");
+				moreToolsDiv.innerHTML = "";
+
 				const actions = [
 					{
 						id: "search",
@@ -1408,7 +1465,9 @@
 					{
 						id: "createFolder",
 						title: "Create folder",
-						onclick: makefolderhuh,
+						onclick: () => {
+							document.getElementById('makefoldia').showModal();
+						},
 						innerHTML: `<span class="material-symbols-rounded">add</span> <b>Folder</b>`
 					},
 					{
@@ -1416,7 +1475,6 @@
 						title: "Create File",
 						onclick: () => {
 							document.getElementById('makefiledia').showModal();
-							document.getElementById('makflatw').value = currentPath;
 						},
 						innerHTML: `<span class="material-symbols-rounded">add</span> <b>New File</b>`
 					},
@@ -1434,17 +1492,19 @@
 					{
 						id: "toggleView",
 						title: flmode === 'grid' ? 'List view' : 'Grid view',
-						onclick: () => {
+						onclick: function () {
 							flmode = flmode === 'grid' ? 'list' : 'grid';
 							changeview(flmode);
 							this.title = flmode === 'grid' ? 'List view' : 'Grid view';
 							this.innerHTML = flmode === 'grid' ?
-								`<span class="material-symbols-rounded">view_list</span> <b>List V</b>iew` :
-								`<span class="material-symbols-rounded">grid_view</span> Grid View`;
+								`<span class="material-symbols-rounded">view_list</span> <b>List View</b>` :
+								`<span class="material-symbols-rounded">grid_view</span> <b>Grid View</b>`;
 						},
-						innerHTML: flmode === 'grid' ? `<span class="material-symbols-rounded">view_list</span> <b><b><b></b>List View</b></b>` : `<span class="material-symbols-rounded">grid_view</span> <b>Grid View</b>`
+						innerHTML: flmode === 'grid' ? `<span class="material-symbols-rounded">view_list</span> <b>List View</b>` : `<span class="material-symbols-rounded">grid_view</span> <b>Grid View</b>`
 					}
 				];
+
+				const actionLinks = [];
 
 				actions.forEach(({ id, title, onclick, innerHTML, disabled }) => {
 					const link = document.createElement("a");
@@ -1454,10 +1514,33 @@
 					link.innerHTML = innerHTML;
 					link.id = `topbarAction-${id}`;
 					if (disabled) link.classList.add("disabled");
+					actionLinks.push(link);
 					dropupContentDiv.appendChild(link);
 				});
 
 				dropupDiv.appendChild(dropupContentDiv);
+
+				requestAnimationFrame(() => {
+					let overflowStarted = false;
+					while (dropupDiv.scrollHeight > dropupDiv.clientHeight && actionLinks.length > 0) {
+						const linkToMove = actionLinks.pop();
+						dropupContentDiv.removeChild(linkToMove);
+						moreToolsDiv.appendChild(linkToMove);
+						overflowStarted = true;
+					}
+
+					if (overflowStarted) {
+						const moreToggle = document.createElement("a");
+						moreToggle.classList.add("dropdownerthebob");
+						moreToggle.title = "More Tools";
+						moreToggle.innerHTML = `<span class="material-symbols-rounded">more_vert</span> <b>More</b>`;
+						moreToggle.onclick = () => {
+							moreToolsDiv.classList.toggle("visible");
+						};
+						dropupContentDiv.appendChild(moreToggle);
+					}
+				});
+
 				currentPath = folderName;
 				updpth();
 
@@ -1658,9 +1741,15 @@
 
 						const dropupDiv = document.getElementById("filetools");
 						dropupDiv.innerHTML = "";
+
 						const dropupContentDiv = document.createElement("div");
 						dropupContentDiv.className = "dropup-content";
+
+						const moreToolsDiv = document.getElementById("moretoolsdropdwn");
+						moreToolsDiv.innerHTML = "";
+
 						const itemuid = fileData.id;
+						const visibleLinks = [];
 
 						Object.values(fileActions).forEach(action => {
 							if (action.condition(fileData)) {
@@ -1669,11 +1758,44 @@
 								option.title = action.label;
 								option.onclick = () => action.action(itemuid);
 								option.innerHTML = `<span class="material-symbols-rounded">${action.icon}</span> <b>${action.label}</b>`;
+								visibleLinks.push(option);
 								dropupContentDiv.appendChild(option);
 							}
 						});
-						// Append the dropup content to the dropup container
+
+						const moreToggle = document.createElement("a");
+						moreToggle.classList.add("dropdownerthebob");
+						moreToggle.title = "More Tools";
+						moreToggle.innerHTML = `<span class="material-symbols-rounded">more_vert</span> <b>More</b>`;
+						moreToggle.onclick = () => {
+							moreToolsDiv.classList.toggle("visible");
+						};
+						moreToggle.style.visibility = "hidden"; // reserve space but not show yet
+						dropupContentDiv.appendChild(moreToggle);
+
+
 						dropupDiv.appendChild(dropupContentDiv);
+
+						requestAnimationFrame(() => {
+							let overflowStarted = false;
+
+							while (visibleLinks.length > 0) {
+								if (dropupContentDiv.scrollWidth <= dropupContentDiv.clientWidth) break;
+
+								const linkToMove = visibleLinks.pop();
+								dropupContentDiv.removeChild(linkToMove);
+								moreToolsDiv.appendChild(linkToMove);
+								overflowStarted = true;
+							}
+
+							if (overflowStarted) {
+								moreToggle.style.visibility = "visible";
+							} else {
+								dropupContentDiv.removeChild(moreToggle);
+							}
+						});
+
+
 
 					} catch (error) {
 						document.getElementById("fileinfobn").innerHTML += "Safe Error 0006";

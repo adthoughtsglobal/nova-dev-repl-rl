@@ -712,44 +712,44 @@
 		});
 
 		function readthefile(filethings, fileName = 'Unknown Title') {
-			const blob = filethings.content;
+			const base64String = filethings.content.split(',')[1];
+			const binaryString = atob(base64String);
+			const bytes = new Uint8Array(binaryString.length);
 
-			const reader = new FileReader();
-			reader.onload = function (event) {
-				const arrayBuffer = event.target.result;
+			for (let i = 0; i < binaryString.length; i++) {
+				bytes[i] = binaryString.charCodeAt(i);
+			}
 
-				jsmediatags.read(new Blob([arrayBuffer], { type: 'application/octet-binary' }), {
-					onSuccess: function (tag) {
-						const metadata = tag.tags;
-						const trackName = metadata.title || fileName;
-						const artistName = metadata.artist || 'Unknown Artist';
-						const albumName = metadata.album || 'Unknown Album';
 
-						track_list[trackName] = {
-							artist: artistName,
-							fileRef: filethings
-						};
+			const blob = new Blob([bytes.buffer], { type: 'application/octet-binary' });
 
-						console.log('Updated track list:', track_list);
 
-						renderQueue();
-						if (Object.keys(track_list).length === 1) {
-							playFirstTrack();
-						}
-					},
-					onError: function (error) {
-						console.error("Error reading metadata: ", error);
+			jsmediatags.read(blob, {
+				onSuccess: function (tag) {
+					const metadata = tag.tags;
+					const trackName = metadata.title || fileName;
+					const artistName = metadata.artist || 'Unknown Artist';
+					const albumName = metadata.album || 'Unknown Album';
+
+
+					track_list[trackName] = {
+						artist: artistName,
+						fileRef: filethings
+					};
+
+					console.log('Updated track list:', track_list);
+
+
+					renderQueue();
+					if (Object.keys(track_list).length === 1) {
+						playFirstTrack();
 					}
-				});
-			};
-
-			reader.onerror = function (error) {
-				console.error("Error reading blob: ", error);
-			};
-
-			reader.readAsArrayBuffer(blob);
+				},
+				onError: function (error) {
+					console.error("Error reading metadata: ", error);
+				}
+			});
 		}
-
 
 		function playpauseTrack() {
 			if (!isPlaying) playTrack();
