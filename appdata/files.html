@@ -200,12 +200,10 @@
 		@keyframes poprs {
 			from {
 				opacity: 0;
-				transform: translateY(-10px);
 			}
 
 			to {
 				opacity: 1;
-				transform: translateY(0px);
 			}
 		}
 
@@ -369,8 +367,10 @@
 
 		.upload-box a {
 			color: white;
-			text-decoration: underline;
+			background: var(--colors-BG-highlighted);
 			cursor: pointer;
+			padding: .3em .5em;
+			border-radius: var(--sizing-border-radius);
 		}
 
 		input[type="file"] {
@@ -388,9 +388,8 @@
 		}
 
 		dialog::backdrop {
-			background: transparent;
+			background: #000000b8;
 			animation: pop .3s ease-out;
-			backdrop-filter: contrast(0.5) brightness(.2);
 		}
 
 		dialog {
@@ -409,7 +408,7 @@
 		#upmod [cv] {
 			display: block;
 			padding: 5px 10px;
-			background: #282828;
+			background: var(--colors-BG-sub);
 			width: fit-content;
 			border-radius: 10px;
 			opacity: 0.5;
@@ -498,6 +497,7 @@
 			align-items: flex-start;
 			border-radius: 5px;
 			overflow: auto;
+			justify-content: space-around;
 		}
 
 		/* Links inside the dropup */
@@ -516,6 +516,7 @@
 			opacity: 0.7;
 			font-size: 11px;
 			padding: 0.3rem .5rem;
+			flex: 1;
 		}
 
 		a.dropdownerthebob.disabled {
@@ -536,10 +537,6 @@
 			opacity: 1;
 			color: var(--colors-text-section);
 			background-color: var(--colors-BG-sub);
-		}
-
-		.dropup:hover .dropbtn {
-			background-color: #393939;
 		}
 
 		[flap-fl-topnav] div {
@@ -716,11 +713,12 @@
 			flex-direction: column;
 			background: var(--colors-BG-section);
 			border-radius: var(--sizing-border-radius);
-			right: 80px;
+			right: 60px;
 			z-index: 99;
 			box-shadow: 0 3px 10px #0000008a;
 			border: 1px solid #ffffff0c;
 			overflow: hidden;
+			visibility: hidden;
 		}
 
 		div#moretoolsdropdwn a.dropdownerthebob {
@@ -733,6 +731,10 @@
 			margin-top: 10px;
 			font-size: small;
 			opacity: 0.5;
+		}
+
+		.visible {
+			visibility: visible !important;
 		}
 	</style>
 	<script src="https://unpkg.com/interactjs/dist/interact.min.js"></script>
@@ -997,10 +999,9 @@
 		.classydialog textarea {
 			display: block;
 			width: 100%;
-			background: #101010;
+			background: var(--colors-BG-normal);
 			color: white;
 			padding: 7px 10px;
-			border: 1px solid #2f2f2f;
 			border-radius: 5px;
 			border: none;
 			resize: none;
@@ -1047,7 +1048,7 @@
 		}
 
 		.btncont button.cancel {
-			background: #272727;
+			background: var(--colors-BG-sub);
 		}
 
 		#makefiledivno {
@@ -1208,7 +1209,7 @@
 				});
 		}
 
-		
+
 		async function createfol() {
 			let fname = document.getElementById("makfolname").value;
 			window.parent.createFolder(fname);
@@ -1770,7 +1771,7 @@
 						moreToggle.onclick = () => {
 							moreToolsDiv.classList.toggle("visible");
 						};
-						moreToggle.style.visibility = "hidden"; // reserve space but not show yet
+						moreToggle.style.visibility = "hidden";
 						dropupContentDiv.appendChild(moreToggle);
 
 

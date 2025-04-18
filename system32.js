@@ -1143,7 +1143,6 @@ async function createFile(folderName, fileName, type, content, metadata = {}) {
 
             if (ext === "app") {
                 await extractAndRegisterCapabilities(uid, contentData);
-                return uid || null;
             }
 
             await setdb("handling file: " + fileNameWithExtension);
