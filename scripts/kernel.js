@@ -489,7 +489,7 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
             return new Promise((resolve, reject) => {
                 const transactionId = this.generateTransactionId();
                 this.pendingRequests[transactionId] = { resolve, reject };
-                const winuid = myWindow.windowID;
+                const winuid = "${winuid}";
                 window.parent.postMessage({ transactionId, action, params, iframeId: winuid }, "*");
             });
         }

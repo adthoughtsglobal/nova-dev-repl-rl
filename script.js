@@ -905,12 +905,9 @@ async function initialiseOS() {
 			})
 			.then(async () => {
 				await startup();
-				await createFile('Downloads/', 'Welcome.txt', 'text', `Welcome to Nova OS! If you are having trouble, kindly tell us in our discord, https://discord.gg/atkqbwEQU8.
-
-Learn how to do things in the NovaOS wiki pages, https://novaos.gitbook.io/main. 
-Browse the most used features at https://novaos.gitbook.io/main/docs/features.
-
-Support NovaOS at https://novaos.gitbook.io/main/how-to/support-novaos`)
+				let textcontentwelcome = await fetch("appdata/welcome.html");
+				textcontentwelcome = await textcontentwelcome.text();
+				await createFile('Downloads/', 'Welcome.html', 'html', textcontentwelcome)
 				notify("Welcome to NovaOS, " + CurrentUsername + "!", "We really hope you would enjoy your NovaOS", "NovaOS")
 				initialization = false;
 			})
