@@ -17,7 +17,7 @@ function timeAgo(ms) {
 }
 
 function genUID() {
-	const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_=+].,><;|?}{!@#$%^&*()';
+	const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789?!@#$%+';
 	let randomString = '';
 	for (let i = 0; i < 12; i++) {
 		const randomIndex = Math.floor(Math.random() * characters.length);

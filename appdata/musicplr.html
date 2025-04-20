@@ -41,12 +41,15 @@
 		.main-flex-container {
 			display: flex;
 			flex-direction: row;
-			height: 100%;
-			width: 100%;
+			height: calc(100% - 2em);
+			width: calc(100% - 2em);
 			position: absolute;
 			top: 0;
 			z-index: 2;
 			left: 0;
+			padding: 1em;
+			justify-content: center;
+			align-items: stretch;
 		}
 
 		#particleCanvas {
@@ -64,8 +67,8 @@
 			justify-content: center;
 			width: 0;
 			flex-grow: 1;
-			margin: 2rem;
-
+			margin: 2em;
+			max-width: 30em;
 		}
 
 		.details {
@@ -198,9 +201,8 @@
 		#queuewindow {
 			flex: 1;
 			width: 0;
-			margin: 1rem;
+			padding: 1em;
 			border-radius: 1rem;
-			padding: 1rem;
 			background: #34343445;
 			backdrop-filter: blur(0.8rem);
 			display: flex;
@@ -406,6 +408,20 @@
 			color: #afafaf;
 			cursor: pointer;
 		}
+
+		button#queuebtn {
+			display: flex;
+			position: absolute;
+			top: 1em;
+			right: 1em;
+			border-radius: 50%;
+			border: 0;
+			padding: .5em;
+			font-size: inherit;
+			background: #1f1f1f;
+			color: inherit;
+			z-index: 1;
+		}
 	</style>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.0/color-thief.umd.js"></script>
 
@@ -456,12 +472,22 @@
 					</span>
 				</div>
 			</div>
+			<button onclick="toggleQueue(1)" id="queuebtn">
+				<span class="material-symbols-rounded">
+					list
+				</span>
+			</button>
 			<div id="queuewindow">
 				<div class="queuewinnav">
 					<span class="queuenavtit">Queue
 						<div class="now-playing">Playing 1 / 1</div>
 					</span>
 					<div class="buttonside">
+						<button onclick="toggleQueue(0)">
+							<span class="material-symbols-rounded">
+								close
+							</span>
+						</button>
 						<button onclick="shuffle()">
 							<span class="material-symbols-rounded">
 								shuffle
@@ -620,45 +646,57 @@
 			const blob = new Blob([bytes.buffer], { type: 'audio/mpeg' });
 
 
-			jsmediatags.read(blob, {
-				onSuccess: function (tag) {
-					const metadata = tag.tags;
+			try {
+				jsmediatags.read(blob, {
+					onSuccess: function (tag) {
+						const metadata = tag.tags;
+						track_name.textContent = trackName;
+						track_artist.textContent = metadata.artist || 'Unknown Artist';
+						now_playing.textContent = "Playing " + (Object.keys(track_list).indexOf(trackName) + 1) + " of " + Object.keys(track_list).length;
+						if (playmoedrn == 'mini') {
+							myWindow.titleElement.innerTxt = "Playing " + (Object.keys(track_list).indexOf(trackName) + 1) + " of " + Object.keys(track_list).length;
+						}
 
 
-					track_name.textContent = trackName;
-					track_artist.textContent = metadata.artist || 'Unknown Artist';
-					now_playing.textContent = "Playing " + (Object.keys(track_list).indexOf(trackName) + 1) + " of " + Object.keys(track_list).length;
-					if (playmoedrn == 'mini') {
-						myWindow.titleElement.innerTxt = "Playing " + (Object.keys(track_list).indexOf(trackName) + 1) + " of " + Object.keys(track_list).length;
-					}
+						if (metadata.picture && metadata.picture.data) {
+							const base64String = arrayBufferToBase64(metadata.picture.data);
+							baseimg.src = `data:${metadata.picture.format};base64,${base64String}`;
+							getDominantColor(baseimg.src, function (color) {
+								baseimg.style.boxShadow = "0 3px 1rem " + color;
+							});
+						} else {
+							baseimg.src = '';
+							baseimg.style.boxShadow = "";
+						}
 
 
-					if (metadata.picture && metadata.picture.data) {
-						const base64String = arrayBufferToBase64(metadata.picture.data);
-						baseimg.src = `data:${metadata.picture.format};base64,${base64String}`;
-						getDominantColor(baseimg.src, function (color) {
-							baseimg.style.boxShadow = "0 3px 1rem " + color;
-						});
-					} else {
+						curr_track.src = URL.createObjectURL(blob);
+
+						curr_track.addEventListener("canplaythrough", () => {
+							playTrack();
+						}, { once: true });
+						updateTimer = setInterval(seekUpdate, 1000);
+						curr_track.addEventListener("ended", nextTrack);
+					},
+					onError: function (error) {
+						console.error("Error reading metadata: ", error);
 						baseimg.src = '';
 						baseimg.style.boxShadow = "";
 					}
+				});
+			} catch (e) {
+				track_name.textContent = trackName;
+				track_artist.textContent = 'Unknown Artist';
+				now_playing.textContent = "Playing " + (Object.keys(track_list).indexOf(trackName) + 1) + " of " + Object.keys(track_list).length;
 
+				curr_track.src = URL.createObjectURL(blob);
 
-					curr_track.src = URL.createObjectURL(blob);
-
-					curr_track.addEventListener("canplaythrough", () => {
-						playTrack();
-					}, { once: true });
-					updateTimer = setInterval(seekUpdate, 1000);
-					curr_track.addEventListener("ended", nextTrack);
-				},
-				onError: function (error) {
-					console.error("Error reading metadata: ", error);
-					baseimg.src = '';
-					baseimg.style.boxShadow = "";
-				}
-			});
+				curr_track.addEventListener("canplaythrough", () => {
+					playTrack();
+				}, { once: true });
+				updateTimer = setInterval(seekUpdate, 1000);
+				curr_track.addEventListener("ended", nextTrack);
+			}
 		}
 
 
@@ -723,32 +761,47 @@
 
 			const blob = new Blob([bytes.buffer], { type: 'application/octet-binary' });
 
-
-			jsmediatags.read(blob, {
-				onSuccess: function (tag) {
-					const metadata = tag.tags;
-					const trackName = metadata.title || fileName;
-					const artistName = metadata.artist || 'Unknown Artist';
-					const albumName = metadata.album || 'Unknown Album';
-
-
-					track_list[trackName] = {
-						artist: artistName,
-						fileRef: filethings
-					};
-
-					console.log('Updated track list:', track_list);
+			try {
+				jsmediatags.read(blob, {
+					onSuccess: function (tag) {
+						const metadata = tag.tags;
+						const trackName = metadata.title || fileName;
+						const artistName = metadata.artist || 'Unknown Artist';
+						const albumName = metadata.album || 'Unknown Album';
 
 
-					renderQueue();
-					if (Object.keys(track_list).length === 1) {
-						playFirstTrack();
+						track_list[trackName] = {
+							artist: artistName,
+							fileRef: filethings
+						};
+
+						console.log('Updated track list:', track_list);
+
+
+						renderQueue();
+						if (Object.keys(track_list).length === 1) {
+							playFirstTrack();
+						}
+					},
+					onError: function (error) {
+						console.error("Error reading metadata: ", error);
 					}
-				},
-				onError: function (error) {
-					console.error("Error reading metadata: ", error);
-				}
-			});
+				});
+			} catch (e) {
+				const trackName = fileName;
+				const artistName = 'Unknown Artist';
+				const albumName = 'Unknown Album';
+
+				track_list[trackName] = {
+					artist: artistName,
+					fileRef: filethings
+				};
+
+				console.log('Updated track list:', track_list);
+
+
+				renderQueue();
+			}
 		}
 
 		function playpauseTrack() {
@@ -1177,6 +1230,17 @@
 			canvas.height = window.innerHeight;
 		});
 
+		function toggleQueue(e) {
+			if (e == 1) {
+				document.getElementById("queuewindow").style.display = "flex";
+				document.getElementById("queuebtn").style.display = "none";
+			} else {
+				document.getElementById("queuewindow").style.display = "none";
+				document.getElementById("queuebtn").style.display = "flex";
+			}
+		}
+
+		toggleQueue(1)
 	</script>
 </body>
 

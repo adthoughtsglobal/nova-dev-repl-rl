@@ -17,6 +17,12 @@
 			padding: 0 var(--sizing-huge);
 		}
 
+		div#cont {
+			height: calc(100vh - 6em);
+			overflow-y: scroll;
+			overflow-x: hidden;
+		}
+
 		h1 {
 			font-family: arial;
 			font-weight: normal;
@@ -277,6 +283,16 @@
 			border-radius: 50%;
 			background-color: var(--colors-BG-section);
 		}
+
+		.relbtn {
+			position: absolute;
+			top: 1em;
+			right: 1em;
+			padding: .5em;
+			background-color: var(--colors-BG-section);
+			border-radius: 50%;
+			display: flex;
+		}
 	</style>
 	<link rel="stylesheet"
 		href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
@@ -284,6 +300,7 @@
 
 <body>
 	<h1>Photos</h1>
+	<span class="material-symbols-rounded relbtn" onclick="renderlist()">refresh</span>
 	<div id="cont"></div>
 
 	<div id="fullfmd">
@@ -334,14 +351,17 @@
 			image.src = y;
 			modal.style.display = "flex";
 
-			document.getElementById("prevbtn").style.display = imgmap[id - 1] ? "flex" : "none";
-			document.getElementById("nextbtn").style.display = imgmap[id + 1] ? "flex" : "none";
+			document.getElementById("prevbtn").style.visibility = imgmap[id - 1] ? "visible" : "hidden";
+			document.getElementById("nextbtn").style.visibility = imgmap[id + 1] ? "visible" : "hidden";
 		}
 
+		function greenflag() {
+			renderlist();
+		}
 
-
-		async function greenflag() {
+		async function renderlist() {
 			try {
+				document.getElementById("cont").innerHTML = `Loading..`
 				const lcldata = await window.parent.getFileNamesByFolder("Media/");
 				if (lcldata.length < 1) {
 					document.getElementById("cont").innerHTML = nofilesimg;
@@ -350,6 +370,7 @@
 
 				const dyDivs = {};
 
+				document.getElementById("cont").innerHTML = ``
 				for (const item of lcldata) {
 					let x = await window.parent.getFileById(item.id);
 					if (window.parent.getbaseflty(window.parent.ptypext(item.name)) != "image") {
