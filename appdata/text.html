@@ -111,8 +111,7 @@
         async function openfromfiles() {
             document.getElementById("thedisplay").value = "Waiting for you to open a file...";
             currentreqID = await ntxSession.send("utility.genUID");
-            let appIdToOpen = (await ntxSession.send("apps.getHandlers"))["file"][0] || null;
-            await ntxSession.send("olp.launch", appIdToOpen, { "opener": 'any', "dir": "Downloads/" }, currentreqID, myWindow.windowID);
+            await ntxSession.send("olp.launch", "file", { "opener": 'any', "dir": "Downloads/" }, currentreqID, myWindow.windowID);
         }
 
         window.addEventListener('message', async (event) => {

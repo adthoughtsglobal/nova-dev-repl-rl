@@ -2617,7 +2617,7 @@
 				<div setting onclick="window.parent.openapp('store',1, {'opener':'themes'})">
 
 					<div class="settingName"><span>Browse themes</span>
-						<p>Browse tons public theme packs</p>
+						<p>Browse official theme packs</p>
 					</div>
 					<svg class="themestoreopner" style="float: right;" version='1.1' xmlns='http://www.w3.org/2000/svg'
 						xmlns:xlink='http://www.w3.org/1999/xlink' width='53.37052' height='56.68831'
@@ -2873,8 +2873,6 @@
 						console.error(error);
 					}
 
-
-
 				}
 
 				const debouncedSaveColor = debounce((picker, variableName) => {
@@ -2892,20 +2890,6 @@
 						colorsToSave[variableName] = colorValue;
 					});
 					await window.parent.setSetting("themeColors", colorsToSave);
-				}
-
-				function applyTheme(data) {
-					const buttons = document.querySelectorAll('[data-variable]');
-					buttons.forEach(button => {
-						const variableName = button.dataset.variable;
-						const newColor = data.colors[variableName];
-						if (newColor) {
-							button.jscolor.fromString(newColor);
-							updateColor(button, variableName);
-						}
-					});
-
-					saveColors();
 				}
 
 				function updateColor(picker, variableName) {

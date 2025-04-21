@@ -13,16 +13,44 @@ async function openlaunchprotocol(appid, data, id, winuid) {
     openfile(x.appid, { data: Gtodo });
 }
 
-function OLPreturn(fileID, transferID) {
+let _olpResolverMap = new Map();
 
+function OLPreturn(data, transferID) {
+    if (_olpResolverMap.has(transferID)) {
+        const { resolve, timeout } = _olpResolverMap.get(transferID);
+        clearTimeout(timeout);
+        resolve(data);
+        _olpResolverMap.delete(transferID);
+    }
+
+    // legacy code
     if (iframeReferences[transferID]) {
-        iframeReferences[transferID].postMessage({ returned: fileID, id: transferID, action: 'loadlocalfile' }, '*');
+        iframeReferences[transferID].postMessage({ returned: data, id: transferID, action: 'loadlocalfile' }, '*');
     }
 }
 
+async function useHandler(name, stufftodo) {
+    let data = await getSetting('handlers');
+    
+    return new Promise((resolve, reject) => {
+        const transferID = `${name}-${Date.now()}`;
+        console.log(transferID)
+        const timeout = setTimeout(() => {
+            _olpResolverMap.delete(transferID);
+            resolve(undefined);
+        }, 600000);
+        // you get 10 mins to complete handler
+
+        _olpResolverMap.set(transferID, { resolve, timeout });
+        
+        openfile(data[name]?.[0], { data: stufftodo, trid: transferID });
+    });
+}
+
+
 const iframeReferences = {};
 
-async function openfile(x) {
+async function openfile(x, stufftodo) {
     let unid = x;
     try {
         if (!unid) {
@@ -41,7 +69,7 @@ async function openfile(x) {
 
         if (mm.type == "app") {
             // run the app if it is one
-            await openapp(mm.fileName, unid);
+            await openapp(mm.fileName, unid, stufftodo);
         } else if (mm.type == "osl") {
             runAsOSL(mm.content)
         } else if (mm.type == "lnk") {

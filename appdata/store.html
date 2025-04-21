@@ -734,6 +734,7 @@
 					if (winname == "appsmode") {
 						document.getElementById("topse").style.display = 'flex';
 					} else {
+						loadThemes()
 						document.getElementById("topse").style.display = 'none'
 					}
 					document.querySelectorAll("[active]").forEach((x) => {
@@ -754,122 +755,129 @@
 				}
 				document.getElementById('appsmode').style.display = 'block';
 
-				window.parent.fetch('https://adthoughtsglobal.github.io/Nova-Store/db/themes.json')
-					.then(response => response.json())
-					.then(data => {
-						const container = document.getElementById("themeslist");
+				var networkretries = 0;
+				function loadThemes() {
 
-						Object.entries(data).forEach(([themeName, themeData]) => {
-							const themeContainer = document.createElement('div');
-							themeContainer.classList.add("themesing");
-							themeContainer.style.border = `1px solid ${themeData.colors["--colors-BG-sub"]}`;
+					window.parent.fetch('https://adthoughtsglobal.github.io/Nova-Store/db/themes.json')
+						.then(response => response.json())
+						.then(data => {
+							const container = document.getElementById("themeslist");
 
-							themeContainer.style.background = `linear-gradient(to bottom right, 
+							Object.entries(data).forEach(([themeName, themeData]) => {
+								const themeContainer = document.createElement('div');
+								themeContainer.classList.add("themesing");
+								themeContainer.style.border = `1px solid ${themeData.colors["--colors-BG-sub"]}`;
+
+								themeContainer.style.background = `linear-gradient(to bottom right, 
 								${themeData.colors["--colors-BG-normal"]} 0%, 
 								${themeData.colors["--colors-BG-sub"]} 25%, 
 								${themeData.colors["--colors-BG-section"]} 75%, 
 								${themeData.colors["--colors-BG-highlighted"]}) 100%`;
-							themeContainer.style.color = themeData.colors["--colors-text-normal"];
+								themeContainer.style.color = themeData.colors["--colors-text-normal"];
 
-							const colorsSvg = document.createElement('div');
-							colorsSvg.style.background = themeData.wallpaper
-								? `url("${themeData.wallpaper}")`
-								: themeData.colors["--colors-BG-normal"];
+								const colorsSvg = document.createElement('div');
+								colorsSvg.style.background = themeData.wallpaper
+									? `url("${themeData.wallpaper}")`
+									: themeData.colors["--colors-BG-normal"];
 
-							colorsSvg.classList.add('themecolors');
-							const svgNS = "http://www.w3.org/2000/svg";
+								colorsSvg.classList.add('themecolors');
+								const svgNS = "http://www.w3.org/2000/svg";
 
-							const colorsubbg = themeData.colors["--colors-BG-sub"] || "#080808";
-							const colorsectionbg = themeData.colors["--colors-BG-section"] || "#090909";
-							const colorhighlight = themeData.colors["--colors-BG-highlighted"] || "#512DA8";
-							const colorwhite = themeData.colors["--colors-text-high"] || "#FFFFFF";
-							const colortext = themeData.colors["--colors-text-normal"] || "#FFFFFF";
-							const colorgood = themeData.colors["--colors-special-good"] || "#49AC49";
-							const colorbad = themeData.colors["--colors-special-bad"] || "#AC4949";
+								const colorsubbg = themeData.colors["--colors-BG-sub"] || "#080808";
+								const colorsectionbg = themeData.colors["--colors-BG-section"] || "#090909";
+								const colorhighlight = themeData.colors["--colors-BG-highlighted"] || "#512DA8";
+								const colorwhite = themeData.colors["--colors-text-high"] || "#FFFFFF";
+								const colortext = themeData.colors["--colors-text-normal"] || "#FFFFFF";
+								const colorgood = themeData.colors["--colors-special-good"] || "#49AC49";
+								const colorbad = themeData.colors["--colors-special-bad"] || "#AC4949";
 
-							const svg = document.createElementNS(svgNS, 'svg');
-							svg.setAttribute('version', '1.1');
-							svg.setAttribute('xmlns', svgNS);
-							svg.setAttribute('width', '186.92934');
-							svg.setAttribute('height', '127.61522');
-							svg.setAttribute('viewBox', '0 0 186.92934 127.61522');
+								const svg = document.createElementNS(svgNS, 'svg');
+								svg.setAttribute('version', '1.1');
+								svg.setAttribute('xmlns', svgNS);
+								svg.setAttribute('width', '186.92934');
+								svg.setAttribute('height', '127.61522');
+								svg.setAttribute('viewBox', '0 0 186.92934 127.61522');
 
-							const g1 = document.createElementNS(svgNS, 'g');
-							g1.setAttribute('transform', 'translate(-146.53533,-116.19239)');
+								const g1 = document.createElementNS(svgNS, 'g');
+								g1.setAttribute('transform', 'translate(-146.53533,-116.19239)');
 
-							const g2 = document.createElementNS(svgNS, 'g');
-							g2.setAttribute('stroke', 'none');
-							g2.setAttribute('stroke-width', 'none');
-							g2.setAttribute('stroke-miterlimit', '10');
+								const g2 = document.createElementNS(svgNS, 'g');
+								g2.setAttribute('stroke', 'none');
+								g2.setAttribute('stroke-width', 'none');
+								g2.setAttribute('stroke-miterlimit', '10');
 
-							const paths = [
-								{ d: "M153.33273,232.60246v-110.0906h50v110.0906z", fill: colorsectionbg }, // card section
-								{ d: "M153.33273,232.60246v-110.0906h117.15993v110.0906z", fill: colorsectionbg },
-								{ d: "M165.64709,197.15912v-13.89422h54.10463v13.89422z", fill: colorhighlight }, // button
-								{ d: "M165.75792,153.04796v-16.07118h38.50194v16.07118z", fill: colortext },
-								{ d: "M165.44056,166.29708v-8.03559h92.94427v8.03559z", fill: colortext },
-								{ d: "M165.44056,176.68927v-8.03559h74.55944v8.03559z", fill: colortext },
-								{ d: "M173.17094,193.3994v-6.37479h39.05692v6.37479z", fill: colorgood },
-								{ d: "M173.17094,193.3994v-6.37479h39.05692v6.37479z", fill: colorwhite }
-							];
+								const paths = [
+									{ d: "M153.33273,232.60246v-110.0906h50v110.0906z", fill: colorsectionbg }, // card section
+									{ d: "M153.33273,232.60246v-110.0906h117.15993v110.0906z", fill: colorsectionbg },
+									{ d: "M165.64709,197.15912v-13.89422h54.10463v13.89422z", fill: colorhighlight }, // button
+									{ d: "M165.75792,153.04796v-16.07118h38.50194v16.07118z", fill: colortext },
+									{ d: "M165.44056,166.29708v-8.03559h92.94427v8.03559z", fill: colortext },
+									{ d: "M165.44056,176.68927v-8.03559h74.55944v8.03559z", fill: colortext },
+									{ d: "M173.17094,193.3994v-6.37479h39.05692v6.37479z", fill: colorgood },
+									{ d: "M173.17094,193.3994v-6.37479h39.05692v6.37479z", fill: colorwhite }
+								];
 
-							paths.forEach(({ d, fill }) => {
-								const path = document.createElementNS(svgNS, 'path');
-								path.setAttribute('d', d);
-								path.setAttribute('fill', fill);
-								path.setAttribute('rx', '10');
-								g2.appendChild(path);
-							});
+								paths.forEach(({ d, fill }) => {
+									const path = document.createElementNS(svgNS, 'path');
+									path.setAttribute('d', d);
+									path.setAttribute('fill', fill);
+									path.setAttribute('rx', '10');
+									g2.appendChild(path);
+								});
 
-							g1.appendChild(g2);
-							svg.appendChild(g1);
-							colorsSvg.appendChild(svg);
+								g1.appendChild(g2);
+								svg.appendChild(g1);
+								colorsSvg.appendChild(svg);
 
-							const themedetdiv = document.createElement('div');
-							themedetdiv.classList.add('themedetdiv');
+								const themedetdiv = document.createElement('div');
+								themedetdiv.classList.add('themedetdiv');
 
-							const infoDiv = document.createElement('div');
-							infoDiv.classList.add('themeinfodiv');
+								const infoDiv = document.createElement('div');
+								infoDiv.classList.add('themeinfodiv');
 
 
-							const nameDiv = document.createElement('div');
-							nameDiv.classList.add("themename")
-							nameDiv.innerText = themeName;
-							infoDiv.appendChild(nameDiv);
+								const nameDiv = document.createElement('div');
+								nameDiv.classList.add("themename")
+								nameDiv.innerText = themeName;
+								infoDiv.appendChild(nameDiv);
 
-							themeData.by = themeData.by || 'NovaOS';
-							const authdiv = document.createElement('div');
-							authdiv.classList.add("themeauth")
-							authdiv.innerText = themeData.by;
-							infoDiv.appendChild(authdiv);
+								themeData.by = themeData.by || 'NovaOS';
+								const authdiv = document.createElement('div');
+								authdiv.classList.add("themeauth")
+								authdiv.innerText = themeData.by;
+								infoDiv.appendChild(authdiv);
 
-							themedetdiv.appendChild(infoDiv);
+								themedetdiv.appendChild(infoDiv);
 
-							const instdiv = document.createElement('button');
-							instdiv.style.background = themeData.colors["--colors-BG-highlighted"];
-							instdiv.style.color = themeData.colors["--colors-text-high"];
-							instdiv.style.border = `1px solid ${themeData.colors["--colors-BG-sub"]}`;
-							instdiv.innerHTML = `<i
+								const instdiv = document.createElement('button');
+								instdiv.style.background = themeData.colors["--colors-BG-highlighted"];
+								instdiv.style.color = themeData.colors["--colors-text-high"];
+								instdiv.style.border = `1px solid ${themeData.colors["--colors-BG-sub"]}`;
+								instdiv.innerHTML = `<i
 						class="material-symbols-rounded">format_paint</i>`;
-							themedetdiv.appendChild(instdiv);
+								themedetdiv.appendChild(instdiv);
 
-							themeContainer.appendChild(colorsSvg);
-							themeContainer.appendChild(themedetdiv);
+								themeContainer.appendChild(colorsSvg);
+								themeContainer.appendChild(themedetdiv);
 
-							themeContainer.addEventListener('click', async () => {
-								await window.parent.applyThemeNonVisual(themeData, document);
-								window.parent.toast(`Theme pack "${themeName}" applied.`)
+								themeContainer.addEventListener('click', async () => {
+									await window.parent.applyThemeNonVisual(themeData, document);
+									window.parent.toast(`Theme pack "${themeName}" applied.`)
+								});
+								container.appendChild(themeContainer);
 							});
-							container.appendChild(themeContainer);
+
+
+						})
+						.catch((error) => {
+							networkretries++;
+							console.error('Error loading themes:', error);
+							if (networkretries > 2) {
+								displayErrorMessage("<p>Failed to fetch data. Please try opening the app again.</p><code>" + error + "</code>");
+							}
+
 						});
-
-
-					})
-					.catch((error) => {
-						displayErrorMessage("<p>Failed to fetch data. Please try again.</p><code>" + error + "</code>");
-						console.error('Error loading themes:', error);
-
-					});
+				}
 			</script>
 		</div>
 	</div>

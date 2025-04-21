@@ -1,4 +1,4 @@
-var batteryLevel, winds = {}, rp, flwint = true, contentpool = {}, memory = {}, _nowapp, fulsapp = false, nowappdo, appsHistory = [], nowwindow, appicns = {}, dev = true, appfound = 'files', fileslist = [], sessionSettings = {}, badlaunch = false, really = false, initmenuload = true, fileTypeAssociations = {}, Gtodo, notifLog = {}, initialization = false, onstartup = [], novaFeaturedImage = `Dev.png`, defAppsList = [
+var batteryLevel, winds = {}, rp, flwint = true, contentpool = {}, memory = {}, _nowapp, fulsapp = false, nowappdo, appsHistory = [], nowwindow, appicns = {}, dev = true, appfound = 'files', fileslist = [], sessionSettings = {}, badlaunch = false, really = false, initmenuload = true, fileTypeAssociations = {}, handlers = {}, Gtodo, notifLog = {}, initialization = false, onstartup = [], novaFeaturedImage = `Dev.png`, defAppsList = [
 	"store",
 	"files",
 	"settings",
@@ -681,17 +681,29 @@ async function extractAndRegisterCapabilities(appId, content) {
 	}
 }
 async function registerApp(appId, capabilities) {
-	for (let fileType of capabilities) {
-		if (!fileTypeAssociations[fileType]) {
-			fileTypeAssociations[fileType] = [];
-		}
-		if (!fileTypeAssociations[fileType].includes(appId)) {
-			fileTypeAssociations[fileType].push(appId);
+	for (let capability of capabilities) {
+		if (capability.startsWith('.')) {
+			if (!fileTypeAssociations[capability]) {
+				fileTypeAssociations[capability] = [];
+			}
+			if (!fileTypeAssociations[capability].includes(appId)) {
+				fileTypeAssociations[capability].push(appId);
+			}
+		} else {
+			console.log("handler", capability)
+			if (!handlers[capability]) {
+				handlers[capability] = [];
+			}
+			if (!handlers[capability].includes(appId)) {
+				handlers[capability].push(appId);
+			}
 		}
 	}
 	await setSetting('fileTypeAssociations', fileTypeAssociations);
+	await setSetting('handlers', handlers);
 	notify(await getFileNameByID(appId) + " installed", "Registered " + capabilities.toString(), "NovaOS System")
 }
+
 async function cleanupInvalidAssociations() {
 	const validAppIds = await getAllValidAppIds();
 	let associationsChanged = false;

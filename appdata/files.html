@@ -1868,6 +1868,7 @@
 
 		function choosefile() {
 			if (sessiontype == "opener") {
+				console.log(35, sessionreturnreqid)
 				window.parent.OLPreturn(nowfile.getAttribute("unid"), sessionreturnreqid)
 				myWindow.close()
 				return;
@@ -2123,7 +2124,7 @@
 			if (data?.opener) {
 				sessiontype = data.opener === 'showFile' ? 'showFile' : 'opener';
 				myWindow.titleElement.innerText = data.opener === 'showFile' ? "View File" : "Choose File";
-				sessionreturnreqid = myWindow.params.winuid;
+				sessionreturnreqid = myWindow.params.trid;
 				document.getElementById("choosefile").style.display = data.opener === 'showFile' ? "none" : "flex";
 
 				if (data.opener === 'showFile') {
