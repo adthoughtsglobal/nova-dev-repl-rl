@@ -31,7 +31,7 @@ function OLPreturn(data, transferID) {
 
 async function useHandler(name, stufftodo) {
     let data = await getSetting('handlers');
-    
+
     return new Promise((resolve, reject) => {
         const transferID = `${name}-${Date.now()}`;
         console.log(transferID)
@@ -42,7 +42,7 @@ async function useHandler(name, stufftodo) {
         // you get 10 mins to complete handler
 
         _olpResolverMap.set(transferID, { resolve, timeout });
-        
+
         openfile(data[name]?.[0], { data: stufftodo, trid: transferID });
     });
 }
@@ -494,48 +494,55 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
     });
 
     var myWindow = {};
-    
-    class NTXSession {
-        constructor() {
-            this.transactionIdCounter = 0;
-            this.pendingRequests = {};
-            window.addEventListener("message", (event) => {
-                if (event.data.transactionId && (event.data.result || event.data.error)) {
-                    const { transactionId, result, error, success } = event.data;
-                    if (this.pendingRequests[transactionId]) {
-                        success ? this.pendingRequests[transactionId].resolve(result)
-                                : this.pendingRequests[transactionId].reject(error);
-                        delete this.pendingRequests[transactionId];
-                    }
-                }
-                    console.log(69, event);
-               if (event.data.type === "myWindow") {
-                const data = event.data.data;
 
-                myWindow = {
-                    ...data,
-                    close: () => {
-                        window.parent.postMessage({ type: "closeWindow", windowID: data.windowID }, "*");
-                    },
-                    eventBusWorker: new Worker(data.eventBusURL)
-                };
-            }
-            });
-        }
-    
-        generateTransactionId() {
-            return \`txn_\${Date.now()}_\${this.transactionIdCounter++}\`;
-        }
-    
-        send(action, ...params) {
-            return new Promise((resolve, reject) => {
-                const transactionId = this.generateTransactionId();
-                this.pendingRequests[transactionId] = { resolve, reject };
-                const winuid = "${winuid}";
-                window.parent.postMessage({ transactionId, action, params, iframeId: winuid }, "*");
-            });
-        }
+window.addEventListener("message", (event) => {
+    if (event.data.type === "myWindow") {
+        console.log("mywindow set done");
+        const data = event.data.data;
+
+        myWindow = {
+            ...data,
+            close: () => {
+                ntxSession.send("sysUI.close", data.windowID);
+            },
+            eventBusWorker: new Worker(data.eventBusURL)
+        };
+        let greenflagResult;
+        try { greenflagResult = greenflag() } catch (e) { }
     }
+});
+
+class NTXSession {
+    constructor() {
+        this.transactionIdCounter = 0;
+        this.pendingRequests = {};
+        window.addEventListener("message", (event) => {
+            if (event.data.transactionId && (event.data.result || event.data.error)) {
+                const { transactionId, result, error, success } = event.data;
+                if (this.pendingRequests[transactionId]) {
+                    success ? this.pendingRequests[transactionId].resolve(result)
+                        : this.pendingRequests[transactionId].reject(error);
+                    delete this.pendingRequests[transactionId];
+                }
+            }
+        });
+    }
+
+    generateTransactionId() {
+        return \`txn_\${Date.now()}_\${this.transactionIdCounter++}\`;
+    }
+
+    send(action, ...params) {
+        return new Promise((resolve, reject) => {
+            const transactionId = this.generateTransactionId();
+            this.pendingRequests[transactionId] = { resolve, reject };
+            const winuid = "${winuid}";
+            window.parent.postMessage({ transactionId, action, params, iframeId: winuid }, "*");
+        });
+    }
+}
+
+ntxSession = new NTXSession();
     </script>`;
 
         const fullBlobHTML = `
@@ -599,6 +606,7 @@ window.parent.postMessage({
         }
         iframeReferences[winuid] = iframe.contentWindow;
         iframe.onload = async () => {
+            console.log("mywindow set doing")
             const tmpmyWindowData = {
                 appID: appid,
                 windowID: winuid,
@@ -606,22 +614,13 @@ window.parent.postMessage({
                 setTitle: "later",
                 ...(params && { params })
             };
-            
+
             iframe.contentWindow.postMessage({
                 type: "myWindow",
                 data: tmpmyWindowData
             }, "*");
-            
+
             attachWindowMessageListener(winuid);
-            
-            let greenflagResult;
-            try {
-                greenflagResult = await iframe.contentWindow.greenflag();
-            } catch (e) {
-                if (!e.message.includes("greenflag")) {
-                    console.warn(e);
-                }
-            }
         };
 
         if (!winds[winuid]) winds[winuid] = {};

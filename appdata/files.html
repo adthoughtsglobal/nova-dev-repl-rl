@@ -2119,6 +2119,7 @@
 
 		function greenflag() {
 			const data = myWindow?.params?.data;
+			console.log(120, data)
 
 			if (data?.opener) {
 				sessiontype = data.opener === 'showFile' ? 'showFile' : 'opener';

@@ -51,7 +51,8 @@ class NTXSession {
             dropdown: wrapAsync(showDropdownModal),
             ask: wrapAsync(ask),
             say: wrapAsync(say),
-            createWindow: wrapAsync(openwindow)
+            createWindow: wrapAsync(openwindow),
+            clwin: wrapAsync(clwin)
         };
         this.utility = {
             timeAgo: timeAgo,
