@@ -22,7 +22,8 @@ class NTXSession {
         };
         this.olp = {
             openFile: wrapAsync(openfile),
-            launch: wrapAsync(openlaunchprotocol)
+            launch: wrapAsync(openlaunchprotocol),
+            useHandler: wrapAsync(useHandler)
         };
         this.ctntMgr = ctntMgr;
         this.settings = {
@@ -43,9 +44,7 @@ class NTXSession {
         this.apps = {
             getIcon: wrapAsync(getAppIcon),
             // getPerms: wrapAsync(getPerms),
-            getHandlers: function() {
-                return fileTypeAssociations;
-            }
+            getHandlers: handlers
         };
         this.sysUI = {
             confirm: wrapAsync(justConfirm),

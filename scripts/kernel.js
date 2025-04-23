@@ -492,6 +492,8 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
         const winuid = myWindow.windowID;
         window.parent.postMessage({ type: 'iframeClick', iframeId: winuid }, '*');
     });
+
+    var myWindow = {};
     
     class NTXSession {
         constructor() {
@@ -506,6 +508,18 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
                         delete this.pendingRequests[transactionId];
                     }
                 }
+                    console.log(69, event);
+               if (event.data.type === "myWindow") {
+                const data = event.data.data;
+
+                myWindow = {
+                    ...data,
+                    close: () => {
+                        window.parent.postMessage({ type: "closeWindow", windowID: data.windowID }, "*");
+                    },
+                    eventBusWorker: new Worker(data.eventBusURL)
+                };
+            }
             });
         }
     
@@ -564,7 +578,7 @@ window.parent.postMessage({
             }
 
             function handleMessage(event) {
-
+                console.log(234, event)
                 if (!event.data || event.data.iframeId !== winuidfr) return;
 
                 if (event.data.type === "iframeClick") {
@@ -585,17 +599,19 @@ window.parent.postMessage({
         }
         iframeReferences[winuid] = iframe.contentWindow;
         iframe.onload = async () => {
-            iframe.contentWindow.myWindow = {
-                element: windowDiv,
-                eventBusWorker,
-                close: () => {
-                    clwin("window" + winuid);
-                },
-                titleElement: windowtitlespan,
+            const tmpmyWindowData = {
                 appID: appid,
                 windowID: winuid,
+                eventBusURL,
+                setTitle: "later",
                 ...(params && { params })
             };
+            
+            iframe.contentWindow.postMessage({
+                type: "myWindow",
+                data: tmpmyWindowData
+            }, "*");
+            
             attachWindowMessageListener(winuid);
             
             let greenflagResult;

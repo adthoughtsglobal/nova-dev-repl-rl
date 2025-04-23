@@ -14,7 +14,7 @@
             align-items: stretch;
             flex-direction: row;
             margin: 0;
-            height: calc(100vh - 5px);
+            height: 100vh;
             background-color: black;
             user-select: none;
         }
@@ -193,6 +193,26 @@
                 transform: rotate(360deg);
             }
         }
+
+        @media screen and (max-width: 450px) {
+            body {
+                flex-direction: column;
+            }
+
+            .toolpart {
+                flex-direction: row;
+                width: auto;
+            }
+
+            .videopart {
+                height: 0;
+            }
+
+            .captoolbtn {
+                width: 15%;
+                height: auto;
+            }
+        }
     </style>
     <meta name="nova-include" content="nova.css material-symbols-rounded">
 </head>
@@ -222,9 +242,9 @@
                 <option value="5">5s</option>
                 <option value="10">10s</option>
             </select>
-            
+
             <button id="stopwatch-btn">
-                <span class="recording-blinker"></span> 
+                <span class="recording-blinker"></span>
                 <span id="recording-stopwatch">00:00</span>
             </button>
         </div>
@@ -243,7 +263,7 @@
                 <span class="material-symbols-rounded">stop</span></button>
     </div>
 
-    
+
     <script>
         let isMirrored = false;
         let isFlashlightOn = false;

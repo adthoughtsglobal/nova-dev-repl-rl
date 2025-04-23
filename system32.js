@@ -1074,7 +1074,7 @@ async function updateFile(folderName, fileId, newData) {
     }
 }
 async function createFile(folderName, fileName, type, content, metadata = {}) {
-    console.log("creating:", fileName, "in", folderName, content);
+    console.log("creating:", fileName, "in", folderName);
 
     folderName = folderName.endsWith('/') ? folderName : folderName + '/';
     const fileNameWithExtension = fileName.includes('.') ? fileName : `${fileName}.${type || ''}`.trim();

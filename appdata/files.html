@@ -1410,8 +1410,7 @@
 		let cachedFiles = {}; // To store the cached files per folder
 
 		async function listFiles(folderName, gen) {
-			console.log(myWindow.titleElement)
-			myWindow.titleElement.innerText = "Files";
+			// myWindow.setTitle("Files");
 			const startTime = performance.now();
 			if (currentPath == folderName && gen) {
 				const previousFiles = cachedFiles[currentPath] || [];
@@ -2123,7 +2122,7 @@
 
 			if (data?.opener) {
 				sessiontype = data.opener === 'showFile' ? 'showFile' : 'opener';
-				myWindow.titleElement.innerText = data.opener === 'showFile' ? "View File" : "Choose File";
+				// myWindow.setTitle(data.opener === 'showFile' ? "View File" : "Choose File");
 				sessionreturnreqid = myWindow.params.trid;
 				document.getElementById("choosefile").style.display = data.opener === 'showFile' ? "none" : "flex";
 
@@ -2135,7 +2134,7 @@
 
 				onlyshow = data.opener === 'onlyshow' ? data.opener : false;
 				if (onlyshow) {
-					myWindow.titleElement.innerText = "Choose " + onlyshow + " files";
+					// myWindow.setTitle("Choose " + onlyshow + " files");
 				}
 			} else {
 				document.getElementById("choosefile").style.display = "none";

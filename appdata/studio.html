@@ -375,7 +375,7 @@
 			if (file.content == undefined) {
 				window.parent.say("Currupted file", "Your file is having no reader data.")
 
-				myWindow.titleElement.innerText = file.fileName;
+				// myWindow.titleElement.innerText = file.fileName;
 				editor.setValue(file.content)
 				return;
 			}
@@ -389,7 +389,7 @@
 			}
 
 			if (file) {
-				myWindow.titleElement.innerText = file.fileName;
+				// myWindow.titleElement.innerText = file.fileName;
 				editor.setValue(file.content)
 				console.log("Content displayed successfully");
 			} else {

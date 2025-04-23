@@ -177,19 +177,9 @@
 			}
 		}
 
-		window.addEventListener('message', async (event) => {
-			if (event.data.action === 'loadlocalfile') {
-				if (event.data.id === myWindow.windowID) {
-					let newAppId = event.data.returned;
-					openfile(newAppId);
-				}
-			}
-		});
-
 		async function openfromfiles() {
-			currentreqID = await ntxSession.send("utility.genUID");
-			let appIdToOpen = (await ntxSession.send("apps.getHandlers"))["file"][0] || null;
-			await ntxSession.send("olp.launch", appIdToOpen, { "opener": 'any', "dir": "Downloads/" }, currentreqID, myWindow.windowID);
+			const fileID = await ntxSession.send("olp.useHandler", "file", { "opener": 'any', "dir": "Downloads/" });
+			openfile(fileID);
 		}
 
 		function playBase64Chunks(videoElement, videoURL) {

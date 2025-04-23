@@ -144,6 +144,17 @@ function setsrtpprgbr(val) {
 	let width = val;
 	progressBar.style.width = width + '%';
 }
+
+
+async function loadFileTypeAssociations() {
+	const associations = await getSetting('fileTypeAssociations');
+	fileTypeAssociations = associations || {};
+	const associations2 = await getSetting('handlers');
+	handlers = associations2 || {};
+
+	cleanupInvalidAssociations();
+}
+
 async function startup() {
 	gid("edison").showModal();
 	if (badlaunch) { return }
@@ -189,15 +200,13 @@ async function startup() {
 							await installdefaultapps();
 							startup();
 						} else {
-							say("You can always update app on settings app/Preferances")
+							say("You can always update apps on settings app/Preferances")
 						}
 					}
 				} else {
 					console.error("Failed to fetch data from the server.");
 				}
 			}
-
-
 
 			await fetchDataAndUpdate();
 			removeInvalidMagicStrings();
@@ -210,12 +219,6 @@ async function startup() {
 				}, delay);
 			}
 			startUpdateTime();
-			async function loadFileTypeAssociations() {
-				const associations = await getSetting('fileTypeAssociations');
-				fileTypeAssociations = associations || {};
-
-				cleanupInvalidAssociations();
-			}
 			await loadFileTypeAssociations();
 			await ensureAllSettingsFilesExist();
 			const end = performance.now();
@@ -1329,19 +1332,19 @@ function runAsWasm(content) {
 async function realgenTaskBar() {
 	gid("dock").style.display = "none";
 	gid("novanav").style.display = "grid";
-	
+
 	// nav theme
 	try {
-		
-	var NovNavCtrl = await getSetting("NovNavCtrl")
-	if (NovNavCtrl.bg) {
-		gid("novanav").style.backgroundColor = "transparent";
-	} else {
-		gid("novanav").style.backgroundColor = "var(--colors-BG-normal)";
-	}
 
-	gid("novanav").style.justifyContent = NovNavCtrl.align;
-	} catch (e) {}
+		var NovNavCtrl = await getSetting("NovNavCtrl")
+		if (NovNavCtrl.bg) {
+			gid("novanav").style.backgroundColor = "transparent";
+		} else {
+			gid("novanav").style.backgroundColor = "var(--colors-BG-normal)";
+		}
+
+		gid("novanav").style.justifyContent = NovNavCtrl.align;
+	} catch (e) { }
 
 	var appbarelement = document.getElementById("dock")
 	appbarelement.innerHTML = "<span class='taskbarloader' id='taskbarloaderprime'></span>";

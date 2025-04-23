@@ -874,6 +874,8 @@
 							console.error('Error loading themes:', error);
 							if (networkretries > 2) {
 								displayErrorMessage("<p>Failed to fetch data. Please try opening the app again.</p><code>" + error + "</code>");
+							} else {
+								loadThemes();
 							}
 
 						});
@@ -959,7 +961,6 @@
 		}
 
 		async function greenflag() {
-
 			const data = myWindow?.params?.opener;
 			initializeLoader();
 
@@ -976,7 +977,6 @@
 				console.error('Error:', error);
 				return;
 			});
-
 		}
 
 		function initializeLoader() {
