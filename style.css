@@ -145,6 +145,7 @@ nav [navobj] div {
 	gap: 0;
 	box-sizing: border-box;
 	border: 1px solid var(--colors-BG-sub);
+	will-change: transform;
 }
 
 @media only screen and (max-width: 500px) {

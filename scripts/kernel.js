@@ -792,37 +792,30 @@ function dragElement(elmnt) {
         document.onmousemove = elementDrag;
     }
 
+    let raf = 0;
+    let lastX = 0;
+    let lastY = 0;
+
     function elementDrag(e) {
         e = e || window.event;
         e.preventDefault();
-        pos1 = pos3 - e.clientX;
-        pos2 = pos4 - e.clientY;
-        pos3 = e.clientX;
-        pos4 = e.clientY;
+        lastX = e.clientX;
+        lastY = e.clientY;
 
-        let newTop = elmnt.offsetTop - pos2;
-        let newLeft = elmnt.offsetLeft - pos1;
-
-        let boundaryTop = 0;
-        let boundaryLeft = 0;
-        let boundaryBottom = window.innerHeight - elmnt.offsetHeight;
-        let boundaryRight = window.innerWidth - elmnt.offsetWidth;
-
-        if (newTop < boundaryTop) {
-            newTop = boundaryTop;
+        if (raf === 0) {
+            raf = requestAnimationFrame(() => {
+                raf = 0;
+                const newTop = Math.min(
+                    Math.max(lastY - grabOffsetY, 0),
+                    window.innerHeight - elmnt.offsetHeight
+                );
+                const newLeft = Math.min(
+                    Math.max(lastX - grabOffsetX, 0),
+                    window.innerWidth - elmnt.offsetWidth
+                );
+                elmnt.style.transform = `translate(${newLeft}px, ${newTop}px)`;
+            });
         }
-        if (newTop > boundaryBottom) {
-            newTop = boundaryBottom;
-        }
-        if (newLeft < boundaryLeft) {
-            newLeft = boundaryLeft;
-        }
-        if (newLeft > boundaryRight) {
-            newLeft = boundaryRight;
-        }
-
-        elmnt.style.top = newTop + "px";
-        elmnt.style.left = newLeft + "px";
     }
 
     function closeDragElement(event) {
