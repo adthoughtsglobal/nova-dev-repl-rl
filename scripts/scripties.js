@@ -173,20 +173,24 @@ async function checkdmode() {
 
 function applyThemeNonVisual(data, doc) {
     applyTheme(data.colors, doc);
-    if (data.wallpaper) window.top.makewall(data.wallpaper);
+
+    if (data.wallpaper) {
+        window.top.makewall(data.wallpaper);
+    }
+
     window.top.setSetting("themeColors", data.colors);
 }
 
 function applyTheme(colors, doc) {
     const cssVars = Object.fromEntries(
-        [...novadotcsscache.matchAll(/(--[\w-]+):\s*([^;]+)/g)].map(([_, key, value]) => [key, value.trim()])
+        [...novadotcsscache.matchAll(/(--[\w-]+):\s*([^;]+)/g)]
+            .map(([_, key, value]) => [key, value.trim()])
     );
 
     const textColor = colors["--colors-text-normal"] ?? cssVars["--colors-text-normal"];
     const textSelectors = [
         "--colors-text-section",
-        "--colors-text-sub",
-        "--colors-text-high"
+        "--colors-text-sub"
     ];
 
     const colorsToApply = {};
@@ -203,4 +207,6 @@ function applyTheme(colors, doc) {
         window.top.document.documentElement.style.setProperty(variableName, colorValue);
         doc.documentElement.style.setProperty(variableName, colorValue);
     }
+
+	checkdmode();
 }

@@ -2402,7 +2402,7 @@
 					<input class="colorpickerui" data-variable="--colors-special-bad"></input>
 				</div>
 
-				<div setting class="colorsetting">
+				<div setting>
 					<span class="material-symbols-rounded">
 						rounded_corner
 					</span>
@@ -2415,21 +2415,21 @@
 						<option value="0rem">Sharp</option>
 					</select>
 				</div>
-				<div setting class="colorsetting">
+				<div setting>
 					<span class="material-symbols-rounded">
 						space_dashboard
 					</span>
 					<b>Normal Spacing</b>
 					<input class="numinp" min="0" max="100" data-variable="--spacing-normal"></input>
 				</div>
-				<div setting class="colorsetting">
+				<div setting>
 					<span class="material-symbols-rounded">
 						align_space_around
 					</span>
 					<b>Gap spacing</b>
 					<input class="numinp" min="0" max="100" data-variable="--spacing-gap"></input>
 				</div>
-				<div setting class="colorsetting">
+				<div setting>
 					<span class="material-symbols-rounded">
 						aspect_ratio
 					</span>
@@ -2680,8 +2680,12 @@
 							buttons.forEach(button => {
 								const variableName = button.dataset.variable;
 								if (parsedColors[variableName]) {
-									button.jscolor.fromString(parsedColors[variableName]);
-									updateColor(button, variableName);
+									if (button.classList.contains('colorpickerui')) {
+										button.jscolor.fromString(parsedColors[variableName]);
+										updateColor(button, variableName);
+									} else {
+										button.value = (parsedColors[variableName]);
+									}
 								}
 							});
 							if (await window.parent.justConfirm("Include theme wallpaper?", "Include the wallpaper included in the theme code?")) {
@@ -2879,30 +2883,40 @@
 					updateColor(picker, variableName);
 					saveColors();
 				}, 300);
-
 				async function saveColors() {
 					const colorsToSave = {};
 					const buttons = document.querySelectorAll('[data-variable]');
+
 					buttons.forEach(button => {
 						const variableName = button.dataset.variable;
-						const colorValue = button.jscolor ? button.jscolor.toHEXString() : button.value;
+						const colorValue = button.jscolor
+							? button.jscolor.toHEXString()
+							: button.value;
 
 						colorsToSave[variableName] = colorValue;
 					});
+
 					await window.parent.setSetting("themeColors", colorsToSave);
 				}
 
 				function updateColor(picker, variableName) {
-					const colorValue = picker.jscolor ? picker.jscolor.toHEXString() : picker.value;
-					window.parent.document.documentElement.style.setProperty(variableName, colorValue);
+					const colorValue = picker.jscolor
+						? picker.jscolor.toHEXString()
+						: picker.value;
+
 					document.documentElement.style.setProperty(variableName, colorValue);
 				}
 
 				function getCSSVariableValue(varName) {
-					return window.parent.getComputedStyle(window.parent.document.documentElement).getPropertyValue(varName).trim();
+					return window.parent
+						.getComputedStyle(window.parent.document.documentElement)
+						.getPropertyValue(varName)
+						.trim();
 				}
 
 				function applyTheme(data) {
+					window.parent.applyThemeNonVisual(data, document);
+
 					const inputs = document.querySelectorAll('[data-variable]');
 					inputs.forEach(input => {
 						const variableName = input.dataset.variable;
@@ -2911,11 +2925,12 @@
 						if (newValue !== undefined) {
 							if (input.classList.contains('colorpickerui')) {
 								input.jscolor.fromString(newValue);
-								updateColor(input, variableName);
 							} else if (input.classList.contains('numinp')) {
 								input.value = newValue;
-								document.documentElement.style.setProperty(variableName, newValue + 'px');
+								document.documentElement
+									.style.setProperty(variableName, newValue + 'px');
 							}
+							updateColor(input, variableName);
 						}
 					});
 
@@ -2929,6 +2944,7 @@
 						timeout = setTimeout(() => func.apply(this, args), wait);
 					};
 				}
+
 				window.addEventListener('load', initColorPickers);
 			</script>
 			<style>
