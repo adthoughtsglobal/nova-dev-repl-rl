@@ -153,6 +153,7 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
     var windowDiv = document.createElement("div");
     windowDiv.id = "window" + winuid;
     windowDiv.setAttribute("data-winuid", winuid);
+    windowDiv.setAttribute("data-appid", appid);
     windowDiv.style.position = "absolute";
 
     windowDiv.onclick = function () {

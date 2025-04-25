@@ -57,22 +57,25 @@
 			}
 		}
 
-		#topse {
+		.sewid {
 			display: flex;
 			border-radius: 10px;
 			padding-left: 0.3rem;
-			background: var(--colors-BG-sub);
 			animation: inputslide .3s ease-out;
 			transition: .3s ease-out;
 		}
 
+		#topse {
+			background: var(--colors-BG-sub);
+		}
+
 		@keyframes inputslide {
 			0% {
-				transform: translateX(-1rem);
+				opacity: 0;
 			}
 
 			100% {
-				transform: translateX(0rem);
+				opacity: 1;
 			}
 		}
 
@@ -677,6 +680,29 @@
 			color: grey;
 			font-size: small;
 		}
+
+		#themenavsel button.active-filter {
+			background-color: var(--colors-BG-highlighted);
+			color: var(--colors-text-high);
+		}
+
+		#themenavsel {
+    gap: .3em;
+	display: none;
+}
+		#themenavsel button {
+			background-color: var(--colors-BG-section);
+			color: inherit;
+			font-family: inherit;
+			border: 1px solid #ffffff1c;
+			border-radius: .5em;
+			padding: .2em .8em;
+		}
+
+		.divider {
+			background-color: var(--colors-BG-sub);
+			width: 1px;
+		}
 	</style>
 </head>
 
@@ -688,13 +714,20 @@
 		<button id="themesmodebtn" onclick="openwin('themesmode', this)">
 			Themes
 		</button>
-
-		<div id="topse">
+<div class="divider"></div>
+		<div id="topse" class="sewid">
 			<input placeholder="Search or enter link" id="fesinp" onkeydown="handleEnterKey(event)"
 				oninput="updateButtonText()">
 			<button id="actionButton" onclick="handleSearchOrInstall(this)">
 				<div class="material-symbols-rounded installbtnicn">download</div>
 			</button>
+		</div>
+		
+		<div id="themenavsel" class="sewid">
+			<button data-filter="Dark">Dark</button>
+			<button data-filter="Light">Light</button>
+			<button data-filter="Nova">Nova</button>
+			<button data-filter="Accelerator">Accelerator</button>
 		</div>
 	</div>
 	<div class="mains">
@@ -721,8 +754,24 @@
 
 		</div>
 		<div id="themesmode" class="openablewin">
+
 			<div id="themeslist"></div>
 			<script>
+				const activeFilters = new Set();
+
+				document.querySelectorAll('#themenavsel button').forEach(button => {
+					button.addEventListener('click', () => {
+						const filter = button.getAttribute('data-filter');
+						if (activeFilters.has(filter)) {
+							activeFilters.delete(filter);
+							button.classList.remove('active-filter');
+						} else {
+							activeFilters.add(filter);
+							button.classList.add('active-filter');
+						}
+						loadThemes();
+					});
+				});
 
 				function displayErrorMessage(message) {
 					console.log("err")
@@ -733,9 +782,11 @@
 				function openwin(winname, obj) {
 					if (winname == "appsmode") {
 						document.getElementById("topse").style.display = 'flex';
+						document.getElementById("themenavsel").style.display = 'none';
 					} else {
 						loadThemes()
-						document.getElementById("topse").style.display = 'none'
+						document.getElementById("topse").style.display = 'none';
+						document.getElementById("themenavsel").style.display = 'flex';
 					}
 					document.querySelectorAll("[active]").forEach((x) => {
 						x.setAttribute("active", "false");
@@ -757,6 +808,8 @@
 
 				var networkretries = 0;
 				function loadThemes() {
+					const container = document.getElementById("themeslist");
+					container.innerHTML = '';
 
 					window.parent.fetch('https://adthoughtsglobal.github.io/Nova-Store/db/themes.json')
 						.then(response => response.json())
@@ -828,6 +881,30 @@
 								g1.appendChild(g2);
 								svg.appendChild(g1);
 								colorsSvg.appendChild(svg);
+
+								const by = themeData.by || 'NovaOS';
+								const name = themeName.toLowerCase();
+
+								let showTheme = true;
+
+								if (activeFilters.size > 0) {
+									showTheme = true;
+									if (activeFilters.has('Nova') && (by != "NovaOS")) {
+										showTheme = false;
+									}
+									if (activeFilters.has('Accelerator') && by !== 'un4ya.1024') {
+										showTheme = false;
+									}
+									if (activeFilters.has('Dark') && themeData.type !== 'dark') {
+										showTheme = false;
+									}
+									if (activeFilters.has('Light') && themeData.type !== 'bright') {
+										showTheme = false;
+									}
+								}
+
+
+								if (!showTheme) return;
 
 								const themedetdiv = document.createElement('div');
 								themedetdiv.classList.add('themedetdiv');

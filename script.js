@@ -820,7 +820,6 @@ async function loadtaskspanel() {
 		setTimeout(function () {
 			try {
 				if (element) appbarelement.removeChild(element);
-
 			} catch (e) { }
 		}, 500);
 	});
@@ -833,6 +832,7 @@ async function loadtaskspanel() {
 		appShortcutDiv.className = "app-shortcut ctxAvail tooltip adock sizableuielement";
 		appShortcutDiv.setAttribute("unid", key.id || '');
 		appShortcutDiv.dataset.key = key;
+		appShortcutDiv.setAttribute("winid", 'window' + wid || '');
 
 		appShortcutDiv.addEventListener("click", function () {
 			putwinontop('window' + wid);

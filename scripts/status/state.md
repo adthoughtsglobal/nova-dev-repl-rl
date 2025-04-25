@@ -1,5 +1,4 @@
 # Planned
-- **OLP ID System**: a dynamic system for all launches, based on an ID that are defined after the launch initialization.
 - **file copy paste** in files app
 - **sorting** in files app
 - better **clock app**

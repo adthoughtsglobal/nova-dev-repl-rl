@@ -66,16 +66,32 @@ window.fileActions = {
 async function getMenuItems(target) {
 	if (target.classList.contains('app-shortcut') || target.classList.contains('file')) {
 		const itemuid = target.getAttribute("unid");
+		const winid = target.getAttribute("winid");
+		const appid = target.getAttribute("appid");
 		let fileNameRec = await getFileNameByID(itemuid);
 		const file = { unid: itemuid, type: 'app', fileName: fileNameRec };
-		return Object.values(window.fileActions)
+	
+		const isInNowRunningApps = target.closest('#nowrunninapps') !== null;
+	
+		const actions = Object.values(window.fileActions)
 			.filter(action => action.condition(file))
 			.map(action => ({
 				icon: action.icon,
 				label: action.label,
 				action: () => action.action(itemuid),
 			}));
+	
+		if (isInNowRunningApps) {
+			actions.push({
+				icon: 'close',
+				label: 'close window',
+				action: () => clwin(winid, 1),
+			});
+		}
+	
+		return actions;
 	}
+	
 	if (target.id === 'desktop') {
 		return [
 			{ icon: 'refresh', label: 'Refresh homescreen', action: () => novarefresh() },
