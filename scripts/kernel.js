@@ -673,6 +673,7 @@ function resetWindow(id) {
 
 function maximizeWindow(id) {
     console.log("maxing", id)
+    updateNavSize();
     const x = document.getElementById("window" + id);
     x.classList.add("snapping");
     x.style.width = "calc(100% - 0px)";
@@ -683,7 +684,7 @@ function maximizeWindow(id) {
     x.getElementsByClassName("flbtn")[0].innerHTML = "close_fullscreen";
 
     console.log(winds[id]["visualState"], "=>", "fls");
-    winds[id]["visualState"] = "fullScreen";
+    winds[id]["visualState"] = "fullscreen";
 
     setTimeout(() => {
         x.classList.remove("snapping");
@@ -691,6 +692,7 @@ function maximizeWindow(id) {
 }
 
 async function checksnapping(x, event, winuid) {
+    if (event.target.closest('.ibtnsside')) return;
     updateNavSize();
     const logData = {
         x: x,
@@ -734,6 +736,7 @@ async function checksnapping(x, event, winuid) {
     }
 
     if (logData.cursorY < VHInPixels || (logData.viewportHeight - logData.cursorY) < VHInPixels) {
+        console.log("topsnap")
         maximizeWindow(winuid);
     } else if (logData.cursorX < VWInPixels) {
         x.classList.add("snapping");
@@ -757,10 +760,10 @@ async function checksnapping(x, event, winuid) {
         }, 1000);
     }
 }
-
 function dragElement(elmnt) {
-    var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
     var iframeOverlay = null;
+    let grabOffsetX = 0;
+    let grabOffsetY = 0;
 
     if (gid(elmnt.id + "header")) {
         gid(elmnt.id + "header").onmousedown = dragMouseDown;
@@ -770,15 +773,14 @@ function dragElement(elmnt) {
 
     function dragMouseDown(e) {
         e = e || window.event;
-        if (isInsideIbtnsSide(e.target)) {
-            return;
-        }
+        if (isInsideIbtnsSide(e.target)) return;
         e.preventDefault();
-        pos3 = e.clientX;
-        pos4 = e.clientY;
+
+        grabOffsetX = e.clientX - elmnt.getBoundingClientRect().left;
+        grabOffsetY = e.clientY - elmnt.getBoundingClientRect().top;
 
         iframeOverlay = document.createElement('div');
-        iframeOverlay.style.position = 'absolute';
+        iframeOverlay.style.position = 'fixed';
         iframeOverlay.style.top = 0;
         iframeOverlay.style.left = 0;
         iframeOverlay.style.width = '100%';
@@ -792,33 +794,41 @@ function dragElement(elmnt) {
         document.onmousemove = elementDrag;
     }
 
-    let raf = 0;
-    let lastX = 0;
-    let lastY = 0;
-
     function elementDrag(e) {
         e = e || window.event;
         e.preventDefault();
-        lastX = e.clientX;
-        lastY = e.clientY;
 
-        if (raf === 0) {
-            raf = requestAnimationFrame(() => {
-                raf = 0;
-                const newTop = Math.min(
-                    Math.max(lastY - grabOffsetY, 0),
-                    window.innerHeight - elmnt.offsetHeight
-                );
-                const newLeft = Math.min(
-                    Math.max(lastX - grabOffsetX, 0),
-                    window.innerWidth - elmnt.offsetWidth
-                );
-                elmnt.style.transform = `translate(${newLeft}px, ${newTop}px)`;
-            });
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+        const elementWidth = elmnt.offsetWidth;
+        const elementHeight = elmnt.offsetHeight;
+
+        let targetLeft = e.clientX - grabOffsetX;
+        let targetTop = e.clientY - grabOffsetY;
+
+        const repelZone = 100;
+        const repelForce = 15;
+
+        if (targetLeft < repelZone) {
+            targetLeft += repelForce * ((repelZone - targetLeft) / repelZone);
+        } else if (targetLeft + elementWidth > viewportWidth - repelZone) {
+            const overlap = (targetLeft + elementWidth) - (viewportWidth - repelZone);
+            targetLeft -= repelForce * (overlap / repelZone);
         }
+
+        if (targetTop < repelZone) {
+            targetTop += repelForce * ((repelZone - targetTop) / repelZone);
+        } else if (targetTop + elementHeight > viewportHeight - repelZone) {
+            const overlap = (targetTop + elementHeight) - (viewportHeight - repelZone);
+            targetTop -= repelForce * (overlap / repelZone);
+        }
+
+        elmnt.style.position = 'absolute';
+        elmnt.style.left = `${targetLeft}px`;
+        elmnt.style.top = `${targetTop}px`;
     }
 
-    function closeDragElement(event) {
+    function closeDragElement(e) {
         document.onmouseup = null;
         document.onmousemove = null;
 
@@ -827,11 +837,13 @@ function dragElement(elmnt) {
             iframeOverlay = null;
         }
 
-        const mouseUpEvent = new MouseEvent('mouseup', {
-            clientX: event.clientX,
-            clientY: event.clientY,
-        });
-        gid(elmnt.id + "header").dispatchEvent(mouseUpEvent);
+        if (gid(elmnt.id + "header")) {
+            const mouseUpEvent = new MouseEvent('mouseup', {
+                clientX: e.clientX,
+                clientY: e.clientY,
+            });
+            gid(elmnt.id + "header").dispatchEvent(mouseUpEvent);
+        }
     }
 
     function isInsideIbtnsSide(target) {
@@ -844,6 +856,7 @@ function dragElement(elmnt) {
         return false;
     }
 }
+
 async function openapp(x, od, customtodo) {
     // od is the app id, x is the app name
     if (gid('appdmod').open) {
@@ -917,13 +930,13 @@ function flwin(winElement) {
     const flbtn = winElement.getElementsByClassName("flbtn")[0];
 
     console.log(542, winds[winuid]["visualState"]); // "fullscreen"
-    const isFree = winds[winuid]["visualState"] != "fullscreen"; // false
+    const isFree = winds[winuid]["visualState"] != "fullscreen";
 
     if (isFree) {
-        maximizeWindow(winuid); // this runs
+        maximizeWindow(winuid);
         flbtn.innerHTML = "close_fullscreen";
     } else {
-        resetWindow(winuid); // this should run right?
+        resetWindow(winuid);
         flbtn.innerHTML = "open_in_full";
     }
 
