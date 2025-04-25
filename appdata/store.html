@@ -598,7 +598,14 @@
 			overflow: hidden;
 			display: flex;
 			flex-direction: column;
+			transition: width .3s ease-in;
 			gap: 0.5rem;
+		}
+
+		.themesing:hover {
+			transform: scale(1.1);
+			z-index: 99;
+			box-shadow: 0 5px 10px #000000;
 		}
 
 		.themeinfodiv {
@@ -687,9 +694,10 @@
 		}
 
 		#themenavsel {
-    gap: .3em;
-	display: none;
-}
+			gap: .3em;
+			display: none;
+		}
+
 		#themenavsel button {
 			background-color: var(--colors-BG-section);
 			color: inherit;
@@ -714,7 +722,7 @@
 		<button id="themesmodebtn" onclick="openwin('themesmode', this)">
 			Themes
 		</button>
-<div class="divider"></div>
+		<div class="divider"></div>
 		<div id="topse" class="sewid">
 			<input placeholder="Search or enter link" id="fesinp" onkeydown="handleEnterKey(event)"
 				oninput="updateButtonText()">
@@ -722,7 +730,7 @@
 				<div class="material-symbols-rounded installbtnicn">download</div>
 			</button>
 		</div>
-		
+
 		<div id="themenavsel" class="sewid">
 			<button data-filter="Dark">Dark</button>
 			<button data-filter="Light">Light</button>
@@ -809,12 +817,11 @@
 				var networkretries = 0;
 				function loadThemes() {
 					const container = document.getElementById("themeslist");
-					container.innerHTML = '';
 
 					window.parent.fetch('https://adthoughtsglobal.github.io/Nova-Store/db/themes.json')
 						.then(response => response.json())
 						.then(data => {
-							const container = document.getElementById("themeslist");
+							container.innerHTML = '';
 
 							Object.entries(data).forEach(([themeName, themeData]) => {
 								const themeContainer = document.createElement('div');
