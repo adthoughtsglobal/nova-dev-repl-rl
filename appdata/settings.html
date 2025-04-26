@@ -1642,6 +1642,7 @@
 					document.getElementById('appfileassos').innerHTML = "<span class='taskbarloader' id='taskbarloader-files'></span>";
 
 					const associations = window.parent.fileTypeAssociations;
+					const methods = window.parent.handlers;
 
 					async function createTable(data, typeLabel, handlerLabel) {
 						const table = document.createElement('div');
@@ -1701,20 +1702,9 @@
 						return table;
 					}
 
-					// Separate methods and file types
-					const methods = {};
-					const fileTypes = {};
-					for (const [key, value] of Object.entries(associations)) {
-						if (key.startsWith('.')) {
-							fileTypes[key] = value;
-						} else {
-							methods[key] = value;
-						}
-					}
-
 					// Generate tables and insert them
 					const methodTable = await createTable(methods, 'Methods', 'Handlers');
-					const fileTable = await createTable(fileTypes, 'File Types', 'Apps');
+					const fileTable = await createTable(associations, 'File Types', 'Apps');
 
 					document.getElementById('appmethodhandles').appendChild(methodTable);
 					document.getElementById('appfileassos').appendChild(fileTable);

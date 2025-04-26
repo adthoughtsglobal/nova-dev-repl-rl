@@ -52,7 +52,8 @@ class NTXSession {
             ask: wrapAsync(ask),
             say: wrapAsync(say),
             createWindow: wrapAsync(openwindow),
-            clwin: wrapAsync(clwin)
+            clwin: wrapAsync(clwin),
+            notify: wrapAsync(notify)
         };
         this.utility = {
             timeAgo: timeAgo,

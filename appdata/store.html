@@ -598,13 +598,14 @@
 			overflow: hidden;
 			display: flex;
 			flex-direction: column;
-			transition: width .3s ease-in;
+			transition: .2s ease-out;
 			gap: 0.5rem;
 		}
 
 		.themesing:hover {
-			transform: scale(1.1);
+			transform: scale(1.2);
 			z-index: 99;
+			font-size: 70%;
 			box-shadow: 0 5px 10px #000000;
 		}
 
@@ -663,7 +664,7 @@
 
 		.themeauth {
 			opacity: 0.5;
-			font-size: var(--font-size-small);
+			font-size: .8em;
 		}
 
 		.offlinesug {
@@ -936,7 +937,7 @@
 								const instdiv = document.createElement('button');
 								instdiv.style.background = themeData.colors["--colors-BG-highlighted"];
 								instdiv.style.color = themeData.colors["--colors-text-high"];
-								instdiv.style.border = `1px solid ${themeData.colors["--colors-BG-sub"]}`;
+								instdiv.style.border = `1px solid ${themeData.colors["--colors-BG-sub"]}`;instdiv.style.borderRadius = themeData.colors["--sizing-border-radius"]
 								instdiv.innerHTML = `<i
 						class="material-symbols-rounded">format_paint</i>`;
 								themedetdiv.appendChild(instdiv);

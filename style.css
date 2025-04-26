@@ -337,6 +337,7 @@ nav [navobj] div {
 	animation: dmodthingy var(--time-action);
 	padding-bottom: 1.2rem;
 	background-color: var(--colors-BG-normal);
+	border: 1px solid #ffffff0c;
 }
 
 #searchwindow {
@@ -344,6 +345,7 @@ nav [navobj] div {
 	margin-bottom: 60px;
 	animation: dmodthingy var(--time-action);
 	background-color: var(--colors-BG-normal);
+	border: 1px solid #ffffff0c;
 	padding-bottom: 9px;
 }
 
@@ -1089,6 +1091,7 @@ input#novamenusearchinp {
 	box-shadow: 0 1rem 2rem rgb(0 0 0 / 77%);
 	display: none;
 	animation: notifpull var(--time-action);
+	cursor: pointer;
 }
 
 @keyframes notifpull {
@@ -2265,4 +2268,21 @@ div#toastdiv {
 
 .searchbtnac {
 	font-size: 1.4rem !important;
+}
+
+.notifnav {
+	display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+#notification .wincl {
+    background: var(--colors-BG-section);
+    padding: 3px;
+    border-radius: 10px;
+    border: 1px solid #ffffff29;
+}
+
+#notification .wincl:hover {
+    background: var(--colors-BG-sub);
 }
