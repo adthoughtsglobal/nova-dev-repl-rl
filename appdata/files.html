@@ -592,8 +592,8 @@
 			display: flex;
 			flex-direction: row;
 			gap: .3em;
-    align-items: center;
-    justify-content: center;
+			align-items: center;
+			justify-content: center;
 		}
 
 		.im {
@@ -897,7 +897,7 @@
 					await window.parent.createFile('Downloads/', file.name, '', content, { via: "imported" });
 				}
 				upmd();
-
+				handleFiles(fileInput.files);
 				document.getElementById("fupibu").innerHTML = "File(s) Saved";
 			}
 
@@ -1236,31 +1236,17 @@
 			event.preventDefault();
 
 			const files = event.dataTransfer.files;
+			const fileInput = document.getElementById('filupin');
+
+			const dataTransfer = new DataTransfer();
 
 			for (let i = 0; i < files.length; i++) {
-				const file = files[i];
-				const reader = new FileReader();
-
-				let readerMethod = 'readAsText';
-
-				if (file.type.startsWith('image/') || file.type === 'application/pdf' || file.type === 'application/octet-stream') {
-					readerMethod = 'readAsDataURL';
-				} else if (file.type === 'application/octet-stream') {
-					readerMethod = 'readAsArrayBuffer';
-				}
-
-				reader.onload = (e) => {
-					const fileContent = e.target.result;
-					const folderName = 'Downloads';
-					const md = { "via": "imported" };
-					window.parent.createFile(folderName, file.name, file.type, fileContent, md).then(() => {
-						listFiles(folderName, true);
-					});
-				};
-
-				reader[readerMethod](file);
+				dataTransfer.items.add(files[i]);
 			}
+			upmd();
+			fileInput.files = dataTransfer.files;
 		});
+
 
 
 		dropZone.addEventListener('dragend', (event) => {

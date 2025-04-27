@@ -13,8 +13,8 @@
     }
   ],
     "display_override": ["fullscreen", "standalone", "minimal-ui", "browser"],
-    "scope": "https://adthoughtsglobal.github.io/Nova-OS/",
-    "start_url": "https://adthoughtsglobal.github.io/Nova-OS/",
+    "scope": "https://adthoughtsglobal.github.io/nova-dev-repl-rl/",
+    "start_url": "https://adthoughtsglobal.github.io/nova-dev-repl-rl/",
     "icons": [
         {
             "src": "n.png",

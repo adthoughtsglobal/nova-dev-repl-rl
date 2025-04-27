@@ -81,6 +81,27 @@ const eventBusWorker = {
     },
 };
 
+if (!window._workerForwarderAttached) {
+    eventBusWorkerE.addEventListener('message', (event) => {
+        const { type, detail } = event.data;
+        if (!type) return;
+
+        for (const [id, iframeWindow] of Object.entries(iframeReferences)) {
+            try {
+                iframeWindow.postMessage({
+                    type,
+                    payload: detail
+                }, '*');
+            } catch (e) {
+                console.warn(`iframe ${id} seems dead`, e);
+                delete iframeReferences[id];
+            }
+        }
+        
+    });
+    window._workerForwarderAttached = true;
+}
+
 // database functions
 
 async function readAllData(db, storeName) {
@@ -714,8 +735,8 @@ async function resetSettings(fileName = "preferences.json", dirPath = "System/")
             await ctntMgr.set(fileContent.id, resetBase64Data);
 
             await setdb(`reset settings in ${fileName}`);
-            eventBusWorker.deliver({
-                type: "settings",
+            eventBusWorksettingser.deliver({
+                type: "",
                 event: "reset",
                 file: fileName
             });

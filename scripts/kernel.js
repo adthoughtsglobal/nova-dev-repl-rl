@@ -496,57 +496,76 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
 
     var myWindow = {};
 
-window.addEventListener("message", (event) => {
-    if (event.data.type === "myWindow") {
-        console.log("mywindow set done");
-        const data = event.data.data;
+    window.addEventListener("message", (event) => {
+        if (event.data.type === "myWindow") {
+            console.log("mywindow set done");
+            const data = event.data.data;
 
-        myWindow = {
-            ...data,
-            close: () => {
-                ntxSession.send("sysUI.clwin", data.windowID);
-            },
-            eventBusWorker: new Worker(data.eventBusURL)
-        };
-        let greenflagResult;
-        try { greenflagResult = greenflag() } catch (e) { }
-    }
-});
+            myWindow = {
+                ...data,
+                close: () => {
+                    ntxSession.send("sysUI.clwin", data.windowID);
+                },
+                eventBusWorker: new Worker(data.eventBusURL)
+            };
+            let greenflagResult;
+            try { greenflagResult = greenflag() } catch (e) { }
+        }
+    });
 
-class NTXSession {
-    constructor() {
-        this.transactionIdCounter = 0;
-        this.pendingRequests = {};
-        window.addEventListener("message", (event) => {
-            if (event.data.transactionId && (event.data.result || event.data.error)) {
-                const { transactionId, result, error, success } = event.data;
-                if (this.pendingRequests[transactionId]) {
-                    success ? this.pendingRequests[transactionId].resolve(result)
-                        : this.pendingRequests[transactionId].reject(error);
-                    delete this.pendingRequests[transactionId];
+    class NTXSession {
+        constructor() {
+            this.transactionIdCounter = 0;
+            this.pendingRequests = {};
+            this.listeners = {}; // Ensure listeners object exists for event types
+            window.addEventListener("message", (event) => {
+                if (event.data.transactionId && (event.data.result || event.data.error)) {
+                    const { transactionId, result, error, success } = event.data;
+                    if (this.pendingRequests[transactionId]) {
+                        success ? this.pendingRequests[transactionId].resolve(result)
+                            : this.pendingRequests[transactionId].reject(error);
+                        delete this.pendingRequests[transactionId];
+                    }
                 }
+            });
+        }
+
+        generateTransactionId() {
+            return \`txn_\${Date.now()}_\${this.transactionIdCounter++}\`;
+        }
+
+        send(action, ...params) {
+            return new Promise((resolve, reject) => {
+                const transactionId = this.generateTransactionId();
+                this.pendingRequests[transactionId] = { resolve, reject };
+                const winuid = "${winuid}";
+                window.parent.postMessage({ transactionId, action, params, iframeId: winuid }, "*");
+            });
+        }
+
+        eventBus = {
+            send: (action, ...params) => {
+                return new Promise((resolve, reject) => {
+                    const transactionId = this.generateTransactionId();
+                    this.pendingRequests[transactionId] = { resolve, reject };
+                    window.parent.postMessage({ transactionId, action, params, iframeId: winuid }, "*");
+                });
+            },
+
+            listen: (type, handler) => {
+                if (!this.listeners[type]) {
+                    this.listeners[type] = [];
+                }
+                this.listeners[type].push(handler);
             }
-        });
+        };
     }
 
-    generateTransactionId() {
-        return \`txn_\${Date.now()}_\${this.transactionIdCounter++}\`;
-    }
+    var ntxSession = new NTXSession();
+    </script>
+`;
 
-    send(action, ...params) {
-        return new Promise((resolve, reject) => {
-            const transactionId = this.generateTransactionId();
-            this.pendingRequests[transactionId] = { resolve, reject };
-            const winuid = "${winuid}";
-            window.parent.postMessage({ transactionId, action, params, iframeId: winuid }, "*");
-        });
-    }
-}
-
-ntxSession = new NTXSession();
-    </script>`;
-
-        const fullBlobHTML = `
+const fullBlobHTML = `
     <!DOCTYPE html>
     <html>
     <head>
@@ -558,16 +577,13 @@ ntxSession = new NTXSession();
     ${ctxScript ? `<script>${ctxScript}</script>` : ''}
     ${ntxScript}
     <script>
-
-window.parent.postMessage({
-    type: "iframeReady",
-    windowID: "${winuid}",
-    element: "${windowDiv.id}",
-    titleElement: "${windowtitlespan.id}"
-}, "*");
-</script>
-
-
+        window.parent.postMessage({
+            type: "iframeReady",
+            windowID: "${winuid}",
+            element: "${windowDiv.id}",
+            titleElement: "${windowtitlespan.id}"
+        }, "*");
+    </script>
     </body>
     </html>`;
 
@@ -622,13 +638,23 @@ window.parent.postMessage({
             }, "*");
 
             attachWindowMessageListener(winuid);
+
+            eventBusWorkerE.addEventListener('message', (event) => {
+                const { type, detail } = event.data;
+                if (!type) return;
+
+                iframe.contentWindow.postMessage({
+                    type,
+                    payload: detail
+                }, '*');
+            });
+
         };
 
         if (!winds[winuid]) winds[winuid] = {};
         winds[winuid]["src"] = blobURL;
         winds[winuid]["visualState"] = "free";
     }
-
 
     nowwindow = 'window' + winuid;
     windowDiv.appendChild(windowLoader);

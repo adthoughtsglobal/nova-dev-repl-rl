@@ -1329,6 +1329,24 @@ function runAsWasm(content) {
 	div.appendChild(script);
 	openwindow("Nova Wasm Runner", div.innerHTML);
 }
+
+(async () => {
+	let appbarelement = document.getElementById("dock");
+	let dropZone = appbarelement;
+	dropZone.addEventListener('dragover', (event) => {
+		event.preventDefault();
+	});
+	dropZone.addEventListener('drop', async (event) => {
+		event.preventDefault();
+		const unid = event.dataTransfer.getData("Text");
+		await moveFileToFolder(unid, "Dock/");
+		genTaskBar();
+	});
+	dropZone.addEventListener('dragend', (event) => {
+		event.preventDefault();
+	});
+})();
+
 async function realgenTaskBar() {
 	gid("dock").style.display = "none";
 	gid("novanav").style.display = "grid";
@@ -1346,23 +1364,11 @@ async function realgenTaskBar() {
 		gid("novanav").style.justifyContent = NovNavCtrl.align;
 	} catch (e) { }
 
-	var appbarelement = document.getElementById("dock")
+	var appbarelement = document.getElementById("dock");
 	appbarelement.innerHTML = "<span class='taskbarloader' id='taskbarloaderprime'></span>";
 	if (appbarelement) {
 		try {
-			let dropZone = appbarelement;
-			dropZone.addEventListener('dragover', (event) => {
-				event.preventDefault();
-			});
-			dropZone.addEventListener('drop', async (event) => {
-				event.preventDefault();
-				const unid = event.dataTransfer.getData("Text");
-				await moveFileToFolder(unid, "Dock/");
-				genTaskBar();
-			});
-			dropZone.addEventListener('dragend', (event) => {
-				event.preventDefault();
-			});
+
 			let x = await getFileNamesByFolder("Dock");
 			if (Array.isArray(x) && x.length === 0) {
 				const y = await getFileNamesByFolder("Apps");
@@ -1424,24 +1430,29 @@ async function realgenTaskBar() {
 		document.querySelector('#taskbarloaderprime').remove();
 	}
 }
+
+(async () => {
+	let dropZone = document.getElementById("desktop");
+	dropZone.addEventListener('dragover', (event) => {
+		event.preventDefault();
+	});
+	dropZone.addEventListener('drop', async (event) => {
+		event.preventDefault();
+		const unid = event.dataTransfer.getData("Text");
+		await moveFileToFolder(unid, "Desktop/");
+		genDesktop()
+	});
+	dropZone.addEventListener('dragend', (event) => {
+		event.preventDefault();
+	});
+})();
+
 async function realgenDesktop() {
 	let x;
 	try {
 		gid("desktop").innerHTML = ``;
 		let y = await getFileNamesByFolder("Desktop");
-		let dropZone = document.getElementById("desktop");
-		dropZone.addEventListener('dragover', (event) => {
-			event.preventDefault();
-		});
-		dropZone.addEventListener('drop', async (event) => {
-			event.preventDefault();
-			const unid = event.dataTransfer.getData("Text");
-			await moveFileToFolder(unid, "Desktop/");
-			genDesktop()
-		});
-		dropZone.addEventListener('dragend', (event) => {
-			event.preventDefault();
-		});
+
 		y.forEach(async function (app) {
 			var appShortcutDiv = document.createElement("div");
 			appShortcutDiv.className = "app-shortcut ctxAvail sizableuielement";

@@ -119,6 +119,7 @@
 		async function openfile(fileID) {
 			let disp = document.getElementById("displays");
 			let file = await ntxSession.send("fileGet.byId", fileID);
+			console.log(24, file)
 			if (file && file.content) {
 				document.getElementById("tils").innerText = file.fileName;
 				let fileType = await ntxSession.send("utility.getBaseFileType", file.fileName);
@@ -126,25 +127,20 @@
 				console.log(41, file.content)
 				let blob;
 
-				if (typeof file.content === "string" && file.content.startsWith("data:")) {
-					let arr = file.content.split(",");
-					let mimeType = arr[0].split(":")[1].split(";")[0];
-					let b64Data = arr[1];
-					let byteCharacters = atob(b64Data);
-					let byteArrays = [];
+				let arr = file.content.split(",");
+				let b64Data = arr[1];
+				let byteCharacters = atob(b64Data);
+				let byteArrays = [];
 
-					for (let offset = 0; offset < byteCharacters.length; offset += 1024) {
-						let slice = byteCharacters.slice(offset, offset + 1024);
-						let byteArray = new Uint8Array(slice.length);
-						for (let i = 0; i < slice.length; i++) {
-							byteArray[i] = slice.charCodeAt(i);
-						}
-						byteArrays.push(byteArray);
+				for (let offset = 0; offset < byteCharacters.length; offset += 1024) {
+					let slice = byteCharacters.slice(offset, offset + 1024);
+					let byteArray = new Uint8Array(slice.length);
+					for (let i = 0; i < slice.length; i++) {
+						byteArray[i] = slice.charCodeAt(i);
 					}
-					blob = new Blob(byteArrays, { type: mimeType });
-				} else {
-					blob = file.content instanceof Blob ? file.content : new Blob([file.content], { type: mimeType });
+					byteArrays.push(byteArray);
 				}
+				blob = new Blob(byteArrays, { type: mimeType });
 
 				let blobURL = URL.createObjectURL(blob);
 
