@@ -1567,6 +1567,7 @@ async function checkifpassright() {
 async function logoutofnova() {
 	await cleanupram();
 	await showloginmod();
+	removeTheme();
 	loginscreenbackbtn();
 	console.log("logged out of " + CurrentUsername);
 	CurrentUsername = null;
@@ -1596,6 +1597,7 @@ async function novarefresh() {
 	genTaskBar();
 	cleanupInvalidAssociations();
 	checkdmode();
+	console.log(577)
 	loadtaskspanel()
 	loadrecentapps();
 }

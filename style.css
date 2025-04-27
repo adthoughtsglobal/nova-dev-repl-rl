@@ -33,6 +33,12 @@ body {
 	background-repeat: no-repeat;
 }
 
+#main {
+	height: 100%;
+	width: 100%;
+	transition: .5s;
+}
+
 dialog {
 	user-select: none;
 }

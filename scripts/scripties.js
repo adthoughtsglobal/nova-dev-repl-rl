@@ -166,9 +166,11 @@ async function checkdmode() {
         const response = await fetch('nova.css');
         novadotcsscache = await response.text();
     }
-
+ 
+	if (CurrentUsername ){
     const themeColors = await getSetting("themeColors") || {};
     applyTheme(themeColors, document);
+	}
 }
 
 function applyThemeNonVisual(data, doc) {
@@ -180,8 +182,15 @@ function applyThemeNonVisual(data, doc) {
 
     window.top.setSetting("themeColors", data.colors);
 }
+const appliedThemeVars = new Set();
+let themeStyleTag = null;
 
 function applyTheme(colors, doc) {
+    if (!themeStyleTag) {
+        themeStyleTag = document.createElement('style');
+        document.head.appendChild(themeStyleTag);
+    }
+
     const cssVars = Object.fromEntries(
         [...novadotcsscache.matchAll(/(--[\w-]+):\s*([^;]+)/g)]
             .map(([_, key, value]) => [key, value.trim()])
@@ -193,20 +202,25 @@ function applyTheme(colors, doc) {
         "--colors-text-sub"
     ];
 
-    const colorsToApply = {};
+    let cssText = '';
 
     for (const variableName in cssVars) {
         let colorValue = colors[variableName] ?? cssVars[variableName];
-
         if (textSelectors.includes(variableName)) {
             colorValue = textColor;
         }
-
-        colorsToApply[variableName] = colorValue;
-
-        window.top.document.documentElement.style.setProperty(variableName, colorValue);
-        doc.documentElement.style.setProperty(variableName, colorValue);
+        cssText += `${variableName}: ${colorValue};\n`;
+        appliedThemeVars.add(variableName);
     }
 
-	checkdmode();
+    themeStyleTag.textContent = `#main { ${cssText} }`;
+}
+
+function removeTheme() {
+    if (themeStyleTag) {
+        themeStyleTag.remove();
+        themeStyleTag = null;
+    }
+
+    appliedThemeVars.clear();
 }
