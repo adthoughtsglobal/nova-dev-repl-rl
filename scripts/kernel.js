@@ -421,15 +421,25 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
 
         let styleBlock = '';
         if (contentString.includes("nova-include") && getMetaTagContent(contentString, 'nova-include')?.includes('nova.css')) {
-            const updatedCss = novadotcsscache.replace(/:root\s*{([^}]*)}/, (match, declarations) => {
-                let updated = declarations.trim();
-                for (const [key, val] of Object.entries(variables)) {
-                    const regex = new RegExp(`(${key}\\s*:\\s*).*?;`, 'g');
-                    updated = updated.replace(regex, `$1${val.trim()};`);
+            const novaCssTag = document.getElementById('novacsstag');
+            if (novaCssTag) {
+                const customCss = novaCssTag.textContent;
+                const variableRegex = /--([\w-]+)\s*:\s*([^;]+);/g;
+                let customVariables = {};
+                let match;
+                while ((match = variableRegex.exec(customCss)) !== null) {
+                    customVariables[`--${match[1]}`] = match[2].trim();
                 }
-                return `:root { ${updated} }`;
-            });
-            styleBlock += `<style>${updatedCss}</style>`;
+                const updatedCss = novadotcsscache.replace(/:root\s*{([^}]*)}/, (match, declarations) => {
+                    let updated = declarations.trim();
+                    for (const [key, val] of Object.entries(customVariables)) {
+                        const regex = new RegExp(`(${key}\\s*:\\s*).*?;`, 'g');
+                        updated = updated.replace(regex, `$1${val};`);
+                    }
+                    return `:root { ${updated} }`;
+                });
+                styleBlock += `<style>${updatedCss}</style>`;
+            }
         }
 
         if (contentString.includes("nova-include") && getMetaTagContent(contentString, 'nova-include')?.includes('material-symbols-rounded')) {
@@ -565,7 +575,7 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
     </script>
 `;
 
-const fullBlobHTML = `
+        const fullBlobHTML = `
     <!DOCTYPE html>
     <html>
     <head>

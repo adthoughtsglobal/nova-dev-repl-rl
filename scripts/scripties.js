@@ -188,7 +188,9 @@ let themeStyleTag = null;
 function applyTheme(colors, doc) {
     if (!themeStyleTag) {
         themeStyleTag = document.createElement('style');
+		themeStyleTag.id = "novacsstag";
         document.head.appendChild(themeStyleTag);
+		doc.head.appendChild(themeStyleTag);
     }
 
     const cssVars = Object.fromEntries(
@@ -213,7 +215,7 @@ function applyTheme(colors, doc) {
         appliedThemeVars.add(variableName);
     }
 
-    themeStyleTag.textContent = `#main { ${cssText} }`;
+    themeStyleTag.textContent = `body { ${cssText} }`;
 }
 
 function removeTheme() {
