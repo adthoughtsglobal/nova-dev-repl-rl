@@ -421,6 +421,7 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
 
         let styleBlock = '';
         if (contentString.includes("nova-include") && getMetaTagContent(contentString, 'nova-include')?.includes('nova.css')) {
+            let updatedCss = novadotcsscache;
             const novaCssTag = document.getElementById('novacsstag');
             if (novaCssTag) {
                 const customCss = novaCssTag.textContent;
@@ -430,7 +431,7 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
                 while ((match = variableRegex.exec(customCss)) !== null) {
                     customVariables[`--${match[1]}`] = match[2].trim();
                 }
-                const updatedCss = novadotcsscache.replace(/:root\s*{([^}]*)}/, (match, declarations) => {
+                updatedCss = novadotcsscache.replace(/:root\s*{([^}]*)}/, (match, declarations) => {
                     let updated = declarations.trim();
                     for (const [key, val] of Object.entries(customVariables)) {
                         const regex = new RegExp(`(${key}\\s*:\\s*).*?;`, 'g');
@@ -438,9 +439,10 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
                     }
                     return `:root { ${updated} }`;
                 });
-                styleBlock += `<style>${updatedCss}</style>`;
             }
+            styleBlock += `<style>${updatedCss}</style>`;
         }
+
 
         if (contentString.includes("nova-include") && getMetaTagContent(contentString, 'nova-include')?.includes('material-symbols-rounded')) {
             styleBlock += `

@@ -163,9 +163,6 @@ async function encryptData(key, data) {
 
 let decryptWorkerRegistered = false;
 async function decryptData(key, encryptedData) {
-    if ('serviceWorker' in navigator && !navigator.serviceWorker.controller && !decryptWorkerRegistered) {
-        await registerDecryptWorker();
-    }
 
     return new Promise(async (resolve, reject) => {
         if (navigator.serviceWorker.controller) {
