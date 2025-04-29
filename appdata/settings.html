@@ -2825,6 +2825,66 @@
 
 
 			<script>
+
+				const debouncedSaveColor = debounce((picker, variableName) => {
+					updateColor(picker, variableName);
+					saveColors();
+				}, 300);
+				async function saveColors() {
+					const colorsToSave = {};
+					const buttons = document.querySelectorAll('[data-variable]');
+
+					buttons.forEach(button => {
+						const variableName = button.dataset.variable;
+						const colorValue = button.jscolor
+							? button.jscolor.toHEXString()
+							: button.value;
+
+						colorsToSave[variableName] = colorValue;
+					});
+
+					await window.parent.setSetting("themeColors", colorsToSave);
+				}
+
+				function updateColor(picker, variableName) {
+					const colorValue = picker.jscolor
+						? picker.jscolor.toHEXString()
+						: picker.value;
+
+					document.documentElement.style.setProperty(variableName, colorValue);
+				}
+
+				function getCSSVariableValue(varName) {
+					return window.parent
+						.getComputedStyle(window.parent.body)
+						.getPropertyValue(varName)
+						.trim();
+				}
+
+				function applyTheme(data) {
+					window.parent.applyThemeNonVisual(data, document);
+
+					const inputs = document.querySelectorAll('[data-variable]');
+					inputs.forEach(input => {
+						const variableName = input.dataset.variable;
+						const newValue = data.colors[variableName];
+
+						if (newValue !== undefined) {
+							if (input.classList.contains('colorpickerui')) {
+								input.jscolor.fromString(newValue);
+							} else if (input.classList.contains('numinp')) {
+								input.value = newValue;
+								document.documentElement
+									.style.setProperty(variableName, newValue + 'px');
+							}
+							updateColor(input, variableName);
+						}
+					});
+
+					saveColors();
+					window.parent.toast("Please reopen settings to apply theme.")
+				}
+
 				async function initColorPickers() {
 					document.querySelectorAll('[data-variable]').forEach(button => {
 						const variableName = button.dataset.variable;
@@ -2867,65 +2927,6 @@
 						console.error(error);
 					}
 
-				}
-
-				const debouncedSaveColor = debounce((picker, variableName) => {
-					updateColor(picker, variableName);
-					saveColors();
-				}, 300);
-				async function saveColors() {
-					const colorsToSave = {};
-					const buttons = document.querySelectorAll('[data-variable]');
-
-					buttons.forEach(button => {
-						const variableName = button.dataset.variable;
-						const colorValue = button.jscolor
-							? button.jscolor.toHEXString()
-							: button.value;
-
-						colorsToSave[variableName] = colorValue;
-					});
-
-					await window.parent.setSetting("themeColors", colorsToSave);
-				}
-
-				function updateColor(picker, variableName) {
-					const colorValue = picker.jscolor
-						? picker.jscolor.toHEXString()
-						: picker.value;
-
-					document.documentElement.style.setProperty(variableName, colorValue);
-				}
-
-				function getCSSVariableValue(varName) {
-					return window.parent
-						.getComputedStyle(window.parent.document.documentElement)
-						.getPropertyValue(varName)
-						.trim();
-				}
-
-				function applyTheme(data) {
-					window.parent.applyThemeNonVisual(data, document);
-
-					const inputs = document.querySelectorAll('[data-variable]');
-					inputs.forEach(input => {
-						const variableName = input.dataset.variable;
-						const newValue = data.colors[variableName];
-
-						if (newValue !== undefined) {
-							if (input.classList.contains('colorpickerui')) {
-								input.jscolor.fromString(newValue);
-							} else if (input.classList.contains('numinp')) {
-								input.value = newValue;
-								document.documentElement
-									.style.setProperty(variableName, newValue + 'px');
-							}
-							updateColor(input, variableName);
-						}
-					});
-
-					saveColors();
-					window.parent.toast("Please reopen settings to apply theme.")
 				}
 
 				function debounce(func, wait) {
