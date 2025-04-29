@@ -2855,11 +2855,16 @@
 				}
 
 				function getCSSVariableValue(varName) {
-					return window.parent
-						.getComputedStyle(window.parent.body)
-						.getPropertyValue(varName)
-						.trim();
+					const styleTag = window.parent.document.getElementById('novacsstag');
+					if (!styleTag) return null;
+
+					const cssText = styleTag.textContent;
+					const regex = new RegExp(`${varName}\\s*:\\s*([^;]+);`);
+					const match = cssText.match(regex);
+
+					return match ? match[1].trim() : null;
 				}
+
 
 				function applyTheme(data) {
 					window.parent.applyThemeNonVisual(data, document);
