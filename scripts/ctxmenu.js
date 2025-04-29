@@ -26,7 +26,7 @@ window.fileActions = {
 		label: 'Open file location',
 		action: async (itemuid) => {
 			let currentreqID = genUID();
-			let appIdToOpen = fileTypeAssociations['file'][0] || null;
+			let appIdToOpen = handlers['file'][0] || null;
 			openlaunchprotocol(appIdToOpen, { "opener": 'showFile', "id":itemuid }, currentreqID);
 		},
 		condition: () => true,

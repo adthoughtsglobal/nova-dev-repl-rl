@@ -12,7 +12,7 @@
 	--colors-BG-sub: #262626;
 	--colors-text-sub: #FFFFFF;
 
-	--colors-BG-highlighted: rgb(97, 121, 255);
+	--colors-BG-highlighted: #44403C;
 	--colors-text-high: #FFFFFF;
 
 	--colors-special-good: #85ff85;
@@ -30,7 +30,7 @@
 	--time-action: .3s;
 
 	/* Extended support */
-	--colors-accent: #68c2ff;
+	--colors-accent: rgb(97, 121, 255);
 	
 	--font-size-small: calc(var(--font-size-base) * 0.85);
 	--font-size-normal: var(--font-size-base);
@@ -81,6 +81,9 @@ textarea {
 	outline: none;
 	font-family: inherit;
 	font-size: inherit;
+}
+
+button {
 	cursor: pointer;
 }
 

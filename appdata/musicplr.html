@@ -101,7 +101,7 @@
 			display: flex;
 			flex-direction: row;
 			align-items: center;
-			width: 60%;
+			width: fit-content;
 			justify-content: space-evenly;
 			background: #34343445;
 			backdrop-filter: blur(0.8rem);
@@ -109,6 +109,7 @@
 			padding: 0.5rem;
 			margin-top: 1rem;
 			margin-bottom: 1rem;
+			gap: 1em;
 		}
 
 		.playpause-track {
@@ -422,6 +423,15 @@
 			color: inherit;
 			z-index: 1;
 		}
+
+		div#audioEffects {
+			position: absolute;
+			z-index: 99;
+			background: #101010;
+			padding: 1em;
+			border-radius: 1em;
+			margin: 1em;
+		}
 	</style>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.0/color-thief.umd.js"></script>
 
@@ -456,6 +466,13 @@
 					<div class="next-track" onclick="nextTrack()"><span class="material-symbols-rounded">
 							skip_next
 						</span></div>
+				</div>
+				<div class="buttons">
+					<div class="audiefbtn">
+						<span class="material-symbols-rounded">
+							music
+						</span>
+					</div>
 				</div>
 				<div class="slider_container">
 					<div class="current-time">00:00</div>
@@ -519,6 +536,13 @@
 			</div>
 
 		</div>
+	</div>
+
+	<div id="audioEffects">
+		<button id="toggleReverb">Toggle Reverb</button>
+		<button id="toggleChorus">Toggle Chorus</button>
+		<button id="togglePhaser">Toggle Phaser</button>
+		<button id="toggleVibrato">Toggle Vibrato</button>
 	</div>
 
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jsmediatags/3.9.5/jsmediatags.min.js"></script>
@@ -735,7 +759,7 @@
 
 		function openfromfiles() {
 			currentreqID = window.parent.genUID();
-			let appIdToOpen = window.parent.fileTypeAssociations['file'][0] || null;
+			let appIdToOpen = window.parent.handlers['file'][0] || null;
 			window.parent.openlaunchprotocol(appIdToOpen, { "opener": 'any', "dir": "Downloads/" }, currentreqID, myWindow.windowID);
 			primaryalert.style.display = "none"
 		}
@@ -750,6 +774,7 @@
 		});
 
 		function readthefile(filethings, fileName = 'Unknown Title') {
+			console.log(547, fileName);
 			const base64String = filethings.content.split(',')[1];
 			const binaryString = atob(base64String);
 			const bytes = new Uint8Array(binaryString.length);
@@ -914,7 +939,7 @@
 
 				const processFile = async (fileContent, fileInfo, filename) => {
 					skibiditracks++
-					await readthefile(fileContent, fileInfo, filename);
+					await readthefile(fileContent, filename);
 				};
 
 				const processFolder = async (folder, basePath = '') => {
@@ -925,7 +950,7 @@
 						} else if (isMusicFile(key)) {
 							console.log(key, folder[key])
 							let fileContentSave = await window.parent.getFileById(folder[key].id);
-							filePromises.push(processFile(fileContentSave), folder[key], key);
+							filePromises.push(processFile(fileContentSave, folder[key], key), folder[key], key);
 						}
 					}
 					await Promise.all(filePromises);
@@ -933,7 +958,6 @@
 
 				await processFolder(folder, basePath);
 			};
-
 
 			await scanFolders(window.parent.memory.root);
 
@@ -969,109 +993,75 @@
 		let baseNumParticles = 50;
 		let maxParticles = 200;
 
-		function playTrack() {
-			if (curr_track.readyState >= 2) {
-				curr_track.play()
-					.then(() => {
-						initAudioAnalyser();
+		function setupGrooveDetection() {
+			let beatThreshold = 1.05;
+			let energyHistory = new Array(60).fill(0);
+			let grooveDuration = 30;
+			let grooveCount = 0;
+			let particlesOnGroove = false;
 
-						let beatThreshold = 1.05;
-						let energyHistory = new Array(60).fill(0);
-						let beatDecay = 0.95;
+			function getAudioData() {
+				analyser.getByteFrequencyData(dataArray);
 
-						function getAudioData() {
-							analyser.getByteFrequencyData(dataArray);
+				const bassStart = 2;
+				const bassEnd = 20;
+				let bassEnergy = dataArray.slice(bassStart, bassEnd).reduce((sum, v) => sum + v, 0) / (bassEnd - bassStart);
 
-							const bassStart = 2;
-							const bassEnd = 20;
-							let bassEnergy = dataArray.slice(bassStart, bassEnd).reduce((sum, v) => sum + v, 0) / (bassEnd - bassStart);
+				const highStart = bufferLength - 20;
+				const highEnd = bufferLength;
+				let highEnergy = dataArray.slice(highStart, highEnd).reduce((sum, v) => sum + v, 0) / (highEnd - highStart);
 
-							const highStart = bufferLength - 20;
-							const highEnd = bufferLength;
-							let highEnergy = dataArray.slice(highStart, highEnd).reduce((sum, v) => sum + v, 0) / (highEnd - highStart);
+				let totalEnergy = dataArray.reduce((sum, value) => sum + value, 0) / bufferLength;
 
-							let totalEnergy = dataArray.reduce((sum, value) => sum + value, 0) / bufferLength;
+				let avgEnergy = energyHistory.reduce((sum, e) => sum + e, 0) / energyHistory.length;
+				let beatDetected = bassEnergy > avgEnergy * beatThreshold;
 
-							let avgEnergy = energyHistory.reduce((sum, e) => sum + e, 0) / energyHistory.length;
-							let beatDetected = bassEnergy > avgEnergy * beatThreshold;
+				energyHistory.shift();
+				energyHistory.push(bassEnergy);
 
-							energyHistory.shift();
-							energyHistory.push(bassEnergy);
-
-							return { totalEnergy, beatDetected, bassEnergy, highEnergy };
-						}
-
-						let grooveDuration = 30; // Number of frames the beat should be consistently detected
-						let grooveCount = 0;
-						let particlesOnGroove = false;
-
-						function animate() {
-							ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-							const { totalEnergy, beatDetected, bassEnergy, highEnergy } = getAudioData();
-
-							let grooveDecay = 15; // Frames to wait before stopping groove
-
-							if (beatDetected) {
-								grooveCount++;
-							} else {
-								grooveCount = Math.max(0, grooveCount - 1); // Gradually reduce grooveCount
-							}
-
-							// End groove if grooveCount goes below a threshold
-							if (grooveCount < grooveDuration - grooveDecay && particlesOnGroove) {
-								particlesOnGroove = false;
-								removeOldParticles();
-							}
-
-
-							// If we have consistent beats for a certain number of frames, consider it a groove
-							if (grooveCount >= grooveDuration && !particlesOnGroove) {
-								particlesOnGroove = true;
-								// Spawn particles on groove start
-								let newParticles = Math.floor(bassEnergy / 10);
-								console.log("gstart")
-								initParticles(newParticles);
-							}
-
-							if (grooveCount >= grooveDuration && !particlesOnGroove) {
-								particlesOnGroove = true;
-								let newParticles = Math.floor(bassEnergy / 10);
-								initParticles(newParticles);
-								grooveCount = 0; // Reset count to allow re-triggering
-							}
-
-
-							// Update particles
-							particlesArray.forEach(particle => {
-								particle.update(totalEnergy / 255, bassEnergy, highEnergy, beatDetected);
-								particle.draw();
-							});
-
-							removeOldParticles();
-							maintainBaseParticles();
-
-
-							requestAnimationFrame(animate);
-						}
-
-
-						initParticles(baseNumParticles);
-						animate();
-
-						isPlaying = true;
-						playpause_btn.innerHTML = `<span class="material-symbols-rounded">
-                    pause_circle
-                </span>`;
-						console.log('Playback started successfully.');
-					})
-					.catch(error => {
-						console.error('Error playing track:', error);
-					});
-			} else {
-				console.error('curr_track is not defined or is invalid.');
+				return { totalEnergy, beatDetected, bassEnergy, highEnergy };
 			}
+
+			function animate() {
+				ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+				const { totalEnergy, beatDetected, bassEnergy, highEnergy } = getAudioData();
+
+				let grooveDecay = 15;
+
+				if (beatDetected) {
+					grooveCount++;
+				} else {
+					grooveCount = Math.max(0, grooveCount - 1);
+				}
+
+				if (grooveCount < grooveDuration - grooveDecay && particlesOnGroove) {
+					particlesOnGroove = false;
+					removeOldParticles();
+				}
+
+				if (grooveCount >= grooveDuration && !particlesOnGroove) {
+					particlesOnGroove = true;
+					let newParticles = Math.floor(bassEnergy / 10);
+					console.log("gstart");
+					initParticles(newParticles);
+					grooveCount = 0;
+				}
+
+				particlesArray.forEach(particle => {
+					particle.update(totalEnergy / 255, bassEnergy, highEnergy, beatDetected);
+					particle.draw();
+				});
+
+				removeOldParticles();
+				maintainBaseParticles();
+
+				requestAnimationFrame(animate);
+			}
+
+			window.animate = animate;
 		}
+
 
 		class Particle {
 			constructor() {
@@ -1205,25 +1195,71 @@
 			}
 		}
 
-		let audioContext;
-		let analyser;
-		let audioSource;
+
+
+		function playTrack() {
+			if (curr_track.readyState >= 2) {
+				curr_track.play()
+					.then(() => {
+						initAudioAnalyser();
+						setupGrooveDetection();
+						initParticles(baseNumParticles);
+						animate();
+						isPlaying = true;
+						playpause_btn.innerHTML = `<span class="material-symbols-rounded">
+                    pause_circle
+                </span>`;
+						console.log('Playback started successfully.');
+					})
+					.catch(error => {
+						console.error('Error playing track:', error);
+					});
+			} else {
+				console.error('curr_track is not defined or is invalid.');
+			}
+		}
+
+		let context = new (window.AudioContext || window.webkitAudioContext)();
+		let analyser = context.createAnalyser();
+
+		let sourceNode = context.createMediaElementSource(curr_track);
+
+		let masterGain = context.createGain();
+		let dryGain = context.createGain();
+		let wetGain = context.createGain();
+
+		let reverbNode, chorusNode, phaserNode, vibratoNode;
+		let effectChain = context.createGain();
+
+		dryGain.gain.value = 1;
+		wetGain.gain.value = 0;
+
+		sourceNode.connect(dryGain).connect(effectChain).connect(masterGain);
+		sourceNode.connect(wetGain);
+
+		masterGain.connect(analyser);
+		analyser.connect(context.destination);
+
 		let bufferLength;
 		let dataArray;
 
 		function initAudioAnalyser() {
-			if (!audioContext) {
-				audioContext = new (window.AudioContext || window.webkitAudioContext)();
-				analyser = audioContext.createAnalyser();
-				analyser.fftSize = 256;
-				bufferLength = analyser.frequencyBinCount;
-				dataArray = new Uint8Array(bufferLength);
-
-				audioSource = audioContext.createMediaElementSource(curr_track);
-				audioSource.connect(analyser);
-				analyser.connect(audioContext.destination);
-			}
+			analyser.fftSize = 256;
+			bufferLength = analyser.frequencyBinCount;
+			dataArray = new Uint8Array(bufferLength);
 		}
+
+		function createReverbNode(callback) {
+			let convolver = context.createConvolver();
+			fetch('impulse-response.wav')
+				.then(response => response.arrayBuffer())
+				.then(data => context.decodeAudioData(data))
+				.then(buffer => {
+					convolver.buffer = buffer;
+					callback(convolver);
+				});
+		}
+
 
 		window.addEventListener('resize', function () {
 			canvas.width = window.innerWidth;
@@ -1240,7 +1276,138 @@
 			}
 		}
 
-		toggleQueue(1)
+		toggleQueue(1);
+
+		function createReverbNode() {
+			let convolver = context.createConvolver();
+			let length = context.sampleRate * 3;
+			let impulse = context.createBuffer(2, length, context.sampleRate);
+			for (let i = 0; i < 2; i++) {
+				let channelData = impulse.getChannelData(i);
+				for (let j = 0; j < length; j++) {
+					channelData[j] = (Math.random() * 2 - 1) * Math.pow(1 - j / length, 0.2);
+				}
+			}
+			convolver.buffer = impulse;
+			return convolver;
+		}
+
+
+		function createChorusNode() {
+			let delayNode = context.createDelay();
+			let lfo = context.createOscillator();
+			let lfoGain = context.createGain();
+
+			lfo.frequency.value = 0.25;
+			lfoGain.gain.value = 0.005;
+
+			lfo.connect(lfoGain).connect(delayNode.delayTime);
+			lfo.start();
+
+			delayNode.delayTime.value = 0.03;
+			let chorusGain = context.createGain();
+			chorusGain.gain.value = 0.5;
+
+			sourceNode.connect(chorusGain).connect(delayNode);
+			return delayNode;
+		}
+
+		function createPhaserNode() {
+			let phaser = context.createBiquadFilter();
+			phaser.type = 'allpass';
+			phaser.frequency.value = 1000;
+			return phaser;
+		}
+
+		function createVibratoNode() {
+			let delay = context.createDelay();
+			let lfo = context.createOscillator();
+			let lfoGain = context.createGain();
+
+			lfo.frequency.value = 5;
+			lfoGain.gain.value = 0.002;
+
+			lfo.connect(lfoGain).connect(delay.delayTime);
+			lfo.start();
+
+			return delay;
+		}
+
+		let effects = {
+			reverb: false,
+			chorus: false,
+			phaser: false,
+			vibrato: false
+		};
+
+		function toggleEffect(type) {
+			if (effects[type]) {
+				removeEffect(type);
+			} else {
+				console.log("adding eff", type)
+				addEffect(type);
+			}
+			effects[type] = !effects[type];
+		}
+
+		function addEffect(type) {
+			let node;
+			switch (type) {
+				case 'reverb':
+					createReverbNode((node) => {
+						reverbNode = node;
+						dryGain.disconnect();
+						dryGain.connect(node).connect(effectChain);
+					});
+					return;
+
+				case 'chorus':
+					chorusNode = createChorusNode();
+					node = chorusNode;
+					break;
+				case 'phaser':
+					phaserNode = createPhaserNode();
+					node = phaserNode;
+					break;
+				case 'vibrato':
+					vibratoNode = createVibratoNode();
+					node = vibratoNode;
+					break;
+			}
+
+			if (node) {
+				dryGain.disconnect();
+				dryGain.connect(node).connect(effectChain);
+			}
+		}
+
+		function removeEffect(type) {
+			dryGain.disconnect();
+
+			switch (type) {
+				case 'reverb':
+					if (reverbNode) reverbNode.disconnect();
+					break;
+				case 'chorus':
+					if (chorusNode) chorusNode.disconnect();
+					break;
+				case 'phaser':
+					if (phaserNode) phaserNode.disconnect();
+					break;
+				case 'vibrato':
+					if (vibratoNode) vibratoNode.disconnect();
+					break;
+			}
+
+			dryGain.connect(effectChain);
+			wetGain.connect(effectChain);
+		}
+
+		document.getElementById('toggleReverb').addEventListener('click', () => toggleEffect('reverb'));
+		document.getElementById('toggleChorus').addEventListener('click', () => toggleEffect('chorus'));
+		document.getElementById('togglePhaser').addEventListener('click', () => toggleEffect('phaser'));
+		document.getElementById('toggleVibrato').addEventListener('click', () => toggleEffect('vibrato'));
+
 	</script>
 </body>
 

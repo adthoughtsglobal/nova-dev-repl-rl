@@ -508,7 +508,7 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
 
     var myWindow = {};
 
-    window.addEventListener("message", (event) => {
+    window.addEventListener("message", async (event) => {
         if (event.data.type === "myWindow") {
             console.log("mywindow set done");
             const data = event.data.data;
@@ -520,8 +520,11 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
                 },
                 eventBusWorker: new Worker(data.eventBusURL)
             };
+
             let greenflagResult;
-            try { greenflagResult = greenflag() } catch (e) { }
+            try { greenflagResult = await greenflag() } catch (e) { }
+                    console.log(87)
+            window.parent.postMessage({ data:"gfdone", iframeId: myWindow.windowID }, "*");
         }
     });
 
@@ -529,7 +532,7 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
         constructor() {
             this.transactionIdCounter = 0;
             this.pendingRequests = {};
-            this.listeners = {}; // Ensure listeners object exists for event types
+            this.listeners = {};
             window.addEventListener("message", (event) => {
                 if (event.data.transactionId && (event.data.result || event.data.error)) {
                     const { transactionId, result, error, success } = event.data;
@@ -614,8 +617,14 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
             }
 
             function handleMessage(event) {
-                console.log(234, event)
                 if (!event.data || event.data.iframeId !== winuidfr) return;
+                if (event.data.data == "gfdone") {
+                    console.log(45)
+                    if (windowLoader) {
+                        windowLoader.classList.add("transp5");
+                        windowLoader.remove()
+                    }
+                }
 
                 if (event.data.type === "iframeClick") {
                     putwinontop("window" + winuidfr);
@@ -681,10 +690,7 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
     windowDiv.style.zIndex = maxWindValue + 1;
 
     await loadIframeContent(windowLoader, windowContent);
-    if (windowLoader) {
-        windowLoader.classList.add("transp5");
-        setTimeout(() => windowLoader.remove(), 300);
-    }
+    
 
     dragElement(windowDiv);
     putwinontop('window' + winuid);

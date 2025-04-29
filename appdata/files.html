@@ -1253,7 +1253,7 @@
 			event.preventDefault();
 		});
 
-		var currentPath = 'Downloads/', nowfile, flmode = 'grid', onlyshow = false, fileToSelect = null;
+		var currentPath = 'Downloads/', nowfile, flmode = 'grid', onlyshow = false, fileToSelect = null, currentProc = null, slfileID = null;
 		var fllist;
 		var fdlist;
 		var binmode = false;
@@ -1689,7 +1689,7 @@
 
 				openfile(z);
 			} else {
-
+				slfileID = x.getAttribute("unid");
 				if (document.getElementById("slfile")) { document.getElementById("slfile").id = null; }
 				nowfile = x;
 
@@ -1755,7 +1755,7 @@
 								option.classList.add("dropdownerthebob");
 								option.title = action.label;
 								option.onclick = () => action.action(itemuid);
-								option.innerHTML = `<span class="material-symbols-rounded">${action.icon}</span> <b>${action.label}</b>`;
+								option.innerHTML = `<span class="material-symbols-rounded" style="color: ${action.color}">${action.icon}</span> <b>${action.label}</b>`;
 								visibleLinks.push(option);
 								dropupContentDiv.appendChild(option);
 							}
@@ -2128,7 +2128,27 @@
 				initializeFilesApp(false);
 			}
 
+			document.addEventListener('keydown', function (e) {
+				if (e.ctrlKey && e.key === 'c') {
+					const slfile = document.getElementById('slfile');
+					if (slfile) {
+						currentProc = 'copied';
+						slfileID = slfile.getAttribute('unid');
+					}
+				}
 
+				if (e.ctrlKey && e.key === 'v') {
+					currentProc = null;
+					pastefile();
+				}
+			});
+
+		}
+
+		async function pastefile() {
+			let file = await window.parent.getFileById(slfileID);
+			await window.parent.createFile(currentPath, file.fileName, false, file.content, file.metadata || {});
+			
 		}
 
 		window.fileActions = {
@@ -2209,6 +2229,7 @@
 					.filter(action => action.condition(file))
 					.map(action => ({
 						icon: action.icon,
+						color: action.color,
 						label: action.label,
 						action: (itemuid) => action.action(itemuid),
 					}));
@@ -2335,7 +2356,7 @@
 				menuItem.style.padding = '5px 10px';
 				menuItem.style.cursor = 'pointer';
 				menuItem.addEventListener('click', () => {
-					item.action(targetElement.getAttribute("uuid"));
+					item.action(targetElement.getAttribute("unid"));
 					contextMenu.style.display = 'none';
 				});
 				contextMenu.appendChild(menuItem);
