@@ -667,7 +667,7 @@
 			font-size: .8em;
 		}
 
-		.offlinesug {
+		#offlinesug {
 			position: absolute;
 			top: 0;
 			left: 0;
@@ -681,7 +681,7 @@
 			z-index: 99;
 		}
 
-		.offlinesug code {
+		#offlinesug code {
 			background-color: var(--colors-BG-section);
 			padding: .5em .7em;
 			border-radius: .77em;
@@ -712,10 +712,34 @@
 			background-color: var(--colors-BG-sub);
 			width: 1px;
 		}
+
+		#offlinesug {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			height: 100vh;
+			overflow: hidden;
+		}
+
+		.glitchbtn {
+			margin-top: 1em;
+    padding: .5em 1em;
+    font-size: inherit;
+    border-radius: var(--sizing-border-radius);
+    border: 0;
+    background-color: var(--colors-BG-highlighted);
+    color: inherit;
+		}
+
+		.initloadin {
+			filter: contrast(0);
+			opacity: .1;
+		}
 	</style>
 </head>
 
-<body>
+<body class="initloadin">
 	<div class="nav">
 		<button active="true" onclick="openwin('appsmode', this)">
 			Apps
@@ -782,10 +806,15 @@
 					});
 				});
 
-				function displayErrorMessage(message) {
+				function displayErrorMessage(message, error) {
+					let ele = document.createElement("div");
+					if (!message) {
+						message = "<p>Failed to fetch data. Please try again.</p><code>" + error + "</code> <button class='glitchbtn' onclick='greenflag()'>Retry</button>";
+					}
 					console.log("err")
-					document.body.innerHTML = message;
-					document.body.classList.add("offlinesug")
+					ele.id = "offlinesug";
+					ele.innerHTML = message;
+					document.body.appendChild(ele);
 				}
 
 				function openwin(winname, obj) {
@@ -937,7 +966,7 @@
 								const instdiv = document.createElement('button');
 								instdiv.style.background = themeData.colors["--colors-BG-highlighted"];
 								instdiv.style.color = themeData.colors["--colors-text-high"];
-								instdiv.style.border = `1px solid ${themeData.colors["--colors-BG-sub"]}`;instdiv.style.borderRadius = themeData.colors["--sizing-border-radius"]
+								instdiv.style.border = `1px solid ${themeData.colors["--colors-BG-sub"]}`; instdiv.style.borderRadius = themeData.colors["--sizing-border-radius"]
 								instdiv.innerHTML = `<i
 						class="material-symbols-rounded">format_paint</i>`;
 								themedetdiv.appendChild(instdiv);
@@ -958,7 +987,7 @@
 							networkretries++;
 							console.error('Error loading themes:', error);
 							if (networkretries > 2) {
-								displayErrorMessage("<p>Failed to fetch data. Please try opening the app again.</p><code>" + error + "</code>");
+								displayErrorMessage("<p>Failed to fetch data. Please try opening the app again.</p><code>", error);
 							} else {
 								loadThemes();
 							}
@@ -1054,11 +1083,13 @@
 				return;
 			}
 			await fetchAppData().then(appData => {
+				document.getElementById("offlinesug")?.remove();
+				document.body.classList.remove("initloadin");
 				renderSections();
 				populateApps(appData);
 				populateDefaultApps(window.parent.defAppsList);
 			}).catch(error => {
-				displayErrorMessage("<p>Failed to fetch data. Please try again.</p><code>" + error + "</code>");
+				displayErrorMessage(0, error);
 				console.error('Error:', error);
 				return;
 			});
