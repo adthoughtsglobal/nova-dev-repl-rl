@@ -1678,7 +1678,7 @@
 							handlerCell.innerHTML = await window.parent.getAppIcon(0, handlers[0], true);
 							handlerCell.onclick = async () => {
 								replaceableHandler = handlers[0];
-								clickedRowId =`row-${type}`;
+								clickedRowId = `row-${type}`;
 
 								replaceableapp = handlers[0];
 								let appIdToOpen = window.parent.handlers['file'][0] || null;
@@ -2829,8 +2829,10 @@
 						colorsToSave[variableName] = colorValue;
 					});
 
+					applyTheme({ colors: colorsToSave });
 					await window.parent.setSetting("themeColors", colorsToSave);
 				}
+
 
 				function updateColor(picker, variableName) {
 					const colorValue = picker.jscolor
@@ -2851,10 +2853,7 @@
 					return match ? match[1].trim() : null;
 				}
 
-
 				function applyTheme(data) {
-					window.parent.applyThemeNonVisual(data, document);
-
 					const inputs = document.querySelectorAll('[data-variable]');
 					inputs.forEach(input => {
 						const variableName = input.dataset.variable;
@@ -2865,16 +2864,16 @@
 								input.jscolor.fromString(newValue);
 							} else if (input.classList.contains('numinp')) {
 								input.value = newValue;
-								document.documentElement
-									.style.setProperty(variableName, newValue + 'px');
 							}
 							updateColor(input, variableName);
 						}
 					});
 
-					saveColors();
-					window.parent.toast("Please reopen settings to apply theme.")
+					window.parent.applyTheme(data.colors, document);
+
+					window.parent.toast("Please reopen settings to apply theme.");
 				}
+
 
 				async function initColorPickers() {
 					document.querySelectorAll('[data-variable]').forEach(button => {

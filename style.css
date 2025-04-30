@@ -2228,27 +2228,54 @@ div#toastdiv {
 	animation: notifpull .2s;
 }
 
+@keyframes slideInTop {
+	from {
+		transform: translateY(-1rem);
+		opacity: 0;
+	}
+	to {
+		transform: translateY(0);
+	}
+}
+
+@keyframes slideInLeft {
+	from {
+		transform: translateX(-1rem);
+		opacity: 0;
+	}
+	to {
+		transform: translateX(0);
+	}
+}
+
+@keyframes slideInRight {
+	from {
+		transform: translateX(1rem);
+	}
+	to {
+		transform: translateX(0);
+	}
+}
+
 #snappingIndicator {
 	position: absolute;
 	height: calc(100vh - 0px);
 	width: calc(100vw - 0px);
 	z-index: 0;
 	display: none;
-	animation: .3s sleepwin;
 }
 
 #snappingIndicator div {
 	background-color: white;
 	border-radius: .5rem;
 	border: 2px solid var(--colors-BG-highlighted);
-	transition: .2s ease-out;
 }
-
 .topsnappingind {
 	width: 100%;
 	position: absolute;
 	height: calc(3% - .3rem);
 	top: -0.3rem;
+	animation: .3s slideInTop;
 }
 
 .rightsnappingind {
@@ -2257,6 +2284,7 @@ div#toastdiv {
 	width: calc(3% - .3rem);
 	right: -0.3rem;
 	top: calc(3% - 0px);
+	animation: .3s slideInRight;
 }
 
 .leftsnappingind {
@@ -2265,6 +2293,7 @@ div#toastdiv {
 	width: calc(3% - .3rem);
 	left: -0.3rem;
 	top: calc(3% - 0px);
+	animation: .3s slideInLeft;
 }
 
 .app-shortcut svg.mmic {

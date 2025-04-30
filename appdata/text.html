@@ -195,12 +195,11 @@
 
             var defile
             try {
-                if (myWindow.params.appid == myWindow.appID) {
+                if (myWindow.params) {
                     document.getElementById("thedisplay").value = "Loading...";
                     defile = myWindow.params.data;
                     const file = await ntxSession.send("fileGet.byId", defile);
-                    readthefile(file)
-
+                    readthefile(file);
                 } else {
                     document.getElementById("thedisplay").value = "";
                 }

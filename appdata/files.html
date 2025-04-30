@@ -1846,6 +1846,9 @@
 				let appIdToOpen = window.parent.handlers['file'][0] || null;
 				window.parent.openlaunchprotocol(appIdToOpen, { "opener": "app", "dir": "Apps/" }, currentreqID, myWindow.windowID);
 				return;
+			} else if (all == 'text') {
+				window.parent.useHandler("any", slfileID);
+				return;
 			}
 
 			window.parent.openfile(x);
@@ -2164,12 +2167,6 @@
 				action: (itemuid) => openfile(itemuid),
 				condition: (file) => true,
 			},
-			openWith: {
-				icon: 'open_with',
-				label: 'Open With',
-				action: (itemuid) => openfile(itemuid, 'any'),
-				condition: (file) => true,
-			},
 			delete: {
 				icon: 'delete',
 				label: 'Delete',
@@ -2219,11 +2216,24 @@
 				action: (itemuid) => addShortcut(itemuid),
 				condition: (file) => true,
 			},
+			openWith: {
+				icon: 'open_with',
+				label: 'Open With',
+				action: (itemuid) => openfile(itemuid, 'any'),
+				condition: (file) => true,
+			},
+			openAsText: {
+				icon: 'article_shortcut',
+				label: 'Open as text',
+				action: (itemuid) => openfile(itemuid, 'text'),
+				condition: (file) => true,
+			},
 		};
 
 		function getMenuItems(target) {
 			if (target.classList.contains('file')) {
 				const itemuid = target.getAttribute("unid");
+				slfileID = itemuid;
 				const file = { unid: itemuid, type: 'app', fileName: window.parent.getFileNameByID(itemuid) };
 				return Object.values(window.fileActions)
 					.filter(action => action.condition(file))

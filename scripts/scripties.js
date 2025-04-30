@@ -181,16 +181,22 @@ function applyThemeNonVisual(data, doc) {
     }
 
     window.top.setSetting("themeColors", data.colors);
-}
-const appliedThemeVars = new Set();
+}const appliedThemeVars = new Set();
 let themeStyleTag = null;
 
 function applyTheme(colors, doc) {
+	console.log(colors)
     if (!themeStyleTag) {
         themeStyleTag = document.createElement('style');
-		themeStyleTag.id = "novacsstag";
+        themeStyleTag.id = "novacsstag";
+    }
+
+    if (!document.getElementById("novacsstag")) {
         document.head.appendChild(themeStyleTag);
-		doc.head.appendChild(themeStyleTag);
+    }
+
+    if (doc && doc !== document && !doc.getElementById("novacsstag")) {
+        doc.head.appendChild(themeStyleTag.cloneNode(true));
     }
 
     const cssVars = Object.fromEntries(
@@ -216,6 +222,11 @@ function applyTheme(colors, doc) {
     }
 
     themeStyleTag.textContent = `:root { ${cssText} }`;
+
+    if (doc && doc !== document) {
+        const docStyle = doc.getElementById("novacsstag");
+        if (docStyle) docStyle.textContent = themeStyleTag.textContent;
+    }
 }
 
 function removeTheme() {

@@ -96,13 +96,18 @@ body {
 }
 
 body * {
-	transition-timing-function: ease-out;
+	transition-timing-function: cubic-bezier(0, 0, 0, 0.94);
 }
 
 p {
 	font-family: "IBM Plex Sans", sans-serif;
 }
 
+input::placeholder,
+textarea::placeholder {
+    color: var(--colors-text-normal);
+	opacity: .5;
+}
 
 .contextmenu {
 	position: absolute;

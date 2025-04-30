@@ -30,8 +30,8 @@
 			width: calc(100vw - 6px);
 			margin: 3px;
 			border-radius: 5px;
-			background-color: var(--colors-text-normal);
-			color: var(--colors-BG-section);
+			background-color: white;
+			color: black;
 		}
 
 		.urlnav span {
@@ -76,7 +76,7 @@
 
 		.urlnav .inpgrp {
 			width: calc(100% - 140px);
-			background: var(--colors-BG-sub);
+			background: var(--colors-BG-normal);
 			border-radius: 25px;
 			padding: 1px 4px;
 			margin: 3px 0;
@@ -407,9 +407,11 @@
 
 				}
 			} catch (error) {
-				console.log(`safe error: ${error.message.includes("cross-origin ") ? "CORS error" : error}`);
+				console.log(`safe error: ${error.message.includes("cross-origin ") ? () => {
+					"CORS error";
+					document.getElementById("deinput").value = "#cors-enabled"
+				} : error}`);
 
-				document.getElementById("deinput").value = "#cors-enabled"
 			}
 
 			document.getElementById(cityName).style.display = "flex";
@@ -667,9 +669,11 @@
 					const file = await ntxSession.send("fileGet.byId", defile);
 					readthefile(file);
 				} else {
-					newtab("https://adthoughtsglobal.github.io/NovaOS/newtab.html")
+					newtab();
 				}
-			} catch (e) { }
+			} catch (e) {
+				newtab();
+			}
 
 			const dropArea = document.getElementById('tabs');
 			dropArea.addEventListener('dragover', function (e) {
@@ -702,7 +706,7 @@
 			const byteArray = new Uint8Array(byteNumbers);
 			const blob = new Blob([byteArray], { type: 'text/html' });
 			const blobUrl = URL.createObjectURL(blob);
-
+			console.log(435, blobUrl)
 			newtab(blobUrl);
 		}
 

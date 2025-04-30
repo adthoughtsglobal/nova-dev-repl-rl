@@ -1075,11 +1075,11 @@
 		}
 
 		async function greenflag() {
-			const data = myWindow?.params?.opener;
-			initializeLoader();
+			const data = myWindow?.params?.data?.opener;
 
 			if (data == 'themes') {
 				openwin('themesmode', document.getElementById('themesmodebtn'));
+				document.body.classList.remove("initloadin");
 				return;
 			}
 			await fetchAppData().then(appData => {
@@ -1093,10 +1093,6 @@
 				console.error('Error:', error);
 				return;
 			});
-		}
-
-		function initializeLoader() {
-			document.getElementById("sugapps").innerHTML = `<div class="loader"></div>`;
 		}
 
 		async function fetchAppData() {

@@ -39,7 +39,6 @@ async function useHandler(name, stufftodo) {
             _olpResolverMap.delete(transferID);
             resolve(undefined);
         }, 600000);
-        // you get 10 mins to complete handler
 
         _olpResolverMap.set(transferID, { resolve, timeout });
 
