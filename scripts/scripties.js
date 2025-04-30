@@ -215,7 +215,7 @@ function applyTheme(colors, doc) {
         appliedThemeVars.add(variableName);
     }
 
-    themeStyleTag.textContent = `body { ${cssText} }`;
+    themeStyleTag.textContent = `:root { ${cssText} }`;
 }
 
 function removeTheme() {

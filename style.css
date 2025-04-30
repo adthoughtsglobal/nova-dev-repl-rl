@@ -1481,7 +1481,7 @@ dialog#terminal {
 
 .searchinputcont {
 	border-radius: var(--sizing-border-radius);
-	background: var(--colors-BG-normal);
+    background: var(--colors-BG-section);
 	color: inherit;
 	display: flex;
 	flex-direction: row;

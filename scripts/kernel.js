@@ -478,7 +478,7 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
             try {
                 const [namespace, method] = message.action.split(".");
                 if (ntxWrapper[namespace] && typeof ntxWrapper[namespace][method] === "function") {
-                    const result = await ntxWrapper[namespace][method](...message.params, toTitleCase(basename(title)));
+                    const result = await ntxWrapper[namespace][method](...message.params);
 
                     event.source.postMessage({
                         transactionId: message.transactionId,
@@ -516,7 +516,7 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
             myWindow = {
                 ...data,
                 close: () => {
-                    ntxSession.send("sysUI.clwin", data.windowID);
+                    ntxSession.send("sysUI.clwin", myWindow.windowID);
                 },
                 eventBusWorker: new Worker(data.eventBusURL)
             };

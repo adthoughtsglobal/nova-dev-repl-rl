@@ -215,30 +215,22 @@ async function erdbsfull(x) {
 }
 
 async function removeUser(username = CurrentUsername) {
-    const key = 'dataStore';
     try {
-        const db = await openDB(CurrentUsername, 1, {
-            upgrade(db) {
-                if (!db.objectStoreNames.contains(key)) {
-                    db.createObjectStore(key, { keyPath: 'CurrentUsername' });
-                }
-            }
-        });
-        const transaction = db.transaction(key, 'readwrite');
-        const store = transaction.objectStore(key);
-        const existingUser = await store.get(username);
         const magicStrings = JSON.parse(localStorage.getItem('magicStrings')) || {};
-
-        delete magicStrings[CurrentUsername];
+        delete magicStrings[username];
         localStorage.setItem('magicStrings', JSON.stringify(magicStrings));
-        if (existingUser) {
-            await store.delete(username);
-            console.log(`User ${username} removed successfully.`);
-        } else {
-            console.warn(`User ${username} does not exist.`);
-        }
-        await transaction.complete;
-        logoutofnova()
+
+        const deleteRequest = indexedDB.deleteDatabase(username);
+        deleteRequest.onsuccess = function () {
+            console.log(`Database for user ${username} deleted successfully.`);
+            logoutofnova();
+        };
+        deleteRequest.onerror = function (event) {
+            console.error(`Error deleting database for user ${username}:`, event.target.error);
+        };
+        deleteRequest.onblocked = function () {
+            console.warn(`Deletion of database for user ${username} is blocked.`);
+        };
     } catch (error) {
         console.error("Error in removeUser function:", error);
     }
@@ -835,10 +827,10 @@ async function getFileByPath(path) {
     return null;
 }
 async function getFileById(id, dataType) {
-    if (!id) return undefined;
+    if (!id) return 0;
     await updateMemoryData();
     const fileDetails = await findFileDetails(id, memory.root, dataType);
-    if (!fileDetails) return null;
+    if (!fileDetails) return 3;
     return {
         fileName: fileDetails.fileName,
         id: fileDetails.id,

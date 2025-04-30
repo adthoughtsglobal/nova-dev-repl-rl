@@ -1843,7 +1843,7 @@
 
 			if (all == 'any') {
 				currentreqID = window.parent.genUID();
-				let appIdToOpen = window.parent.fileTypeAssociations['file'][0] || null;
+				let appIdToOpen = window.parent.handlers['file'][0] || null;
 				window.parent.openlaunchprotocol(appIdToOpen, { "opener": "app", "dir": "Apps/" }, currentreqID, myWindow.windowID);
 				return;
 			}

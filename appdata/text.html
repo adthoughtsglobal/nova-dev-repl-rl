@@ -112,21 +112,9 @@
             document.getElementById("thedisplay").value = "Waiting for you to open a file...";
             const fileID = await ntxSession.send("olp.useHandler", "file", { "opener": 'any', "dir": "Downloads/" });
             const file = await ntxSession.send("fileGet.byId", fileID);
+            console.log(4534, fileID, file)
             readthefile(file);
-
-            // Legacy code
-            currentreqID = await ntxSession.send("utility.genUID");
-            await ntxSession.send("olp.launch", "file", { "opener": 'any', "dir": "Downloads/" }, currentreqID, myWindow.windowID);
         }
-
-        window.addEventListener('message', async (event) => {
-            if (event.data.action === 'loadlocalfile') {
-                if (event.data.id === myWindow.windowID) {
-                    const file = await ntxSession.send("fileGet.byId", event.data.returned);
-                    readthefile(file);
-                }
-            }
-        });
 
         async function savetx() {
             sbtn.innerHTML = '* Saving';

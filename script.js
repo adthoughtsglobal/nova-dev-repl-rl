@@ -1181,7 +1181,7 @@ function displayTimeLeft(seconds) {
 	document.getElementById('sleeptimer').textContent = display;
 }
 
-function notify(title = "Notification", description = "There is a notification", appname = "unknown") {
+function notify(title = "Notification", description = "There is a notification", appname = "App") {
 	if (document.getElementById("notification").style.display == "block") {
 		document.getElementById("notification").style.display = "none";
 		setTimeout(notify(title, description, appname), 500)

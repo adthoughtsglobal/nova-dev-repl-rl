@@ -1648,7 +1648,6 @@
 						const table = document.createElement('div');
 						table.className = 'table';
 
-						// Header row
 						const headerRow = document.createElement('div');
 						headerRow.className = 'header-row';
 
@@ -1677,13 +1676,26 @@
 							handlerCell.className = 'cell handler-cell';
 							handlerCell.title = handlers[0];
 							handlerCell.innerHTML = await window.parent.getAppIcon(0, handlers[0], true);
-							handlerCell.onclick = () => {
+							handlerCell.onclick = async () => {
 								replaceableHandler = handlers[0];
-								currentreqID = window.parent.genUID();
-								clickedRowId = row.id;
+								clickedRowId =`row-${type}`;
 
-								let appIdToOpen = handlers[0] || null;
-								window.parent.openlaunchprotocol(appIdToOpen, { "opener": "app", "dir": "Apps/" }, currentreqID, myWindow.windowID);
+								replaceableapp = handlers[0];
+								let appIdToOpen = window.parent.handlers['file'][0] || null;
+								let newHandler = await window.parent.useHandler("file", { "opener": "app", "dir": "Apps/" });
+
+								for (let key in window.parent.handlers) {
+									if (window.parent.handlers.hasOwnProperty(key)) {
+										window.parent.handlers[key] = window.parent.handlers[key].map(handler => handler === replaceableHandler ? newHandler : handler);
+									}
+								}
+								await window.parent.setSetting('handlers', window.parent.handlers);
+
+								const row = document.getElementById(clickedRowId);
+								if (row) {
+									const handlerCell = row.querySelector('.handler-cell');
+									handlerCell.innerHTML = await window.parent.getAppIcon(0, newHandler, true);
+								}
 							};
 
 							row.appendChild(typeCell);
@@ -1712,28 +1724,6 @@
 					document.querySelector('#taskbarloader-methods').remove();
 					document.querySelector('#taskbarloader-files').remove();
 				}
-
-
-				window.addEventListener('message', async (event) => {
-					if (event.data.action === 'loadlocalfile' && event.data.id === myWindow.windowID) {
-						let targetHandler = replaceableHandler;
-						let newHandler = event.data.returned;
-
-						for (let key in window.parent.fileTypeAssociations) {
-							if (window.parent.fileTypeAssociations.hasOwnProperty(key)) {
-								window.parent.fileTypeAssociations[key] = window.parent.fileTypeAssociations[key].map(handler => handler === targetHandler ? newHandler : handler);
-							}
-						}
-						await window.parent.setSetting('fileTypeAssociations', window.parent.fileTypeAssociations);
-
-						// Update only the clicked row
-						const row = document.getElementById(clickedRowId);
-						if (row) {
-							const handlerCell = row.querySelector('.handler-cell');
-							handlerCell.innerHTML = await window.parent.getAppIcon(0, newHandler, true);
-						}
-					}
-				});
 			</script>
 
 		</div>
@@ -2256,11 +2246,7 @@
 						loaduprtour()
 					}
 					function loaduprtour() {
-						window.parent.say(`<ol>
-							<li>RoturTW is a third party service that offers various services using their api.</li> 
-							<li>NovaOS supports rotur as a service.</li> 
-							<li>We do not endorse this service and is by no means related or confined to NovaOS or its terms.</li> 
-							<li>Contact rotur.dev for further enquiry on this service.</li></ol>`)
+						window.parent.say(`RoturTW is a third party service, which offers APIs. NovaOS supports it but isn't affiliated or endorsing. Visit rotur.dev for details.`)
 						const roturExtension = window.parent.roturExtension;
 
 						if (roturExtension && roturExtension.loggedIn()) {
@@ -2397,7 +2383,7 @@
 						rounded_corner
 					</span>
 					<b>Corner rounding</b>
-					<select data-variable="--sizing-border-radius">
+					<select data-variable="--sizing-border-radius" id="brdrdrp">
 						<option value="1rem">Too cute</option>
 						<option value=".7rem">Pretty round</option>
 						<option value=".5rem">Normally round</option>
@@ -2904,6 +2890,10 @@
 						} else {
 							button.value = (getCSSVariableValue(variableName));
 							button.addEventListener('input', () => debouncedSaveColor(button, variableName));
+							if (document.getElementById("brdrdrp").value = '') {
+								document.getElementById("brdrdrp").value = '.5rem';
+								// this is temporary fix.
+							}
 						}
 					});
 
