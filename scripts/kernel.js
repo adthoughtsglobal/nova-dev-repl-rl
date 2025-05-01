@@ -478,16 +478,40 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
                 const [namespace, method] = message.action.split(".");
 
                 if (ntxWrapper[namespace] && typeof ntxWrapper[namespace][method] === "function") {
+                    async function checkAndSetPermission() {
+                        let perms = await getSetting(appid, "permissions.json");
+                        if (perms == null) {
+                            await setSetting(appid, [], "permissions.json");
+                            return checkAndSetPermission(appid, namespace, title);
+                        }
+                    
+                        let condition = perms.includes(namespace);
+                        if (!condition) {
+                            let confirmperm = await justConfirm("Allow " + namespace + " permission?", toTitleCase(basename(title)) + " asks permission " + describeNamespaces(namespace) + ". Allow it?");
+                            if (confirmperm) {
+                                perms.push(namespace);
+                                await setSetting(appid, perms, "permissions.json");
+                                return true;
+                            } else {
+                                return false;
+                            }
+                        }
+                        return true;
+                    }
+                    
+                    const hasPermission = await checkAndSetPermission();
+                    if (!hasPermission) return;
+
                     const fn = ntxWrapper[namespace][method];
                     const args = [...message.params];
-                
+
                     if (fn.appIdSupport) {
                         args.push(appid);
                     }
                     console.log("Calling", method, "with args:", args);
 
                     const result = await fn(...args);
-                
+
                     event.source.postMessage({
                         transactionId: message.transactionId,
                         result,
@@ -496,7 +520,7 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
                 } else {
                     throw new Error(`Invalid NTX action: ${message.action}`);
                 }
-                
+
             } catch (error) {
                 console.error("Error handling NTX message:", error);
 
@@ -699,7 +723,7 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
     windowDiv.style.zIndex = maxWindValue + 1;
 
     await loadIframeContent(windowLoader, windowContent);
-    
+
 
     dragElement(windowDiv);
     putwinontop('window' + winuid);
