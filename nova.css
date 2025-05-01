@@ -27,7 +27,7 @@
 	--spacing-normal: 0.3rem;
 	--spacing-gap: 6px;
 
-	--time-action: .3s;
+	--time-action: .8s;
 
 	/* Extended support */
 	--colors-accent: rgb(97, 121, 255);
@@ -96,7 +96,8 @@ body {
 }
 
 body * {
-	transition-timing-function: cubic-bezier(0, 0, 0, 0.94);
+	transition-timing-function: cubic-bezier(0.7, 0, 1, 1);
+	animation-timing-function: cubic-bezier(0.7, 0, 1, 1);
 }
 
 p {

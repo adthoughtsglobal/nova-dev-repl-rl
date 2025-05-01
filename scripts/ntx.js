@@ -1,7 +1,12 @@
 class NTXSession {
     constructor() {
         const wrapAsync = (fn) =>
-            typeof fn === "function" ? async (...args) => await fn(...args) : fn;
+            typeof fn === "function"
+                ? Object.assign(
+                    async (...args) => await fn(...args),
+                    { appIdSupport: fn.appIdSupport }
+                )
+                : fn;
 
         this.fileGet = {
             byId: wrapAsync(getFileById),
@@ -71,7 +76,7 @@ class NTXSession {
             toTitleCase: toTitleCase,
             getRandomNothingQuote: getRandomNothingQuote,
             debounce: debounce,
-            mtpetxt:mtpetxt
+            mtpetxt: mtpetxt
         };
         this.system = {
             ercache: ercache,

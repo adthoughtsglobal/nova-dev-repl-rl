@@ -1181,7 +1181,9 @@ function displayTimeLeft(seconds) {
 	document.getElementById('sleeptimer').textContent = display;
 }
 
-function notify(title = "Notification", description = "There is a notification", appname = "App") {
+async function notify(...args) {
+    let [title = "Notification", description = "There is a notification", appname = "App", ...rest] = args;
+	appname = basename(await getFileNameByID(appname));
 	if (document.getElementById("notification").style.display == "block") {
 		document.getElementById("notification").style.display = "none";
 		setTimeout(notify(title, description, appname), 500)
@@ -1207,6 +1209,8 @@ function notify(title = "Notification", description = "There is a notification",
 	notifLog[notificationID] = { title, description, appname };
 
 }
+notify.appIdSupport = true;
+
 let toastInProgress = false;
 let totalDuration = 0;
 const minToastDuration = 3000;

@@ -476,9 +476,18 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
 
             try {
                 const [namespace, method] = message.action.split(".");
-                if (ntxWrapper[namespace] && typeof ntxWrapper[namespace][method] === "function") {
-                    const result = await ntxWrapper[namespace][method](...message.params);
 
+                if (ntxWrapper[namespace] && typeof ntxWrapper[namespace][method] === "function") {
+                    const fn = ntxWrapper[namespace][method];
+                    const args = [...message.params];
+                
+                    if (fn.appIdSupport) {
+                        args.push(appid);
+                    }
+                    console.log("Calling", method, "with args:", args);
+
+                    const result = await fn(...args);
+                
                     event.source.postMessage({
                         transactionId: message.transactionId,
                         result,
@@ -487,6 +496,7 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
                 } else {
                     throw new Error(`Invalid NTX action: ${message.action}`);
                 }
+                
             } catch (error) {
                 console.error("Error handling NTX message:", error);
 

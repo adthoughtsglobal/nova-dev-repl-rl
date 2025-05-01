@@ -84,7 +84,7 @@ nav .flodiv {
 	border-radius: var(--sizing-border-radius);
 	background: transparent;
 	padding: 1px;
-	animation: pop .5s cubic-bezier(0, 0, 0, 0.94);
+	animation: pop .5s;
     gap: var(--spacing-normal);
 }
 
@@ -1132,12 +1132,12 @@ input#novamenusearchinp {
 }
 
 .snapping {
-	transition: 0.4s cubic-bezier(0, 0, 0, 0.94);
+	transition: 0.4s;
 }
 
 
 .transp2 {
-	transition: 0.4s cubic-bezier(0, 0, 0, 0.94);
+	transition: 0.4s;
 }
 
 .transp3 {
@@ -1529,10 +1529,6 @@ dialog#terminal {
 
 #seprw-icon svg {
 	width: 80%;
-	background: #63636330;
-	padding: 0.3rem;
-	border-radius: var(--sizing-border-radius);
-	box-shadow: 0 5px 10px #0000004f;
 	max-width: 70px;
 	height: auto;
 	aspect-ratio: 1 / 1;
@@ -2032,6 +2028,10 @@ noscript {
 	align-items: center;
 	border-radius: var(--sizing-border-radius);
 	cursor: pointer;
+}
+
+.user:focus {
+    background: #ffffff1c;
 }
 
 .userselect .user .icon svg {
