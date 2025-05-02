@@ -2630,6 +2630,29 @@
 				</div>
 			</segr>
 			<script>
+
+				function normalizeBorderRadius(inputRem) {
+					const allowedValues = ["1rem", ".7rem", ".5rem", ".3rem", "0rem"];
+					const parsedInput = parseFloat(inputRem);
+
+					if (isNaN(parsedInput)) {
+						return "0rem";
+					}
+					let closest = allowedValues[0];
+					let minDiff = Math.abs(parsedInput - parseFloat(closest));
+
+					for (const val of allowedValues) {
+						const diff = Math.abs(parsedInput - parseFloat(val));
+						if (diff < minDiff) {
+							closest = val;
+							minDiff = diff;
+						}
+					}
+
+					return closest;
+				}
+
+
 				async function copyCurrentTheme() {
 					const colorsToCopy = {};
 					document.querySelectorAll('[data-variable]').forEach(button => {
@@ -2661,8 +2684,14 @@
 										button.jscolor.fromString(parsedColors[variableName]);
 										updateColor(button, variableName);
 									} else {
-										button.value = (parsedColors[variableName]);
+										let value = parsedColors[variableName];
+										if (variableName === '--sizing-border-radius') {
+											const parsedValue = parseFloat(value);
+											value = normalizeBorderRadius(parsedValue);
+										}
+										button.value = value;
 									}
+
 								}
 							});
 							if (await window.parent.justConfirm("Include theme wallpaper?", "Include the wallpaper included in the theme code?")) {
@@ -2863,10 +2892,13 @@
 						if (newValue !== undefined) {
 							if (input.classList.contains('colorpickerui')) {
 								input.jscolor.fromString(newValue);
-							} else if (input.classList.contains('numinp')) {
-								input.value = newValue;
+							} else {
+								if (variableName === '--sizing-border-radius') {
+									const parsedValue = parseFloat(newValue);
+									value = normalizeBorderRadius(parsedValue);
+								}
+								input.value = value;
 							}
-							updateColor(input, variableName);
 						}
 					});
 
