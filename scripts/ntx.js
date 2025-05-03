@@ -30,7 +30,6 @@ class NTXSession {
             launch: wrapAsync(openlaunchprotocol),
             useHandler: wrapAsync(useHandler)
         };
-        this.ctntMgr = ctntMgr;
         this.settings = {
             get: wrapAsync(getSetting),
             set: wrapAsync(setSetting),
@@ -56,9 +55,13 @@ class NTXSession {
             dropdown: wrapAsync(showDropdownModal),
             ask: wrapAsync(ask),
             say: wrapAsync(say),
+            toast: wrapAsync(toast),
             createWindow: wrapAsync(openwindow),
             clwin: wrapAsync(clwin),
-            notify: wrapAsync(notify)
+            notify: wrapAsync(notify),
+            genDesktop: wrapAsync(genDesktop),
+            genTaskBar: wrapAsync(genTaskBar),
+            loadtaskspanel: wrapAsync(loadtaskspanel)
         };
         this.utility = {
             timeAgo: timeAgo,
@@ -76,12 +79,20 @@ class NTXSession {
             toTitleCase: toTitleCase,
             getRandomNothingQuote: getRandomNothingQuote,
             debounce: debounce,
-            mtpetxt: mtpetxt
+            mtpetxt: mtpetxt,
+            calculateSimilarity:calculateSimilarity
         };
         this.system = {
             ercache: ercache,
-            sysLog: sysLog
+            cleanupInvalidAssociations: cleanupInvalidAssociations,
+            sysLog: sysLog,
+            password: password
         };
+        this.specific = {
+            useNovaOffline: useNovaOffline,
+            removeSWs:removeSWs,
+            installdefaultapps: installdefaultapps
+        }
     }
 }
 

@@ -237,3 +237,84 @@ function removeTheme() {
 
     appliedThemeVars.clear();
 }
+
+
+function convertToNTXSession(jsCode) {
+	const ntxSession = new NTXSession();
+	const methodMap = [];
+
+	function similarity(a, b) {
+		let matches = 0;
+		const minLength = Math.min(a.length, b.length);
+		for (let i = 0; i < minLength; i++) {
+			if (a[i] === b[i]) matches++;
+		}
+		return matches / Math.max(a.length, b.length);
+	}
+	function flattenMethods(obj, prefix = '') {
+		for (const key in obj) {
+			const value = obj[key];
+			const fullPath = prefix ? `${prefix}.${key}` : key;
+			if (typeof value === 'function') {
+				methodMap.push({ path: fullPath, key, original: value.name });
+			} else if (typeof value === 'object' && value !== null) {
+				flattenMethods(value, fullPath);
+			}
+		}
+	}
+	function findClosestMatch(target) {
+		let exactKeyMatch = methodMap.find(({ key }) => key.toLowerCase() === target.toLowerCase());
+		if (exactKeyMatch) return exactKeyMatch.path;
+	
+		let bestMatch = null;
+		let highestScore = 0;
+	
+		for (const { path, key, original } of methodMap) {
+			if (!original) continue;
+	
+			const normalizedTarget = target.toLowerCase();
+			const normalizedOriginal = original.toLowerCase();
+			let score = similarity(normalizedTarget, normalizedOriginal);
+	
+			if (normalizedTarget.includes(key.toLowerCase())) score += 0.3;
+			if (key.toLowerCase() === target.toLowerCase()) score += 0.5;
+	
+			if (score > highestScore) {
+				highestScore = score;
+				bestMatch = path;
+			}
+		}
+		return bestMatch;
+	}
+	
+	flattenMethods(ntxSession);
+
+	let convertedCode = jsCode.replace(/(await\s+)?window\.parent\.([\w]+)\s*\(/g, (match, awaitKeyword, method) => {
+		let closestMatch = findClosestMatch(method);
+		if (closestMatch) {
+			const prefix = awaitKeyword || ''; // only add `await` if it's not already present
+			return `${prefix}ntxSession.send("${closestMatch}", `;
+		}
+		return match;
+	});
+	
+
+	const dialog = document.createElement("dialog");
+	dialog.style.padding = "20px";
+	dialog.style.border = "none";
+	dialog.style.boxShadow = "0px 4px 10px rgba(0, 0, 0, 0.2)";
+	dialog.style.width = "60vw";
+	dialog.innerHTML = `
+<h3>Converted Code</h3>
+<textarea style="width: 100%; height: 300px;">${convertedCode}</textarea>
+<br>
+<button id="closeDialog">Close</button>
+`;
+	document.body.appendChild(dialog);
+	dialog.showModal();
+
+	document.getElementById("closeDialog").addEventListener("click", () => {
+		dialog.close();
+		document.body.removeChild(dialog);
+	});
+}

@@ -824,6 +824,60 @@
 			font-family: 'IBM Plex Sans';
 			font-weight: 200;
 		}
+
+		div#myProgress3 {
+			height: 1em;
+			background: var(--colors-BG-sub);
+			border-radius: 1em;
+			display: flex;
+			align-items: stretch;
+			justify-content: flex-start;
+			overflow: hidden;
+			height: 1.5em;
+		}
+
+		div#myProgress3 div {
+			height: 100%;
+			width: 0;
+			overflow: hidden;
+			font-size: 14px;
+			white-space: nowrap;
+			text-align: center;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			min-width: fit-content;
+		}
+
+		#compositionlegend {
+			display: flex;
+			flex-direction: row;
+			flex-wrap: wrap;
+			justify-content: flex-start;
+			align-items: flex-start;
+			gap: .3em;
+			margin-top: .5em;
+		}
+
+		.compositionitem {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			gap: 5px;
+			background: var(--colors-BG-sub);
+			padding: 1px 7px;
+			border-radius: var(--sizing-border-radius);
+		}
+
+		.compositionitem:hover {
+			filter: brightness(120%);
+		}
+
+		.compositionitem .coldot {
+			width: 10px;
+			height: 10px;
+			border-radius: 1em;
+		}
 	</style>
 </head>
 
@@ -1235,7 +1289,7 @@
 				</span> Storage</h1>
 			<segr>
 				<div settingn>
-					<b>IndexedDB</b>
+					<b>Available space</b>
 					<div class="progbarma" id="myProgress2">
 						<div id="myBar2" class="progbar"></div>
 					</div>
@@ -1245,6 +1299,83 @@
 						<p style="margin-top: 0px;">Ran out of storage?<br>Get more storage by removing some files</p>
 					</div>
 				</div>
+			</segr>
+
+			<segr>
+				<div settingn>
+					<b>Storage composition</b>
+					<div class="compositionbar" id="myProgress3">
+					</div>
+					<div id="compostitles"></div>
+				</div>
+				<script>
+					const countFileTypes = (root) => {
+						const typeCounts = {};
+						for (const dir in root) {
+							const files = root[dir];
+							for (const file in files) {
+								const ext = window.parent.mtpetxt(file);
+								typeCounts[ext] = (typeCounts[ext] || 0) + 1;
+							}
+						}
+						return typeCounts;
+					};
+
+					const renderCompositionBar = async (typeCounts, containerId) => {
+						const total = Object.values(typeCounts).reduce((a, b) => a + b, 0);
+						const container = document.getElementById(containerId);
+						const colors = {};
+
+						for (const type in typeCounts) {
+							const percent = (typeCounts[type] / total) * 100;
+							if (percent >= 1) {
+								if (!colors[type]) {
+									colors[type] = window.parent.stringToDarkPastelColor(type + "novaOs");
+								}
+								const div = document.createElement('div');
+								div.style.width = percent + '%';
+								div.style.backgroundColor = colors[type];
+								div.classList.add('composition-segment');
+								div.dataset.type = type;
+								container.appendChild(div);
+							}
+						}
+
+						const legend = document.createElement('div');
+						legend.id = "compositionlegend";
+
+						for (const type in colors) {
+							const item = document.createElement('div');
+							item.classList.add("compositionitem");
+
+							const colorBox = document.createElement('div');
+							colorBox.classList.add("coldot");
+							colorBox.style.backgroundColor = colors[type];
+
+							const label = document.createElement('span');
+							label.textContent = type;
+
+							item.appendChild(colorBox);
+							item.appendChild(label);
+							legend.appendChild(item);
+
+							item.addEventListener('mouseenter', () => {
+								const segments = container.querySelectorAll(`.composition-segment[data-type="${type}"]`);
+								segments.forEach(seg => seg.style.boxShadow = '0 0 20px black, 0 0 10px #00c2ff inset');
+							});
+
+							item.addEventListener('mouseleave', () => {
+								const segments = container.querySelectorAll(`.composition-segment[data-type="${type}"]`);
+								segments.forEach(seg => seg.style.boxShadow = '');
+							});
+						}
+
+						document.getElementById("compostitles").appendChild(legend);
+					};
+
+					const typeCounts = countFileTypes(window.parent.memory.root);
+					renderCompositionBar(typeCounts, 'myProgress3');
+				</script>
 			</segr>
 
 			<h3>Related settings</h3>
@@ -1352,12 +1483,11 @@
 						// smartsearch
 						document.getElementById("cbx-69").addEventListener("change", async function () {
 							let newValue2 = document.getElementById("cbx-69").checked;
-							await window.parent.setSetting("smartsearch", newValue2)
-							window.parent.qsetsRefresh()
+							ntxSession.send("settings.set", "smartsearch", newValue2)
 						});
 
 						try {
-							if (await window.parent.getSetting("smartsearch")) {
+							if (await ntxSession.send("settings.get", "smartsearch")) {
 								document.getElementById("cbx-69").checked = true;
 							}
 						} catch (error) {
@@ -2565,7 +2695,6 @@
 
 		<div id="exp" class="tabcontent">
 			<h1>Theme</h1>
-			<h3>Theme Packs</h3>
 			<segr>
 
 				<div class="buttongrp">
@@ -2631,13 +2760,14 @@
 			</segr>
 			<script>
 
-				function normalizeBorderRadius(inputRem) {
+				function normalizeBorderRadiusValue(inputRem) {
 					const allowedValues = ["1rem", ".7rem", ".5rem", ".3rem", "0rem"];
 					const parsedInput = parseFloat(inputRem);
 
 					if (isNaN(parsedInput)) {
 						return "0rem";
 					}
+
 					let closest = allowedValues[0];
 					let minDiff = Math.abs(parsedInput - parseFloat(closest));
 
@@ -2664,13 +2794,13 @@
 						colorsToCopy['wallpaper'] = await window.parent.getSetting("wall");
 					}
 					window.parent.navigator.clipboard.writeText(JSON.stringify(colorsToCopy))
-						.then(() => window.parent.say('Theme copied to clipboard!'))
+						.then(() => window.parent.toast('Theme copied to clipboard!'))
 						.catch(err => console.error('Error copying theme:', err));
 				}
 
 				async function pasteThemeFromClipboard() {
 					try {
-						const text = await window.parent.navigator.clipboard.readText();
+						const text = await navigator.clipboard.readText();
 						const parsedColors = JSON.parse(text);
 						console.log(parsedColors)
 						var variableName;
@@ -2694,12 +2824,15 @@
 
 								}
 							});
-							if (await window.parent.justConfirm("Include theme wallpaper?", "Include the wallpaper included in the theme code?")) {
-								document.getElementById("wallpaperurl").value = parsedColors['wallpaper'];
-								savewallpap();
+							if (parsedColors['wallpaper']) {
+								if (await window.parent.justConfirm("Include theme wallpaper?", "Include the wallpaper included in the theme code?")) {
+									document.getElementById("wallpaperurl").value = parsedColors['wallpaper'];
+									savewallpap();
+								}
+
 							}
 							saveColors();
-							window.parent.say('Theme applied from clipboard!');
+							window.parent.toast('Theme applied from clipboard!');
 						} else {
 							window.parent.say('Clipboard does not contain a valid theme JSON.');
 						}
@@ -2892,19 +3025,14 @@
 						if (newValue !== undefined) {
 							if (input.classList.contains('colorpickerui')) {
 								input.jscolor.fromString(newValue);
-							} else {
-								if (variableName === '--sizing-border-radius') {
-									const parsedValue = parseFloat(newValue);
-									value = normalizeBorderRadius(parsedValue);
-								}
-								input.value = value;
+							} else if (input.classList.contains('numinp')) {
+								input.value = newValue;
 							}
+							updateColor(input, variableName);
 						}
 					});
 
 					window.parent.applyTheme(data.colors, document);
-
-					window.parent.toast("Please reopen settings to apply theme.");
 				}
 
 
@@ -2936,7 +3064,6 @@
 							"align": document.getElementById("navAlignment").value
 						};
 						await window.parent.setSetting("NovNavCtrl", newValue);
-						window.parent.qsetsRefresh();
 					}
 
 					document.getElementById("cbx-71").addEventListener("change", saveNovNavCtrlSetting);
@@ -3065,22 +3192,6 @@
 				}
 
 				generateDeviceDivs()
-
-
-				var psmm = window.parent.document.body.style.opacity == "1";
-				if (psmm) { togglepsm() }
-				function togglepsm() {
-					if (psmm) {
-						window.parent.document.body.style.filter = "brightness(1)"
-						psmm = false
-					} else {
-						window.parent.document.body.style.filter = "brightness(" + (100 - document.getElementById("dimlightsby").value) + "%)"
-
-						psmm = true;
-						document.getElementById("cbx-51").check()
-					}
-				}
-
 			</script>
 	</container>
 	<script>

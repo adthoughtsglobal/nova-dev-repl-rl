@@ -488,12 +488,12 @@
         function saveRecording() {
             const blob = new Blob(recordedChunks, { type: recordedChunks[0].type || "video/webm" });
 
-            function createFileWithTimestamp() {
+            async function createFileWithTimestamp() {
                 let now = new Date();
                 let timestamp = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}, ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-                let filename = `video_${timestamp} ${window.parent.genUID()}`;
+                let filename = `video_${timestamp} ${await ntxSession.send("utility.genUID", )}`;
 
-                window.parent.createFile("Media/", filename, "webm", blob);
+                await ntxSession.send("fileSet.createFile", "Media/", filename, "webm", blob);
             }
 
             createFileWithTimestamp();
@@ -527,7 +527,7 @@
 
             let dataUrl;
             try {
-                let format = await window.parent.getSetting("CamImgFormat");
+                let format = await ntxSession.send("settings.get", "CamImgFormat");
                 dataUrl = canvas.toDataURL(`image/${format ? format.toLowerCase() : 'webp'}`);
             } catch (error) {
                 console.log("safe error: " + error);
@@ -571,14 +571,13 @@
             async function startCaptureProcess() {
                 try {
                     let imgData = await captureCameraImage();
-                    let compressedImg = window.parent.shrinkbsf(imgData);
-                    let format = (await window.parent.getSetting("CamImgFormat")) || 'webp';
+                    let format = (await ntxSession.send("settings.get", "CamImgFormat")) || 'webp';
 
                     let now = new Date();
                     let timestamp = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}, ${now.getHours()}:${now.getMinutes()}`;
-                    let filename = `captured_${timestamp} ${window.parent.genUID()}`;
+                    let filename = `${timestamp} ${await ntxSession.send("utility.genUID", )}`;
 
-                    window.parent.createFile("Media/", filename, format, compressedImg);
+                    ntxSession.send("fileSet.createFile", "Media/", filename, format, imgData);
                     obj.innerHTML = originalText;
                     video.style.display = "block";
                 } catch (error) {

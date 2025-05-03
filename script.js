@@ -11,7 +11,7 @@ var batteryLevel, winds = {}, rp, flwint = true, contentpool = {}, memory = {}, 
 	"gallery",
 	"browser",
 	"studio"
-], timeFormat, timetypecondition = true, genTaskBar, genDesktop;
+], timeFormat, timetypecondition = true, genTaskBar, genDesktop, nonotif;
 
 function setbgimagetourl(x) {
 	const bgImage = document.getElementById('bgimage');
@@ -919,16 +919,18 @@ async function initialiseOS() {
 				console.error("Error during initialization:", error);
 			})
 			.then(async () => {
+				nonotif = false;
 				await startup();
 				let textcontentwelcome = await fetch("appdata/welcome.html");
 				textcontentwelcome = await textcontentwelcome.text();
 				await createFile('Downloads/', 'Welcome.html', 'html', textcontentwelcome)
-				notify("Welcome to NovaOS, " + CurrentUsername + "!", "We really hope you would enjoy your NovaOS", "NovaOS")
+				notify("Welcome to NovaOS, " + CurrentUsername + "!", "We really hope you would enjoy it!", "NovaOS")
 				initialization = false;
 			})
 	})
 }
 async function installdefaultapps() {
+	nonotif = true
 	gid("edison").showModal();
 	if (gid('startupterms')) {
 		gid('startupterms').innerText = "Just a moment...";
@@ -944,6 +946,7 @@ async function installdefaultapps() {
 			}
 			const fileContent = await response.text();
 			await createFile("Apps/", toTitleCase(appName), "app", fileContent);
+			return true;
 		} catch (error) {
 			console.error("Error updating " + appName + ":", error.message);
 			if (attempt < maxRetries) {
@@ -951,6 +954,7 @@ async function installdefaultapps() {
 			} else {
 				console.error("Max retries reached for " + appName + ". Skipping update.");
 			}
+			return false;
 		}
 	}
 	async function waitForNonNull() {
@@ -968,7 +972,7 @@ async function installdefaultapps() {
 		// Update each app sequentially
 		const hangMessages = ["Hang in tight...", "Almost there...", "Just a moment more...", "Patience, young grasshopper..."];
 		for (let i = 0; i < defAppsList.length; i++) {
-			const appUpdatePromise = await updateApp(defAppsList[i]);
+			const appUpdatePromise = updateApp(defAppsList[i]);
 			let delay = 0;
 			const interval = setInterval(() => {
 				if (delay >= 3000) {
@@ -1182,11 +1186,13 @@ function displayTimeLeft(seconds) {
 }
 
 async function notify(...args) {
-    let [title = "Notification", description = "There is a notification", appname = "App", ...rest] = args;
+	if (nonotif) {return}
+	let [title = "Notification", description = "There is a notification", appname = "App", ...rest] = args;
 	appname = basename(await getFileNameByID(appname));
 	if (document.getElementById("notification").style.display == "block") {
 		document.getElementById("notification").style.display = "none";
-		setTimeout(notify(title, description, appname), 500)
+		setTimeout(() => notify(title, description, appname), 2500);
+
 	}
 	var appnameb = document.getElementById('notifappName');
 	var descb = document.getElementById('notifappDesc');
@@ -1738,7 +1744,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 		});
 	}
 
-	await startfunctions();
+	startfunctions();
 
 	gid("versionswitcher")?.remove();
 	gid("novanav").style.display = "none";

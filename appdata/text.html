@@ -93,7 +93,7 @@
 <body>
 
     <nav>
-        <button onclick="window.parent.openapp('text',1)" class="navbutton">New</button>
+        <button onclick="ntxSession.send('olp.useHandler', 'any')" class="navbutton">New</button>
         <button onclick="openfromfiles()" class="navbutton">Open</button>
         <button onclick="savetx(1)" id="sbtn" class="navbutton">Save</button>
         <button onclick="toggleDarkMode()" class="navbutton">Reading Mode</button>
@@ -119,22 +119,24 @@
         async function savetx() {
             sbtn.innerHTML = '* Saving';
 
-            const content = document.getElementById("thedisplay").value;
-            const encodedContent = btoa(content);
+            try {
+                const content = document.getElementById("thedisplay").value;
+                const encodedContent = btoa(content);
 
-            if (mode === "edit") {
-                const dataUri = `data:${currentMime};base64,${encodedContent}`;
-                await ntxSession.send("fileSet.updateFile", currentfile.path, currentfile.id, {
-                    metadata: currentfile.metadata,
-                    content: dataUri,
-                    fileName: currentfile.fileName
-                });
-            } else {
-                const dataUri = `data:text/plain;base64,${encodedContent}`;
-                let y = await ntxSession.send("sysUI.ask", "Enter a file name:", "untitled.txt");
-                await ntxSession.send("fileSet.createFile", "Documents", y, false, dataUri);
-            }
-
+                if (mode === "edit") {
+                    const dataUri = `data:${currentMime};base64,${encodedContent}`;
+                    ntxSession.send("fileSet.updateFile", currentfile.path, currentfile.id, {
+                        metadata: currentfile.metadata,
+                        content: dataUri,
+                        fileName: currentfile.fileName
+                    });
+                } else {
+                    const dataUri = `data:text/plain;base64,${encodedContent}`;
+                    let y = await ntxSession.send("sysUI.ask", "Enter a file name:", "untitled.txt");
+                    await ntxSession.send("fileSet.createFile", "Documents", y, false, dataUri);
+                }
+            } catch (e) { console.log(e) }
+            ntxSession.send("sysUI.toast", "File saved")
             sbtn.innerHTML = 'Save';
             mode = "edit";
         }
@@ -203,7 +205,7 @@
                 } else {
                     document.getElementById("thedisplay").value = "";
                 }
-            } catch (e) {}
+            } catch (e) { }
 
         }
 
