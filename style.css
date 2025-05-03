@@ -35,7 +35,7 @@ body {
 
 @supports (height: 100lvh) {
 	body {
-		height: 100vh;
+		height: 100lvh;
 	}
 }
 
@@ -1416,6 +1416,7 @@ dialog#terminal {
 	justify-content: flex-start;
 	white-space: nowrap;
 	width: 100%;
+    margin-top: .5em;
 }
 
 #notiflist {

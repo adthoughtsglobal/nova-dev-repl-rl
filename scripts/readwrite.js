@@ -55,7 +55,6 @@ async function getdb() {
 }
 
 function setdb(x) {
-    console.log("flushing... ", x);
     const value = {
         memory: { ...memory }
     };

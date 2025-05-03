@@ -712,7 +712,6 @@
 
             if (searchResults?.query?.search.length) {
                 const bestMatch = findBestMatch(term, searchResults.query.search);
-                console.log(bestMatch)
                 if (bestMatch) return await formatWikiResult(bestMatch);
             }
             return null;
@@ -748,7 +747,6 @@
             if (!term1 || !term2) {
                 return 0;
             }
-            console.log(term1, term2)
             const set1 = new Set(term1.toLowerCase().split(" "));
             const set2 = new Set(term2.toLowerCase().split(" "));
             const intersection = [...set1].filter(word => set2.has(word)).length;

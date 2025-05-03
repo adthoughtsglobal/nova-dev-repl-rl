@@ -88,11 +88,6 @@ function edgecases() {
 		say(cantusetext + issues + caniuse2, "failed");
 		badlaunch = true;
 	}
-
-	if (!navigator.serviceWorker.controller) {
-		console.log("Reduced functions: No SW Access.")
-	}
-
 }
 
 function detectIE() {

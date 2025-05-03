@@ -892,8 +892,6 @@
 					const fileType = await ntxSession.send("utility.getBaseFileType",file.name);
 
 					let content = await readFileAsBase64(file);
-
-					console.log(4534785, content)
 					await window.parent.createFile('Downloads/', file.name, '', content, { via: "imported" });
 				}
 				upmd();
@@ -1254,7 +1252,7 @@
 		});
 
 		var currentPath = 'Downloads/', nowfile, flmode = 'grid', onlyshow = false, fileToSelect = null, currentProc = null, slfileID = null;
-		var fllist;
+		var fllist = document.getElementById("filelist");
 		var fdlist;
 		var binmode = false;
 		var sessiontype = "normal", sessionreturnreqid = null;
@@ -1291,7 +1289,6 @@
 			});
 
 			liststuff();
-			fllist = document.getElementById("filelist");
 			fdlist = document.getElementById("folders");
 
 			try {
@@ -1557,8 +1554,8 @@
 								fileElement?.remove();
 							});
 
-							addedFiles.forEach(newFile => {
-								createFileElement(newFile);
+							addedFiles.forEach(async (newFile) => {
+								await createFileElement(newFile);
 							});
 						} else {
 							cachedFiles[currentPath] = filesInFolder;
@@ -1572,7 +1569,7 @@
 			}
 		}
 
-		function createFileElement(file) {
+		async function createFileElement(file) {
 			const fileElement = document.createElement('div');
 			fileElement.classList.add("file");
 			fileElement.setAttribute(flmode, '');
@@ -1582,7 +1579,7 @@
 			if (!file.name.endsWith('/')) {
 				fileElement.setAttribute("ondragstart", "dragfl(event, this)");
 			}
-			const icon = geticon(ptypext(file.name), file.id);
+			const icon = await geticon(ptypext(file.name), file.id);
 			const iconSpan = document.createElement('span');
 			iconSpan.className = 'fileicons';
 			iconSpan.innerHTML = icon;
@@ -1856,7 +1853,6 @@
 
 		function choosefile() {
 			if (sessiontype == "opener") {
-				console.log(35, sessionreturnreqid)
 				window.parent.OLPreturn(nowfile.getAttribute("unid"), sessionreturnreqid)
 				myWindow.close()
 				return;
@@ -2108,8 +2104,6 @@
 
 		function greenflag() {
 			const data = myWindow?.params?.data;
-			console.log(120, data)
-
 			if (data?.opener) {
 				sessiontype = data.opener === 'showFile' ? 'showFile' : 'opener';
 				// myWindow.setTitle(data.opener === 'showFile' ? "View File" : "Choose File");
@@ -2205,7 +2199,6 @@
 				icon: 'content_copy',
 				label: 'Copy ID',
 				action: (itemuid) => {
-					console.log(itemuid);
 					window.parent.navigator.clipboard.writeText(itemuid)
 				},
 				condition: (file) => true,

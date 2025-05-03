@@ -357,7 +357,7 @@ async function loadrecentapps() {
 			return
 		}
 		var appShortcutDiv = document.createElement("div");
-		appShortcutDiv.className = "app-shortcut ctxAvail tooltip sizableuielement";
+		appShortcutDiv.className = "app-shortcut ctxAvail sizableuielement";
 		appShortcutDiv.setAttribute("unid", app.id || '');
 		appShortcutDiv.addEventListener("click", () => openapp(app.name, app.id));
 		var iconSpan = document.createElement("span");
@@ -392,13 +392,9 @@ async function loadrecentapps() {
 		var nameSpan = document.createElement("span");
 		nameSpan.className = "appname";
 		nameSpan.textContent = basename(app.name);
-		var tooltisp = document.createElement("span");
-		tooltisp.className = "tooltiptext";
-		tooltisp.textContent = basename(app.name);
 
 		appShortcutDiv.appendChild(iconSpan);
 		appShortcutDiv.appendChild(nameSpan);
-		appShortcutDiv.appendChild(tooltisp);
 		gid("serrecentapps").appendChild(appShortcutDiv);
 	})).then(async () => {
 
@@ -903,7 +899,6 @@ async function initialiseOS() {
 	};
 
 	setdb().then(async function () {
-		console.log("mgstr saved")
 		await saveMagicStringInLocalStorage(password);
 		await ensureAllSettingsFilesExist()
 			.then(async () => await installdefaultapps())
@@ -1607,7 +1602,6 @@ async function novarefresh() {
 	genTaskBar();
 	cleanupInvalidAssociations();
 	checkdmode();
-	console.log(577)
 	loadtaskspanel()
 	loadrecentapps();
 }

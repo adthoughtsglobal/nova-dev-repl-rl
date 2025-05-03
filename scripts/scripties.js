@@ -185,7 +185,6 @@ function applyThemeNonVisual(data, doc) {
 let themeStyleTag = null;
 
 function applyTheme(colors, doc) {
-	console.log(colors)
     if (!themeStyleTag) {
         themeStyleTag = document.createElement('style');
         themeStyleTag.id = "novacsstag";
@@ -281,7 +280,6 @@ function convertTontxWrapper(jsCode) {
 		const normalizedTarget = target.toLowerCase();
 		let bestMatch = null;
 		let highestScore = 0;
-		console.log(34, normalizedTarget)
 	
 		for (const fnName in exactMethodMap) {
 			const path = exactMethodMap[fnName];

@@ -34,7 +34,6 @@ async function useHandler(name, stufftodo) {
 
     return new Promise((resolve, reject) => {
         const transferID = `${name}-${Date.now()}`;
-        console.log(transferID)
         const timeout = setTimeout(() => {
             _olpResolverMap.delete(transferID);
             resolve(undefined);
@@ -543,7 +542,6 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
 
     window.addEventListener("message", async (event) => {
         if (event.data.type === "myWindow") {
-            console.log("mywindow set done");
             const data = event.data.data;
 
             myWindow = {
@@ -556,7 +554,6 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
 
             let greenflagResult;
             try { greenflagResult = await greenflag() } catch (e) { }
-                    console.log(87)
             window.parent.postMessage({ data:"gfdone", iframeId: myWindow.windowID }, "*");
         }
     });
@@ -652,7 +649,6 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
             function handleMessage(event) {
                 if (!event.data || event.data.iframeId !== winuidfr) return;
                 if (event.data.data == "gfdone") {
-                    console.log(45)
                     if (windowLoader) {
                         windowLoader.classList.add("transp5");
                         windowLoader.remove()
@@ -677,7 +673,6 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
         }
         iframeReferences[winuid] = iframe.contentWindow;
         iframe.onload = async () => {
-            console.log("mywindow set doing")
             const tmpmyWindowData = {
                 appID: appid,
                 windowID: winuid,
@@ -730,7 +725,6 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
     loadtaskspanel();
 }
 function resetWindow(id) {
-    console.log("resetting", id)
     const x = document.getElementById("window" + id);
     x.classList.add("snapping");
 
@@ -741,7 +735,6 @@ function resetWindow(id) {
     x.getElementsByClassName("flbtn")[0].innerHTML = "open_in_full";
     fulsapp = false;
 
-    console.log(winds[id]["visualState"], "=>", "free");
     winds[id]["visualState"] = "free";
 
     setTimeout(() => {
@@ -750,7 +743,6 @@ function resetWindow(id) {
 }
 
 function maximizeWindow(id) {
-    console.log("maxing", id)
     updateNavSize();
     const x = document.getElementById("window" + id);
     x.classList.add("snapping");
@@ -761,7 +753,6 @@ function maximizeWindow(id) {
     fulsapp = true;
     x.getElementsByClassName("flbtn")[0].innerHTML = "close_fullscreen";
 
-    console.log(winds[id]["visualState"], "=>", "fls");
     winds[id]["visualState"] = "fullscreen";
 
     setTimeout(() => {
@@ -814,14 +805,12 @@ async function checksnapping(x, event, winuid) {
     }
 
     if (logData.cursorY < VHInPixels || (logData.viewportHeight - logData.cursorY) < VHInPixels) {
-        console.log("topsnap")
         maximizeWindow(winuid);
     } else if (logData.cursorX < VWInPixels) {
         x.classList.add("snapping");
         x.style = `left: 0; top: 0; width: calc(50% - 0px); height: calc(100% - ${navheight}px);`;
         fulsapp = true;
         x.getElementsByClassName("flbtn")[0].innerHTML = "open_in_full";
-        console.log(winds[winuid]["visualState"], "=>", "snppd");
         winds[winuid]["visualState"] = "snapped";
         setTimeout(() => {
             x.classList.remove("snapping");
@@ -831,7 +820,6 @@ async function checksnapping(x, event, winuid) {
         x.style = `right: 0; top: 0; width: calc(50% - 0px); height: calc(100% - ${navheight}px);`;
         fulsapp = true;
         x.getElementsByClassName("flbtn")[0].innerHTML = "open_in_full";
-        console.log(winds[winuid]["visualState"], "=>", "snppd");
         winds[winuid]["visualState"] = "snapped";
         setTimeout(() => {
             x.classList.remove("snapping");
@@ -979,16 +967,13 @@ async function openapp(x, od, customtodo) {
 
 function minim(winuid) {
     const x = gid('window' + winuid);
-    console.log(winds[winuid]["visualState"], "=>", "minim");
 
     if (winds[winuid]["visualState"] === "minimized") {
         x.style.display = "flex";
-        console.log(winds[winuid]["visualState"], "=>", "free");
         winds[winuid]["visualState"] = "free";
     } else {
         if (isWinOnTop('window' + winuid)) {
             x.classList.add("transp4");
-            console.log(winds[winuid]["visualState"], "=>", "minim");
             winds[winuid]["visualState"] = "minimized";
 
             setTimeout(() => {
@@ -1007,7 +992,6 @@ function flwin(winElement) {
     const winuid = winElement.getAttribute("data-winuid");
     const flbtn = winElement.getElementsByClassName("flbtn")[0];
 
-    console.log(542, winds[winuid]["visualState"]); // "fullscreen"
     const isFree = winds[winuid]["visualState"] != "fullscreen";
 
     if (isFree) {

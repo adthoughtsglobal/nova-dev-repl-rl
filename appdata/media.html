@@ -107,7 +107,6 @@
 		var disp, ntxSession;
 		async function greenflag() {
 			ntxSession = new NTXSession();
-			console.log(50, ntxSession)
 			try {
 				if (myWindow.params.appid == myWindow.appID) {
 					openfile(myWindow.params.data)
@@ -119,12 +118,10 @@
 		async function openfile(fileID) {
 			let disp = document.getElementById("displays");
 			let file = await ntxSession.send("fileGet.byId", fileID);
-			console.log(24, file)
 			if (file && file.content) {
 				document.getElementById("tils").innerText = file.fileName;
 				let fileType = await ntxSession.send("utility.getBaseFileType", file.fileName);
 				let mimeType = (await ntxSession.send("utility.getMimeType", await ntxSession.send("utility.mtpetxt", file.fileName))) || "application/octet-stream";
-				console.log(41, file.content)
 				let blob;
 
 				let arr = file.content.split(",");
