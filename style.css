@@ -33,9 +33,9 @@ body {
 	background-repeat: no-repeat;
 }
 
-@supports (height: 100dvh) {
+@supports (height: 100lvh) {
 	body {
-		height: 100dvh;
+		height: 100vh;
 	}
 }
 
