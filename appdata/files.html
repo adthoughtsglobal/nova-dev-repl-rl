@@ -889,7 +889,7 @@
 
 				for (let i = 0; i < files.length; i++) {
 					const file = files[i];
-					const fileType = await window.parent.getbaseflty(file.name);
+					const fileType = await ntxSession.send("utility.getBaseFileType",file.name);
 
 					let content = await readFileAsBase64(file);
 
@@ -921,7 +921,7 @@
 			}
 
 			async function makefolderhuh() {
-				let x = await window.parent.ask("Enter your Folder Name:", currentPath);
+				let x = await ntxSession.send("sysUI.ask","Enter your Folder Name:", currentPath);
 				window.parent.createFolder(x);
 			}
 		</script>
@@ -1184,12 +1184,12 @@
 					addDragAndDropListeners();
 				});
 
-				$('#jstree').on("changed.jstree", function (e, data) {
+				$('#jstree').on("changed.jstree", async function (e, data) {
 					if (data?.node?.li_attr?.['data-path']) {
 						let selectedPath = data.node.li_attr['data-path'];
 						listFiles(selectedPath);
 
-						if (!window.parent.getSetting("filesSidenavSize")) {
+						if (!await ntxSession.send("settings.get","filesSidenavSize")) {
 							fitsizesidenav();
 						}
 					} else {
@@ -1265,14 +1265,14 @@
 		async function initializeFilesApp(defaultopenfold = false, method = undefined) {
 
 			if (method == "showFile") {
-				currentPath = (await window.parent.getFileById(defaultopenfold)).path;
+				currentPath = (await ntxSession.send("fileGet.byId",defaultopenfold)).path;
 				fileToSelect = defaultopenfold;
 			} else if (defaultopenfold) {
 				currentPath = defaultopenfold;
 			}
 
-			if (await window.parent.getSetting("filesSidenavSize")) {
-				document.getElementById("flap-sidenav").style.width = await window.parent.getSetting("filesSidenavSize");
+			if (await ntxSession.send("settings.get","filesSidenavSize")) {
+				document.getElementById("flap-sidenav").style.width = await ntxSession.send("settings.get","filesSidenavSize");
 			} else {
 				fitsizesidenav();
 			}
@@ -1284,9 +1284,9 @@
 
 			$("#flap-sidenav").resizable({
 				handles: 'e',
-				stop: function (event, ui) {
+				stop: async function (event, ui) {
 					const newWidth = ui.size.width;
-					window.parent.setSetting("filesSidenavSize", newWidth + 'px');
+					await ntxSession.send("settings.set","filesSidenavSize", newWidth + 'px');
 				}
 			});
 
@@ -1295,8 +1295,8 @@
 			fdlist = document.getElementById("folders");
 
 			try {
-				if (await window.parent.getSetting('defFileLayout')) {
-					changeview(await window.parent.getSetting('defFileLayout'))
+				if (await ntxSession.send("settings.get",'defFileLayout')) {
+					changeview(await ntxSession.send("settings.get",'defFileLayout'))
 				}
 			} catch (error) {
 				console.error(error)
@@ -1564,7 +1564,7 @@
 							cachedFiles[currentPath] = filesInFolder;
 						}
 					} else {
-						fllist.innerHTML = `<center class='thisfolderisempty'><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="74.20199" height="94.1023" viewBox="0,0,74.20199,94.1023"><g transform="translate(-224.61774,-142.87893)"><g data-paper-data="{&quot;isPaintingLayer&quot;:true}" fill-rule="nonzero" stroke="#ffffff" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" style="mix-blend-mode: normal"><path style="animation: headsad .5s 2;" d="M227.11774,158.26119c0,-7.11468 5.76758,-12.88226 12.88226,-12.88226c7.11468,0 12.88226,5.76758 12.88226,12.88226c0,7.11468 -5.76758,12.88226 -12.88226,12.88226c-7.11468,0 -12.88226,-5.76758 -12.88226,-12.88226z" fill="none" stroke-width="5" stroke-linecap="butt"/><path d="M244.56247,233.94447l9.12493,-32.20565l-8.58817,-28.98508" fill="none" stroke-width="5" stroke-linecap="round"/><path d="M253.6874,202.81234l17.71311,31.66888" fill="none" stroke-width="5" stroke-linecap="round"/><path d="M246.17275,178.6581l-7.51465,27.37481" fill="none" stroke-width="5" stroke-linecap="round"/><path d="M250.46684,179.73163l28.44833,-12.3455" fill="none" stroke-width="5" stroke-linecap="round"/><path d="M260.82196,192.96703l-1.81137,-23.54791l37.99776,-2.9229l1.81138,23.54791z" fill="#aa8b00" stroke-width="0" stroke-linecap="butt"/><path onclick="window.parent.say('You found it :3')" d="M256.80524,189.29958l2.20535,-19.88046l37.99776,-2.9229l-2.20535,19.53118z" fill="#ffcf00" stroke-width="0" stroke-linecap="butt"/><path d="M279.06646,168.81576l-0.1513,-1.42964" fill="none" stroke-width="5" stroke-linecap="round"/></g></g></svg><br>This folder is empty.</center>`;
+						fllist.innerHTML = `<center class='thisfolderisempty'><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="74.20199" height="94.1023" viewBox="0,0,74.20199,94.1023"><g transform="translate(-224.61774,-142.87893)"><g data-paper-data="{&quot;isPaintingLayer&quot;:true}" fill-rule="nonzero" stroke="#ffffff" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" style="mix-blend-mode: normal"><path style="animation: headsad .5s 2;" d="M227.11774,158.26119c0,-7.11468 5.76758,-12.88226 12.88226,-12.88226c7.11468,0 12.88226,5.76758 12.88226,12.88226c0,7.11468 -5.76758,12.88226 -12.88226,12.88226c-7.11468,0 -12.88226,-5.76758 -12.88226,-12.88226z" fill="none" stroke-width="5" stroke-linecap="butt"/><path d="M244.56247,233.94447l9.12493,-32.20565l-8.58817,-28.98508" fill="none" stroke-width="5" stroke-linecap="round"/><path d="M253.6874,202.81234l17.71311,31.66888" fill="none" stroke-width="5" stroke-linecap="round"/><path d="M246.17275,178.6581l-7.51465,27.37481" fill="none" stroke-width="5" stroke-linecap="round"/><path d="M250.46684,179.73163l28.44833,-12.3455" fill="none" stroke-width="5" stroke-linecap="round"/><path d="M260.82196,192.96703l-1.81137,-23.54791l37.99776,-2.9229l1.81138,23.54791z" fill="#aa8b00" stroke-width="0" stroke-linecap="butt"/><path onclick="ntxSession.send("sysUI.say",'You found it :3')" d="M256.80524,189.29958l2.20535,-19.88046l37.99776,-2.9229l-2.20535,19.53118z" fill="#ffcf00" stroke-width="0" stroke-linecap="butt"/><path d="M279.06646,168.81576l-0.1513,-1.42964" fill="none" stroke-width="5" stroke-linecap="round"/></g></g></svg><br>This folder is empty.</center>`;
 					}
 				}
 
@@ -1702,7 +1702,7 @@
 						return;
 					}
 					try {
-						fileData = await window.parent.getFileById(x.getAttribute("unid"));
+						fileData = await ntxSession.send("fileGet.byId",x.getAttribute("unid"));
 
 						if (fileData && fileData.content) {
 							fileSize = new TextEncoder().encode(fileData.content).length;
@@ -1797,7 +1797,7 @@
 
 					} catch (error) {
 						document.getElementById("fileinfobn").innerHTML += "Safe Error 0006";
-						window.parent.say(`<h1>File Error</h1><p>Nova files couldn't process that file</p><small>(Error 0006)</small>`, "warning")
+						await ntxSession.send("sysUI.say",`<h1>File Error</h1><p>Nova files couldn't process that file</p><small>(Error 0006)</small>`, "warning")
 						refresh()
 						console.error("An error occurred:", error);
 					}
@@ -1810,7 +1810,7 @@
 					const wallpaperOption = document.createElement("a");
 					wallpaperOption.classList.add("dropdownerthebob");
 					wallpaperOption.title = "Info";
-					wallpaperOption.onclick = () => window.parent.say("The item selected is a folder. A folder can store multiple items.");
+					wallpaperOption.onclick = () => ntxSession.send("sysUI.say","The item selected is a folder. A folder can store multiple items.");
 					wallpaperOption.innerHTML = `<span class="material-symbols-rounded">info</span> Folder`;
 					dropupContentDiv.appendChild(wallpaperOption);
 					dropupDiv.appendChild(dropupContentDiv);
@@ -1847,7 +1847,7 @@
 				window.parent.openlaunchprotocol(appIdToOpen, { "opener": "app", "dir": "Apps/" }, currentreqID, myWindow.windowID);
 				return;
 			} else if (all == 'text') {
-				window.parent.useHandler("any", slfileID);
+				await ntxSession.send("olp.useHandler","any", slfileID);
 				return;
 			}
 
@@ -1868,9 +1868,9 @@
 			try {
 				const fileId = x.getAttribute("unid");
 
-				let file = await window.parent.getFileById(fileId);
+				let file = await ntxSession.send("fileGet.byId",fileId);
 
-				file.fileName = await window.parent.ask("New Name:", file.fileName);
+				file.fileName = await ntxSession.send("sysUI.ask","New Name:", file.fileName);
 				await window.parent.updateFile(currentPath, fileId, file);
 
 				document.getElementById("fileinfobn").innerHTML = "File renamed successfully.";
@@ -1908,7 +1908,7 @@
 					"open": flid
 				};
 				const dataUri = `data:application/json;base64,${btoa(JSON.stringify(openable))}`;
-				let x = await window.parent.ask("Enter a shortcut file name: (without extension)", "MyFile");
+				let x = await ntxSession.send("sysUI.ask","Enter a shortcut file name: (without extension)", "MyFile");
 				await window.parent.createFile(selectedFolder, x + ".lnk", false, dataUri);
 
 				await liststuff();
@@ -1986,7 +1986,7 @@
 			});
 		}
 
-		function geticon(x, name) {
+		async function geticon(x, name) {
 
 			let i, c;
 			if (x == "txt") {
@@ -2001,13 +2001,13 @@
 					i = "rocket_launch";
 					c = "#4CAF50";
 				}
-			} else if (window.parent.getbaseflty(x) == "image") {
+			} else if (await ntxSession.send("utility.getBaseFileType",x) == "image") {
 				i = "image"
 				c = "#FFEE58"
-			} else if (window.parent.getbaseflty(x) == "music") {
+			} else if (await ntxSession.send("utility.getBaseFileType",x) == "music") {
 				i = "graphic_eq"
 				c = "violet"
-			} else if (window.parent.getbaseflty(x) == "video") {
+			} else if (await ntxSession.send("utility.getBaseFileType",x) == "video") {
 				i = "videocam"
 				c = "lightblue"
 			} else if (x == "json") {
@@ -2016,7 +2016,7 @@
 			} else if (x == "lnk") {
 				i = "reply"
 				c = "green"
-			} else if (window.parent.getbaseflty(x) == "code") {
+			} else if (await ntxSession.send("utility.getBaseFileType",x) == "code") {
 				i = "developer_board"
 				c = "#hh83j2"
 			} else if (!name) {
@@ -2066,10 +2066,10 @@
 
 		async function remfold() {
 			if (currentPath == "System") {
-				window.parent.say("You cannot remove system folder through files app.");
+				await ntxSession.send("sysUI.say","You cannot remove system folder through files app.");
 				return;
 			}
-			let x = await window.parent.justConfirm("Remove folder?", "Remove '" + currentPath + "' permanently from your device?")
+			let x = await ntxSession.send("sysUI.confirm","Remove folder?", "Remove '" + currentPath + "' permanently from your device?")
 			if (x) {
 				await window.parent.remfolder(currentPath).then(function () {
 					document.getElementById("fileinfobn").innerHTML = currentPath + " was removed"
@@ -2149,7 +2149,7 @@
 		}
 
 		async function pastefile() {
-			let file = await window.parent.getFileById(slfileID);
+			let file = await ntxSession.send("fileGet.byId",slfileID);
 			await window.parent.createFile(currentPath, file.fileName, false, file.content, file.metadata || {});
 			
 		}
@@ -2177,8 +2177,8 @@
 				icon: 'save_as',
 				label: 'Rename',
 				action: async (itemuid) => {
-					let file = await window.parent.getFileById(itemuid);
-					file.fileName = await window.parent.ask("New Name:", file.fileName);
+					let file = await ntxSession.send("fileGet.byId",itemuid);
+					file.fileName = await ntxSession.send("sysUI.ask","New Name:", file.fileName);
 					await window.parent.updateFile(false, itemuid, file);
 				},
 				condition: (file) => true,
@@ -2193,7 +2193,7 @@
 				icon: 'wallpaper',
 				label: 'Set As Wallpaper',
 				action: (itemuid) => window.parent.makewall(itemuid),
-				condition: (file) => window.parent.getbaseflty(ptypext(file.fileName)) === 'image',
+				condition: async (file) => await ntxSession.send("utility.getBaseFileType",ptypext(file.fileName)) === 'image',
 			},
 			move: {
 				icon: 'drive_file_move',

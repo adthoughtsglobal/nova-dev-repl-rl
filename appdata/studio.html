@@ -333,7 +333,7 @@
 		window.addEventListener('message', async (event) => {
 			if (event.data.action === 'loadlocalfile') {
 				if (event.data.id === myWindow.windowID) {
-					const file = await window.parent.getFileById(event.data.returned);
+					const file = await ntxSession.send("fileGet.byID",event.data.returned);
 					readthefile(file);
 				}
 			}
@@ -406,7 +406,7 @@
 
 			if (mode === "edit") {
 				const dataUri = `data:${currentMime};base64,${encodedContent}`;
-				await window.parent.updateFile(currentfile.path, currentfile.id, {
+				await ntxSession.send("fileSet.updateFile",currentfile.path, currentfile.id, {
 					metadata: currentfile.metadata,
 					content: dataUri,
 					fileName: currentfile.fileName
@@ -414,7 +414,7 @@
 			} else {
 				const dataUri = `data:text/plain;base64,${encodedContent}`;
 				let y = await window.parent.ask("Enter a file name:", "untitled.txt");
-				window.parent.createFile("Documents", y, false, dataUri);
+				ntxSession.send("fileSet.createFile","Documents", y, false, dataUri);
 			}
 
 			mode = "edit";
@@ -658,7 +658,7 @@
 			var timeString = hours + '-' + minutes;
 
 			function createCanvasFile(extension) {
-				window.parent.createFile("Downloads/", "Canvas-" + timeString, extension, editor.getValue());
+				ntxSession.send("fileSet.createFile","Downloads/", "Canvas-" + timeString, extension, editor.getValue());
 			}
 
 			createCanvasFile("app");
@@ -698,7 +698,7 @@
 				if (myWindow.params.appid == myWindow.appID) {
 					editor.setValue("Loading...");
 					defile = myWindow.params.data;
-					const file = await window.parent.getFileById(defile);
+					const file = await ntxSession.send("fileGet.byID",defile);
 					readthefile(file);
 				}
 			} catch (error) {

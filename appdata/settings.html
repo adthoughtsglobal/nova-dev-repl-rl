@@ -1018,7 +1018,7 @@
 						elemval.classList = "value";
 						elemval.innerText = items[key];
 						elemval.addEventListener('click', async function () {
-							let x = await window.parent.ask("Set value for '" + key + "':", items[key]);
+							let x = await ntxSession.send("sysUI.ask","Set value for '" + key + "':", items[key]);
 							localStorage.setItem(key, x)
 						});
 						elem.appendChild(elemval);
@@ -1468,7 +1468,7 @@
 						document.getElementById('copy-theme-btn').addEventListener('click', copyCurrentTheme);
 						document.getElementById('paste-theme-btn').addEventListener('click', pasteThemeFromClipboard);
 
-						let storedwall = await window.parent.getSetting("wall");
+						let storedwall = await ntxSession.send("settings.get","wall");
 
 						if (storedwall) {
 							document.getElementById("wallpaperurl").value = storedwall;
@@ -1502,11 +1502,11 @@
 							} else {
 								window.parent.removeSWs()
 							}
-							window.parent.setSetting("novaOffline", newValue2)
+							ntxSession.send("settings.set","novaOffline", newValue2)
 						});
 
 						try {
-							if (await window.parent.getSetting("novaOffline")) {
+							if (await ntxSession.send("settings.get","novaOffline")) {
 								document.getElementById("cbx-70").checked = true;
 							}
 						} catch (error) {
@@ -1517,11 +1517,11 @@
 						// window snapping
 						document.getElementById("cbx-66").addEventListener("change", function () {
 							let newValue2 = document.getElementById("cbx-66").checked;
-							window.parent.setSetting("wsnapping", newValue2)
+							ntxSession.send("settings.set","wsnapping", newValue2)
 						});
 
 						try {
-							if (await window.parent.getSetting("wsnapping")) {
+							if (await ntxSession.send("settings.get","wsnapping")) {
 								document.getElementById("cbx-66").checked = true;
 							}
 						} catch (error) {
@@ -1532,15 +1532,15 @@
 						let selinp;
 						selinp = document.getElementById("scapimas");
 						try {
-							if (await window.parent.getSetting("CamImgFormat")) {
-								selinp.value = await window.parent.getSetting("CamImgFormat");
+							if (await ntxSession.send("settings.get","CamImgFormat")) {
+								selinp.value = await ntxSession.send("settings.get","CamImgFormat");
 							}
 						} catch (error) {
 							console.error(error)
 						}
 						document.getElementById("scapimas").addEventListener("change", function () {
 							let newValue = document.getElementById("scapimas").value;
-							window.parent.setSetting("CamImgFormat", newValue)
+							ntxSession.send("settings.set","CamImgFormat", newValue)
 						});
 					}
 				</script>
@@ -1556,7 +1556,7 @@
 						let selinp;
 						selinp = document.getElementById("defflvm");
 						try {
-							if (await window.parent.getSetting("defflvm")) {
+							if (await ntxSession.send("settings.get","defflvm")) {
 								selinp.value = defflvm;
 							}
 						} catch (error) {
@@ -1564,7 +1564,7 @@
 						}
 						document.getElementById("defflvm").addEventListener("change", function () {
 							let newValue = document.getElementById("defflvm").value;
-							window.parent.setSetting("defFileLayout", newValue)
+							ntxSession.send("settings.set","defFileLayout", newValue)
 						});
 					}
 				</script>
@@ -1586,22 +1586,22 @@
 					async function defs3() {
 						let selinp;
 						selinp = document.getElementById("timefrmt");
-						if (await window.parent.getSetting("timefrmt")) {
-							selinp.value = await window.parent.getSetting("timefrmt");
+						if (await ntxSession.send("settings.get","timefrmt")) {
+							selinp.value = await ntxSession.send("settings.get","timefrmt");
 						}
 						document.getElementById("timefrmt").addEventListener("change", function () {
 							let newValue = document.getElementById("timefrmt").value;
-							window.parent.setSetting("timefrmt", newValue);
-							window.parent.say("Reload NovaOS for the changes to take effect.");
+							ntxSession.send("settings.set","timefrmt", newValue);
+							ntxSession.send("sysUI.say","Reload NovaOS for the changes to take effect.");
 						});
 
 						let selinp2 = document.getElementById("defSearchEngine");
-						if (await window.parent.getSetting("defSearchEngine")) {
-							selinp2.value = await window.parent.getSetting("defSearchEngine");
+						if (await ntxSession.send("settings.get","defSearchEngine")) {
+							selinp2.value = await ntxSession.send("settings.get","defSearchEngine");
 						}
 						document.getElementById("defSearchEngine").addEventListener("change", function () {
 							let newValue = document.getElementById("defSearchEngine").value;
-							window.parent.setSetting("defSearchEngine", newValue)
+							ntxSession.send("settings.set","defSearchEngine", newValue)
 						});
 					}
 				</script>
@@ -1806,26 +1806,26 @@
 							const handlerCell = document.createElement('div');
 							handlerCell.className = 'cell handler-cell';
 							handlerCell.title = handlers[0];
-							handlerCell.innerHTML = await window.parent.getAppIcon(0, handlers[0], true);
+							handlerCell.innerHTML = await ntxSession.send("apps.getIcon",0, handlers[0], true);
 							handlerCell.onclick = async () => {
 								replaceableHandler = handlers[0];
 								clickedRowId = `row-${type}`;
 
 								replaceableapp = handlers[0];
 								let appIdToOpen = window.parent.handlers['file'][0] || null;
-								let newHandler = await window.parent.useHandler("file", { "opener": "app", "dir": "Apps/" });
+								let newHandler = await ntxSession.send("olp.useHandler","file", { "opener": "app", "dir": "Apps/" });
 
 								for (let key in window.parent.handlers) {
 									if (window.parent.handlers.hasOwnProperty(key)) {
 										window.parent.handlers[key] = window.parent.handlers[key].map(handler => handler === replaceableHandler ? newHandler : handler);
 									}
 								}
-								await window.parent.setSetting('handlers', window.parent.handlers);
+								await ntxSession.send("settings.set",'handlers', window.parent.handlers);
 
 								const row = document.getElementById(clickedRowId);
 								if (row) {
 									const handlerCell = row.querySelector('.handler-cell');
-									handlerCell.innerHTML = await window.parent.getAppIcon(0, newHandler, true);
+									handlerCell.innerHTML = await ntxSession.send("apps.getIcon",0, newHandler, true);
 								}
 							};
 
@@ -1861,7 +1861,7 @@
 
 		<div id="password" class="tabcontent">
 			<div class="usercard">
-				<div class="pfp" onclick="window.parent.say('Public shared storage unavailable for the moment.')">
+				<div class="pfp" onclick="ntxSession.send('sysUI.say','Public shared storage unavailable for the moment.')">
 					<span class="material-symbols-rounded">
 						edit
 					</span>
@@ -1972,17 +1972,17 @@
 				async function chstpass() {
 					var setpass = '';
 					if (window.parent.password == 'nova') {
-						setpass = await window.parent.ask("Set a password: ", "")
+						setpass = await ntxSession.send("sysUI.ask","Set a password: ", "")
 					} else {
-						setpass = await window.parent.ask("Choose an another password: ", window.parent.password);
+						setpass = await ntxSession.send("sysUI.ask","Choose an another password: ", window.parent.password);
 						if (setpass == window.parent.password) {
-							window.parent.say("That is your current password. Choose a different one.", "failed")
+							ntxSession.send("sysUI.say","That is your current password. Choose a different one.", "failed")
 							return;
 						}
 					}
-					if (await window.parent.justConfirm("Are you sure?", "All your data will be lost if you forget this password. Re-encrypt all your files with this one?")) {
+					if (await ntxSession.send("sysUI.confirm","Are you sure?", "All your data will be lost if you forget this password. Re-encrypt all your files with this one?")) {
 						await window.parent.changePassword(window.parent.password, setpass);
-						await window.parent.say("Click OK when you are ready to restart your OS.")
+						await ntxSession.send("sysUI.say","Click OK when you are ready to restart your OS.")
 						window.parent.location.reload()
 					} else {
 						return;
@@ -2242,7 +2242,7 @@
 			</div>
 			<script>
 				async function openlink(x) {
-					let okay = await window.parent.justConfirm("Are you sure?", "Open " + x + " outside of NovaOS?");
+					let okay = await ntxSession.send("sysUI.confirm","Are you sure?", "Open " + x + " outside of NovaOS?");
 					if (okay) {
 						window.open(x);
 					}
@@ -2377,7 +2377,7 @@
 						loaduprtour()
 					}
 					function loaduprtour() {
-						window.parent.say(`RoturTW is a third party service, which offers APIs. NovaOS supports it but isn't affiliated or endorsing. Visit rotur.dev for details.`)
+						ntxSession.send("sysUI.say",`RoturTW is a third party service, which offers APIs. NovaOS supports it but isn't affiliated or endorsing. Visit rotur.dev for details.`)
 						const roturExtension = window.parent.roturExtension;
 
 						if (roturExtension && roturExtension.loggedIn()) {
@@ -2408,7 +2408,7 @@
 						document.getElementById("rtrsignupform").style.display = "none";
 						document.getElementById("rtruserstatsi").innerText = "Signed in as " + targetun;
 
-						window.parent.setSetting("roturLink", JSON.stringify({
+						ntxSession.send("settings.set","roturLink", JSON.stringify({
 							"username": targetun,
 							"password": targetpass
 						}));
@@ -2720,7 +2720,7 @@
 
 			</segr>
 			<segr style="margin-top: .5rem">
-				<div setting onclick="window.parent.useHandler('contentStore', {'opener':'themes'})">
+				<div setting onclick="ntxSession.send('olp.useHandler','contentStore', {'opener':'themes'})">
 
 					<div class="settingName"><span>Browse themes</span>
 						<p>Browse official theme packs</p>
@@ -2790,11 +2790,11 @@
 						const colorValue = button.jscolor ? button.jscolor.toHEXString() : button.value;
 						colorsToCopy[variableName] = colorValue;
 					});
-					if (await window.parent.justConfirm("Include current wallpaper?", "Include the currently set wallpaper with the theme code?")) {
-						colorsToCopy['wallpaper'] = await window.parent.getSetting("wall");
+					if (await ntxSession.send("sysUI.confirm","Include current wallpaper?", "Include the currently set wallpaper with the theme code?")) {
+						colorsToCopy['wallpaper'] = await ntxSession.send("settings.get","wall");
 					}
 					window.parent.navigator.clipboard.writeText(JSON.stringify(colorsToCopy))
-						.then(() => window.parent.toast('Theme copied to clipboard!'))
+						.then(() => ntxSession.send("sysUI.toast",'Theme copied to clipboard!'))
 						.catch(err => console.error('Error copying theme:', err));
 				}
 
@@ -2825,20 +2825,20 @@
 								}
 							});
 							if (parsedColors['wallpaper']) {
-								if (await window.parent.justConfirm("Include theme wallpaper?", "Include the wallpaper included in the theme code?")) {
+								if (await ntxSession.send("sysUI.confirm","Include theme wallpaper?", "Include the wallpaper included in the theme code?")) {
 									document.getElementById("wallpaperurl").value = parsedColors['wallpaper'];
 									savewallpap();
 								}
 
 							}
 							saveColors();
-							window.parent.toast('Theme applied from clipboard!');
+							ntxSession.send("sysUI.toast",'Theme applied from clipboard!');
 						} else {
-							window.parent.say('Clipboard does not contain a valid theme JSON.');
+							ntxSession.send("sysUI.say",'Clipboard does not contain a valid theme JSON.');
 						}
 					} catch (error) {
 						console.error('Error pasting theme:', error);
-						window.parent.say('Failed to apply theme from clipboard. Ensure it contains valid JSON.');
+						ntxSession.send("sysUI.say",'Failed to apply theme from clipboard. Ensure it contains valid JSON.');
 					}
 				}
 			</script>
@@ -2993,7 +2993,7 @@
 					});
 
 					applyTheme({ colors: colorsToSave });
-					await window.parent.setSetting("themeColors", colorsToSave);
+					await ntxSession.send("settings.set","themeColors", colorsToSave);
 				}
 
 
@@ -3063,14 +3063,14 @@
 							"bg": document.getElementById("cbx-71").checked,
 							"align": document.getElementById("navAlignment").value
 						};
-						await window.parent.setSetting("NovNavCtrl", newValue);
+						await ntxSession.send("settings.set","NovNavCtrl", newValue);
 					}
 
 					document.getElementById("cbx-71").addEventListener("change", saveNovNavCtrlSetting);
 					document.getElementById("navAlignment").addEventListener("change", saveNovNavCtrlSetting);
 
 					try {
-						let currentSettings = await window.parent.getSetting("NovNavCtrl");
+						let currentSettings = await ntxSession.send("settings.get","NovNavCtrl");
 						if (currentSettings?.bg) {
 							document.getElementById("cbx-71").checked = true;
 						}
@@ -3138,7 +3138,7 @@
 			<script defer>
 				async function savewallpap() {
 					var newurl = document.getElementById("wallpaperurl");
-					await window.parent.setSetting("wall", newurl.value);
+					await ntxSession.send("settings.set","wall", newurl.value);
 					setTimeout(() => { window.parent.genDesktop() }, 1000)
 
 				}

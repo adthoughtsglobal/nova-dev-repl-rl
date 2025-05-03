@@ -551,7 +551,7 @@
 				let finalUrl = isValid ? validatedUrl : `https://adthoughtsglobal.github.io/Search?q=${encodeURIComponent(input)}`;
 
 				try {
-					const qsets = await window.parent.getSetting("defSearchEngine");
+					const qsets = await ntxSession.send("settings.get","defSearchEngine");
 					if (qsets && !isValid) {
 						if (qsets === "Bing") {
 							finalUrl = `https://www.bing.com/search?q=${encodeURIComponent(input)}`;

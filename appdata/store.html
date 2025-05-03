@@ -848,7 +848,7 @@
 				function loadThemes() {
 					const container = document.getElementById("themeslist");
 
-					window.parent.fetch('https://adthoughtsglobal.github.io/Nova-Store/db/themes.json')
+					fetch('https://adthoughtsglobal.github.io/Nova-Store/db/themes.json')
 						.then(response => response.json())
 						.then(data => {
 							container.innerHTML = '';
@@ -976,7 +976,7 @@
 
 								themeContainer.addEventListener('click', async () => {
 									await window.parent.applyThemeNonVisual(themeData, document);
-									window.parent.toast(`Theme pack "${themeName}" applied.`)
+									ntxSession.send("sysUI.toast",`Theme pack "${themeName}" applied.`)
 								});
 								container.appendChild(themeContainer);
 							});
@@ -1188,7 +1188,7 @@
 			var response
 			const filePath = "appdata/" + appName + ".html";
 			try {
-				response = await window.parent.fetch(filePath);
+				response = await fetch(filePath);
 				if (!response.ok) {
 					// Set background color to red
 					div.style.backgroundColor = "red";

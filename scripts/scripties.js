@@ -238,10 +238,8 @@ function removeTheme() {
     appliedThemeVars.clear();
 }
 
-
-function convertToNTXSession(jsCode) {
-	const ntxSession = new NTXSession();
-	const methodMap = [];
+function convertTontxWrapper(jsCode) {
+	const exactMethodMap = buildExactMethodMap();
 
 	function similarity(a, b) {
 		let matches = 0;
@@ -251,53 +249,83 @@ function convertToNTXSession(jsCode) {
 		}
 		return matches / Math.max(a.length, b.length);
 	}
-	function flattenMethods(obj, prefix = '') {
-		for (const key in obj) {
-			const value = obj[key];
-			const fullPath = prefix ? `${prefix}.${key}` : key;
-			if (typeof value === 'function') {
-				methodMap.push({ path: fullPath, key, original: value.name });
-			} else if (typeof value === 'object' && value !== null) {
-				flattenMethods(value, fullPath);
+
+	function buildExactMethodMap() {
+		const map = {};
+	
+		function traverse(obj, path = "") {
+			for (const key in obj) {
+				const value = obj[key];
+				const fullPath = path ? `${path}.${key}` : key;
+	
+				if (typeof value === "function") {
+					const fnName = value.name;
+					if (fnName) map[fnName] = fullPath;
+				} else if (typeof value === "object" && value !== null) {
+					if (value instanceof Function) {
+						const fnName = value.name;
+						if (fnName) map[fnName] = fullPath;
+					} else {
+						traverse(value, fullPath);
+					}
+				}
 			}
 		}
-	}
-	function findClosestMatch(target) {
-		let exactKeyMatch = methodMap.find(({ key }) => key.toLowerCase() === target.toLowerCase());
-		if (exactKeyMatch) return exactKeyMatch.path;
 	
+		traverse(ntxWrapper)
+		return map;
+	}
+	
+
+	function findClosestMatch(target) {
+		const normalizedTarget = target.toLowerCase();
 		let bestMatch = null;
 		let highestScore = 0;
+		console.log(34, normalizedTarget)
 	
-		for (const { path, key, original } of methodMap) {
-			if (!original) continue;
+		for (const fnName in exactMethodMap) {
+			const path = exactMethodMap[fnName];
+			const [namespace, method] = path.toLowerCase().split(".");
 	
-			const normalizedTarget = target.toLowerCase();
-			const normalizedOriginal = original.toLowerCase();
-			let score = similarity(normalizedTarget, normalizedOriginal);
+			let score = 0;
+			if (path.toLowerCase() === normalizedTarget) score += 1;
+			if (normalizedTarget.includes(fnName.toLowerCase())) score += 0.3;
+			if (normalizedTarget.includes(namespace)) score += 0.3;
+			if (normalizedTarget.includes(method)) score += 0.3;
+			if (fnName.toLowerCase() === normalizedTarget) score += 10;
 	
-			if (normalizedTarget.includes(key.toLowerCase())) score += 0.3;
-			if (key.toLowerCase() === target.toLowerCase()) score += 0.5;
+			// Fallback to similarity for tie-breaking
+			score += similarity(normalizedTarget, fnName.toLowerCase()) * 0.3;
 	
 			if (score > highestScore) {
 				highestScore = score;
 				bestMatch = path;
 			}
 		}
+	
 		return bestMatch;
 	}
 	
-	flattenMethods(ntxSession);
 
-	let convertedCode = jsCode.replace(/(await\s+)?window\.parent\.([\w]+)\s*\(/g, (match, awaitKeyword, method) => {
-		let closestMatch = findClosestMatch(method);
-		if (closestMatch) {
-			const prefix = awaitKeyword || ''; // only add `await` if it's not already present
-			return `${prefix}ntxSession.send("${closestMatch}", `;
+	const convertedCode = jsCode.replace(
+		/(?<!await\s)(window\.parent\.)(\w+)\s*\(/g,
+		(match, base, fnName) => {
+			const path = findClosestMatch(fnName);
+			if (path) {
+				return `await ntxWrapper.send("${path}", `;
+			}
+			return match;
 		}
-		return match;
-	});
-	
+	).replace(
+		/await\s+window\.parent\.(\w+)\s*\(/g,
+		(match, fnName) => {
+			const path = findClosestMatch(fnName);
+			if (path) {
+				return `await ntxWrapper.send("${path}", `;
+			}
+			return match;
+		}
+	);
 
 	const dialog = document.createElement("dialog");
 	dialog.style.padding = "20px";
