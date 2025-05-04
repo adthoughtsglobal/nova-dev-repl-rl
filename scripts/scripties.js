@@ -344,3 +344,20 @@ function convertTontxWrapper(jsCode) {
 		document.body.removeChild(dialog);
 	});
 }
+
+function backupsdia(){ 
+	let url = `bios.html?un=${CurrentUsername}`;
+	let title = "biowin";
+	let height = 250, width = 450;
+	const screenLeft = window.screenLeft !== undefined ? window.screenLeft : screen.left;
+    const screenTop = window.screenTop !== undefined ? window.screenTop : screen.top;
+
+    const screenWidth = window.innerWidth || document.documentElement.clientWidth || screen.width;
+    const screenHeight = window.innerHeight || document.documentElement.clientHeight || screen.height;
+
+    const left = screenLeft + (screenWidth - width) / 2;
+    const top = screenTop + (screenHeight - height) / 2;
+
+    const features = `width=${width},height=${height},top=${top},left=${left},resizable,scrollbars`;
+    window.open(url, title, features);
+}

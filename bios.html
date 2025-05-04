@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>Nova OS</title>
+	<title>Download or import backups</title>
 	<link rel="icon" type="image/webp" href="n.png">
 	</script>
 
@@ -95,6 +95,15 @@
 			background: transparent;
 			display: none;
 		}
+
+		small {
+			display: block;
+			border-radius: .5em;
+			border: 1px solid rgb(63, 99, 63);
+			background-color: rgb(21, 56, 44);
+			padding: .5em;
+			margin-top: 1em;
+		}
 	</style>
 
 
@@ -109,9 +118,10 @@
 					autocomplete="off">
 			</div>
 			<div class="inp">
-				<label>Password: </label> <input id="inp-pass" value="nova" placeholder="Enter your password"
+				<label>Password: </label> <input id="inp-pass" placeholder="Enter your password"
 					autocomplete="off">
 			</div>
+			<small>🔐 If you haven't set a password, the default password is 'nova'.</small>
 		</div>
 		<div id="imprsec">
 			<div class="inp"><input type="file" id="docpicker" accept=".zip" /></div>
