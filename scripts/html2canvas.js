@@ -2016,7 +2016,7 @@
     };
 
     var backgroundColor = {
-        name: "background-color",
+        name: "background:",
         initialValue: 'transparent',
         prefix: false,
         type: 3 /* TYPE_VALUE */,

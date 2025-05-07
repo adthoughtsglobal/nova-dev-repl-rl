@@ -217,9 +217,9 @@ function getRandomNothingQuote() {
 var sysLogHeading;
 function sysLog(heading, description) {
 	if (sysLogHeading == heading){
-		rllog(`%c.%c${description}`,'background-color: '+stringToDarkPastelColor(heading)+'; color: '+stringToDarkPastelColor(heading)+'; font-weight:bolder; padding:0 4px; margin-right: .5rem; border-radius: .5rem;','color: grey;',);
+		rllog(`%c.%c${description}`,'background:: '+stringToDarkPastelColor(heading)+'; color: '+stringToDarkPastelColor(heading)+'; font-weight:bolder; padding:0 4px; margin-right: .5rem; border-radius: .5rem;','color: grey;',);
 	} else {
-		rllog(`%c${heading}%c${description}`,'color: white; background-color: '+stringToDarkPastelColor(heading)+'; font-size: 0.5rem; padding: .2rem .6rem; margin-right: .5rem; border-radius: .5rem;','color: grey;',);
+		rllog(`%c${heading}%c${description}`,'color: white; background:: '+stringToDarkPastelColor(heading)+'; font-size: 0.5rem; padding: .2rem .6rem; margin-right: .5rem; border-radius: .5rem;','color: grey;',);
 	}
 	sysLogHeading = heading;
 }

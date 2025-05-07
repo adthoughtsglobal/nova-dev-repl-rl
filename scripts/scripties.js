@@ -35,7 +35,7 @@ function terminal() {
 function cuteee() {
 	let stylelement = document.createElement('style')
 	stylelement.innerHTML = `.windowheader {
-	background-color: #121212;
+	background:: #121212;
 	backdrop-filter: blur(5px) brightness(0.5);
 	position: absolute;
 	padding: 0.3rem 0.8rem;

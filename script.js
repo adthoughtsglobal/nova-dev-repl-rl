@@ -225,7 +225,7 @@ async function startup() {
 
 			rllog(
 				`You are using \n\n%cNovaOS%c\n%cNovaOS is the web system made for you.%c\n\nStartup: ${(end - start).toFixed(2)}ms\nUsername: ${CurrentUsername}\nCurrent: ${localupdatedataver}\n12hr Time format: ${timetypecondition}\nNewest: ${fetchupdatedataver}`,
-				'color: white; background-color: #101010; font-size: 2rem; padding: 0.7rem 1rem; border-radius: 1rem;',
+				'color: white; background:: #101010; font-size: 2rem; padding: 0.7rem 1rem; border-radius: 1rem;',
 				'',
 				'padding:5px 0; padding-top:1rem;',
 				'color: lightgreen; font-size:70%;'
@@ -303,7 +303,7 @@ async function openn() {
 			appShortcutDiv.addEventListener("click", () => openfile(app.id));
 
 			var iconSpan = document.createElement("span");
-			iconSpan.classList.add("appiconspan");
+			iconSpan.classList.add("appicnspan");
 			iconSpan.innerHTML = "<span class='taskbarloader'></span>";
 			getAppIcon(false, app.id).then((appIcon) => {
 				iconSpan.innerHTML = appIcon;
@@ -361,7 +361,7 @@ async function loadrecentapps() {
 		appShortcutDiv.setAttribute("unid", app.id || '');
 		appShortcutDiv.addEventListener("click", () => openapp(app.name, app.id));
 		var iconSpan = document.createElement("span");
-		iconSpan.classList.add("appiconspan");
+		iconSpan.classList.add("appicnspan");
 		if (!appicns[app.id]) {
 			const content = await getFileById(app.id);
 			const unshrunkContent = decodeBase64Content(content.content);
@@ -513,27 +513,82 @@ function getAppAspectRatio(unshrunkContent) {
 	return content.includes("aspect-ratio") ? getMetaTagContent(content, 'aspect-ratio', false) : null;
 }
 async function getAppIcon(content, id, lazy = 0) {
+	console.log(76, content, id, lazy)
 	try {
 		const withTimeout = (promise) =>
 			Promise.race([promise, new Promise((_, reject) => setTimeout(() => reject(), 3000))]);
+
+		if (appicns[id]) return appicns[id];
+		if (lazy) return defaultAppIcon;
+
+		const registry = await getSetting(id, "AppRegistry.json") || {};
+		if (registry.appicns && registry.appicns[id]) {
+			appicns[id] = registry.appicns[id];
+			return appicns[id];
+		}
+
 		if (!content) {
 			const file = await withTimeout(getFileById(id));
-			if (!file || !file.content) throw new Error("File content unavailable" + id);
+			if (!file || !file.content) throw new Error("File content unavailable " + id);
 			return await withTimeout(getAppIcon(file.content, id));
 		}
-		if (lazy) return appicns[id] || defaultAppIcon;
-		if (appicns[id]) return appicns[id];
+
 		const iconContent = await withTimeout(getMetaTagContent(content, 'nova-icon', true));
 		if (iconContent && containsSmallSVGElement(iconContent)) {
 			appicns[id] = iconContent;
+
+			const updatedRegistry = {
+				...(registry || {}),
+				appicns: { ...(registry.appicns || {}), [id]: iconContent }
+			};
+			await setSetting(id, updatedRegistry, "AppRegistry.json");
+
 			return iconContent;
 		}
 	} catch (err) {
-		console.error(err);
+		console.error("Error in getAppIcon:", err);
 	}
-	let icondatatodo = await getFileNameByID(id) || id;
-	return `<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="115.24806" height="130.92446" viewBox="0,0,115.24806,130.92446"><g transform="translate(-182.39149,-114.49081)"><g stroke="none" stroke-miterlimit="10"><path d="M182.39149,245.41527v-130.83054h70.53005l44.68697,44.95618v85.87436z" fill="` + stringToPastelColor(icondatatodo) + `" stroke-width="none"/><path d="M252.60365,158.84688v-44.35607l45.03589,44.35607z" style="opacity: 0.7" fill="#dadada" stroke-width="0"/><text transform="translate(189,229) scale(0.9,0.9)" font-size="3rem" xml:space="preserve" fill="#dadada" style="opacity: 0.7" stroke-width="1" font-family="monospace" font-weight="normal" text-anchor="start"><tspan x="0" dy="0" fill="black">${makedefic(icondatatodo)}</tspan></text></g></g></svg>`;
+
+	const icondatatodo = await getFileNameByID(id) || id;
+	const fallbackIcon = `<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="115.24806" height="130.92446" viewBox="0,0,115.24806,130.92446"><g transform="translate(-182.39149,-114.49081)"><g stroke="none" stroke-miterlimit="10"><path d="M182.39149,245.41527v-130.83054h70.53005l44.68697,44.95618v85.87436z" fill="` + stringToPastelColor(icondatatodo) + `" stroke-width="none"/><path d="M252.60365,158.84688v-44.35607l45.03589,44.35607z" style="opacity: 0.7" fill="#dadada" stroke-width="0"/><text transform="translate(189,229) scale(0.9,0.9)" font-size="3rem" xml:space="preserve" fill="#dadada" style="opacity: 0.7" stroke-width="1" font-family="monospace" font-weight="normal" text-anchor="start"><tspan x="0" dy="0" fill="black">${makedefic(icondatatodo)}</tspan></text></g></g></svg>`;
+
+	appicns[id] = fallbackIcon;
+
+	try {
+		const registry = await getSetting(id, "AppRegistry.json") || {};
+		const updatedIcons = { ...(registry.appicns || {}), [id]: fallbackIcon };
+		await setSetting(id, { ...registry, appicns: updatedIcons }, "AppRegistry.json");
+	} catch (err) {
+		console.error("Failed to cache fallback icon:", err);
+	}
+
+	return fallbackIcon;
 }
+
+async function applyIconPack(iconPack) {
+	try {
+		for (const namespace in handlers) {
+			const appID = handlers[namespace];
+			const iconSVG = iconPack[namespace];
+
+			if (!iconSVG) continue;
+			try {
+				const registry = await getSetting(appID, "AppRegistry.json") || {};
+				const appicns = registry.appicns || {};
+
+				appicns[appID] = iconSVG;
+
+				await setSetting(appID, { ...registry, appicns }, "AppRegistry.json");
+				console.log(`Icon set for app ${appID} from namespace ${namespace}`);
+			} catch (err) {
+				console.error(`Failed to set icon for app ${appID}`, err);
+			}
+		}
+	} catch (err) {
+		console.error("Failed to apply icon pack", err);
+	}
+}
+
 async function fetchData(url) {
 	try {
 		const response = await fetch(url);
@@ -675,12 +730,24 @@ async function extractAndRegisterCapabilities(appId, content) {
 		} else {
 			console.log(`No capabilities: ${appId}`);
 		}
+
+		let metaTag2 = doc.querySelector('meta[name="permissions"]');
+		if (metaTag2) {
+			let permissions = metaTag2.getAttribute("content").split(',').map(s => s.trim());
+			let registry = {};
+			registry.perms = permissions;
+			await setSetting(appId, registry, "AppRegistry.json");
+		} else {
+			console.log(`No permissions: ${appId}`);
+		}
+
 	} catch (error) {
 		console.error("Error extracting and registering capabilities:", error);
 	}
 }
 async function registerApp(appId, capabilities) {
-	for (let capability of capabilities) {
+	for (let rawCapability of capabilities) {
+		let capability = rawCapability.trim();
 		if (capability.startsWith('.')) {
 			if (!fileTypeAssociations[capability]) {
 				fileTypeAssociations[capability] = [];
@@ -689,18 +756,16 @@ async function registerApp(appId, capabilities) {
 				fileTypeAssociations[capability].push(appId);
 			}
 		} else {
-			console.log("handler", capability)
+			console.log("handler", capability);
 			if (!handlers[capability]) {
-				handlers[capability] = [];
+				handlers[capability] = appId;
 			}
-			if (!handlers[capability].includes(appId)) {
-				handlers[capability].push(appId);
-			}
+
 		}
 	}
 	await setSetting('fileTypeAssociations', fileTypeAssociations);
 	await setSetting('handlers', handlers);
-	notify(await getFileNameByID(appId) + " installed", "Registered " + capabilities.toString(), "NovaOS System")
+	notify(await getFileNameByID(appId) + " installed", "Registered " + capabilities.toString(), "NovaOS System");
 }
 
 async function cleanupInvalidAssociations() {
@@ -836,8 +901,8 @@ async function loadtaskspanel() {
 		});
 
 		let iconSpan = document.createElement("span");
-		iconSpan.classList.add("appiconspan");
-		iconSpan.innerHTML = appicns[app] || defaultAppIcon;
+		iconSpan.classList.add("appicnspan");
+		iconSpan.innerHTML = (await getAppIcon(0, key?.appid)) || defaultAppIcon;
 
 		let tooltisp = document.createElement("span");
 		tooltisp.className = "tooltiptext";
@@ -878,7 +943,7 @@ async function initialiseOS() {
 	await say(`
 		<h2>Terms of service and License</h2>
 		<p>By using Nova OS, you agree to the <a href="https://github.com/adthoughtsglobal/Nova-OS/blob/main/Adthoughtsglobal%20Nova%20Terms%20of%20use">Adthoughtsglobal Nova Terms of Use</a>. Read the terms before use. 
-		<div style="background-color: #001b00; color: lightgreen; padding: 0.8rem; border: 1px solid #254625;font-size:inherit; border-radius: .5rem; margin: 0.8rem 0; display: flex;flex-direction:row; align-items: center; justify-content: flex-start;gap:0.5rem;">
+		<div style="background:: #001b00; color: lightgreen; padding: 0.8rem; border: 1px solid #254625;font-size:inherit; border-radius: .5rem; margin: 0.8rem 0; display: flex;flex-direction:row; align-items: center; justify-content: flex-start;gap:0.5rem;">
 			<span class="material-symbols-rounded">check</span>
 			<div>We do not store or share your personal information.</div>
 		</div>
@@ -1181,7 +1246,7 @@ function displayTimeLeft(seconds) {
 }
 
 async function notify(...args) {
-	if (nonotif) {return}
+	if (nonotif) { return }
 	let [title = "Notification", description = "There is a notification", appname = "App", ...rest] = args;
 	appname = basename(await getFileNameByID(appname));
 	if (document.getElementById("notification").style.display == "block") {
@@ -1417,7 +1482,7 @@ async function realgenTaskBar() {
 				appShortcutDiv.addEventListener("click", () => openfile(app.id));
 
 				var iconSpan = document.createElement("span");
-				iconSpan.classList.add("appiconspan");
+				iconSpan.classList.add("appicnspan");
 
 				var tooltisp = document.createElement("span");
 				tooltisp.className = "tooltiptext";
@@ -1475,7 +1540,7 @@ async function realgenDesktop() {
 			appShortcutDiv.setAttribute("unid", app.id);
 			var iconSpan = document.createElement("span");
 
-			iconSpan.classList.add("appiconspan");
+			iconSpan.classList.add("appicnspan");
 			getAppIcon(app.content, app.id).then((icon) => {
 				iconSpan.innerHTML = `${icon}`;
 			})

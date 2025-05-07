@@ -540,7 +540,7 @@ function enqueueTask(action) {
 }
 
 const defaultFileData = {
-    "System/permissions.json": {
+    "System/AppRegistry.json": {
     },
     "System/preferences.json": {
         "defFileLayout": "List",

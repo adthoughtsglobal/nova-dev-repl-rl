@@ -41,7 +41,7 @@ async function useHandler(name, stufftodo) {
 
         _olpResolverMap.set(transferID, { resolve, timeout });
 
-        openfile(data[name]?.[0], { data: stufftodo, trid: transferID });
+        openfile(data[name], { data: stufftodo, trid: transferID });
     });
 }
 
@@ -147,6 +147,7 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
     let winuid = genUID();
     if (!winds[winuid]) { winds[winuid] = {} };
     winds[winuid].title = title;
+    winds[winuid].appid = appid;
 
     var windowDiv = document.createElement("div");
     windowDiv.id = "window" + winuid;
@@ -392,7 +393,7 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
         }
 
         if (windowLoader) {
-            windowLoader.innerHTML = await getAppIcon(contentString, appid);
+            windowLoader.innerHTML = appicns[appid] || defaultAppIcon;
             windowLoader.appendChild(loaderdiv);
         }
 
@@ -469,7 +470,6 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
             ctxScript = await fetch('scripts/ctxmenu.js').then(res => res.text());
         }
 
-
         async function handleNtxSessionMessage(event) {
             const message = event.data;
 
@@ -477,19 +477,32 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
                 const [namespace, method] = message.action.split(".");
 
                 if (ntxWrapper[namespace] && typeof ntxWrapper[namespace][method] === "function") {
-                    async function checkAndSetPermission() {
-                        let perms = await getSetting(appid, "permissions.json");
-                        if (perms == null) {
-                            await setSetting(appid, [], "permissions.json");
+                    async function checkAndSetPermission(appid, namespace, title) {
+                        let registry = await getSetting(appid, "AppRegistry.json");
+                        if (registry == null) {
+                            registry = {};
+                        }
+                    
+                        if (!registry[appid]) {
+                            registry[appid] = { perms: [] };
+                        }
+                    
+                        let perms = registry[appid].perms;
+                        if (!Array.isArray(perms)) {
+                            registry[appid].perms = [];
+                            await setSetting(appid, registry, "AppRegistry.json");
                             return checkAndSetPermission(appid, namespace, title);
                         }
                     
                         let condition = perms.includes(namespace);
                         if (!condition) {
-                            let confirmperm = await justConfirm("Allow " + namespace + " permission?", toTitleCase(basename(title)) + " asks permission " + describeNamespaces(namespace) + ". Allow it?");
+                            let confirmperm = await justConfirm(
+                                "Allow " + namespace + " permission?",
+                                toTitleCase(basename(title)) + " asks permission " + describeNamespaces(namespace) + ". Allow it?"
+                            );
                             if (confirmperm) {
-                                perms.push(namespace);
-                                await setSetting(appid, perms, "permissions.json");
+                                registry[appid].perms.push(namespace);
+                                await setSetting(appid, registry, "AppRegistry.json");
                                 return true;
                             } else {
                                 return false;
@@ -497,8 +510,7 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
                         }
                         return true;
                     }
-                    
-                    const hasPermission = await checkAndSetPermission();
+                    const hasPermission = await checkAndSetPermission(appid, namespace, title);
                     if (!hasPermission) return;
 
                     const fn = ntxWrapper[namespace][method];
@@ -955,7 +967,7 @@ async function openapp(x, od, customtodo) {
                 Gtodo = customtodo;
             }
 
-            openwindow(x, y, await getAppIcon(y, x), getAppTheme(y), getAppAspectRatio(y), od, Gtodo);
+            openwindow(x, y, appicns[od] || defaultAppIcon, getAppTheme(y), getAppAspectRatio(y), od, Gtodo);
 
             Gtodo = null;
         } catch (error) {
