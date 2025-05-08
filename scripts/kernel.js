@@ -544,7 +544,7 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
         }
 
         const ntxScript = `
-    <script>
+    <script defer>
     document.addEventListener('mousedown', function(event) {
         const winuid = myWindow.windowID;
         window.parent.postMessage({ type: 'iframeClick', iframeId: winuid }, '*');
@@ -633,7 +633,7 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
     ${contentString}
     ${ctxScript ? `<script>${ctxScript}</script>` : ''}
     ${ntxScript}
-    <script>
+    <script defer>
         window.parent.postMessage({
             type: "iframeReady",
             windowID: "${winuid}",

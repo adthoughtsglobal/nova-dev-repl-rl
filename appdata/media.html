@@ -171,7 +171,7 @@
 		}
 
 		async function openfromfiles() {
-			const fileID = await ntxSession.send("olp.useHandler", "file", { "opener": 'any', "dir": "Downloads/" });
+			const fileID = await ntxSession.send("olp.useHandler", "file_manager", { "opener": 'any', "dir": "Downloads/" });
 			openfile(fileID);
 		}
 

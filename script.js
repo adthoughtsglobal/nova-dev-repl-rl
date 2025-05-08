@@ -734,9 +734,33 @@ async function extractAndRegisterCapabilities(appId, content) {
 		let metaTag2 = doc.querySelector('meta[name="permissions"]');
 		if (metaTag2) {
 			let permissions = metaTag2.getAttribute("content").split(',').map(s => s.trim());
-			let registry = {};
-			registry.perms = permissions;
-			await setSetting(appId, registry, "AppRegistry.json");
+			// confirm perms in bulk
+			let modal = gid("AppInstDia");
+			permissions.forEach((perm) => {
+				let listelement = gid("app_inst_mod_li");
+				let span = document.createElement("li");
+				span.innerText = describeNamespaces(perm);
+				listelement.appendChild(span);
+			})
+			modal.showModal();
+			let yesButton = gid("app_inst_mod_agbtn");
+			let noButton = gid("app_inst_mod_nobtn");
+			let condition = await new Promise((resolve) => {
+				yesButton.onclick = () => {
+					modal.close();
+					resolve(true);
+				};
+				noButton.onclick = () => {
+					modal.close();
+					resolve(false);
+				};
+			});
+
+			if (condition) {
+				let registry = {};
+				registry.perms = permissions;
+				await setSetting(appId, registry, "AppRegistry.json");
+			}
 		} else {
 			console.log(`No permissions: ${appId}`);
 		}

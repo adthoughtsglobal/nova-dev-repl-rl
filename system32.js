@@ -576,7 +576,6 @@ async function ensureFileExists(fileName = "preferences.json", dirPath = "System
         console.error(`Error ensuring file ${fileName} exists in ${dirPath}:`, err);
     }
 }
-
 async function getSetting(settingKey, fileName = "preferences.json", dirPath = "System/") {
     return enqueueTask(async () => {
         try {
@@ -585,7 +584,7 @@ async function getSetting(settingKey, fileName = "preferences.json", dirPath = "
             let currentPath = memory.root;
 
             for (let part of pathParts) {
-                part += "/"
+                part += "/";
                 if (!currentPath[part]) {
                     console.error(`Folder ${part} not found in memory.`);
                     return null;
@@ -606,7 +605,12 @@ async function getSetting(settingKey, fileName = "preferences.json", dirPath = "
             }
 
             const fileSettings = JSON.parse(decodeBase64Content(base64Data));
-            return fileSettings[settingKey] !== undefined ? fileSettings[settingKey] : null;
+            if (fileSettings[settingKey] === undefined) {
+                await setSetting(settingKey, 0, fileName, dirPath);
+                return 0;
+            }
+
+            return fileSettings[settingKey];
         } catch (error) {
             console.error(`Error in getSetting for ${fileName}:`, error);
             return null;

@@ -94,7 +94,7 @@
 <body>
 
     <nav>
-        <button onclick="ntxSession.send('olp.useHandler', 'any')" class="navbutton">New</button>
+        <button onclick="ntxSession.send('olp.useHandler', 'text_editor')" class="navbutton">New</button>
         <button onclick="openfromfiles()" class="navbutton">Open</button>
         <button onclick="savetx(1)" id="sbtn" class="navbutton">Save</button>
         <button onclick="toggleDarkMode()" class="navbutton">Reading Mode</button>
@@ -111,7 +111,7 @@
         var ntxSession;
         async function openfromfiles() {
             document.getElementById("thedisplay").value = "Waiting for you to open a file...";
-            const fileID = await ntxSession.send("olp.useHandler", "file", { "opener": 'any', "dir": "Downloads/" });
+            const fileID = await ntxSession.send("olp.useHandler", "file_manager", { "opener": 'any', "dir": "Downloads/" });
             const file = await ntxSession.send("fileGet.byId", fileID);
             console.log(4534, fileID, file)
             readthefile(file);

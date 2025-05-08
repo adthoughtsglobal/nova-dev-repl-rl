@@ -91,8 +91,8 @@ body {
 	margin: 0;
 	background-color: var(--colors-BG-normal);
 	color: var(--colors-text-normal);
-	font-family: 'Poppins', sans-serif;
 	user-select: none;
+	font-family: "IBM Plex Sans", sans-serif;
 }
 
 body * {
@@ -100,8 +100,8 @@ body * {
 	animation-timing-function: cubic-bezier(0.7, 0, 1, 1);
 }
 
-p {
-	font-family: "IBM Plex Sans", sans-serif;
+h1, h2, h3, h4, h5, b {
+	font-family: 'Poppins', sans-serif;
 }
 
 input::placeholder,

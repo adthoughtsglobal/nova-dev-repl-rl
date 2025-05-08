@@ -759,7 +759,7 @@
 
 		function openfromfiles() {
 			currentreqID = window.parent.genUID();
-			let appIdToOpen = window.parent.handlers['file'][0] || null;
+			let appIdToOpen = window.parent.handlers['file_manager'] || null;
 			window.parent.openlaunchprotocol(appIdToOpen, { "opener": 'any', "dir": "Downloads/" }, currentreqID, myWindow.windowID);
 			primaryalert.style.display = "none"
 		}
