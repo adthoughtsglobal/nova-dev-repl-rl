@@ -528,8 +528,9 @@ async function processTask() {
 
     isProcessingTask = false;
 
-    // Ensure any newly enqueued tasks are processed
-    if (settingsTaskQueue.length > 0) processTask();
+    if (settingsTaskQueue.length > 0) {
+        queueMicrotask(processTask);
+    }
 }
 
 function enqueueTask(action) {
@@ -605,9 +606,14 @@ async function getSetting(settingKey, fileName = "preferences.json", dirPath = "
             }
 
             const fileSettings = JSON.parse(decodeBase64Content(base64Data));
-            if (fileSettings[settingKey] === undefined) {
-                await setSetting(settingKey, 0, fileName, dirPath);
-                return 0;
+            if (!fileSettings || typeof fileSettings !== 'object') {
+                console.error(`Invalid content in ${fileName}`);
+                return null;
+            }
+
+            if (!(settingKey in fileSettings)) {
+                console.warn(`Setting key "${settingKey}" not found in ${fileName}`);
+                return null;
             }
 
             return fileSettings[settingKey];

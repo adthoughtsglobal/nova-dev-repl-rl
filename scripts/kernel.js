@@ -480,20 +480,16 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
                     async function checkAndSetPermission(appid, namespace, title) {
                         let registry = await getSetting(appid, "AppRegistry.json");
                         if (registry == null) {
-                            registry = {};
+                            registry = { perms: [] };
                         }
-                    
-                        if (!registry[appid]) {
-                            registry[appid] = { perms: [] };
-                        }
-                    
-                        let perms = registry[appid].perms;
+
+                        let perms = registry.perms;
                         if (!Array.isArray(perms)) {
-                            registry[appid].perms = [];
+                            registry.perms = [];
                             await setSetting(appid, registry, "AppRegistry.json");
                             return checkAndSetPermission(appid, namespace, title);
                         }
-                    
+
                         let condition = perms.includes(namespace);
                         if (!condition) {
                             let confirmperm = await justConfirm(
@@ -501,7 +497,7 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
                                 toTitleCase(basename(title)) + " asks permission " + describeNamespaces(namespace) + ". Allow it?"
                             );
                             if (confirmperm) {
-                                registry[appid].perms.push(namespace);
+                                registry.perms.push(namespace);
                                 await setSetting(appid, registry, "AppRegistry.json");
                                 return true;
                             } else {
@@ -576,14 +572,16 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
             this.pendingRequests = {};
             this.listeners = {};
             window.addEventListener("message", (event) => {
-                if (event.data.transactionId && (event.data.result || event.data.error)) {
+                if (event.data.transactionId && typeof event.data.success === "boolean") {
                     const { transactionId, result, error, success } = event.data;
                     if (this.pendingRequests[transactionId]) {
-                        success ? this.pendingRequests[transactionId].resolve(result)
+                        success
+                            ? this.pendingRequests[transactionId].resolve(result)
                             : this.pendingRequests[transactionId].reject(error);
                         delete this.pendingRequests[transactionId];
                     }
                 }
+
             });
         }
 

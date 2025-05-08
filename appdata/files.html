@@ -1289,7 +1289,6 @@
 			} catch (e) { }
 
 			liststuff();
-			listFiles(currentPath);
 			fdlist = document.getElementById("folders");
 
 			try {
@@ -2226,7 +2225,7 @@
 		};
 
 		function getMenuItems(target) {
-			if (target.classList.contains('file_manager')) {
+			if (target.classList.contains('file')) {
 				const itemuid = target.getAttribute("unid");
 				slfileID = itemuid;
 				const file = { unid: itemuid, type: 'app', fileName: window.parent.getFileNameByID(itemuid) };

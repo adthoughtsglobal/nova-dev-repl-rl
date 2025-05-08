@@ -225,7 +225,7 @@ async function startup() {
 
 			rllog(
 				`You are using \n\n%cNovaOS%c\n%cNovaOS is the web system made for you.%c\n\nStartup: ${(end - start).toFixed(2)}ms\nUsername: ${CurrentUsername}\nCurrent: ${localupdatedataver}\n12hr Time format: ${timetypecondition}\nNewest: ${fetchupdatedataver}`,
-				'color: white; background:: #101010; font-size: 2rem; padding: 0.7rem 1rem; border-radius: 1rem;',
+				'color: white; background-color: #101010; font-size: 2rem; padding: 0.7rem 1rem; border-radius: 1rem;',
 				'',
 				'padding:5px 0; padding-top:1rem;',
 				'color: lightgreen; font-size:70%;'
@@ -731,9 +731,11 @@ async function extractAndRegisterCapabilities(appId, content) {
 			console.log(`No capabilities: ${appId}`);
 		}
 
+		let totalperms = ['utility'];
 		let metaTag2 = doc.querySelector('meta[name="permissions"]');
 		if (metaTag2) {
-			let permissions = metaTag2.getAttribute("content").split(',').map(s => s.trim());
+			let requestedperms = metaTag2.getAttribute("content").split(',').map(s => s.trim());
+			let permissions = totalperms;
 			// confirm perms in bulk
 			let modal = gid("AppInstDia");
 			permissions.forEach((perm) => {
@@ -757,13 +759,19 @@ async function extractAndRegisterCapabilities(appId, content) {
 			});
 
 			if (condition) {
-				let registry = {};
-				registry.perms = permissions;
-				await setSetting(appId, registry, "AppRegistry.json");
-			}
+				requestedperms.forEach((perm) => {
+					if (!totalperms.includes(perm)) {
+						totalperms.push(perm);
+					}
+				});
+			}			
 		} else {
 			console.log(`No permissions: ${appId}`);
 		}
+
+		let registry = {};
+		registry.perms = totalperms;
+		await setSetting(appId, registry, "AppRegistry.json");
 
 	} catch (error) {
 		console.error("Error extracting and registering capabilities:", error);
