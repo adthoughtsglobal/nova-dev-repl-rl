@@ -731,7 +731,7 @@ async function extractAndRegisterCapabilities(appId, content) {
 			console.log(`No capabilities: ${appId}`);
 		}
 
-		let totalperms = ['utility'];
+		let totalperms = ['utility','sysUI'];
 		let metaTag2 = doc.querySelector('meta[name="permissions"]');
 		if (metaTag2) {
 			let requestedperms = metaTag2.getAttribute("content").split(',').map(s => s.trim());

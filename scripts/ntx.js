@@ -103,14 +103,14 @@ function describeNamespaces(namespaceKey) {
         fileGet: "to read file data",
         fileSet: "to modify and manage file data",
         dir: "to manipulate directories",
-        olp: "to use handlers and open apps",
-        ctntMgr: "to manage raw file contents",
+        olp: "to use open apps and use their features",
         settings: "to read and modify settings",
         accounts: "to manage user accounts",
         apps: "to know handlers and perms",
         sysUI: "to manipulate system UI",
         utility: "to use various utilities",
-        system: "to interact with high risk system functions"
+        system: "to interact with high risk system functions",
+        specific:"to trigger specific risky system sequences"
     };
 
     return descriptions[namespaceKey] || "to " + namespaceKey;
