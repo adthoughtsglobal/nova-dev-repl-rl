@@ -515,7 +515,6 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
                     if (fn.appIdSupport) {
                         args.push(appid);
                     }
-                    console.log("Calling", method, "with args:", args);
 
                     const result = await fn(...args);
 

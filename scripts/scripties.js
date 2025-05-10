@@ -147,7 +147,7 @@ async function qsetsRefresh() {
 }
 
 async function setuprotur() {
-    roturExtension = new RoturExtension();
+	roturExtension = new RoturExtension();
 	if (roturExtension.is_connected) {
 		return true;
 	}
@@ -162,79 +162,79 @@ async function logoutofrtr() {
 
 // themes
 async function checkdmode() {
-    if (!novadotcsscache) {
-        const response = await fetch('nova.css');
-        novadotcsscache = await response.text();
-    }
- 
-	if (CurrentUsername ){
-    const themeColors = await getSetting("themeColors") || {};
-    applyTheme(themeColors, document);
+	if (!novadotcsscache) {
+		const response = await fetch('nova.css');
+		novadotcsscache = await response.text();
+	}
+
+	if (CurrentUsername) {
+		const themeColors = await getSetting("themeColors") || {};
+		applyTheme(themeColors, document);
 	}
 }
 
 function applyThemeNonVisual(data, doc) {
-    applyTheme(data.colors, doc);
+	applyTheme(data.colors, doc);
 
-    if (data.wallpaper) {
-        window.top.makewall(data.wallpaper);
-    }
+	if (data.wallpaper) {
+		window.top.makewall(data.wallpaper);
+	}
 
-    window.top.setSetting("themeColors", data.colors);
-}const appliedThemeVars = new Set();
+	window.top.setSetting("themeColors", data.colors);
+} const appliedThemeVars = new Set();
 let themeStyleTag = null;
 
 function applyTheme(colors, doc) {
-    if (!themeStyleTag) {
-        themeStyleTag = document.createElement('style');
-        themeStyleTag.id = "novacsstag";
-    }
+	if (!themeStyleTag) {
+		themeStyleTag = document.createElement('style');
+		themeStyleTag.id = "novacsstag";
+	}
 
-    if (!document.getElementById("novacsstag")) {
-        document.head.appendChild(themeStyleTag);
-    }
+	if (!document.getElementById("novacsstag")) {
+		document.head.appendChild(themeStyleTag);
+	}
 
-    if (doc && doc !== document && !doc.getElementById("novacsstag")) {
-        doc.head.appendChild(themeStyleTag.cloneNode(true));
-    }
+	if (doc && doc !== document && !doc.getElementById("novacsstag")) {
+		doc.head.appendChild(themeStyleTag.cloneNode(true));
+	}
 
-    const cssVars = Object.fromEntries(
-        [...novadotcsscache.matchAll(/(--[\w-]+):\s*([^;]+)/g)]
-            .map(([_, key, value]) => [key, value.trim()])
-    );
+	const cssVars = Object.fromEntries(
+		[...novadotcsscache.matchAll(/(--[\w-]+):\s*([^;]+)/g)]
+			.map(([_, key, value]) => [key, value.trim()])
+	);
 
-    const textColor = colors["--colors-text-normal"] ?? cssVars["--colors-text-normal"];
-    const textSelectors = [
-        "--colors-text-section",
-        "--colors-text-sub"
-    ];
+	const textColor = colors["--colors-text-normal"] ?? cssVars["--colors-text-normal"];
+	const textSelectors = [
+		"--colors-text-section",
+		"--colors-text-sub"
+	];
 
-    let cssText = '';
+	let cssText = '';
 
-    for (const variableName in cssVars) {
-        let colorValue = colors[variableName] ?? cssVars[variableName];
-        if (textSelectors.includes(variableName)) {
-            colorValue = textColor;
-        }
-        cssText += `${variableName}: ${colorValue};\n`;
-        appliedThemeVars.add(variableName);
-    }
+	for (const variableName in cssVars) {
+		let colorValue = colors[variableName] ?? cssVars[variableName];
+		if (textSelectors.includes(variableName)) {
+			colorValue = textColor;
+		}
+		cssText += `${variableName}: ${colorValue};\n`;
+		appliedThemeVars.add(variableName);
+	}
 
-    themeStyleTag.textContent = `:root { ${cssText} }`;
+	themeStyleTag.textContent = `:root { ${cssText} }`;
 
-    if (doc && doc !== document) {
-        const docStyle = doc.getElementById("novacsstag");
-        if (docStyle) docStyle.textContent = themeStyleTag.textContent;
-    }
+	if (doc && doc !== document) {
+		const docStyle = doc.getElementById("novacsstag");
+		if (docStyle) docStyle.textContent = themeStyleTag.textContent;
+	}
 }
 
 function removeTheme() {
-    if (themeStyleTag) {
-        themeStyleTag.remove();
-        themeStyleTag = null;
-    }
+	if (themeStyleTag) {
+		themeStyleTag.remove();
+		themeStyleTag = null;
+	}
 
-    appliedThemeVars.clear();
+	appliedThemeVars.clear();
 }
 
 function convertTontxWrapper(jsCode) {
@@ -251,12 +251,12 @@ function convertTontxWrapper(jsCode) {
 
 	function buildExactMethodMap() {
 		const map = {};
-	
+
 		function traverse(obj, path = "") {
 			for (const key in obj) {
 				const value = obj[key];
 				const fullPath = path ? `${path}.${key}` : key;
-	
+
 				if (typeof value === "function") {
 					const fnName = value.name;
 					if (fnName) map[fnName] = fullPath;
@@ -270,40 +270,40 @@ function convertTontxWrapper(jsCode) {
 				}
 			}
 		}
-	
+
 		traverse(ntxWrapper)
 		return map;
 	}
-	
+
 
 	function findClosestMatch(target) {
 		const normalizedTarget = target.toLowerCase();
 		let bestMatch = null;
 		let highestScore = 0;
-	
+
 		for (const fnName in exactMethodMap) {
 			const path = exactMethodMap[fnName];
 			const [namespace, method] = path.toLowerCase().split(".");
-	
+
 			let score = 0;
 			if (path.toLowerCase() === normalizedTarget) score += 1;
 			if (normalizedTarget.includes(fnName.toLowerCase())) score += 0.3;
 			if (normalizedTarget.includes(namespace)) score += 0.3;
 			if (normalizedTarget.includes(method)) score += 0.3;
 			if (fnName.toLowerCase() === normalizedTarget) score += 10;
-	
+
 			// Fallback to similarity for tie-breaking
 			score += similarity(normalizedTarget, fnName.toLowerCase()) * 0.3;
-	
+
 			if (score > highestScore) {
 				highestScore = score;
 				bestMatch = path;
 			}
 		}
-	
+
 		return bestMatch;
 	}
-	
+
 
 	const convertedCode = jsCode.replace(
 		/(?<!await\s)(window\.parent\.)(\w+)\s*\(/g,
@@ -345,19 +345,50 @@ function convertTontxWrapper(jsCode) {
 	});
 }
 
-function backupsdia(){ 
+function backupsdia() {
 	let url = `bios.html?un=${CurrentUsername}`;
 	let title = "biowin";
 	let height = 250, width = 450;
 	const screenLeft = window.screenLeft !== undefined ? window.screenLeft : screen.left;
-    const screenTop = window.screenTop !== undefined ? window.screenTop : screen.top;
+	const screenTop = window.screenTop !== undefined ? window.screenTop : screen.top;
 
-    const screenWidth = window.innerWidth || document.documentElement.clientWidth || screen.width;
-    const screenHeight = window.innerHeight || document.documentElement.clientHeight || screen.height;
+	const screenWidth = window.innerWidth || document.documentElement.clientWidth || screen.width;
+	const screenHeight = window.innerHeight || document.documentElement.clientHeight || screen.height;
 
-    const left = screenLeft + (screenWidth - width) / 2;
-    const top = screenTop + (screenHeight - height) / 2;
+	const left = screenLeft + (screenWidth - width) / 2;
+	const top = screenTop + (screenHeight - height) / 2;
 
-    const features = `width=${width},height=${height},top=${top},left=${left},resizable,scrollbars`;
-    window.open(url, title, features);
+	const features = `width=${width},height=${height},top=${top},left=${left},resizable,scrollbars`;
+	window.open(url, title, features);
+}
+
+
+async function addShortcut(flid) {
+	const getFolderNames = (memory, parentPath = '', level = 0) => {
+		let folders = [];
+		Object.keys(memory).forEach(key => {
+			const fullPath = parentPath + key;
+			if (fullPath.endsWith('/')) {
+				const indent = '-'.repeat(level * 2);
+				folders.push(indent + fullPath);
+				folders = folders.concat(getFolderNames(memory[key], fullPath, level + 1));
+			}
+		});
+		return folders;
+	};
+
+
+	let folders = getFolderNames(memory.root);
+
+	let selectedFolder = await showDropdownModal("Select a folder", "Create shortcut for " + flid + " in:", folders);
+
+	if (selectedFolder) {
+		const openable = {
+			"open": flid
+		};
+		const dataUri = `data:application/json;base64,${btoa(JSON.stringify(openable))}`;
+		let x = await ask("Enter a shortcut file name: (without extension)", "MyFile");
+		await createFile(selectedFolder, x + ".lnk", false, dataUri);
+		toast("Shortcut created")
+	}
 }

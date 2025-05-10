@@ -93,6 +93,56 @@ async function enqueueRequest(action, args) {
     });
 }
 
+const baseURL = location.origin;
+
+const workerScript = `
+importScripts('${baseURL}/scripts/fflate.js', '${baseURL}/scripts/encdec.js');
+
+let password = "${window.password}"
+const encoder = new TextEncoder();
+const decoder = new TextDecoder();
+
+self.addEventListener('message', async (e) => {
+    const { type, content, key } = e.data;
+    try {
+        let result;
+        switch (type) {
+            case 'encrypt-compress':
+                result = await encryptData(key, compressString(content));
+                break;
+            case 'decrypt-decompress':
+                const decrypted = await decryptData(key, content);
+                result = decompressString(decrypted);
+                break;
+            default:
+                throw new Error('Unknown operation');
+        }
+        self.postMessage({ success: true, result });
+    } catch (err) {
+        self.postMessage({ success: false, error: err.message });
+    }
+});
+`;
+
+function runWorker(type, content, key) {
+    return new Promise((resolve, reject) => {
+        const blob = new Blob([workerScript], { type: 'application/javascript' });
+        const worker = new Worker(URL.createObjectURL(blob));
+        
+        worker.onmessage = (e) => {
+            const { success, result, error } = e.data;
+            success ? resolve(result) : reject(new Error(error));
+            worker.terminate();
+        };
+
+        worker.onerror = (err) => {
+            reject(err);
+            worker.terminate();
+        };
+
+        worker.postMessage({ type, content, key });
+    });
+}
 async function getFileContents(id) {
     if (!dbCache) dbCache = await openDB(CurrentUsername, 1);
     if (!cryptoKeyCache) cryptoKeyCache = await getKey(password);
@@ -110,9 +160,8 @@ async function getFileContents(id) {
                         resolve(value);
                         return;
                     }
-
-                    const decrypted = await decryptData(cryptoKeyCache, value);
-                    resolve(decompressString(decrypted));
+                    const result = await runWorker('decrypt-decompress', value, cryptoKeyCache);
+                    resolve(result);
                 } catch (error) {
                     reject(error);
                 }
@@ -128,21 +177,17 @@ async function setFileContents(id, content) {
     if (!dbCache) dbCache = await openDB(CurrentUsername, 1);
     if (!cryptoKeyCache) cryptoKeyCache = await getKey(password);
 
-    let dataToStore, encrypted = true;
-
-    dataToStore = await encryptData(cryptoKeyCache, compressString(content));
+    const dataToStore = await runWorker('encrypt-compress', content, cryptoKeyCache);
 
     const transaction = dbCache.transaction('contentpool', 'readwrite');
     const store = transaction.objectStore('contentpool');
-    const request = store.put({ key: id, value: dataToStore, encrypted });
+    const request = store.put({ key: id, value: dataToStore, encrypted: true });
 
     return new Promise((resolve, reject) => {
         request.onsuccess = resolve;
         request.onerror = () => reject(request.error);
     });
 }
-
-
 
 async function removeFileContents(id) {
     if (!dbCache) dbCache = await openDB(CurrentUsername, 1);

@@ -819,6 +819,7 @@
 
 				function openwin(winname, obj) {
 					if (winname == "appsmode") {
+						renderapps()
 						document.getElementById("topse").style.display = 'flex';
 						document.getElementById("themenavsel").style.display = 'none';
 					} else {
@@ -1074,15 +1075,8 @@
 
 		}
 
-		async function greenflag() {
-			const data = myWindow?.params?.data?.opener;
-
-			if (data == 'themes') {
-				openwin('themesmode', document.getElementById('themesmodebtn'));
-				document.body.classList.remove("initloadin");
-				return;
-			}
-			await fetchAppData().then(appData => {
+		function renderapps() {
+			fetchAppData().then(appData => {
 				document.getElementById("offlinesug")?.remove();
 				document.body.classList.remove("initloadin");
 				renderSections();
@@ -1093,6 +1087,17 @@
 				console.error('Error:', error);
 				return;
 			});
+		}
+		async function greenflag() {
+			const data = myWindow?.params?.data?.opener;
+
+			if (data == 'themes') {
+				openwin('themesmode', document.getElementById('themesmodebtn'));
+				document.body.classList.remove("initloadin");
+				return;
+			}
+
+			renderapps()
 		}
 
 		async function fetchAppData() {

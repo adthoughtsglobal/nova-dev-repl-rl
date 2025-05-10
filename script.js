@@ -513,7 +513,6 @@ function getAppAspectRatio(unshrunkContent) {
 	return content.includes("aspect-ratio") ? getMetaTagContent(content, 'aspect-ratio', false) : null;
 }
 async function getAppIcon(content, id, lazy = 0) {
-	console.log(76, content, id, lazy)
 	try {
 		const withTimeout = (promise) =>
 			Promise.race([promise, new Promise((_, reject) => setTimeout(() => reject(), 3000))]);
@@ -731,7 +730,7 @@ async function extractAndRegisterCapabilities(appId, content) {
 			console.log(`No capabilities: ${appId}`);
 		}
 
-		let totalperms = ['utility','sysUI'];
+		let totalperms = ['utility', 'sysUI'];
 		let metaTag2 = doc.querySelector('meta[name="permissions"]');
 		if (metaTag2) {
 			let requestedperms = metaTag2.getAttribute("content").split(',').map(s => s.trim());
@@ -764,7 +763,7 @@ async function extractAndRegisterCapabilities(appId, content) {
 						totalperms.push(perm);
 					}
 				});
-			}			
+			}
 		} else {
 			console.log(`No permissions: ${appId}`);
 		}
@@ -826,13 +825,16 @@ async function getAllValidAppIds() {
 	return Object.keys(appsFolder || {}).map(appFileName => appsFolder[appFileName].id);
 }
 function makedialogclosable(ok) {
+	console.log('svtrigdiacl')
 	const myDialog = gid(ok);
 	document.addEventListener('click', (event) => {
+		console.log('trigdiacl')
 		if (event.target === myDialog) {
-			myDialog.classList.add("*closeEffect");
-			setTimeout(
-				myDialog.close()
-				, 500);
+			myDialog.classList.add("closeEffect");
+			setTimeout(() => {
+				myDialog.close();
+				myDialog.classList.remove("closeEffect");
+			}, 150);
 		}
 	});
 }
@@ -1735,8 +1737,8 @@ document.addEventListener("DOMContentLoaded", async function () {
 		}
 	});
 	const scriptSources = [
-		"scripts/html2canvas.js",
 		"scripts/fflate.js",
+		"scripts/encdec.js",
 		"scripts/kernel.js",
 		"scripts/rotur.js",
 		"scripts/ctxmenu.js",
