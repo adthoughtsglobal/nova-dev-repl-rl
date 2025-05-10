@@ -2527,27 +2527,21 @@
 						rounded_corner
 					</span>
 					<b>Corner rounding</b>
-					<select data-variable="--sizing-border-radius" id="brdrdrp">
-						<option value="1rem">Too cute</option>
-						<option value=".7rem">Pretty round</option>
-						<option value=".5rem">Normally round</option>
-						<option value=".3rem">Barely round</option>
-						<option value="0rem">Sharp</option>
-					</select>
+					<input class="numinp" data-variable="--sizing-border-radius"></input>
 				</div>
 				<div setting>
 					<span class="material-symbols-rounded">
 						space_dashboard
 					</span>
 					<b>Normal Spacing</b>
-					<input class="numinp" min="0" max="100" data-variable="--spacing-normal"></input>
+					<input class="numinp" data-variable="--spacing-normal"></input>
 				</div>
 				<div setting>
 					<span class="material-symbols-rounded">
 						align_space_around
 					</span>
 					<b>Gap spacing</b>
-					<input class="numinp" min="0" max="100" data-variable="--spacing-gap"></input>
+					<input class="numinp" data-variable="--spacing-gap"></input>
 				</div>
 				<div setting>
 					<span class="material-symbols-rounded">
@@ -2773,7 +2767,7 @@
 			</segr>
 			<script>
 
-				function normalizeBorderRadiusValue(inputRem) {
+				function normalizeBorderRadius(inputRem) {
 					const allowedValues = ["1rem", ".7rem", ".5rem", ".3rem", "0rem"];
 					const parsedInput = parseFloat(inputRem);
 
@@ -3063,10 +3057,6 @@
 						} else {
 							button.value = (getCSSVariableValue(variableName));
 							button.addEventListener('input', () => debouncedSaveColor(button, variableName));
-							if (document.getElementById("brdrdrp").value = '') {
-								document.getElementById("brdrdrp").value = '.5rem';
-								// this is temporary fix.
-							}
 						}
 					});
 
