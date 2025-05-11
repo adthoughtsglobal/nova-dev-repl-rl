@@ -97,21 +97,52 @@ class NTXSession {
 }
 
 const ntxWrapper = new NTXSession();
-
-function describeNamespaces(namespaceKey) {
-    const descriptions = {
-        fileGet: "to read file data",
-        fileSet: "to modify and manage file data",
-        dir: "to manipulate directories",
-        olp: "to use open apps and use their features",
-        settings: "to read and modify settings",
-        accounts: "to manage user accounts",
-        apps: "to know handlers and perms",
-        sysUI: "to manipulate system UI",
-        utility: "to use various utilities",
-        system: "to interact with high risk system functions",
-        specific:"to trigger specific risky system sequences"
+const namespaceDetails = {
+        fileGet: { risk: 10, description: "to read file data" },
+        fileSet: { risk: 40, description: "to modify and manage file data" },
+        dir: { risk: 30, description: "to manipulate directories" },
+        olp: { risk: 20, description: "to use open apps and use their features" },
+        settings: { risk: 35, description: "to read and modify settings" },
+        accounts: { risk: 50, description: "to manage user accounts" },
+        apps: { risk: 25, description: "to know handlers and perms" },
+        sysUI: { risk: 30, description: "to manipulate system UI" },
+        utility: { risk: 20, description: "to use various utilities" },
+        system: { risk: 80, description: "to interact with high risk system functions" },
+        specific: { risk: 90, description: "to trigger specific risky system sequences" }
     };
+function describeNamespaces(namespaceKey) {
+    if (namespaceDetails[namespaceKey]) {
+        return namespaceDetails[namespaceKey].description;
+    }
+    return null;
+}
 
-    return descriptions[namespaceKey] || "to " + namespaceKey;
+function rateNamespaceRisk(namespacesString) {
+    if (!namespacesString)
+        return null;
+
+    const levels = [
+        { max: 0, label: "no risk" },
+        { max: 19, label: "low risk" },
+        { max: 39, label: "medium risk" },
+        { max: 59, label: "very risky" },
+        { max: 79, label: "dangerous" },
+        { max: 89, label: "full access" }
+    ];
+
+    const namespaceKeys = namespacesString;
+    let highestRisk = 0;
+
+    for (const key of namespaceKeys) {
+        const risk = namespaceDetails[key].risk;
+        if (risk > highestRisk) {
+            highestRisk = risk;
+        }
+    }
+
+    for (const level of levels) {
+        if (highestRisk <= level.max) {
+            return level.label;
+        }
+    }
 }

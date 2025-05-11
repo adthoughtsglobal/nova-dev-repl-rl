@@ -40,6 +40,10 @@
 			flex-direction: column;
 			gap: 0.2rem;
 			transition: .3s ease-out;
+			background-color: var(--colors-BG-section);
+			padding: .5em;
+			border-radius: var(--sizing-border-radius);
+			border: 1px solid #ffffff0c;
 		}
 
 		.tab::after {
@@ -49,8 +53,9 @@
 			content: "";
 			display: block;
 			position: absolute;
-			bottom: 10px;
+			bottom: 0px;
 			z-index: 1;
+			left: 0;
 		}
 
 		.tab h3 {
@@ -68,14 +73,13 @@
 		}
 
 		.tab button.active:hover {
-			background-color: var(--colors-BG-section);
 			opacity: 0.8;
 		}
 
 
 		.btnlike {
 			color: inherit;
-			width: calc(100% - 10px);
+			width: 100%;
 			flex-shrink: 0;
 			border-radius: var(--sizing-border-radius);
 		}
@@ -85,7 +89,7 @@
 			padding: 4px 7px;
 			border: 2px solid transparent;
 			display: block;
-			width: calc(100% - 10px);
+			width: 100%;
 			border-radius: var(--sizing-border-radius);
 			outline: none;
 			text-align: left;
@@ -580,11 +584,10 @@
 			border: 1px solid #ffffff0c;
 			font-size: inherit;
 			cursor: pointer;
-			transition: .2s;
 		}
 
 		button:hover {
-			transform: scale(0.95);
+			filter: brightness(110%);
 		}
 
 		[danger] {
@@ -774,11 +777,11 @@
 			display: flex;
 			flex-direction: row;
 			align-items: center;
-			background-color: var(--colors-BG-section);
+			background-color: var(--colors-BG-sub);
 			padding: 2px 5px;
 			gap: 0.3rem;
 			border-radius: 0.5rem;
-			width: calc(100% - 10px);
+			width: 100%;
 			margin-bottom: 0.3rem;
 			border: 1px solid #ffffff0c;
 		}
@@ -879,6 +882,610 @@
 			height: 10px;
 			border-radius: 1em;
 		}
+
+		.colorpacks {
+			display: flex;
+			flex-direction: row;
+			flex-wrap: nowrap;
+			align-items: stretch;
+			justify-content: flex-start;
+			gap: 0.3rem;
+			overflow-x: auto;
+			padding-bottom: 0.3rem;
+		}
+
+		#themeslist {
+			display: flex;
+			flex-direction: row;
+			gap: 0.3rem;
+		}
+
+		.newthemebtn {
+			background: var(--colors-text-high);
+			padding: 1.5rem;
+			border-radius: 0.5rem;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+
+		#themeslist div {
+			padding: 0.5rem;
+			border-radius: 0.5rem;
+			width: 100px;
+			text-overflow: ellipsis;
+			white-space: break-spaces;
+			overflow: hidden;
+		}
+
+		.newthemebtn {
+			background: var(--colors-BG-section);
+			color: var(--colors-text-section);
+			padding: 1.5rem;
+			border-radius: 0.5rem;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			color: var(--colors-text-high);
+			text-shadow: 0 0 9px var(--colors-BG-highlighted);
+			border: 1px solid var(--colors-BG-sub);
+		}
+
+		.newthemebtn i {
+			font-size: 1.5rem;
+		}
+
+		label[real] {
+			font-size: var(--font-size-small);
+			background-color: rgb(139 62 62);
+			color: white;
+			border-radius: 5px;
+			padding: 3px 5px;
+			margin-left: 5px;
+		}
+
+		.jscolor {
+			width: 7rem;
+			height: 35px;
+			border-radius: var(--sizing-border-radius);
+			font-family: monospace;
+			font-size: var(--font-size-default);
+			background-color: var(--colors-BG-normal);
+			border: 0;
+			color: var(--colors-text-normal);
+		}
+
+		/* Styles for the color picker itself */
+		.jscolor-palette {
+			background: #333;
+			border: 1px solid #555;
+		}
+
+		/* Styles for the color palette elements */
+		.jscolor-palette .jscolor-palette-cell {
+			border: 1px solid #444;
+		}
+
+		/* Styles for the color picker input */
+		.jscolor-picker {
+			background: #222;
+			color: #ddd;
+			border: 1px solid #444;
+		}
+
+		/* Adjust color of the text and input areas */
+		.jscolor-input {
+			background: #333;
+			color: #eee;
+		}
+
+		/* Additional adjustments for hover and focus states */
+		.jscolor-picker:hover,
+		.jscolor-picker:focus {
+			border-color: #777;
+		}
+
+		.jscolor-palette-cell:hover {
+			background: #444;
+		}
+
+		.numinp {
+			width: 7rem;
+			border-radius: var(--sizing-border-radius);
+			min-width: 0;
+			border: 0;
+			background-color: var(--colors-BG-normal);
+			color: var(--colors-text-normal);
+			padding: 0.3rem;
+			text-align: center;
+		}
+
+		.datamangernav {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			padding: 4px 10px;
+			background: var(--colors-BG-section);
+			color: var(--colors-text-section);
+			border-radius: var(--sizing-normal);
+		}
+
+		.datamangernav i {
+
+			font-size: var(--font-size-normal) !important;
+			transform: translateY(3px);
+		}
+
+		.lclstr {
+			border-bottom: 2px solid var(--colors-BG-sub);
+			color: var(--colors-text-sub);
+			padding: 0.2rem var(--sizing-normal);
+			margin-top: 0.2rem;
+			display: flex;
+			flex-direction: row;
+			flex-wrap: nowrap;
+		}
+
+		.lclstr:hover {
+			background: #1f1f1f69;
+			transition: 0.3s;
+		}
+
+		.lclstr span {
+			width: 0;
+			word-break: break-all;
+		}
+
+		.lclstr .name {
+			flex: 1;
+			margin-right: 0.2rem;
+		}
+
+		.lclstr .value {
+			flex: 3;
+		}
+
+		.lclstr .material-symbols-rounded {
+			width: 20px;
+			font-size: var(--sizing-huge);
+			display: grid;
+			justify-items: center;
+			align-items: center;
+			opacity: 0.5;
+		}
+
+		.datasmall {
+			margin-bottom: 0.5rem;
+			display: flex;
+			flex-direction: row;
+			gap: 1rem;
+			padding: 1rem;
+		}
+
+		.datasmall svg {
+
+			height: 41px;
+			width: 51px;
+		}
+
+		.datasmall p {
+			margin: 0;
+		}
+
+
+		.graphcanvas {
+			width: 100%;
+			max-height: 100px;
+			background: #141414;
+			border-radius: var(--sizing-normal);
+		}
+
+		.bigtext {
+			font-size: 10vw;
+			display: inline-block;
+			width: fit-content;
+			margin: 0;
+		}
+
+		#fpsprof::after {
+			content: 'FPS';
+			padding: 2px 8px;
+			font-size: 13px;
+			border-radius: 5px;
+			background-color: var(--colors-BG-section);
+			color: var(--colors-text-section);
+			display: inline-block;
+			border: 1px solid var(--colors-BG-sub);
+			margin-left: 10px;
+			transform: translate(5px, -10px);
+		}
+
+		#defaultappsforfiles {
+			svg {
+				height: 1.5rem;
+				max-width: 1.5rem;
+				background: #57575733;
+				padding: 3px;
+				min-width: var(--sizing-normal);
+				border-radius: var(--sizing-nano);
+			}
+
+			.table {
+				display: flex;
+				flex-direction: column;
+				width: 100%;
+				border-radius: var(--sizing-normal);
+				overflow: hidden;
+			}
+
+			.header-row,
+			.row {
+				display: flex;
+				border-bottom: 1px solid #333333;
+				padding: 8px 0;
+			}
+
+			.header-row {
+				background-color: var(--colors-BG-section);
+				color: var(--colors-text-section);
+				font-weight: normal;
+				opacity: 0.7;
+				font-size: var(--font-size-small);
+			}
+
+			.cell {
+				padding: 8px;
+				display: flex;
+				align-items: center;
+				justify-content: flex-start;
+			}
+
+			/* Apply styles to both method handlers & file types */
+			.type-cell {
+				font-size: var(--font-size-normal);
+				flex: 1;
+				border-right: 1px solid #353535;
+				padding-left: 16px;
+			}
+
+			.type-header {
+				flex: 1 !important;
+			}
+
+			.header-cell,
+			.handler-cell {
+				flex: 2;
+				padding-left: 16px;
+				display: flex;
+				flex-direction: column;
+				align-items: flex-start;
+			}
+
+			.row:last-child {
+				border-bottom: none;
+			}
+
+			.subapps {
+				.material-symbols-rounded {
+					color: var(--colors-text-normal);
+					opacity: 0.5;
+					font-size: var(--sizing-huge) !important;
+					transform: translateY(-2px);
+					margin-right: var(--sizing-normal);
+				}
+			}
+		}
+
+		.themestoreopner {
+			height: 2rem;
+			margin-top: 5px;
+		}
+
+		.usedetssys {
+			display: flex;
+			flex-direction: column;
+			gap: .2em;
+		}
+
+		.pfp {
+			background-image: linear-gradient(45deg, #4b4b4b 50%, #1f1f1f 30%);
+			aspect-ratio: 1 / 1;
+			height: 80px;
+			border-radius: .5rem;
+			display: inline-flex;
+			justify-content: center;
+			align-items: center;
+		}
+
+		.usercard {
+			margin: 1em 0;
+			display: flex;
+			flex-direction: row;
+			justify-content: flex-start;
+			gap: 1em;
+		}
+
+		span.userrole {
+			opacity: .5;
+		}
+
+		b#userstatsi {
+			font-size: 2em;
+		}
+
+		.pfp span {
+			padding: .3em;
+			background: rgba(225, 225, 225, .2);
+			border-radius: 2em;
+			opacity: 0;
+			font-size: 1.3em;
+			transition: .2s ease-out;
+			cursor: pointer;
+		}
+
+		.pfp:hover span {
+			opacity: 1;
+		}
+
+		[setting].spread {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			justify-content: space-between;
+		}
+
+		[setting].formlike {
+			display: flex;
+			flex-direction: column;
+			justify-content: space-between;
+			gap: 0.3rem;
+			align-items: stretch;
+		}
+
+		.doablestep {
+			display: flex;
+			justify-content: space-between;
+			background: var(--colors-BG-normal);
+			border-radius: var(--sizing-border-radius);
+			padding: .3rem;
+			align-items: center;
+		}
+
+		.doablestep button {
+			padding: .3rem;
+			background-color: var(--colors-BG-section);
+			color: var(--colors-text-section);
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			width: fit-content;
+			min-width: 0;
+		}
+
+		.doablestep b {
+			font-size: var(--font-size-normal);
+			font-weight: normal;
+			margin-left: 0.5rem;
+		}
+
+		#supportexpandable {
+			display: none;
+			flex-direction: column;
+			gap: .3rem;
+			margin-top: 0.5rem;
+			animation: tab .3s;
+		}
+
+		#supportexpandbtn {
+			background-color: var(--colors-BG-highlighted);
+			color: var(--colors-text-high);
+		}
+
+		.task {
+			padding: var(--sizing-normal);
+			background: var(--colors-BG-section);
+			color: var(--colors-text-section);
+			border-radius: var(--sizing-border-radius);
+			margin: 5px 0;
+			box-shadow: 0 3px 5px #0000007e;
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+		}
+
+		.task .stpicn {
+			cursor: pointer;
+			width: fit-content;
+			padding: 0.3rem;
+			background: var(--colors-BG-sub);
+			border-radius: var(--sizing-border-radius);
+			color: var(--colors-special-bad);
+		}
+
+		.task .tasknamespan {
+			flex: 1;
+		}
+
+		.task small {
+			display: inline-block;
+			background-color: transparent;
+			opacity: 0.5;
+			margin: 0;
+			padding: 0;
+			padding-left: 5px;
+		}
+
+		@keyframes wooboo {
+			0% {
+				transform: scale(1);
+			}
+
+			50% {
+				transform: scale(1.1);
+				filter: brightness(120%);
+			}
+
+			100% {
+				transform: scale(1);
+			}
+		}
+
+		.wooboo-animation {
+			animation: wooboo .5s infinite;
+		}
+
+		.device {
+			padding: var(--sizing-normal);
+			background: var(--colors-BG-section);
+			color: var(--colors-text-section);
+			border-radius: var(--sizing-border-radius);
+			margin: 5px 0;
+		}
+
+		.device .dic {
+			display: inline-grid;
+			width: 30px;
+			height: 30px;
+			justify-content: center;
+			align-items: center;
+			justify-items: center;
+		}
+
+		.device .ddts {
+			display: inline-block;
+			width: calc(100% - 35px);
+			overflow: hidden;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+		}
+
+		.device [boo] {
+			opacity: 0.7;
+			overflow: hidden;
+			text-wrap: nowrap;
+			width: calc(100% - 20px);
+			display: block;
+			text-overflow: ellipsis;
+		}
+
+		.device-type {
+			margin-right: 3px;
+			padding-right: 3px;
+			border-right: 1px solid grey;
+		}
+
+		.colorsetting {
+			display: flex;
+			flex-direction: row;
+			justify-content: space-between;
+			align-items: center;
+		}
+
+		.inputwithbtn {
+			width: 100%;
+			display: flex;
+			flex-direction: row;
+			gap: 0.5rem;
+			margin-top: 0.5rem;
+		}
+
+		input.inputtype1 {
+			background-color: var(--colors-BG-normal);
+			color: var(--colors-text-normal);
+			flex: 1;
+			border: none;
+			padding: var(--sizing-nano) var(--sizing-normal);
+			border-radius: var(--sizing-border-radius);
+		}
+
+		#UISIZErangeslid {
+			width: 79%;
+			height: 2px;
+			display: block;
+			margin: var(--sizing-normal) auto;
+			margin-top: var(--sizing-huge);
+		}
+
+		.UISIZEslider-labels {
+			display: flex;
+			justify-content: space-between;
+			width: 100%;
+			margin-top: var(--sizing-normal);
+		}
+
+		.UISIZEslider-labels span {
+			opacity: 0.5;
+			font-size: var(--font-size-small);
+			width: 0;
+			text-align: center;
+			flex: 1;
+		}
+
+		#appslist {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+			gap: .5em;
+		}
+
+		@keyframes apppop {
+			0% {
+				opacity: 0;
+				transform: translateY(5px);
+			}
+
+			100% {
+				opacity: 1;
+			}
+		}
+
+		.singular_app {
+			animation: apppop .2s ease-out;
+			display: flex;
+			flex-direction: row;
+			background-color: var(--colors-BG-section);
+			padding: .5em;
+			border-radius: var(--sizing-border-radius);
+			border: 1px solid #ffffff0c;
+			justify-content: space-between;
+			align-items: center;
+
+			& .app_options {
+				padding: 5px;
+				display: flex;
+				border-radius: 50%;
+
+				& span {
+					font-size: 1em;
+					opacity: .5;
+				}
+
+				&:hover {
+					background-color: var(--colors-BG-sub);
+				}
+			}
+
+			& .app_risk {
+				opacity: .5;
+				font-size: small;
+			}
+
+			& .app_icon>svg {
+				width: 25px;
+				height: 25px;
+				border-radius: .5em;
+			}
+
+			& .app_left {
+				display: flex;
+				flex-direction: row;
+				gap: .5em;
+				align-items: center;
+
+				& .app_icon {
+					display: flex;
+				}
+			}
+		}
 	</style>
 </head>
 
@@ -903,6 +1510,8 @@
 			<button class="tablinks btnlike" windowopener="User" onclick="openCity(event, 'password')"><i
 					class="material-symbols-rounded">person</i>
 				User</button>
+			<button class="tablinks btnlike" windowopener="Defaults" onclick="openCity(event, 'apps');loadappslist()"><i
+					class="material-symbols-rounded">apps</i> Apps</button>
 			<button class="tablinks btnlike" windowopener="Networking" onclick="openCity(event, 'network');"><i
 					class="material-symbols-rounded">language</i>
 				Network</button>
@@ -918,79 +1527,6 @@
 		</div>
 
 		<div id="lclstgsc" class="tabcontent">
-			<style>
-				.datamangernav {
-					display: flex;
-					justify-content: space-between;
-					align-items: center;
-					padding: 4px 10px;
-					background: var(--colors-BG-section);
-					color: var(--colors-text-section);
-					border-radius: var(--sizing-normal);
-				}
-
-				.datamangernav i {
-
-					font-size: var(--font-size-normal) !important;
-					transform: translateY(3px);
-				}
-
-				.lclstr {
-					border-bottom: 2px solid var(--colors-BG-sub);
-					color: var(--colors-text-sub);
-					padding: 0.2rem var(--sizing-normal);
-					margin-top: 0.2rem;
-					display: flex;
-					flex-direction: row;
-					flex-wrap: nowrap;
-				}
-
-				.lclstr:hover {
-					background: #1f1f1f69;
-					transition: 0.3s;
-				}
-
-				.lclstr span {
-					width: 0;
-					word-break: break-all;
-				}
-
-				.lclstr .name {
-					flex: 1;
-					margin-right: 0.2rem;
-				}
-
-				.lclstr .value {
-					flex: 3;
-				}
-
-				.lclstr .material-symbols-rounded {
-					width: 20px;
-					font-size: var(--sizing-huge);
-					display: grid;
-					justify-items: center;
-					align-items: center;
-					opacity: 0.5;
-				}
-
-				.datasmall {
-					margin-bottom: 0.5rem;
-					display: flex;
-					flex-direction: row;
-					gap: 1rem;
-					padding: 1rem;
-				}
-
-				.datasmall svg {
-
-					height: 41px;
-					width: 51px;
-				}
-
-				.datasmall p {
-					margin: 0;
-				}
-			</style>
 			<h1>Data Manager</h1>
 			<div class="datamangernav">
 				<span>LocalStorage</span>
@@ -1019,7 +1555,7 @@
 						elemval.classList = "value";
 						elemval.innerText = items[key];
 						elemval.addEventListener('click', async function () {
-							let x = await ntxSession.send("sysUI.ask","Set value for '" + key + "':", items[key]);
+							let x = await ntxSession.send("sysUI.ask", "Set value for '" + key + "':", items[key]);
 							localStorage.setItem(key, x)
 						});
 						elem.appendChild(elemval);
@@ -1041,34 +1577,6 @@
 			<h1><span class="material-symbols-rounded advancedsetsbackbtn" onclick="openCity(event, 'system');">
 					arrow_back
 				</span> Performance</h1>
-			<style>
-				.graphcanvas {
-					width: 100%;
-					max-height: 100px;
-					background: #141414;
-					border-radius: var(--sizing-normal);
-				}
-
-				.bigtext {
-					font-size: 10vw;
-					display: inline-block;
-					width: fit-content;
-					margin: 0;
-				}
-
-				#fpsprof::after {
-					content: 'FPS';
-					padding: 2px 8px;
-					font-size: 13px;
-					border-radius: 5px;
-					background-color: var(--colors-BG-section);
-					color: var(--colors-text-section);
-					display: inline-block;
-					border: 1px solid var(--colors-BG-sub);
-					margin-left: 10px;
-					transform: translate(5px, -10px);
-				}
-			</style>
 			<h1 id="fpsprof" class="bigtext">0</h1>
 			<br>
 			<canvas class="graphcanvas" id="fpsCanvas" width="400" height="200"></canvas>
@@ -1469,7 +1977,7 @@
 						document.getElementById('copy-theme-btn').addEventListener('click', copyCurrentTheme);
 						document.getElementById('paste-theme-btn').addEventListener('click', pasteThemeFromClipboard);
 
-						let storedwall = await ntxSession.send("settings.get","wall");
+						let storedwall = await ntxSession.send("settings.get", "wall");
 
 						if (storedwall) {
 							document.getElementById("wallpaperurl").value = storedwall;
@@ -1503,11 +2011,11 @@
 							} else {
 								window.parent.removeSWs()
 							}
-							ntxSession.send("settings.set","novaOffline", newValue2)
+							ntxSession.send("settings.set", "novaOffline", newValue2)
 						});
 
 						try {
-							if (await ntxSession.send("settings.get","novaOffline")) {
+							if (await ntxSession.send("settings.get", "novaOffline")) {
 								document.getElementById("cbx-70").checked = true;
 							}
 						} catch (error) {
@@ -1518,11 +2026,11 @@
 						// window snapping
 						document.getElementById("cbx-66").addEventListener("change", function () {
 							let newValue2 = document.getElementById("cbx-66").checked;
-							ntxSession.send("settings.set","wsnapping", newValue2)
+							ntxSession.send("settings.set", "wsnapping", newValue2)
 						});
 
 						try {
-							if (await ntxSession.send("settings.get","wsnapping")) {
+							if (await ntxSession.send("settings.get", "wsnapping")) {
 								document.getElementById("cbx-66").checked = true;
 							}
 						} catch (error) {
@@ -1533,15 +2041,15 @@
 						let selinp;
 						selinp = document.getElementById("scapimas");
 						try {
-							if (await ntxSession.send("settings.get","CamImgFormat")) {
-								selinp.value = await ntxSession.send("settings.get","CamImgFormat");
+							if (await ntxSession.send("settings.get", "CamImgFormat")) {
+								selinp.value = await ntxSession.send("settings.get", "CamImgFormat");
 							}
 						} catch (error) {
 							console.error(error)
 						}
 						document.getElementById("scapimas").addEventListener("change", function () {
 							let newValue = document.getElementById("scapimas").value;
-							ntxSession.send("settings.set","CamImgFormat", newValue)
+							ntxSession.send("settings.set", "CamImgFormat", newValue)
 						});
 					}
 				</script>
@@ -1557,7 +2065,7 @@
 						let selinp;
 						selinp = document.getElementById("defflvm");
 						try {
-							if (await ntxSession.send("settings.get","defflvm")) {
+							if (await ntxSession.send("settings.get", "defflvm")) {
 								selinp.value = defflvm;
 							}
 						} catch (error) {
@@ -1565,7 +2073,7 @@
 						}
 						document.getElementById("defflvm").addEventListener("change", function () {
 							let newValue = document.getElementById("defflvm").value;
-							ntxSession.send("settings.set","defFileLayout", newValue)
+							ntxSession.send("settings.set", "defFileLayout", newValue)
 						});
 					}
 				</script>
@@ -1587,22 +2095,22 @@
 					async function defs3() {
 						let selinp;
 						selinp = document.getElementById("timefrmt");
-						if (await ntxSession.send("settings.get","timefrmt")) {
-							selinp.value = await ntxSession.send("settings.get","timefrmt");
+						if (await ntxSession.send("settings.get", "timefrmt")) {
+							selinp.value = await ntxSession.send("settings.get", "timefrmt");
 						}
 						document.getElementById("timefrmt").addEventListener("change", function () {
 							let newValue = document.getElementById("timefrmt").value;
-							ntxSession.send("settings.set","timefrmt", newValue);
-							ntxSession.send("sysUI.say","Reload NovaOS for the changes to take effect.");
+							ntxSession.send("settings.set", "timefrmt", newValue);
+							ntxSession.send("sysUI.say", "Reload NovaOS for the changes to take effect.");
 						});
 
 						let selinp2 = document.getElementById("defSearchEngine");
-						if (await ntxSession.send("settings.get","defSearchEngine")) {
-							selinp2.value = await ntxSession.send("settings.get","defSearchEngine");
+						if (await ntxSession.send("settings.get", "defSearchEngine")) {
+							selinp2.value = await ntxSession.send("settings.get", "defSearchEngine");
 						}
 						document.getElementById("defSearchEngine").addEventListener("change", function () {
 							let newValue = document.getElementById("defSearchEngine").value;
-							ntxSession.send("settings.set","defSearchEngine", newValue)
+							ntxSession.send("settings.set", "defSearchEngine", newValue)
 						});
 					}
 				</script>
@@ -1629,134 +2137,6 @@
 
 		<div id="defaultappsforfiles" class="tabcontent">
 			<h1>Defaults</h1>
-			<style>
-				#defaultappsforfiles {
-					svg {
-						height: 1.5rem;
-						max-width: 1.5rem;
-						background: #57575733;
-						padding: 3px;
-						min-width: var(--sizing-normal);
-						border-radius: var(--sizing-nano);
-					}
-
-					.table {
-						display: flex;
-						flex-direction: column;
-						width: 100%;
-						border-radius: var(--sizing-normal);
-						overflow: hidden;
-					}
-
-					.header-row,
-					.row {
-						display: flex;
-						border-bottom: 1px solid #333333;
-						padding: 8px 0;
-					}
-
-					.header-row {
-						background-color: var(--colors-BG-section);
-						color: var(--colors-text-section);
-						font-weight: normal;
-						opacity: 0.7;
-						font-size: var(--font-size-small);
-					}
-
-					.cell {
-						padding: 8px;
-						display: flex;
-						align-items: center;
-						justify-content: flex-start;
-					}
-
-					/* Apply styles to both method handlers & file types */
-					.type-cell {
-						font-size: var(--font-size-normal);
-						flex: 1;
-						border-right: 1px solid #353535;
-						padding-left: 16px;
-					}
-
-					.type-header {
-						flex: 1 !important;
-					}
-
-					.header-cell,
-					.handler-cell {
-						flex: 2;
-						padding-left: 16px;
-						display: flex;
-						flex-direction: column;
-						align-items: flex-start;
-					}
-
-					.row:last-child {
-						border-bottom: none;
-					}
-
-					.subapps {
-						.material-symbols-rounded {
-							color: var(--colors-text-normal);
-							opacity: 0.5;
-							font-size: var(--sizing-huge) !important;
-							transform: translateY(-2px);
-							margin-right: var(--sizing-normal);
-						}
-					}
-				}
-
-				.themestoreopner {
-					height: 2rem;
-					margin-top: 5px;
-				}
-
-				.usedetssys {
-					display: flex;
-					flex-direction: column;
-					gap: .2em;
-				}
-
-				.pfp {
-					background-image: linear-gradient(45deg, #4b4b4b 50%, #1f1f1f 30%);
-					aspect-ratio: 1 / 1;
-					height: 80px;
-					border-radius: .5rem;
-					display: inline-flex;
-					justify-content: center;
-					align-items: center;
-				}
-
-				.usercard {
-					margin: 1em 0;
-					display: flex;
-					flex-direction: row;
-					justify-content: flex-start;
-					gap: 1em;
-				}
-
-				span.userrole {
-					opacity: .5;
-				}
-
-				b#userstatsi {
-					font-size: 2em;
-				}
-
-				.pfp span {
-					padding: .3em;
-					background: rgba(225, 225, 225, .2);
-					border-radius: 2em;
-					opacity: 0;
-					font-size: 1.3em;
-					transition: .2s ease-out;
-					cursor: pointer;
-				}
-
-				.pfp:hover span {
-					opacity: 1;
-				}
-			</style>
 			<button onclick="rldfltyptable()" style="margin-bottom: var(--sizing-normal);">Reload Tables</button>
 			<small>Default Handlers are apps that provide support for different methods and file types. You can change a
 				default handler by clicking on its icon.</small>
@@ -1807,26 +2187,26 @@
 							const handlerCell = document.createElement('div');
 							handlerCell.className = 'cell handler-cell';
 							handlerCell.title = handlers;
-							handlerCell.innerHTML = await ntxSession.send("apps.getIcon",0, handlers[0], true);
+							handlerCell.innerHTML = await ntxSession.send("apps.getIcon", 0, handlers[0], true);
 							handlerCell.onclick = async () => {
 								replaceableHandler = handlers;
 								clickedRowId = `row-${type}`;
 
 								replaceableapp = handlers;
 								let appIdToOpen = window.parent.handlers['file_manager'] || null;
-								let newHandler = await ntxSession.send("olp.useHandler","file_manager", { "opener": "app", "dir": "Apps/" });
+								let newHandler = await ntxSession.send("olp.useHandler", "file_manager", { "opener": "app", "dir": "Apps/" });
 
 								for (let key in window.parent.handlers) {
 									if (window.parent.handlers.hasOwnProperty(key)) {
-										window.parent.handlers[key] = window.parent.handlers[key].map(handler => handler === replaceableHandler ? newHandler : handler);
+										window.parent.handlers[key] = (window.parent.handlers[key] === replaceableHandler) ? newHandler : window.parent.handlers[key];
 									}
 								}
-								await ntxSession.send("settings.set",'handlers', window.parent.handlers);
+								await ntxSession.send("settings.set", 'handlers', window.parent.handlers);
 
 								const row = document.getElementById(clickedRowId);
 								if (row) {
 									const handlerCell = row.querySelector('.handler-cell');
-									handlerCell.innerHTML = await ntxSession.send("apps.getIcon",0, newHandler, true);
+									handlerCell.innerHTML = await ntxSession.send("apps.getIcon", 0, newHandler, true);
 								}
 							};
 
@@ -1862,7 +2242,8 @@
 
 		<div id="password" class="tabcontent">
 			<div class="usercard">
-				<div class="pfp" onclick="ntxSession.send('sysUI.say','Public shared storage unavailable for the moment.')">
+				<div class="pfp"
+					onclick="ntxSession.send('sysUI.say','Public shared storage unavailable for the moment.')">
 					<span class="material-symbols-rounded">
 						edit
 					</span>
@@ -1942,22 +2323,6 @@
 			</segr>
 			<h1>Password</h1>
 			<segr>
-				<style>
-					[setting].spread {
-						display: flex;
-						flex-direction: row;
-						align-items: center;
-						justify-content: space-between;
-					}
-
-					[setting].formlike {
-						display: flex;
-						flex-direction: column;
-						justify-content: space-between;
-						gap: 0.3rem;
-						align-items: stretch;
-					}
-				</style>
 				<div setting id="changpassthingy" class="spread">
 					<b id="passstat"></b>
 					<button onclick="chstpass()">Continue</button>
@@ -1973,17 +2338,17 @@
 				async function chstpass() {
 					var setpass = '';
 					if (window.parent.password == 'nova') {
-						setpass = await ntxSession.send("sysUI.ask","Set a password: ", "")
+						setpass = await ntxSession.send("sysUI.ask", "Set a password: ", "")
 					} else {
-						setpass = await ntxSession.send("sysUI.ask","Choose an another password: ", window.parent.password);
+						setpass = await ntxSession.send("sysUI.ask", "Choose an another password: ", window.parent.password);
 						if (setpass == window.parent.password) {
-							ntxSession.send("sysUI.say","That is your current password. Choose a different one.", "failed")
+							ntxSession.send("sysUI.say", "That is your current password. Choose a different one.", "failed")
 							return;
 						}
 					}
-					if (await ntxSession.send("sysUI.confirm","Are you sure?", "All your data will be lost if you forget this password. Re-encrypt all your files with this one?")) {
+					if (await ntxSession.send("sysUI.confirm", "Are you sure?", "All your data will be lost if you forget this password. Re-encrypt all your files with this one?")) {
 						await window.parent.changePassword(window.parent.password, setpass);
-						await ntxSession.send("sysUI.say","Click OK when you are ready to restart your OS.")
+						await ntxSession.send("sysUI.say", "Click OK when you are ready to restart your OS.")
 						window.parent.location.reload()
 					} else {
 						return;
@@ -2068,46 +2433,6 @@
 				<b>Support NovaOS?</b>
 				<p>Support us making NovaOS into a better and more powerful place for you. Starting from 1$.
 				</p>
-				<style>
-					.doablestep {
-						display: flex;
-						justify-content: space-between;
-						background: var(--colors-BG-normal);
-						border-radius: var(--sizing-border-radius);
-						padding: .3rem;
-						align-items: center;
-					}
-
-					.doablestep button {
-						padding: .3rem;
-						background-color: var(--colors-BG-section);
-						color: var(--colors-text-section);
-						display: flex;
-						align-items: center;
-						justify-content: center;
-						width: fit-content;
-						min-width: 0;
-					}
-
-					.doablestep b {
-						font-size: var(--font-size-normal);
-						font-weight: normal;
-						margin-left: 0.5rem;
-					}
-
-					#supportexpandable {
-						display: none;
-						flex-direction: column;
-						gap: .3rem;
-						margin-top: 0.5rem;
-						animation: tab .3s;
-					}
-
-					#supportexpandbtn {
-						background-color: var(--colors-BG-highlighted);
-						color: var(--colors-text-high);
-					}
-				</style>
 				<div id="supportexpandable">
 					<div class="doablestep">
 						<b>View Memberships</b>
@@ -2191,60 +2516,6 @@
 			<h1><span class="material-symbols-rounded advancedsetsbackbtn" onclick="openCity(event, 'system');">
 					arrow_back
 				</span> Activity</h1>
-			<style>
-				.task {
-					padding: var(--sizing-normal);
-					background: var(--colors-BG-section);
-					color: var(--colors-text-section);
-					border-radius: var(--sizing-border-radius);
-					margin: 5px 0;
-					box-shadow: 0 3px 5px #0000007e;
-					display: flex;
-					flex-direction: row;
-					align-items: center;
-				}
-
-				.task .stpicn {
-					cursor: pointer;
-					width: fit-content;
-					padding: 0.3rem;
-					background: var(--colors-BG-sub);
-					border-radius: var(--sizing-border-radius);
-					color: var(--colors-special-bad);
-				}
-
-				.task .tasknamespan {
-					flex: 1;
-				}
-
-				.task small {
-					display: inline-block;
-					background-color: transparent;
-					opacity: 0.5;
-					margin: 0;
-					padding: 0;
-					padding-left: 5px;
-				}
-
-				@keyframes wooboo {
-					0% {
-						transform: scale(1);
-					}
-
-					50% {
-						transform: scale(1.1);
-						filter: brightness(120%);
-					}
-
-					100% {
-						transform: scale(1);
-					}
-				}
-
-				.wooboo-animation {
-					animation: wooboo .5s infinite;
-				}
-			</style>
 			<div id="taskslist">
 				<div class="task">
 					<span>Settings</span>
@@ -2255,7 +2526,7 @@
 			</div>
 			<script>
 				async function openlink(x) {
-					let okay = await ntxSession.send("sysUI.confirm","Are you sure?", "Open " + x + " outside of NovaOS?");
+					let okay = await ntxSession.send("sysUI.confirm", "Are you sure?", "Open " + x + " outside of NovaOS?");
 					if (okay) {
 						window.open(x);
 					}
@@ -2304,6 +2575,55 @@
 			</script>
 		</div>
 
+		<div id="apps" class="tabcontent">
+			<h1>Installed Apps</h1>
+			<div id="appslist">
+				<div class="singular_app">
+					<div class="app_left">
+						<div class="app_icon"></div>
+						<div class="app_detail">
+							<div class="app_name">Settings</div>
+							<div class="app_risk">Very risky</div>
+						</div>
+					</div>
+
+					<div class="app_options">
+						<span class="material-symbols-rounded">
+							more_vert
+						</span>
+					</div>
+				</div>
+			</div>
+			<script>
+				async function loadappslist() {
+					let registry = await window.parent.getSetting('full', "AppRegistry.json");
+
+					let appslist = document.getElementById("appslist");
+					appslist.innerHTML = "";
+
+					for (let key in registry) {
+						let singularApp = document.createElement("div");
+						singularApp.className = "singular_app";
+						singularApp.innerHTML = `
+        <div class="app_left">
+            <div class="app_icon">${await window.parent.getAppIcon(0, key)}</div>
+            <div class="app_detail">
+                <div class="app_name">${await window.parent.getFileNameByID(key)}</div>
+                <div class="app_risk">${window.parent.rateNamespaceRisk(registry[key].perms) || "Installed"}</div>
+            </div>
+        </div>
+        <div class="app_options">
+            <span class="material-symbols-rounded">
+                more_vert
+            </span>
+        </div>
+    `;
+						appslist.appendChild(singularApp);
+					}
+				}
+
+			</script>
+		</div>
 		<div id="network" class="tabcontent">
 			<h1>Networking</h1>
 			<segr>
@@ -2390,7 +2710,7 @@
 						loaduprtour()
 					}
 					function loaduprtour() {
-						ntxSession.send("sysUI.say",`RoturTW is a third party service, which offers APIs. NovaOS supports it but isn't affiliated or endorsing. Visit rotur.dev for details.`)
+						ntxSession.send("sysUI.say", `RoturTW is a third party service, which offers APIs. NovaOS supports it but isn't affiliated or endorsing. Visit rotur.dev for details.`)
 						const roturExtension = window.parent.roturExtension;
 
 						if (roturExtension && roturExtension.loggedIn()) {
@@ -2421,7 +2741,7 @@
 						document.getElementById("rtrsignupform").style.display = "none";
 						document.getElementById("rtruserstatsi").innerText = "Signed in as " + targetun;
 
-						ntxSession.send("settings.set","roturLink", JSON.stringify({
+						ntxSession.send("settings.set", "roturLink", JSON.stringify({
 							"username": targetun,
 							"password": targetpass
 						}));
@@ -2563,54 +2883,6 @@
 			<h1><span class="material-symbols-rounded advancedsetsbackbtn" onclick="openCity(event, 'system');">
 					arrow_back
 				</span> Devices</h1>
-			<style>
-				.device {
-					padding: var(--sizing-normal);
-					background: var(--colors-BG-section);
-					color: var(--colors-text-section);
-					border-radius: var(--sizing-border-radius);
-					margin: 5px 0;
-				}
-
-				.device .dic {
-					display: inline-grid;
-					width: 30px;
-					height: 30px;
-					justify-content: center;
-					align-items: center;
-					justify-items: center;
-				}
-
-				.device .ddts {
-					display: inline-block;
-					width: calc(100% - 35px);
-					overflow: hidden;
-					white-space: nowrap;
-					text-overflow: ellipsis;
-				}
-
-				.device [boo] {
-					opacity: 0.7;
-					overflow: hidden;
-					text-wrap: nowrap;
-					width: calc(100% - 20px);
-					display: block;
-					text-overflow: ellipsis;
-				}
-
-				.device-type {
-					margin-right: 3px;
-					padding-right: 3px;
-					border-right: 1px solid grey;
-				}
-
-				.colorsetting {
-					display: flex;
-					flex-direction: row;
-					justify-content: space-between;
-					align-items: center;
-				}
-			</style>
 			<div id="deviceslist">
 				<div class="device">
 					<div class="dic">
@@ -2803,11 +3075,11 @@
 						const colorValue = button.jscolor ? button.jscolor.toHEXString() : button.value;
 						colorsToCopy[variableName] = colorValue;
 					});
-					if (await ntxSession.send("sysUI.confirm","Include current wallpaper?", "Include the currently set wallpaper with the theme code?")) {
-						colorsToCopy['wallpaper'] = await ntxSession.send("settings.get","wall");
+					if (await ntxSession.send("sysUI.confirm", "Include current wallpaper?", "Include the currently set wallpaper with the theme code?")) {
+						colorsToCopy['wallpaper'] = await ntxSession.send("settings.get", "wall");
 					}
 					window.parent.navigator.clipboard.writeText(JSON.stringify(colorsToCopy))
-						.then(() => ntxSession.send("sysUI.toast",'Theme copied to clipboard!'))
+						.then(() => ntxSession.send("sysUI.toast", 'Theme copied to clipboard!'))
 						.catch(err => console.error('Error copying theme:', err));
 				}
 
@@ -2838,20 +3110,20 @@
 								}
 							});
 							if (parsedColors['wallpaper']) {
-								if (await ntxSession.send("sysUI.confirm","Include theme wallpaper?", "Include the wallpaper included in the theme code?")) {
+								if (await ntxSession.send("sysUI.confirm", "Include theme wallpaper?", "Include the wallpaper included in the theme code?")) {
 									document.getElementById("wallpaperurl").value = parsedColors['wallpaper'];
 									savewallpap();
 								}
 
 							}
 							saveColors();
-							ntxSession.send("sysUI.toast",'Theme applied from clipboard!');
+							ntxSession.send("sysUI.toast", 'Theme applied from clipboard!');
 						} else {
-							ntxSession.send("sysUI.say",'Clipboard does not contain a valid theme JSON.');
+							ntxSession.send("sysUI.say", 'Clipboard does not contain a valid theme JSON.');
 						}
 					} catch (error) {
 						console.error('Error pasting theme:', error);
-						ntxSession.send("sysUI.say",'Failed to apply theme from clipboard. Ensure it contains valid JSON.');
+						ntxSession.send("sysUI.say", 'Failed to apply theme from clipboard. Ensure it contains valid JSON.');
 					}
 				}
 			</script>
@@ -2865,126 +3137,6 @@
 					</div>
 				</div>
 			</segr>
-
-			<style>
-				.colorpacks {
-					display: flex;
-					flex-direction: row;
-					flex-wrap: nowrap;
-					align-items: stretch;
-					justify-content: flex-start;
-					gap: 0.3rem;
-					overflow-x: auto;
-					padding-bottom: 0.3rem;
-				}
-
-				#themeslist {
-					display: flex;
-					flex-direction: row;
-					gap: 0.3rem;
-				}
-
-				.newthemebtn {
-					background: var(--colors-text-high);
-					padding: 1.5rem;
-					border-radius: 0.5rem;
-					display: flex;
-					align-items: center;
-					justify-content: center;
-				}
-
-				#themeslist div {
-					padding: 0.5rem;
-					border-radius: 0.5rem;
-					width: 100px;
-					text-overflow: ellipsis;
-					white-space: break-spaces;
-					overflow: hidden;
-				}
-
-				.newthemebtn {
-					background: var(--colors-BG-section);
-					color: var(--colors-text-section);
-					padding: 1.5rem;
-					border-radius: 0.5rem;
-					display: flex;
-					align-items: center;
-					justify-content: center;
-					color: var(--colors-text-high);
-					text-shadow: 0 0 9px var(--colors-BG-highlighted);
-					border: 1px solid var(--colors-BG-sub);
-				}
-
-				.newthemebtn i {
-					font-size: 1.5rem;
-				}
-
-				label[real] {
-					font-size: var(--font-size-small);
-					background-color: rgb(139 62 62);
-					color: white;
-					border-radius: 5px;
-					padding: 3px 5px;
-					margin-left: 5px;
-				}
-
-				.jscolor {
-					width: 7rem;
-					height: 35px;
-					border-radius: var(--sizing-border-radius);
-					font-family: monospace;
-					font-size: var(--font-size-default);
-					background-color: var(--colors-BG-normal);
-					border: 0;
-					color: var(--colors-text-normal);
-				}
-
-				/* Styles for the color picker itself */
-				.jscolor-palette {
-					background: #333;
-					border: 1px solid #555;
-				}
-
-				/* Styles for the color palette elements */
-				.jscolor-palette .jscolor-palette-cell {
-					border: 1px solid #444;
-				}
-
-				/* Styles for the color picker input */
-				.jscolor-picker {
-					background: #222;
-					color: #ddd;
-					border: 1px solid #444;
-				}
-
-				/* Adjust color of the text and input areas */
-				.jscolor-input {
-					background: #333;
-					color: #eee;
-				}
-
-				/* Additional adjustments for hover and focus states */
-				.jscolor-picker:hover,
-				.jscolor-picker:focus {
-					border-color: #777;
-				}
-
-				.jscolor-palette-cell:hover {
-					background: #444;
-				}
-
-				.numinp {
-					width: 7rem;
-					border-radius: var(--sizing-border-radius);
-					min-width: 0;
-					border: 0;
-					background-color: var(--colors-BG-normal);
-					color: var(--colors-text-normal);
-					padding: 0.3rem;
-					text-align: center;
-				}
-			</style>
-
 
 			<script>
 
@@ -3006,7 +3158,7 @@
 					});
 
 					applyTheme({ colors: colorsToSave });
-					await ntxSession.send("settings.set","themeColors", colorsToSave);
+					await ntxSession.send("settings.set", "themeColors", colorsToSave);
 				}
 
 
@@ -3072,14 +3224,14 @@
 							"bg": document.getElementById("cbx-71").checked,
 							"align": document.getElementById("navAlignment").value
 						};
-						await ntxSession.send("settings.set","NovNavCtrl", newValue);
+						await ntxSession.send("settings.set", "NovNavCtrl", newValue);
 					}
 
 					document.getElementById("cbx-71").addEventListener("change", saveNovNavCtrlSetting);
 					document.getElementById("navAlignment").addEventListener("change", saveNovNavCtrlSetting);
 
 					try {
-						let currentSettings = await ntxSession.send("settings.get","NovNavCtrl");
+						let currentSettings = await ntxSession.send("settings.get", "NovNavCtrl");
 						if (currentSettings?.bg) {
 							document.getElementById("cbx-71").checked = true;
 						}
@@ -3102,52 +3254,11 @@
 
 				window.addEventListener('load', initColorPickers);
 			</script>
-			<style>
-				.inputwithbtn {
-					width: 100%;
-					display: flex;
-					flex-direction: row;
-					gap: 0.5rem;
-					margin-top: 0.5rem;
-				}
-
-				input.inputtype1 {
-					background-color: var(--colors-BG-normal);
-					color: var(--colors-text-normal);
-					flex: 1;
-					border: none;
-					padding: var(--sizing-nano) var(--sizing-normal);
-					border-radius: var(--sizing-border-radius);
-				}
-
-				#UISIZErangeslid {
-					width: 79%;
-					height: 2px;
-					display: block;
-					margin: var(--sizing-normal) auto;
-					margin-top: var(--sizing-huge);
-				}
-
-				.UISIZEslider-labels {
-					display: flex;
-					justify-content: space-between;
-					width: 100%;
-					margin-top: var(--sizing-normal);
-				}
-
-				.UISIZEslider-labels span {
-					opacity: 0.5;
-					font-size: var(--font-size-small);
-					width: 0;
-					text-align: center;
-					flex: 1;
-				}
-			</style>
 			</segr>
 			<script defer>
 				async function savewallpap() {
 					var newurl = document.getElementById("wallpaperurl");
-					await ntxSession.send("settings.set","wall", newurl.value);
+					await ntxSession.send("settings.set", "wall", newurl.value);
 					setTimeout(() => { window.parent.genDesktop() }, 1000)
 
 				}

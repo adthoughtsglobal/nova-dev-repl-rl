@@ -445,8 +445,16 @@ async function ensureFileExists(fileName = "preferences.json", dirPath = "System
     } catch (err) {
         console.error(`Error ensuring file ${fileName} exists in ${dirPath}:`, err);
     }
-}
+}const settingCache = new Map();
+
 async function getSetting(settingKey, fileName = "preferences.json", dirPath = "System/") {
+    const cacheKey = `${dirPath}/${fileName}:${settingKey}`;
+    const cached = settingCache.get(cacheKey);
+
+    if (cached && (Date.now() - cached.timestamp) < 500) {
+        return cached.value;
+    }
+
     return enqueueTask(async () => {
         try {
             await ensureFileExists(fileName, dirPath);
@@ -480,11 +488,17 @@ async function getSetting(settingKey, fileName = "preferences.json", dirPath = "
                 return null;
             }
 
+            if (settingKey == 'full') {
+                return fileSettings;
+            }
+
             if (!(settingKey in fileSettings)) {
                 return null;
             }
 
-            return fileSettings[settingKey];
+            const settingValue = fileSettings[settingKey];
+            settingCache.set(cacheKey, { value: settingValue, timestamp: Date.now() });
+            return settingValue;
         } catch (error) {
             console.error(`Error in getSetting for ${fileName}:`, error);
             return null;

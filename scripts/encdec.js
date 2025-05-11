@@ -20,13 +20,16 @@ async function getKey(password) {
         ["encrypt", "decrypt"]
     );
 }
+function bufferToBase64(buffer) {
+    return btoa(String.fromCharCode(...new Uint8Array(buffer)));
+}
 
 async function encryptData(key, data) {
     const iv = crypto.getRandomValues(new Uint8Array(12));
     let encoded;
 
     if (typeof data === 'string') {
-        encoded = encoder.encode(data);
+        encoded = new TextEncoder().encode(data);
     } else if (data instanceof Blob) {
         encoded = new Uint8Array(await data.arrayBuffer());
     } else if (data instanceof Uint8Array || ArrayBuffer.isView(data)) {
@@ -42,32 +45,45 @@ async function encryptData(key, data) {
     );
 
     return {
-    iv: iv.buffer,
-    data: encrypted
-};
-
+        iv: bufferToBase64(iv.buffer),
+        data: bufferToBase64(encrypted)
+    };
 }
 
+
 let decryptWorkerRegistered = false;
+function base64ToBuffer(base64) {
+    const binary = atob(base64);
+    const buffer = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) {
+        buffer[i] = binary.charCodeAt(i);
+    }
+    return buffer;
+}
+
 async function decryptData(key, encryptedData) {
-
     return new Promise(async (resolve, reject) => {
+        try {
+            const iv = base64ToBuffer(encryptedData.iv);
+            const data = base64ToBuffer(encryptedData.data);
+
+            const decrypted = await crypto.subtle.decrypt(
+                { name: "AES-GCM", iv },
+                key,
+                data
+            );
+
+            let result;
             try {
-                const iv = new Uint8Array(encryptedData.iv);
-                const data = new Uint8Array(encryptedData.data);
-                const decrypted = await crypto.subtle.decrypt({ name: "AES-GCM", iv }, key, data);
-
-                let result;
-                try {
-                    result = new TextDecoder().decode(decrypted);
-                } catch {
-                    result = new Uint8Array(decrypted);
-                }
-
-                resolve(result);
-            } catch (error) {
-                reject('Incorrect password or corrupted data');
+                result = new TextDecoder().decode(decrypted);
+            } catch {
+                result = new Uint8Array(decrypted);
             }
+
+            resolve(result);
+        } catch (error) {
+            reject('Incorrect password or corrupted data');
+        }
     });
 }
 

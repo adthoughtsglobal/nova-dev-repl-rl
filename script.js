@@ -513,55 +513,64 @@ function getAppAspectRatio(unshrunkContent) {
 	return content.includes("aspect-ratio") ? getMetaTagContent(content, 'aspect-ratio', false) : null;
 }
 async function getAppIcon(content, id, lazy = 0) {
-	try {
-		const withTimeout = (promise) =>
-			Promise.race([promise, new Promise((_, reject) => setTimeout(() => reject(), 3000))]);
+  const withTimeout = (promise) =>
+    Promise.race([promise, new Promise((_, reject) => setTimeout(() => reject(), 3000))]);
 
-		if (appicns[id]) return appicns[id];
-		if (lazy) return defaultAppIcon;
+  const getAppIconFromRegistry = async (id, registry) => {
+    if (registry[id] && registry[id].icon) {
+      appicns[id] = registry[id].icon;
+      return appicns[id];
+    }
+    return null;
+  };
 
-		const registry = await getSetting(id, "AppRegistry.json") || {};
-		if (registry.appicns && registry.appicns[id]) {
-			appicns[id] = registry.appicns[id];
-			return appicns[id];
-		}
+  const saveIconToRegistry = async (id, iconContent, registry) => {
+    const updatedRegistry = {
+      ...(registry || {}),
+      [id]: {
+        ...(registry[id] || {}),
+        icon: iconContent
+      }
+    };
+    await setSetting(id, updatedRegistry, "AppRegistry.json");
+  };
 
-		if (!content) {
-			const file = await withTimeout(getFileById(id));
-			if (!file || !file.content) throw new Error("File content unavailable " + id);
-			return await withTimeout(getAppIcon(file.content, id));
-		}
+  try {
+    if (appicns[id]) return appicns[id];
+    if (lazy) return defaultAppIcon;
 
-		const iconContent = await withTimeout(getMetaTagContent(content, 'nova-icon', true));
-		if (iconContent && containsSmallSVGElement(iconContent)) {
-			appicns[id] = iconContent;
+    const registry = await getSetting(id, "AppRegistry.json") || {};
+    const cachedIcon = await getAppIconFromRegistry(id, registry);
+    if (cachedIcon) return cachedIcon;
 
-			const updatedRegistry = {
-				...(registry || {}),
-				appicns: { ...(registry.appicns || {}), [id]: iconContent }
-			};
-			await setSetting(id, updatedRegistry, "AppRegistry.json");
+    if (!content) {
+      if (id == undefined)
+        return null;
+      const file = await withTimeout(getFileById(id));
+      if (!file || !file.content) throw new Error("File content unavailable " + id);
+      content = file.content;
+    }
 
-			return iconContent;
-		}
-	} catch (err) {
-		console.error("Error in getAppIcon:", err);
-	}
+    const iconContent = await withTimeout(getMetaTagContent(content, 'nova-icon', true));
+    if (iconContent && containsSmallSVGElement(iconContent)) {
+      appicns[id] = iconContent;
+      await saveIconToRegistry(id, iconContent, registry);
+      return iconContent;
+    }
+  } catch (err) {
+    console.error("Error in getAppIcon:", err);
+  }
+  console.log("GEN FLIC: ", id);
 
-	const icondatatodo = await getFileNameByID(id) || id;
-	const fallbackIcon = `<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="115.24806" height="130.92446" viewBox="0,0,115.24806,130.92446"><g transform="translate(-182.39149,-114.49081)"><g stroke="none" stroke-miterlimit="10"><path d="M182.39149,245.41527v-130.83054h70.53005l44.68697,44.95618v85.87436z" fill="` + stringToPastelColor(icondatatodo) + `" stroke-width="none"/><path d="M252.60365,158.84688v-44.35607l45.03589,44.35607z" style="opacity: 0.7" fill="#dadada" stroke-width="0"/><text transform="translate(189,229) scale(0.9,0.9)" font-size="3rem" xml:space="preserve" fill="#dadada" style="opacity: 0.7" stroke-width="1" font-family="monospace" font-weight="normal" text-anchor="start"><tspan x="0" dy="0" fill="black">${makedefic(icondatatodo)}</tspan></text></g></g></svg>`;
+  const fallbackIcon = generateFallbackIcon(id);
+  appicns[id] = fallbackIcon;
 
-	appicns[id] = fallbackIcon;
+  return fallbackIcon;
+}
 
-	try {
-		const registry = await getSetting(id, "AppRegistry.json") || {};
-		const updatedIcons = { ...(registry.appicns || {}), [id]: fallbackIcon };
-		await setSetting(id, { ...registry, appicns: updatedIcons }, "AppRegistry.json");
-	} catch (err) {
-		console.error("Failed to cache fallback icon:", err);
-	}
-
-	return fallbackIcon;
+async function generateFallbackIcon(id) {
+  const icondatatodo = await getFileNameByID(id) || id;
+  return `<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="115.24806" height="130.92446" viewBox="0,0,115.24806,130.92446"><g transform="translate(-182.39149,-114.49081)"><g stroke="none" stroke-miterlimit="10"><path d="M182.39149,245.41527v-130.83054h70.53005l44.68697,44.95618v85.87436z" fill="` + stringToPastelColor(icondatatodo) + `" stroke-width="none"/><path d="M252.60365,158.84688v-44.35607l45.03589,44.35607z" style="opacity: 0.7" fill="#dadada" stroke-width="0"/><text transform="translate(189,229) scale(0.9,0.9)" font-size="3rem" xml:space="preserve" fill="#dadada" style="opacity: 0.7" stroke-width="1" font-family="monospace" font-weight="normal" text-anchor="start"><tspan x="0" dy="0" fill="black">${makedefic(icondatatodo)}</tspan></text></g></g></svg>`;
 }
 
 async function applyIconPack(iconPack) {
@@ -737,6 +746,8 @@ async function extractAndRegisterCapabilities(appId, content) {
 			let permissions = totalperms;
 			// confirm perms in bulk
 			let modal = gid("AppInstDia");
+			gid("app_inst_dia_icon").innerHTML = await getAppIcon(appId);
+			gid("app_inst_mod_app_name").innerText = await getFileNameByID(appId);
 			permissions.forEach((perm) => {
 				let listelement = gid("app_inst_mod_li");
 				let span = document.createElement("li");

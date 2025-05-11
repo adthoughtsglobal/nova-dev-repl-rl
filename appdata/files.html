@@ -5,6 +5,7 @@
 	<title>Files app</title>
 	<meta name="description" content="Default Files app for Nova OS">
 	<meta name="capabilities" content="file_manager">
+	<meta name="permissions" content="utility, fileGet, olp, fileSet, settings">
 	<meta name="nova-include" content="nova.css material-symbols-rounded">
 	<meta name="nova-icon"
 		content="<svg width='232' height='232' viewBox='0 0 232 232' fill='none' xmlns='http://www.w3.org/2000/svg'> <g clip-path='url(#clip0_2_55)'> <path d='M0 22.8205C0 10.2171 8.9543 0 20 0H48C48 0 67 0 81 0C95 0 97.5 19.3974 106 19.3974C112.283 19.3974 178.121 19.3974 212.038 19.3974C223.084 19.3974 232 29.6145 232 42.2179V155.179C232 167.783 223.046 178 212 178H20C8.95431 178 0 167.783 0 155.179V22.8205Z' fill='#d19450'/> <path d='M200 39H32C20.9543 39 12 49.2908 12 61.9851V170.015C12 182.709 20.9543 193 32 193H200C211.046 193 220 182.709 220 170.015V61.9851C220 49.2908 211.046 39 200 39Z' fill='#ffffff'/> <path d='M212 72H20C8.9543 72 0 82.2335 0 94.8571V209.143C0 221.767 8.9543 232 20 232H212C223.046 232 232 221.767 232 209.143V94.8571C232 82.2335 223.046 72 212 72Z' fill='#ffc853'/> </g> <defs> <clipPath id='clip0_2_55'> <rect width='232' height='232' fill='white'/> </clipPath> </defs> </svg>">
@@ -1253,7 +1254,7 @@
 				}
 
 				if (await ntxSession.send("settings.get", "filesSidenavSize")) {
-			console.log(87.1)
+					console.log(87.1)
 					document.getElementById("flap-sidenav").style.width = await ntxSession.send("settings.get", "filesSidenavSize");
 				} else {
 					fitsizesidenav();
@@ -1264,12 +1265,12 @@
 
 				}
 				$("#flap-sidenav").resizable({
-				handles: 'e',
-				stop: async function (event, ui) {
-					const newWidth = ui.size.width;
-					await ntxSession.send("settings.set", "filesSidenavSize", newWidth + 'px');
-				}
-			});
+					handles: 'e',
+					stop: async function (event, ui) {
+						const newWidth = ui.size.width;
+						await ntxSession.send("settings.set", "filesSidenavSize", newWidth + 'px');
+					}
+				});
 
 			} catch (e) { }
 
@@ -1389,7 +1390,7 @@
 					return;
 				}
 			}
-			fllist.innerHTML = `<div class="loader33" id='listfilesloader'></div>`;
+			fllist.innerHTML = ``;
 			await window.parent.updateMemoryData();
 
 			function findFolder(path, obj) {
@@ -1419,111 +1420,115 @@
 
 			const folder = findFolder(folderName, window.parent.memory.root);
 			if (folder) {
-				const dropupDiv = document.getElementById("filetools");
-				dropupDiv.innerHTML = "";
+				function filldropup() {
+					const dropupDiv = document.getElementById("filetools");
+					dropupDiv.innerHTML = "";
 
-				const dropupContentDiv = document.createElement("div");
-				dropupContentDiv.className = "dropup-content";
+					const dropupContentDiv = document.createElement("div");
+					dropupContentDiv.className = "dropup-content";
 
-				const moreToolsDiv = document.getElementById("moretoolsdropdwn");
-				moreToolsDiv.innerHTML = "";
+					const moreToolsDiv = document.getElementById("moretoolsdropdwn");
+					moreToolsDiv.innerHTML = "";
 
-				const actions = [
-					{
-						id: "search",
-						title: "Search files",
-						onclick: window.parent.opensearchpanel,
-						innerHTML: `<span class="material-symbols-rounded">search</span> <b>Search</b>`,
-						disabled: folderName === "System/" || folderName === ""
-					},
-					{
-						id: "deleteFolder",
-						title: "Delete folder",
-						onclick: folderName === "System/" || folderName === "" ? (e) => e.preventDefault() : remfold,
-						innerHTML: `<span class="material-symbols-rounded">delete</span> <b>Delete</b>`,
-						disabled: folderName === "System/" || folderName === ""
-					},
-					{
-						id: "createFolder",
-						title: "Create folder",
-						onclick: () => {
-							document.getElementById('makefoldia').showModal();
+					const actions = [
+						{
+							id: "search",
+							title: "Search files",
+							onclick: window.parent.opensearchpanel,
+							innerHTML: `<span class="material-symbols-rounded">search</span> <b>Search</b>`,
+							disabled: folderName === "System/" || folderName === ""
 						},
-						innerHTML: `<span class="material-symbols-rounded">add</span> <b>Folder</b>`
-					},
-					{
-						id: "createFile",
-						title: "Create File",
-						onclick: () => {
-							document.getElementById('makefiledia').showModal();
+						{
+							id: "deleteFolder",
+							title: "Delete folder",
+							onclick: folderName === "System/" || folderName === "" ? (e) => e.preventDefault() : remfold,
+							innerHTML: `<span class="material-symbols-rounded">delete</span> <b>Delete</b>`,
+							disabled: folderName === "System/" || folderName === ""
 						},
-						innerHTML: `<span class="material-symbols-rounded">add</span> <b>New File</b>`
-					},
-					{
-						id: "parentFolder",
-						title: "Parent folder",
-						onclick: () => {
-							if (currentPath.split('/').length > 1) {
-								listFiles(currentPath.substring(0, currentPath.lastIndexOf('/', currentPath.lastIndexOf('/') - 1) + 1));
-							}
+						{
+							id: "createFolder",
+							title: "Create folder",
+							onclick: () => {
+								document.getElementById('makefoldia').showModal();
+							},
+							innerHTML: `<span class="material-symbols-rounded">add</span> <b>Folder</b>`
 						},
-						innerHTML: `<span class="material-symbols-rounded">keyboard_return</span> <b>Parent</b>`,
-						disabled: currentPath.split('/').length <= 1
-					},
-					{
-						id: "toggleView",
-						title: flmode === 'grid' ? 'List view' : 'Grid view',
-						onclick: function () {
-							flmode = flmode === 'grid' ? 'list' : 'grid';
-							changeview(flmode);
-							this.title = flmode === 'grid' ? 'List view' : 'Grid view';
-							this.innerHTML = flmode === 'grid' ?
-								`<span class="material-symbols-rounded">view_list</span> <b>List View</b>` :
-								`<span class="material-symbols-rounded">grid_view</span> <b>Grid View</b>`;
+						{
+							id: "createFile",
+							title: "Create File",
+							onclick: () => {
+								document.getElementById('makefiledia').showModal();
+							},
+							innerHTML: `<span class="material-symbols-rounded">add</span> <b>New File</b>`
 						},
-						innerHTML: flmode === 'grid' ? `<span class="material-symbols-rounded">view_list</span> <b>List View</b>` : `<span class="material-symbols-rounded">grid_view</span> <b>Grid View</b>`
-					}
-				];
+						{
+							id: "parentFolder",
+							title: "Parent folder",
+							onclick: () => {
+								if (currentPath.split('/').length > 1) {
+									listFiles(currentPath.substring(0, currentPath.lastIndexOf('/', currentPath.lastIndexOf('/') - 1) + 1));
+								}
+							},
+							innerHTML: `<span class="material-symbols-rounded">keyboard_return</span> <b>Parent</b>`,
+							disabled: currentPath.split('/').length <= 1
+						},
+						{
+							id: "toggleView",
+							title: flmode === 'grid' ? 'List view' : 'Grid view',
+							onclick: function () {
+								flmode = flmode === 'grid' ? 'list' : 'grid';
+								changeview(flmode);
+								this.title = flmode === 'grid' ? 'List view' : 'Grid view';
+								this.innerHTML = flmode === 'grid' ?
+									`<span class="material-symbols-rounded">view_list</span> <b>List View</b>` :
+									`<span class="material-symbols-rounded">grid_view</span> <b>Grid View</b>`;
+							},
+							innerHTML: flmode === 'grid' ? `<span class="material-symbols-rounded">view_list</span> <b>List View</b>` : `<span class="material-symbols-rounded">grid_view</span> <b>Grid View</b>`
+						}
+					];
 
-				const actionLinks = [];
+					const actionLinks = [];
 
-				actions.forEach(({ id, title, onclick, innerHTML, disabled }) => {
-					const link = document.createElement("a");
-					link.classList.add("dropdownerthebob");
-					link.title = title;
-					link.onclick = onclick;
-					link.innerHTML = innerHTML;
-					link.id = `topbarAction-${id}`;
-					if (disabled) link.classList.add("disabled");
-					actionLinks.push(link);
-					dropupContentDiv.appendChild(link);
-				});
+					actions.forEach(({ id, title, onclick, innerHTML, disabled }) => {
+						const link = document.createElement("a");
+						link.classList.add("dropdownerthebob");
+						link.title = title;
+						link.onclick = onclick;
+						link.innerHTML = innerHTML;
+						link.id = `topbarAction-${id}`;
+						if (disabled) link.classList.add("disabled");
+						actionLinks.push(link);
+						dropupContentDiv.appendChild(link);
+					});
 
-				dropupDiv.appendChild(dropupContentDiv);
+					dropupDiv.appendChild(dropupContentDiv);
 
-				requestAnimationFrame(() => {
-					let overflowStarted = false;
-					while (dropupDiv.scrollHeight > dropupDiv.clientHeight && actionLinks.length > 0) {
-						const linkToMove = actionLinks.pop();
-						dropupContentDiv.removeChild(linkToMove);
-						moreToolsDiv.appendChild(linkToMove);
-						overflowStarted = true;
-					}
+					requestAnimationFrame(() => {
+						let overflowStarted = false;
+						while (dropupDiv.scrollHeight > dropupDiv.clientHeight && actionLinks.length > 0) {
+							const linkToMove = actionLinks.pop();
+							dropupContentDiv.removeChild(linkToMove);
+							moreToolsDiv.appendChild(linkToMove);
+							overflowStarted = true;
+						}
 
-					if (overflowStarted) {
-						const moreToggle = document.createElement("a");
-						moreToggle.classList.add("dropdownerthebob");
-						moreToggle.title = "More Tools";
-						moreToggle.innerHTML = `<span class="material-symbols-rounded">more_vert</span> <b>More</b>`;
-						moreToggle.onclick = () => {
-							moreToolsDiv.classList.toggle("visible");
-						};
-						dropupContentDiv.appendChild(moreToggle);
-					}
-				});
+						if (overflowStarted) {
+							const moreToggle = document.createElement("a");
+							moreToggle.classList.add("dropdownerthebob");
+							moreToggle.title = "More Tools";
+							moreToggle.innerHTML = `<span class="material-symbols-rounded">more_vert</span> <b>More</b>`;
+							moreToggle.onclick = () => {
+								moreToolsDiv.classList.toggle("visible");
+							};
+							dropupContentDiv.appendChild(moreToggle);
+						}
+					});
 
-				currentPath = folderName;
-				updpth();
+					currentPath = folderName;
+					updpth();
+				}
+
+				filldropup();
 
 				const filesInFolder = await window.parent.getFileNamesByFolder(folderName);
 				if (filesInFolder) {
