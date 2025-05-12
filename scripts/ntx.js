@@ -116,33 +116,3 @@ function describeNamespaces(namespaceKey) {
     }
     return null;
 }
-
-function rateNamespaceRisk(namespacesString) {
-    if (!namespacesString)
-        return null;
-
-    const levels = [
-        { max: 0, label: "no risk" },
-        { max: 19, label: "low risk" },
-        { max: 39, label: "medium risk" },
-        { max: 59, label: "very risky" },
-        { max: 79, label: "dangerous" },
-        { max: 89, label: "full access" }
-    ];
-
-    const namespaceKeys = namespacesString;
-    let highestRisk = 0;
-
-    for (const key of namespaceKeys) {
-        const risk = namespaceDetails[key].risk;
-        if (risk > highestRisk) {
-            highestRisk = risk;
-        }
-    }
-
-    for (const level of levels) {
-        if (highestRisk <= level.max) {
-            return level.label;
-        }
-    }
-}

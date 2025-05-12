@@ -1486,6 +1486,46 @@
 				}
 			}
 		}
+
+		div#big_app_card {
+			display: flex;
+			gap: .5em;
+			gap: var(--sizing-normal);
+			align-items: center;
+			justify-content: space-between;
+			width: 100%;
+
+			& .app_icon {
+				flex: 0;
+			}
+
+			& .appdets {
+				flex: 2;
+			}
+
+			& .app_icon svg {
+        width: 50px;
+        height: auto;
+        aspect-ratio: 1 / 1;
+        padding: 5px;
+			}
+
+			& .appname {
+				font-size: 1.5em;
+			}
+
+			& .app_options {
+				padding: 1em;
+				display: flex;
+				border-radius: 50%;
+				font-size: 1em;
+				opacity: .5;
+
+				&:hover {
+					background-color: var(--colors-BG-sub);
+				}
+			}
+		}
 	</style>
 </head>
 
@@ -2602,14 +2642,22 @@
 					appslist.innerHTML = "";
 
 					for (let key in registry) {
+
+						let perms = registry[key].perms || "";
+						let riskLevel = perms.length + " permissions";
 						let singularApp = document.createElement("div");
 						singularApp.className = "singular_app";
+						singularApp.onclick = async () => {
+							openCity(event, 'appsets');
+							await loadAppSettings(key);
+						};
+
 						singularApp.innerHTML = `
         <div class="app_left">
             <div class="app_icon">${await window.parent.getAppIcon(0, key)}</div>
             <div class="app_detail">
                 <div class="app_name">${await window.parent.getFileNameByID(key)}</div>
-                <div class="app_risk">${window.parent.rateNamespaceRisk(registry[key].perms) || "Installed"}</div>
+                <div class="app_risk">${riskLevel || "Installed"}</div>
             </div>
         </div>
         <div class="app_options">
@@ -2622,8 +2670,44 @@
 					}
 				}
 
+				async function loadAppSettings(appID) {
+					let registry = await window.parent.getSetting('full', "AppRegistry.json");
+
+					if (!registry[appID]) return;
+
+					let appData = registry[appID];
+					let icon = await window.parent.getAppIcon(0, appID);
+					let name = await window.parent.getFileNameByID(appID);
+
+					document.querySelector("#big_app_card .app_icon").innerHTML = icon;
+					document.querySelector("#big_app_card .appname").textContent = name;
+					document.querySelector("#app_setting_nav").textContent = name;
+				}
+
 			</script>
 		</div>
+		<div id="appsets" class="tabcontent advancedsettab">
+			<h1><span class="material-symbols-rounded advancedsetsbackbtn" onclick="openCity(event, 'apps');">
+					arrow_back
+				</span>
+				<div id="app_setting_nav">App</div>
+			</h1>
+			<segr>
+				<div setting>
+					<div id="big_app_card">
+						<div class="app_icon"></div>
+						<div class="appdets">
+							<div class="appname">App</div>
+						</div>
+						<span class="app_options material-symbols-rounded">
+							open_in_new
+						</span>
+					</div>
+				</div>
+			</segr>
+
+		</div>
+
 		<div id="network" class="tabcontent">
 			<h1>Networking</h1>
 			<segr>

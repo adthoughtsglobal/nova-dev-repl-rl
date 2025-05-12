@@ -817,6 +817,10 @@ async function remfile(ID) {
                 }
             }
             return false;
+        }``
+        let filedat = await getFileNameByID(ID);
+        if (mtpetxt(filedat) == "app") {
+            await remSetting(ID, "AppRegistry.json")
         }
         let fileRemoved = removeFileFromFolder(memory.root);
         if (!fileRemoved) {
