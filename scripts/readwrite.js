@@ -93,7 +93,7 @@ async function enqueueRequest(action, args) {
     });
 }
 
-const baseURL = location.origin;
+const baseURL = location.href;
 
 const workerScript = `
 importScripts('${baseURL}/scripts/fflate.js', '${baseURL}/scripts/encdec.js');
