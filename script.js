@@ -591,6 +591,7 @@ async function applyIconPack(iconPack) {
 	} catch (err) {
 		console.error("Failed to apply icon pack", err);
 	}
+	appicns = {};
 }
 
 async function fetchData(url) {

@@ -3244,7 +3244,7 @@
 			<h1>Wallpaper</h1>
 			<segr>
 				<div class="inpbox" type="textInput">
-					<span>Current</span>
+					<span>Change your wallpaper:</span>
 					<div class="inputwithbtn">
 						<input placeholder="Paste a URL here..." id="wallpaperurl" class="inputtype1">
 						<button onclick="savewallpap()">Save</button>
@@ -3252,7 +3252,24 @@
 				</div>
 			</segr>
 
+			<h1>Icon pack</h1>
+			<segr>
+				<div class="inpbox" type="textInput">
+					<span>Apply an icon pack: </span>
+					<div class="inputwithbtn">
+						<input placeholder="Paste the file ID here..." id="iconpackidinp" class="inputtype1">
+						<button onclick="saveiconpack()">Save</button>
+					</div>
+				</div>
+			</segr>
+
 			<script>
+
+				async function saveiconpack(){
+					let iconp = await window.parent.getFileById(document.getElementById("iconpackidinp").value);
+					window.parent.applyIconPack(JSON.parse(window.parent.decodeBase64Content(iconp.content)));
+					window.parent.toast("Reload to apply icon pack")
+				}
 
 				const debouncedSaveColor = debounce((picker, variableName) => {
 					updateColor(picker, variableName);
