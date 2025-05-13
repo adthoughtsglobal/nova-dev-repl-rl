@@ -513,64 +513,62 @@ function getAppAspectRatio(unshrunkContent) {
 	return content.includes("aspect-ratio") ? getMetaTagContent(content, 'aspect-ratio', false) : null;
 }
 async function getAppIcon(content, id, lazy = 0) {
-  const withTimeout = (promise) =>
-    Promise.race([promise, new Promise((_, reject) => setTimeout(() => reject(), 3000))]);
+	const withTimeout = (promise) =>
+		Promise.race([promise, new Promise((_, reject) => setTimeout(() => reject(), 3000))]);
 
-  const getAppIconFromRegistry = async (id, registry) => {
-    if (registry[id] && registry[id].icon) {
-      appicns[id] = registry[id].icon;
-      return appicns[id];
-    }
-    return null;
-  };
+	const getAppIconFromRegistry = async (id, registry) => {
+		if (registry[id] && registry[id].icon) {
+			appicns[id] = registry[id].icon;
+			return appicns[id];
+		}
+		return null;
+	};
 
-  const saveIconToRegistry = async (id, iconContent, registry) => {
-    const updatedRegistry = {
-      ...(registry || {}),
-      [id]: {
-        ...(registry[id] || {}),
-        icon: iconContent
-      }
-    };
-    await setSetting(id, updatedRegistry, "AppRegistry.json");
-  };
+	const saveIconToRegistry = async (id, iconContent, registry) => {
+		const updatedRegistry = {
+			...(registry || {}),
+			perms: [],
+			icon: iconContent
+		};
+		await setSetting(id, updatedRegistry, "AppRegistry.json");
+	};
 
-  try {
-    if (appicns[id]) return appicns[id];
-    if (lazy) return defaultAppIcon;
+	try {
+		if (appicns[id]) return appicns[id];
+		if (lazy) return defaultAppIcon;
 
-    const registry = await getSetting(id, "AppRegistry.json") || {};
-    const cachedIcon = await getAppIconFromRegistry(id, registry);
-    if (cachedIcon) return cachedIcon;
+		const registry = await getSetting(id, "AppRegistry.json") || {};
+		const cachedIcon = await getAppIconFromRegistry(id, registry);
+		if (cachedIcon) return cachedIcon;
 
-    if (!content) {
-      if (id == undefined)
-        return null;
-      const file = await withTimeout(getFileById(id));
-      if (!file || !file.content) throw new Error("File content unavailable " + id);
-      content = file.content;
-    }
+		if (!content) {
+			if (id == undefined)
+				return null;
+			const file = await withTimeout(getFileById(id));
+			if (!file || !file.content) throw new Error("File content unavailable " + id);
+			content = file.content;
+		}
 
-    const iconContent = await withTimeout(getMetaTagContent(content, 'nova-icon', true));
-    if (iconContent && containsSmallSVGElement(iconContent)) {
-      appicns[id] = iconContent;
-      await saveIconToRegistry(id, iconContent, registry);
-      return iconContent;
-    }
-  } catch (err) {
-    console.error("Error in getAppIcon:", err);
-  }
-  console.log("GEN FLIC: ", id);
+		const iconContent = await withTimeout(getMetaTagContent(content, 'nova-icon', true));
+		if (iconContent && containsSmallSVGElement(iconContent)) {
+			appicns[id] = iconContent;
+			await saveIconToRegistry(id, iconContent, registry);
+			return iconContent;
+		}
+	} catch (err) {
+		console.error("Error in getAppIcon:", err);
+	}
+	console.log("GEN FLIC: ", id);
 
-  const fallbackIcon = generateFallbackIcon(id);
-  appicns[id] = fallbackIcon;
+	const fallbackIcon = generateFallbackIcon(id);
+	appicns[id] = fallbackIcon;
 
-  return fallbackIcon;
+	return fallbackIcon;
 }
 
 async function generateFallbackIcon(id) {
-  const icondatatodo = await getFileNameByID(id) || id;
-  return `<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="115.24806" height="130.92446" viewBox="0,0,115.24806,130.92446"><g transform="translate(-182.39149,-114.49081)"><g stroke="none" stroke-miterlimit="10"><path d="M182.39149,245.41527v-130.83054h70.53005l44.68697,44.95618v85.87436z" fill="` + stringToPastelColor(icondatatodo) + `" stroke-width="none"/><path d="M252.60365,158.84688v-44.35607l45.03589,44.35607z" style="opacity: 0.7" fill="#dadada" stroke-width="0"/><text transform="translate(189,229) scale(0.9,0.9)" font-size="3rem" xml:space="preserve" fill="#dadada" style="opacity: 0.7" stroke-width="1" font-family="monospace" font-weight="normal" text-anchor="start"><tspan x="0" dy="0" fill="black">${makedefic(icondatatodo)}</tspan></text></g></g></svg>`;
+	const icondatatodo = await getFileNameByID(id) || id;
+	return `<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="115.24806" height="130.92446" viewBox="0,0,115.24806,130.92446"><g transform="translate(-182.39149,-114.49081)"><g stroke="none" stroke-miterlimit="10"><path d="M182.39149,245.41527v-130.83054h70.53005l44.68697,44.95618v85.87436z" fill="` + stringToPastelColor(icondatatodo) + `" stroke-width="none"/><path d="M252.60365,158.84688v-44.35607l45.03589,44.35607z" style="opacity: 0.7" fill="#dadada" stroke-width="0"/><text transform="translate(189,229) scale(0.9,0.9)" font-size="3rem" xml:space="preserve" fill="#dadada" style="opacity: 0.7" stroke-width="1" font-family="monospace" font-weight="normal" text-anchor="start"><tspan x="0" dy="0" fill="black">${makedefic(icondatatodo)}</tspan></text></g></g></svg>`;
 }
 
 async function applyIconPack(iconPack) {
@@ -581,12 +579,11 @@ async function applyIconPack(iconPack) {
 
 			if (!iconSVG) continue;
 			try {
-				const registry = await getSetting(appID, "AppRegistry.json") || {};
-				const appicns = registry.appicns || {};
+				const appicn = await getSetting(appID, "AppRegistry.json") || {};
 
-				appicns[appID] = iconSVG;
+				appicn["icon"] = iconSVG;
 
-				await setSetting(appID, { ...registry, appicns }, "AppRegistry.json");
+				await setSetting(appID, appicn, "AppRegistry.json");
 				console.log(`Icon set for app ${appID} from namespace ${namespace}`);
 			} catch (err) {
 				console.error(`Failed to set icon for app ${appID}`, err);
@@ -1013,13 +1010,6 @@ async function initialiseOS() {
 		await ensureAllSettingsFilesExist()
 			.then(async () => await installdefaultapps())
 			.then(async () => getFileNamesByFolder("Apps"))
-			.then(async (fileNames) => {
-				if (defAppsList.length !== fileNames.length) {
-					setTimeout(installdefaultapps(), 3000);
-					gid('startupterms').innerText = "Fixing problems..."
-					return;
-				}
-			})
 			.catch(error => {
 				console.error("Error during initialization:", error);
 			})
