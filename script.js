@@ -513,7 +513,7 @@ function getAppAspectRatio(unshrunkContent) {
 	return content.includes("aspect-ratio") ? getMetaTagContent(content, 'aspect-ratio', false) : null;
 }
 async function getAppIcon(content, id, lazy = 0) {
-	console.log(content,id,lazy)
+	console.log(content, id, lazy)
 	const withTimeout = (promise) =>
 		Promise.race([promise, new Promise((_, reject) => setTimeout(() => reject(), 3000))]);
 
@@ -746,17 +746,22 @@ async function extractAndRegisterCapabilities(appId, content) {
 			let modal = gid("AppInstDia");
 			gid("app_inst_dia_icon").innerHTML = await getAppIcon(0, appId);
 			gid("app_inst_mod_app_name").innerText = await getFileNameByID(appId);
-				let listelement = gid("app_inst_mod_li");
-				listelement.innerHTML = '';
+			let listelement = gid("app_inst_mod_li");
+			listelement.innerHTML = '';
+			permissions = Array.from(new Set([...permissions, ...requestedperms]));
 			permissions.forEach((perm) => {
 				let span = document.createElement("li");
 				span.innerText = describeNamespaces(perm);
 				listelement.appendChild(span);
 			})
-			modal.showModal();
 			let yesButton = gid("app_inst_mod_agbtn");
 			let noButton = gid("app_inst_mod_nobtn");
 			let condition = await new Promise((resolve) => {
+				if (initialization) {
+					resolve(true);
+				} else {
+					modal.showModal();
+				}
 				yesButton.onclick = () => {
 					modal.close();
 					resolve(true);
@@ -986,8 +991,8 @@ async function initialiseOS() {
 	dbCache = null;
 	cryptoKeyCache = null;
 	await say(`
-		<h2>Terms of service and License</h2>
-		<p>By using Nova OS, you agree to the <a href="https://github.com/adthoughtsglobal/Nova-OS/blob/main/Adthoughtsglobal%20Nova%20Terms%20of%20use">Adthoughtsglobal Nova Terms of Use</a>. Read the terms before use. 
+		<h2>This is a source-available system</h2>
+		<p>By using Nova OS, you agree to the <a href="https://github.com/adthoughtsglobal/Nova-OS/blob/main/Adthoughtsglobal%20Nova%20Terms%20of%20use">Terms of Use</a>. Which mentions the intended purpose of this system.
 		<div style="background:: #001b00; color: lightgreen; padding: 0.8rem; border: 1px solid #254625;font-size:inherit; border-radius: .5rem; margin: 0.8rem 0; display: flex;flex-direction:row; align-items: center; justify-content: flex-start;gap:0.5rem;">
 			<span class="material-symbols-rounded">check</span>
 			<div>We do not store or share your personal information.</div>
@@ -1081,7 +1086,7 @@ async function installdefaultapps() {
 			await Promise.race([appUpdatePromise, new Promise(res => setTimeout(res, 3000))]);
 			clearInterval(interval);
 			if (gid('startupterms')) {
-				gid('startupterms').innerText = "Installing Apps";
+				gid('startupterms').innerText = "Installing " + defAppsList[i] + "...";
 			}
 			setsrtpprgbr(Math.round((i + 1) / defAppsList.length * 100));
 		}
