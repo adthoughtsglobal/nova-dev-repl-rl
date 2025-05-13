@@ -393,7 +393,7 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
         }
 
         if (windowLoader) {
-            windowLoader.innerHTML = appicns[appid] || defaultAppIcon;
+            windowLoader.innerHTML = await getAppIcon(0,appid)|| defaultAppIcon;
             windowLoader.appendChild(loaderdiv);
         }
 
@@ -964,7 +964,7 @@ async function openapp(x, od, customtodo) {
                 Gtodo = customtodo;
             }
 
-            openwindow(x, y, appicns[od] || defaultAppIcon, getAppTheme(y), getAppAspectRatio(y), od, Gtodo);
+            openwindow(x, y, await getAppIcon(0,od)|| defaultAppIcon, getAppTheme(y), getAppAspectRatio(y), od, Gtodo);
 
             Gtodo = null;
         } catch (error) {

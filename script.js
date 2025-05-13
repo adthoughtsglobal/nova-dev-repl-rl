@@ -518,9 +518,9 @@ async function getAppIcon(content, id, lazy = 0) {
 		Promise.race([promise, new Promise((_, reject) => setTimeout(() => reject(), 3000))]);
 
 	const getAppIconFromRegistry = async (id, registry) => {
-		if (registry[id] && registry[id].icon) {
-			appicns[id] = registry[id].icon;
-			return appicns[id];
+		if (registry && registry.icon) {
+			appicns = registry.icon;
+			return appicns;
 		}
 		return null;
 	};
@@ -528,7 +528,6 @@ async function getAppIcon(content, id, lazy = 0) {
 	const saveIconToRegistry = async (id, iconContent, registry) => {
 		const updatedRegistry = {
 			...(registry || {}),
-			perms: [],
 			icon: iconContent
 		};
 		await setSetting(id, updatedRegistry, "AppRegistry.json");
@@ -559,7 +558,6 @@ async function getAppIcon(content, id, lazy = 0) {
 	} catch (err) {
 		console.error("Error in getAppIcon:", err);
 	}
-	console.log("GEN FLIC: ", id);
 
 	const fallbackIcon = generateFallbackIcon(id);
 	appicns[id] = fallbackIcon;
