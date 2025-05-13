@@ -494,7 +494,7 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
                         if (!condition) {
                             let confirmperm = await justConfirm(
                                 "Allow " + namespace + " permission?",
-                                toTitleCase(basename(title)) + " asks permission " + describeNamespaces(namespace) + ". Allow it?"
+                                toTitleCase(basename(title)) + " asks permission to " + describeNamespaces(namespace) + ". Allow it?"
                             );
                             if (confirmperm) {
                                 registry.perms.push(namespace);

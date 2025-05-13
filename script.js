@@ -513,6 +513,7 @@ function getAppAspectRatio(unshrunkContent) {
 	return content.includes("aspect-ratio") ? getMetaTagContent(content, 'aspect-ratio', false) : null;
 }
 async function getAppIcon(content, id, lazy = 0) {
+	console.log(content,id,lazy)
 	const withTimeout = (promise) =>
 		Promise.race([promise, new Promise((_, reject) => setTimeout(() => reject(), 3000))]);
 
@@ -743,10 +744,11 @@ async function extractAndRegisterCapabilities(appId, content) {
 			let permissions = totalperms;
 			// confirm perms in bulk
 			let modal = gid("AppInstDia");
-			gid("app_inst_dia_icon").innerHTML = await getAppIcon(appId);
+			gid("app_inst_dia_icon").innerHTML = await getAppIcon(0, appId);
 			gid("app_inst_mod_app_name").innerText = await getFileNameByID(appId);
-			permissions.forEach((perm) => {
 				let listelement = gid("app_inst_mod_li");
+				listelement.innerHTML = '';
+			permissions.forEach((perm) => {
 				let span = document.createElement("li");
 				span.innerText = describeNamespaces(perm);
 				listelement.appendChild(span);
@@ -766,6 +768,7 @@ async function extractAndRegisterCapabilities(appId, content) {
 			});
 
 			if (condition) {
+				console.log("requestedperms")
 				requestedperms.forEach((perm) => {
 					if (!totalperms.includes(perm)) {
 						totalperms.push(perm);
@@ -944,7 +947,7 @@ async function loadtaskspanel() {
 
 		let iconSpan = document.createElement("span");
 		iconSpan.classList.add("appicnspan");
-		iconSpan.innerHTML = (await getAppIcon(0, key?.appid)) || defaultAppIcon;
+		iconSpan.innerHTML = (await getAppIcon(0, winds[wid]?.appid)) || defaultAppIcon;
 
 		let tooltisp = document.createElement("span");
 		tooltisp.className = "tooltiptext";
@@ -1067,7 +1070,7 @@ async function installdefaultapps() {
 		// Update each app sequentially
 		const hangMessages = ["Hang in tight...", "Almost there...", "Just a moment more...", "Patience, young grasshopper..."];
 		for (let i = 0; i < defAppsList.length; i++) {
-			const appUpdatePromise = updateApp(defAppsList[i]);
+			const appUpdatePromise = await updateApp(defAppsList[i]);
 			let delay = 0;
 			const interval = setInterval(() => {
 				if (delay >= 3000) {

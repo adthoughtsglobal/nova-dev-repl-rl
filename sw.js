@@ -2,14 +2,12 @@ const CACHE_NAME = 'app-cache-v1';
 const urlsToCache = [
   '/',
   '/index.html',
-  'https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200',
   'https://cdn.jsdelivr.net/npm/mime-db@1.52.0/db.json',
   'https://fonts.googleapis.com/css2?family=Poppins:wght@300&display=swap',
   '/system32.js',
   '/style.css',
   '/n.png',
   '/nova.css',
-  'https://code.jquery.com/jquery-3.6.4.min.js',
   '/scripts/edgecases.js',
   '/scripts/scripties.js',
   '/script.js',
@@ -18,7 +16,6 @@ const urlsToCache = [
   '/scripts/readwrite.js',
   '/scripts/utility.js',
   '/scripts/ctxmenu.js',
-  '/scripts/rotur.js'
 ];
 
 self.addEventListener('install', (event) => {

@@ -80,7 +80,7 @@ class NTXSession {
             getRandomNothingQuote: getRandomNothingQuote,
             debounce: debounce,
             mtpetxt: mtpetxt,
-            calculateSimilarity:calculateSimilarity
+            calculateSimilarity: calculateSimilarity
         };
         this.system = {
             ercache: ercache,
@@ -90,7 +90,7 @@ class NTXSession {
         };
         this.specific = {
             useNovaOffline: useNovaOffline,
-            removeSWs:removeSWs,
+            removeSWs: removeSWs,
             installdefaultapps: installdefaultapps
         }
     }
@@ -98,21 +98,24 @@ class NTXSession {
 
 const ntxWrapper = new NTXSession();
 const namespaceDetails = {
-        fileGet: { risk: 10, description: "to read file data" },
-        fileSet: { risk: 40, description: "to modify and manage file data" },
-        dir: { risk: 30, description: "to manipulate directories" },
-        olp: { risk: 20, description: "to use open apps and use their features" },
-        settings: { risk: 35, description: "to read and modify settings" },
-        accounts: { risk: 50, description: "to manage user accounts" },
-        apps: { risk: 25, description: "to know handlers and perms" },
-        sysUI: { risk: 30, description: "to manipulate system UI" },
-        utility: { risk: 20, description: "to use various utilities" },
-        system: { risk: 80, description: "to interact with high risk system functions" },
-        specific: { risk: 90, description: "to trigger specific risky system sequences" }
-    };
+    fileGet: { risk: 10, description: "read file data" },
+    fileSet: { risk: 40, description: "modify and manage file data" },
+    dir: { risk: 30, description: "manipulate directories" },
+    olp: { risk: 20, description: "use open apps and use their features" },
+    settings: { risk: 35, description: "read and modify settings" },
+    accounts: { risk: 50, description: "manage user accounts" },
+    apps: { risk: 25, description: "know handlers and perms" },
+    sysUI: { risk: 30, description: "manipulate system UI" },
+    utility: { risk: 20, description: "use various utilities" },
+    system: { risk: 80, description: "interact with high risk system functions" },
+    specific: { risk: 90, description: "trigger specific risky system sequences" }
+};
 function describeNamespaces(namespaceKey) {
     if (namespaceDetails[namespaceKey]) {
         return namespaceDetails[namespaceKey].description;
     }
     return null;
+}
+function returnallnamespaces() {
+    return Object.keys(namespaceDetails);
 }

@@ -1304,6 +1304,12 @@ dialog#terminal {
 	flex-direction: row-reverse;
 	align-items: stretch;
 	overflow: hidden;
+	background-color: var(--colors-BG-normal);
+	border-radius: var(--sizing-border-radius);
+	transition: .3s;
+	&:hover {
+		filter: brightness(110%);
+	}
 }
 
 .ibtnsside button {
@@ -1314,7 +1320,6 @@ dialog#terminal {
 	justify-content: center;
 	border: 0;
 	background-color: transparent;
-	border-radius: var(--sizing-border-radius);
 	color: var(--colors-text-normal);
 	width: 24px;
 	aspect-ratio: 1 / 1;
