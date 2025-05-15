@@ -232,6 +232,8 @@ async function startup() {
 			);
 
 			try {
+				
+	console.log("889")
 				function runScriptsSequentially(scripts, delay) {
 					scripts.forEach((script, index) => {
 						setTimeout(script, index * delay);
@@ -1289,8 +1291,8 @@ function displayTimeLeft(seconds) {
 
 async function notify(...args) {
 	if (nonotif) { return }
-	let [title = "Notification", description = "There is a notification", appname = "App", ...rest] = args;
-	appname = basename(await getFileNameByID(appname));
+	let [title = "Notification", description = "There is a notification", appname = "App", isid = 1, ...rest] = args;
+	appname = (!isid) ? basename(await getFileNameByID(appname)) : appname;
 	if (document.getElementById("notification").style.display == "block") {
 		document.getElementById("notification").style.display = "none";
 		setTimeout(() => notify(title, description, appname), 2500);

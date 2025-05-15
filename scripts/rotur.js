@@ -184,6 +184,10 @@ function wsClose() {
 
 class RoturExtension {
   constructor() {
+    this.connecting = false;
+    this.loggingIn = false;
+
+
     this.ws = null;
     this.client = {};
     this.packets = {};
@@ -268,22 +272,43 @@ class RoturExtension {
   // main functions
 
   async connectToServer(args) {
+    if (this.connecting || this.loggingIn) return;
+    this.connecting = true;
+
     if (!this.server || !this.accounts) {
       console.log("Waiting for server and accounts...");
-      setTimeout(() => {
-        this.connectToServer(args);
-      }, 1000);
-      return true;
+      this.connecting = false;
+      setTimeout(() => this.connectToServer(args), 3000);
+      return;
     }
-    if (this.ws) { wsClose; }
+    1
+    if (this.ws && (this.ws.readyState === WebSocket.CONNECTING || this.ws.readyState === WebSocket.OPEN)) {
+      this.connecting = false;
+      return;
+    }
+    this.waitForSocketClose = () => {
+      return new Promise((resolve) => {
+        if (!this.ws || this.ws.readyState === WebSocket.CLOSED) {
+          return resolve();
+        }
+        this.ws.addEventListener("close", () => resolve(), { once: true });
+        this.ws.close();
+      });
+    }
+
+    await this.waitForSocketClose();
+
     this.designation = args.DESIGNATION;
     this.username = randomString(32);
     this.my_client = {
       system: args.SYSTEM,
       version: args.VERSION,
     };
+
     await this.connectToWebsocket();
+    this.connecting = false;
   }
+
 
   openPorts() {
     let ports = [];
@@ -349,6 +374,11 @@ class RoturExtension {
   }
 
   async connectToWebsocket() {
+    if (this.ws && (this.ws.readyState === WebSocket.CONNECTING || this.ws.readyState === WebSocket.OPEN)) {
+      return;
+    }
+      notify(`Logged in Rotur`, "You can use Rotur supported apps now.", "RoturTW", 1)
+
     return new Promise((resolve, reject) => {
       try {
         this.ws = new WebSocket(this.server);
@@ -446,20 +476,14 @@ class RoturExtension {
         if (packet.listener == "link_cfg") {
           this.client.room = packet.val;
           this.is_connected = true;
-          sysLog("RoturTW","is now connected");
-          eventBusWorker.deliver({
-            "type": "rotur",
-            "event": "connected",
-            "key": "connected"
-          });
           if (!roturExtension.authenticated) {
             (async () => {
-              sysLog("RoturTW",`Trying to log in`);
               let localroturdata = await window.getSetting("roturLink");
               if (localroturdata) {
                 let targetun = JSON.parse(localroturdata).username;
                 let targetpass = JSON.parse(localroturdata).password;
-                await roturExtension.login({ USERNAME: targetun, PASSWORD: targetpass });
+                console.log(543)
+                let oktmp = await roturExtension.login({ USERNAME: targetun, PASSWORD: targetpass });
               }
             })()
           }
@@ -508,10 +532,10 @@ class RoturExtension {
 
   login(args) {
     if (!this.is_connected) {
-      return "Not Connected";
+      return 0;
     }
     if (this.authenticated) {
-      return "Already Logged In";
+      return 0;
     }
     return new Promise((resolve, reject) => {
       this.ws.send(
@@ -528,7 +552,7 @@ class RoturExtension {
         }),
       );
 
-      const handleLoginResponse = (event) => {
+      const handleLoginResponse = async (event) => {
         let packet = JSON.parse(event.data);
         if (packet?.origin?.username === this.accounts) {
           if (packet.val?.source_command === "login") {
@@ -553,17 +577,25 @@ class RoturExtension {
               delete this.user.friends;
               delete this.user.requests;
 
-              // setup username for reconnect
               this.username = args.USERNAME + "§" + randomString(10);
-              this.connectToWebsocket();
-              while (!this.is_connected) { }
+              const waitForConnection = () => new Promise((res, rej) => {
+                const timeout = setTimeout(() => rej("Timed out"), 10000);
+                const interval = setInterval(() => {
+                  if (this.is_connected) {
+                    clearTimeout(timeout);
+                    clearInterval(interval);
+                    res();
+                  }
+                }, 100);
+              });
+              await waitForConnection();
+
               this.authenticated = true;
-              sysLog("RoturTW",`logged in as ${args.USERNAME}`);
-              notify(`Logged in as ${args.USERNAME}`, "You can use Rotur supported apps now.", "RoturTW")
-              resolve(`Logged in as ${args.USERNAME}`);
+              sysLog("RoturTW", `logged in as ${args.USERNAME}`);
+              resolve(1);
             } else {
               this.authenticated = false;
-              reject(`Failed to login as ${args.USERNAME}`);
+              reject(0);
             }
             this.ws.removeEventListener("message", handleLoginResponse);
           }

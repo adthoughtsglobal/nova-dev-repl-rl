@@ -149,7 +149,6 @@ nav [navobj] div {
 	font-size: var(--font-size-normal);
 	padding: 0px;
 	overflow: visible;
-	box-shadow: 0px 5px 1rem 1px #000000b0;
 	animation: appshow 0.5s 1;
 	resize: none;
 	display: flex;
@@ -158,6 +157,13 @@ nav [navobj] div {
 	box-sizing: border-box;
 	border: 1px solid var(--colors-BG-sub);
 	will-change: transform;
+	box-shadow: 0px 0px .5em 1px #00000070;
+	transition: box-shadow .5s;
+
+	&:hover {
+	box-shadow: 0px 5px 1em 1px #00000070;
+
+	}
 }
 
 @media only screen and (max-width: 500px) {

@@ -62,7 +62,6 @@
 		.tab h3 {
 			padding-left: 5px;
 			margin: 5px 0px;
-			font-weight: normal;
 			font-size: var(--font-size-normal);
 		}
 
@@ -405,10 +404,6 @@
 			flex: 1;
 		}
 
-		[setting] b {
-			font-weight: 500;
-		}
-
 		@keyframes drop {
 			0% {
 				transform: translateY(10px);
@@ -650,7 +645,6 @@
 		}
 
 		h1 {
-			font-weight: normal;
 			font-size: var(--font-size-normal);
 			margin-top: var(--sizing-huge);
 			display: flex;
@@ -660,7 +654,6 @@
 		}
 
 		h3 {
-			font-weight: normal;
 			font-size: var(--font-size-normal);
 			opacity: 0.7;
 			margin-top: var(--sizing-huge);
@@ -726,7 +719,6 @@
 		}
 
 		.btngrpelem b {
-
 			font-size: 0.8rem;
 			font-weight: normal;
 		}
@@ -1530,6 +1522,11 @@
 
 		.turnon_checkbox {
 			display: none;
+		}
+
+		p {
+			margin: 0;
+			opacity: .7;
 		}
 	</style>
 </head>
@@ -2501,27 +2498,8 @@
 				</div>
 			</segr>
 			<h3>Credits</h3>
-			<table>
-				<tbody style="width: 100%;">
-					<tr>
-						<td><b onclick="openlink('https://github.com/RoturTW')">RoturTW</b></td>
-						<td>Networking</td>
-					</tr>
-					<tr>
-						<td>Libraries</td>
-						<td>
-							<ul>
-								<li onclick="openlink('https://fonts.google.com/')">Google Fonts</li>
-								<li>FFlate</li>
-							</ul>
-						</td>
-					</tr>
-				</tbody>
-			</table>
-			<br>
-			<small>
-				Credits to all those who we couldn't mention in here.
-			</small>
+			<p>Huge credits for Google for Google Fonts and 101arrowz for FFlate. Credits to all those who we couldn't
+						mention in here.</p>
 			<br>
 		</div>
 		<div id="activity" class="tabcontent advancedsettab">
@@ -2683,7 +2661,7 @@
 						input.type = "checkbox";
 						input.className = "turnon_checkbox";
 						input.id = `cbx-perms-${i}`;
-						
+
 
 						div.appendChild(nameDiv);
 						div.appendChild(input);
@@ -2694,7 +2672,7 @@
 						}
 						input.addEventListener("change", async function () {
 							let registrykid = await window.parent.getSetting(appID, "AppRegistry.json");
-							console.log(appID,registrykid, 45)
+							console.log(appID, registrykid, 45)
 
 							if (input.checked) {
 								if (!registrykid.perms.includes(ns)) {
@@ -2807,6 +2785,8 @@
 						<button onclick="initrotur()">Start</button>
 					</div>
 				</segr>
+				<small>RoturTW is a third party service, which offers APIs. NovaOS supports it but isn't affiliated or
+					endorsing. Visit rotur.dev for details.</small>
 				<segr id="rtrsignedinsec" style="display:none;">
 					<div setting class="spread">
 						<b id="rtruserstatsi">Signed in</b>
@@ -2835,7 +2815,6 @@
 						loaduprtour()
 					}
 					function loaduprtour() {
-						ntxSession.send("sysUI.say", `RoturTW is a third party service, which offers APIs. NovaOS supports it but isn't affiliated or endorsing. Visit rotur.dev for details.`)
 						const roturExtension = window.parent.roturExtension;
 
 						if (roturExtension && roturExtension.loggedIn()) {
@@ -3265,7 +3244,7 @@
 
 			<script>
 
-				async function saveiconpack(){
+				async function saveiconpack() {
 					let iconp = await window.parent.getFileById(document.getElementById("iconpackidinp").value);
 					window.parent.applyIconPack(JSON.parse(window.parent.decodeBase64Content(iconp.content)));
 					window.parent.toast("Reload to apply icon pack")
@@ -3405,13 +3384,16 @@
 					for (i = 0; i < tablinks.length; i++) {
 						tablinks[i].className = tablinks[i].className.replace(" active", "");
 					}
-					document.getElementById(cityName).style.display = "block";
-					if (evt.currentTarget.classList.contains("tablinks")) {
-						evt.currentTarget.className += " active";
-						prevCityBtn = evt.currentTarget;
-					} else if (prevCityBtn) {
-						prevCityBtn.className += " active"
-					}
+					try {
+						document.getElementById(cityName).style.display = "block";
+						if (evt.currentTarget.classList.contains("tablinks")) {
+							evt.currentTarget.className += " active";
+							prevCityBtn = evt.currentTarget;
+						} else if (prevCityBtn) {
+							prevCityBtn.className += " active"
+						}
+					} catch (e) { }
+
 				}
 
 				var usedMemoryPercentage;
@@ -3554,42 +3536,57 @@
 			}
 		}
 		function convertTurnonCheckboxes() {
-	const checkboxes = document.querySelectorAll('.turnon_checkbox');
-	checkboxes.forEach(original => {
-		const id = original.id;
+			const checkboxes = document.querySelectorAll('.turnon_checkbox');
+			checkboxes.forEach(original => {
+				const id = original.id;
 
-		const wrapper = document.createElement('div');
-		wrapper.className = 'checkbox-wrapper-51';
+				const wrapper = document.createElement('div');
+				wrapper.className = 'checkbox-wrapper-51';
 
-		const label = document.createElement('label');
-		label.setAttribute('for', id);
-		label.className = 'toggle';
+				const label = document.createElement('label');
+				label.setAttribute('for', id);
+				label.className = 'toggle';
 
-		const span = document.createElement('span');
+				const span = document.createElement('span');
 
-		const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-		svg.setAttribute('width', '10px');
-		svg.setAttribute('height', '10px');
-		svg.setAttribute('viewBox', '0 0 10 10');
+				const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+				svg.setAttribute('width', '10px');
+				svg.setAttribute('height', '10px');
+				svg.setAttribute('viewBox', '0 0 10 10');
 
-		const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-		path.setAttribute('d', 'M5,1 L5,1 C2.790861,1 1,2.790861 1,5 L1,5 C1,7.209139 2.790861,9 5,9 L5,9 C7.209139,9 9,7.209139 9,5 L9,5 C9,2.790861 7.209139,1 5,1 L5,9 L5,1 Z');
+				const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+				path.setAttribute('d', 'M5,1 L5,1 C2.790861,1 1,2.790861 1,5 L1,5 C1,7.209139 2.790861,9 5,9 L5,9 C7.209139,9 9,7.209139 9,5 L9,5 C9,2.790861 7.209139,1 5,1 L5,9 L5,1 Z');
 
-		svg.appendChild(path);
-		span.appendChild(svg);
-		label.appendChild(span);
+				svg.appendChild(path);
+				span.appendChild(svg);
+				label.appendChild(span);
 
-		original.setAttribute('role', 'submit');
+				original.setAttribute('role', 'submit');
 
-		const parent = original.parentNode;
-		parent.insertBefore(wrapper, original);
-		wrapper.appendChild(original);
-		wrapper.appendChild(label);
-	});
-}
+				const parent = original.parentNode;
+				parent.insertBefore(wrapper, original);
+				wrapper.appendChild(original);
+				wrapper.appendChild(label);
+			});
+		}
 
-		function greenflag() {
+		async function greenflag() {
 			convertTurnonCheckboxes();
+			ntxSession = new NTXSession();
+
+			var defile
+			try {
+				if (myWindow.params) {
+					let tmp = myWindow.params;
+					console.log(myWindow.params.data);
+					defile = tmp.data.openType;
+					if (defile == "appSettings") {
+						openCity(0, 'appsets');
+						loadAppSettings(tmp.data.data);
+					}
+				}
+			} catch (e) { }
+
 		}
 	</script>
 </body>
