@@ -413,6 +413,13 @@ nav [navobj] div {
 	animation: pop var(--time-action);
 }
 
+#AppInstDia span.dangertext {
+		color: inherit;
+    background: #ff00004d;
+    border-radius: 5px;
+    padding: 0 5px;
+	}
+
 .modal::backdrop {
 	backdrop-filter: blur(5px) brightness(0.5);
 }

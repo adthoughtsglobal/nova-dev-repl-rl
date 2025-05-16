@@ -645,7 +645,7 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
 
         iframe = document.createElement("iframe");
         if (!perms.includes("system")) {
-            iframe.setAttribute("sandbox", "allow-scripts, allow modals");
+            iframe.setAttribute("sandbox", "allow-scripts allow-modals");
         }
         iframe.src = blobURL;
         windowContent.appendChild(iframe);

@@ -100,16 +100,16 @@ class NTXSession {
 const ntxWrapper = new NTXSession();
 const namespaceDetails = {
     fileGet: { risk: 10, description: "read file data" },
-    fileSet: { risk: 40, description: "modify and manage file data" },
+    fileSet: { risk: 40, description: "create and modify file data and files" },
     dir: { risk: 30, description: "manipulate directories" },
     olp: { risk: 20, description: "use open apps and use their features" },
-    settings: { risk: 35, description: "read and modify settings" },
+    settings: { risk: 80, description: "read and <span class='dangertext'>modify system settings and permissions</span>" },
     accounts: { risk: 50, description: "manage user accounts" },
-    apps: { risk: 25, description: "know handlers and perms" },
-    sysUI: { risk: 30, description: "manipulate system UI" },
+    apps: { risk: 25, description: "know handlers and permissions" },
+    sysUI: { risk: 30, description: "show dialogs and trigger UI functions" },
     utility: { risk: 20, description: "use various utilities" },
-    system: { risk: 80, description: "interact with high risk system functions" },
-    specific: { risk: 90, description: "trigger specific risky system sequences" }
+    system: { risk: 80, description: "gain unrestricted access to <span class='dangertext'>high risk system functions</span>" },
+    specific: { risk: 90, description: "trigger specific <span class='dangertext'>risky system sequences</span>" }
 };
 function describeNamespaces(namespaceKey) {
     if (namespaceDetails[namespaceKey]) {

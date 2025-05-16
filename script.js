@@ -752,7 +752,7 @@ async function extractAndRegisterCapabilities(appId, content) {
 			permissions = Array.from(new Set([...permissions, ...requestedperms]));
 			permissions.forEach((perm) => {
 				let span = document.createElement("li");
-				span.innerText = describeNamespaces(perm);
+				span.innerHTML = describeNamespaces(perm);
 				listelement.appendChild(span);
 			})
 			let yesButton = gid("app_inst_mod_agbtn");
