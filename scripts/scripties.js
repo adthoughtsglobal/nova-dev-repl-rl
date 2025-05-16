@@ -236,90 +236,97 @@ function removeTheme() {
 
 	appliedThemeVars.clear();
 }
+function convertTontxSession(jsCode) {
+	const hardcodedMethodMap = {
+		getFileById: "fileGet.byId",
+		getFileNameByID: "fileGet.nameById",
+		findFileDetails: "fileGet.detailsById",
+		getFileByPath: "fileGet.byPath",
 
-function convertTontxWrapper(jsCode) {
-	const exactMethodMap = buildExactMethodMap();
+		createFile: "fileSet.createFile",
+		updateFile: "fileSet.updateFile",
+		remfile: "fileSet.removeFile",
+		moveFileToFolder: "fileSet.moveFile",
 
-	function similarity(a, b) {
-		let matches = 0;
-		const minLength = Math.min(a.length, b.length);
-		for (let i = 0; i < minLength; i++) {
-			if (a[i] === b[i]) matches++;
-		}
-		return matches / Math.max(a.length, b.length);
-	}
+		getFolderNames: "dir.getFolderNames",
+		remfolder: "dir.remove",
+		createFolder: "dir.create",
 
-	function buildExactMethodMap() {
-		const map = {};
+		openfile: "olp.openFile",
+		openlaunchprotocol: "olp.launch",
+		useHandler: "olp.useHandler",
 
-		function traverse(obj, path = "") {
-			for (const key in obj) {
-				const value = obj[key];
-				const fullPath = path ? `${path}.${key}` : key;
+		getSetting: "settings.get",
+		setSetting: "settings.set",
+		remSetting: "settings.remove",
+		resetAllSettings: "settings.resetAll",
+		ensureAllSettingsFilesExist: "settings.ensurePreferencesFile",
 
-				if (typeof value === "function") {
-					const fnName = value.name;
-					if (fnName) map[fnName] = fullPath;
-				} else if (typeof value === "object" && value !== null) {
-					if (value instanceof Function) {
-						const fnName = value.name;
-						if (fnName) map[fnName] = fullPath;
-					} else {
-						traverse(value, fullPath);
-					}
-				}
-			}
-		}
+		removeUser: "accounts.removeUser",
+		removeInvalidMagicStrings: "accounts.removeInvalidMagicStrings",
+		checkPassword: "accounts.changePassword",
+		password: "accounts.password",
+		getallusers: "accounts.getAllUsers",
+		CurrentUsername: "accounts.username",
 
-		traverse(ntxWrapper)
-		return map;
-	}
+		getAppIcon: "apps.getIcon",
+		handlers: "apps.getHandlers",
 
+		justConfirm: "sysUI.confirm",
+		showDropdownModal: "sysUI.dropdown",
+		ask: "sysUI.ask",
+		say: "sysUI.say",
+		toast: "sysUI.toast",
+		openwindow: "sysUI.createWindow",
+		clwin: "sysUI.clwin",
+		notify: "sysUI.notify",
+		genDesktop: "sysUI.genDesktop",
+		genTaskBar: "sysUI.genTaskBar",
+		loadtaskspanel: "sysUI.loadtaskspanel",
 
-	function findClosestMatch(target) {
-		const normalizedTarget = target.toLowerCase();
-		let bestMatch = null;
-		let highestScore = 0;
+		timeAgo: "utility.timeAgo",
+		genUID: "utility.genUID",
+		isBase64: "utility.isBase64",
+		isElement: "utility.isElement",
+		decodeBase64Content: "utility.decodeBase64Content",
+		getfourthdimension: "utility.getTime",
+		getbaseflty: "utility.getBaseFileType",
+		basename: "utility.getBaseName",
+		markdownToHTML: "utility.markdownToHTML",
+		getMimeType: "utility.getMimeType",
+		stringToPastelColor: "utility.stringToPastelColor",
+		stringToDarkPastelColor: "utility.stringToDarkPastelColor",
+		toTitleCase: "utility.toTitleCase",
+		getRandomNothingQuote: "utility.getRandomNothingQuote",
+		debounce: "utility.debounce",
+		mtpetxt: "utility.mtpetxt",
+		calculateSimilarity: "utility.calculateSimilarity",
 
-		for (const fnName in exactMethodMap) {
-			const path = exactMethodMap[fnName];
-			const [namespace, method] = path.toLowerCase().split(".");
+		ercache: "system.ercache",
+		cleanupInvalidAssociations: "system.cleanupInvalidAssociations",
+		sysLog: "system.sysLog",
 
-			let score = 0;
-			if (path.toLowerCase() === normalizedTarget) score += 1;
-			if (normalizedTarget.includes(fnName.toLowerCase())) score += 0.3;
-			if (normalizedTarget.includes(namespace)) score += 0.3;
-			if (normalizedTarget.includes(method)) score += 0.3;
-			if (fnName.toLowerCase() === normalizedTarget) score += 10;
-
-			// Fallback to similarity for tie-breaking
-			score += similarity(normalizedTarget, fnName.toLowerCase()) * 0.3;
-
-			if (score > highestScore) {
-				highestScore = score;
-				bestMatch = path;
-			}
-		}
-
-		return bestMatch;
-	}
-
+		useNovaOffline: "specific.useNovaOffline",
+		removeSWs: "specific.removeSWs",
+		installdefaultapps: "specific.installdefaultapps",
+		erdbsfull: "system.eraseNova"
+	};
 
 	const convertedCode = jsCode.replace(
 		/(?<!await\s)(window\.parent\.)(\w+)\s*\(/g,
 		(match, base, fnName) => {
-			const path = findClosestMatch(fnName);
+			const path = hardcodedMethodMap[fnName];
 			if (path) {
-				return `await ntxWrapper.send("${path}", `;
+				return `await ntxSession.send("${path}", `;
 			}
 			return match;
 		}
 	).replace(
 		/await\s+window\.parent\.(\w+)\s*\(/g,
 		(match, fnName) => {
-			const path = findClosestMatch(fnName);
+			const path = hardcodedMethodMap[fnName];
 			if (path) {
-				return `await ntxWrapper.send("${path}", `;
+				return `await ntxSession.send("${path}", `;
 			}
 			return match;
 		}

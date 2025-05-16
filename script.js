@@ -232,8 +232,8 @@ async function startup() {
 			);
 
 			try {
-				
-	console.log("889")
+
+				console.log("889")
 				function runScriptsSequentially(scripts, delay) {
 					scripts.forEach((script, index) => {
 						setTimeout(script, index * delay);
@@ -1034,13 +1034,16 @@ async function initialiseOS() {
 	})
 }
 async function installdefaultapps() {
-	nonotif = true
+	nonotif = true;
 	gid("edison").showModal();
 	if (gid('startupterms')) {
 		gid('startupterms').innerText = "Just a moment...";
 	}
 	gid("appdmod").close();
-	const maxRetries = 2;
+
+	const maxRetries = 3;
+	const failedApps = [];
+
 	async function updateApp(appName, attempt = 1) {
 		try {
 			const filePath = "appdata/" + appName + ".html";
@@ -1054,29 +1057,33 @@ async function installdefaultapps() {
 		} catch (error) {
 			console.error("Error updating " + appName + ":", error.message);
 			if (attempt < maxRetries) {
-				await updateApp(appName, attempt + 1);
+				return await updateApp(appName, attempt + 1);
 			} else {
 				console.error("Max retries reached for " + appName + ". Skipping update.");
+				failedApps.push(appName);
+				return false;
 			}
-			return false;
 		}
 	}
+
 	async function waitForNonNull() {
 		let result = null;
 		while (result === null) {
 			result = await updateMemoryData();
 			if (result === null) {
-				gid('startupterms').innerText = "Waiting for DB to open..."
+				gid('startupterms').innerText = "Waiting for DB to open...";
 				await new Promise(resolve => setTimeout(resolve, 1000));
 			}
 		}
 		return result;
 	}
+
 	await waitForNonNull().then(async () => {
-		// Update each app sequentially
 		const hangMessages = ["Hang in tight...", "Almost there...", "Just a moment more...", "Patience, young grasshopper..."];
 		for (let i = 0; i < defAppsList.length; i++) {
-			const appUpdatePromise = await updateApp(defAppsList[i]);
+			await new Promise(res => setTimeout(res, 300));
+			const appName = defAppsList[i];
+			const appUpdatePromise = updateApp(appName);
 			let delay = 0;
 			const interval = setInterval(() => {
 				if (delay >= 3000) {
@@ -1087,10 +1094,11 @@ async function installdefaultapps() {
 			await Promise.race([appUpdatePromise, new Promise(res => setTimeout(res, 3000))]);
 			clearInterval(interval);
 			if (gid('startupterms')) {
-				gid('startupterms').innerText = "Installing " + defAppsList[i] + "...";
+				gid('startupterms').innerText = "Installing " + appName + "...";
 			}
 			setsrtpprgbr(Math.round((i + 1) / defAppsList.length * 100));
 		}
+
 		let fetchupdatedata = await fetch("versions.json");
 		if (fetchupdatedata.ok) {
 			let fetchupdatedataver = (await fetchupdatedata.json()).osver;
@@ -1098,11 +1106,31 @@ async function installdefaultapps() {
 		} else {
 			console.error("Failed to fetch data from the server.");
 		}
+
+		if (failedApps.length > 0) {
+			const response = await say(failedApps.length + " apps failed to download. This might be an internet issue, retry?");
+			if (response === "yes" || response === true) {
+				const stillFailed = [];
+				for (let i = 0; i < failedApps.length; i++) {
+					const appName = failedApps[i];
+					const success = await updateApp(appName, 1);
+					if (!success) {
+						stillFailed.push(appName);
+					}
+				}
+				if (stillFailed.length > 0) {
+					console.error("These apps still failed after retry:", stillFailed);
+					await say("Some apps still failed to download: " + stillFailed.join(", "));
+				}
+			}
+		}
+
 		if (!initialization) {
 			closeElementedis();
 		}
-	})
+	});
 }
+
 async function prepareArrayToSearch() {
 	let arrayToSearch = [];
 	function scanFolder(folderPath, folderContents) {

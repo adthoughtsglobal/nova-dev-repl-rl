@@ -86,7 +86,8 @@ class NTXSession {
             ercache: ercache,
             cleanupInvalidAssociations: cleanupInvalidAssociations,
             sysLog: sysLog,
-            password: password
+            password: password,
+            eraseNova: erdbsfull
         };
         this.specific = {
             useNovaOffline: useNovaOffline,

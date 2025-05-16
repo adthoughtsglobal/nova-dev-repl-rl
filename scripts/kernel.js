@@ -393,7 +393,7 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
         }
 
         if (windowLoader) {
-            windowLoader.innerHTML = await getAppIcon(0,appid)|| defaultAppIcon;
+            windowLoader.innerHTML = await getAppIcon(0, appid) || defaultAppIcon;
             windowLoader.appendChild(loaderdiv);
         }
 
@@ -469,7 +469,12 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
         if (contentString.includes("nova-include") && getMetaTagContent(contentString, 'nova-include')?.includes('contextMenu')) {
             ctxScript = await fetch('scripts/ctxmenu.js').then(res => res.text());
         }
+        let registry = await getSetting(appid, "AppRegistry.json");
+        if (registry == null) {
+            registry = { perms: [] };
+        }
 
+        let perms = registry.perms;
         async function handleNtxSessionMessage(event) {
             const message = event.data;
 
@@ -478,12 +483,7 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
 
                 if (ntxWrapper[namespace] && typeof ntxWrapper[namespace][method] === "function") {
                     async function checkAndSetPermission(appid, namespace, title) {
-                        let registry = await getSetting(appid, "AppRegistry.json");
-                        if (registry == null) {
-                            registry = { perms: [] };
-                        }
 
-                        let perms = registry.perms;
                         if (!Array.isArray(perms)) {
                             registry.perms = [];
                             await setSetting(appid, registry, "AppRegistry.json");
@@ -555,8 +555,7 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
                 ...data,
                 close: () => {
                     ntxSession.send("sysUI.clwin", myWindow.windowID);
-                },
-                eventBusWorker: new Worker(data.eventBusURL)
+                }
             };
 
             let greenflagResult;
@@ -645,7 +644,9 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
         const blobURL = URL.createObjectURL(blob);
 
         iframe = document.createElement("iframe");
-        // iframe.setAttribute("sandbox", "allow-scripts");
+        if (!perms.includes("system")) {
+            iframe.setAttribute("sandbox", "allow-scripts, allow modals");
+        }
         iframe.src = blobURL;
         windowContent.appendChild(iframe);
         function attachWindowMessageListener(winuidfr) {
@@ -964,7 +965,7 @@ async function openapp(x, od, customtodo) {
                 Gtodo = customtodo;
             }
 
-            openwindow(x, y, await getAppIcon(0,od)|| defaultAppIcon, getAppTheme(y), getAppAspectRatio(y), od, Gtodo);
+            openwindow(x, y, await getAppIcon(0, od) || defaultAppIcon, getAppTheme(y), getAppAspectRatio(y), od, Gtodo);
 
             Gtodo = null;
         } catch (error) {
