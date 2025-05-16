@@ -1439,7 +1439,6 @@ dialog#terminal {
 	box-sizing: border-box;
 	scroll-snap-type: y mandatory;
 	scroll-behavior: smooth;
-	overflow: hidden;
 }
 
 .notiflistnav {
