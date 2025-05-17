@@ -449,7 +449,7 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
     @font-face {
         font-family: 'Material Symbols Rounded';
         font-style: normal;
-        src: url("${location.href}libs/MaterialSymbolsRounded.woff2") format('woff2');
+        src: url("http://adthoughtsglobal.github.io/resources/MaterialSymbolsRounded.woff2") format('woff2');
     }
     .material-symbols-rounded {
         font-family: 'Material Symbols Rounded';
@@ -646,6 +646,7 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
         iframe = document.createElement("iframe");
         if (!perms.includes("system")) {
             iframe.setAttribute("sandbox", "allow-scripts allow-modals");
+            iframe.setAttribute("allow", "camera; microphone");
         }
         iframe.src = blobURL;
         windowContent.appendChild(iframe);

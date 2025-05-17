@@ -2657,7 +2657,7 @@
 						let nameDiv = document.createElement("div");
 						nameDiv.className = "settingName";
 						let p = document.createElement("p");
-						p.textContent = window.parent.toTitleCase(window.parent.describeNamespaces(ns));
+						p.innerHTML = window.parent.toTitleCase(window.parent.describeNamespaces(ns));
 						nameDiv.appendChild(p);
 
 						let input = document.createElement("input");

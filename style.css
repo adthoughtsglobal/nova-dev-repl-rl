@@ -415,9 +415,7 @@ nav [navobj] div {
 
 #AppInstDia span.dangertext {
 		color: inherit;
-    background: #ff00004d;
-    border-radius: 5px;
-    padding: 0 5px;
+		font-weight: bold;
 	}
 
 .modal::backdrop {
