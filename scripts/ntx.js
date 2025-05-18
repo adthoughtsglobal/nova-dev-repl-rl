@@ -109,11 +109,19 @@ const namespaceDetails = {
     sysUI: { risk: 30, description: "show dialogs and trigger UI functions" },
     utility: { risk: 20, description: "use various utilities" },
     system: { risk: 80, description: "gain unrestricted access to <span class='dangertext'>high risk system functions</span>" },
-    specific: { risk: 90, description: "trigger specific <span class='dangertext'>risky system sequences</span>" }
+    specific: { risk: 90, description: "trigger specific <span class='dangertext'>risky system sequences</span>" },
+    unsandboxed: { risk: 100, description: "Run <span class='dangertext'>with full system access.</span>" }
 };
 function describeNamespaces(namespaceKey) {
     if (namespaceDetails[namespaceKey]) {
         return namespaceDetails[namespaceKey].description;
+    }
+    return null;
+}
+
+function getNamespaceRisk(namespaceKey) {
+    if (namespaceDetails[namespaceKey]) {
+        return namespaceDetails[namespaceKey].risk;
     }
     return null;
 }

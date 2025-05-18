@@ -54,11 +54,13 @@
 
 ::-webkit-scrollbar-track {
 	background: var(--colors-BG-normal);
+	width: 5px;
 }
 
 ::-webkit-scrollbar-thumb {
 	background: var(--colors-BG-sub);
 	border-radius: var(--sizing-border-radius);
+	    border: 1px solid #7a7a7a4a;
 }
 
 ::-webkit-scrollbar-thumb:hover {

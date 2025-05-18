@@ -7,7 +7,7 @@
 	<title>Settings App</title>
 	<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 	<script src="https://jscolor.com/release/2.5/jscolor-2.5.2/jscolor.js"></script>
-	<meta name="permissions" content="olp, settings, system">
+	<meta name="permissions" content="olp, settings, system, unsandboxed">
 	<meta name="capabilities" content="settings_manager">
 	<meta name="nova-include" content="nova.css material-symbols-rounded">
 	<meta name="nova-icon"
@@ -45,6 +45,10 @@
 			padding: .5em;
 			border-radius: var(--sizing-border-radius);
 			border: 1px solid #ffffff0c;
+		}
+
+		p {
+			margin: 0;
 		}
 
 		.tab::after {
@@ -2020,9 +2024,9 @@
 						document.getElementById("cbx-70").addEventListener("change", function () {
 							let newValue2 = document.getElementById("cbx-70").checked;
 							if (newValue2) {
-								 ntxSession.send("specific.useNovaOffline", );
+								ntxSession.send("specific.useNovaOffline",);
 							} else {
-								 ntxSession.send("specific.removeSWs", )
+								ntxSession.send("specific.removeSWs",)
 							}
 							ntxSession.send("settings.set", "novaOffline", newValue2)
 						});
@@ -2272,13 +2276,13 @@
 					if (!confirm("Erase Device? \nThis will remove all data, including every user's files, folders, apps, permissions, cache and everything.\n\nWould you like to Clear your device?")) {
 						return;
 					}
-					await ntxSession.send("system.eraseNova", );
+					await ntxSession.send("system.eraseNova",);
 				}
 				async function erdbsur() {
 					if (!confirm("Remove User? \nThis will remove your data, including your files, folders, apps, permissions, cache and everything.\n\nWould you like to Clear your account?")) {
 						return;
 					}
-					await ntxSession.send("accounts.removeUser", );
+					await ntxSession.send("accounts.removeUser",);
 				}
 
 			</script>

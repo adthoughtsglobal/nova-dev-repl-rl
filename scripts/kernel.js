@@ -644,7 +644,7 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
         const blobURL = URL.createObjectURL(blob);
 
         iframe = document.createElement("iframe");
-        if (!perms.includes("system")) {
+        if (!perms?.includes("unsandboxed")) {
             iframe.setAttribute("sandbox", "allow-scripts allow-modals");
             iframe.setAttribute("allow", "camera; microphone");
         }

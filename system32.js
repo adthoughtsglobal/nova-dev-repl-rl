@@ -445,17 +445,22 @@ async function ensureFileExists(fileName = "preferences.json", dirPath = "System
     } catch (err) {
         console.error(`Error ensuring file ${fileName} exists in ${dirPath}:`, err);
     }
-}const settingCache = new Map();
+}
+const pendingFetches = new Map();
+const settingCache = new Map();
 
 async function getSetting(settingKey, fileName = "preferences.json", dirPath = "System/") {
     const cacheKey = `${dirPath}/${fileName}:${settingKey}`;
     const cached = settingCache.get(cacheKey);
-
-    if (cached && (Date.now() - cached.timestamp) < 500) {
+    if (cached && (Date.now() - cached.timestamp) < 2500) {
         return cached.value;
     }
 
-    return enqueueTask(async () => {
+    if (pendingFetches.has(cacheKey)) {
+        return pendingFetches.get(cacheKey);
+    }
+
+    const fetchPromise = enqueueTask(async () => {
         try {
             await ensureFileExists(fileName, dirPath);
             const pathParts = dirPath.split('/').filter(Boolean);
@@ -488,13 +493,9 @@ async function getSetting(settingKey, fileName = "preferences.json", dirPath = "
                 return null;
             }
 
-            if (settingKey == 'full') {
-                return fileSettings;
-            }
+            if (settingKey === 'full') return fileSettings;
 
-            if (!(settingKey in fileSettings)) {
-                return null;
-            }
+            if (!(settingKey in fileSettings)) return null;
 
             const settingValue = fileSettings[settingKey];
             settingCache.set(cacheKey, { value: settingValue, timestamp: Date.now() });
@@ -502,9 +503,15 @@ async function getSetting(settingKey, fileName = "preferences.json", dirPath = "
         } catch (error) {
             console.error(`Error in getSetting for ${fileName}:`, error);
             return null;
+        } finally {
+            pendingFetches.delete(cacheKey);
         }
     });
+
+    pendingFetches.set(cacheKey, fetchPromise);
+    return fetchPromise;
 }
+
 
 async function setSetting(settingKey, settingValue, fileName = "preferences.json", dirPath = "System/") {
     console.log(settingKey, settingValue)

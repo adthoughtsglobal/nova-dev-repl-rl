@@ -750,11 +750,18 @@ async function extractAndRegisterCapabilities(appId, content) {
 			let listelement = gid("app_inst_mod_li");
 			listelement.innerHTML = '';
 			permissions = Array.from(new Set([...permissions, ...requestedperms]));
+
+			permissions.sort((a, b) => getNamespaceRisk(b) - getNamespaceRisk(a));
+
 			permissions.forEach((perm) => {
 				let span = document.createElement("li");
-				span.innerHTML = describeNamespaces(perm);
+				span.innerHTML = describeNamespaces(perm).replace(/^./, c => c.toUpperCase());
+				if (perm == "unsandboxed") {
+					span.innerHTML += `<small>Only recommended for apps you trust.</small>`
+				}
 				listelement.appendChild(span);
-			})
+			});
+
 			let yesButton = gid("app_inst_mod_agbtn");
 			let noButton = gid("app_inst_mod_nobtn");
 			let condition = await new Promise((resolve) => {
