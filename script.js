@@ -1215,20 +1215,20 @@ async function strtappse(event) {
 		const pathElement = document.createElement("div");
 		pathElement.innerHTML = `<strong>${path}</strong>`;
 		gid("strtappsugs").appendChild(pathElement);
-		items.forEach(item => {
+		items.forEach(async item => {
 			if (!mostRelevantItem) mostRelevantItem = item;
 			const newElement = document.createElement("div");
-			newElement.innerHTML = `<div>${appicns[item.id] != undefined ? appicns[item.id] : defaultAppIcon} ${item.name}</div><span class="material-symbols-rounded" onclick="openfile('${item.id}')">arrow_outward</span>`;
+			newElement.innerHTML = `<div onclick="openfile('${item.id}')">${(await getAppIcon(0, item.id))} ${item.name}</div><span class="material-symbols-rounded">arrow_outward</span>`;
 			gid("strtappsugs").appendChild(newElement);
 			elements++;
 		});
 	});
-	gid("strtappsugs").style.display = "block";
+	gid("strtappsugs").style.display = "flex";
 	if (mostRelevantItem) {
 		gid("partrecentapps").style.display = "none";
 		document.getElementsByClassName("previewsside")[0].style.display = "flex";
 		gid("seapppreview").style.display = "block";
-		gid('seprw-icon').innerHTML = appicns[mostRelevantItem.id] != undefined ? appicns[mostRelevantItem.id] : defaultAppIcon;
+		gid('seprw-icon').innerHTML = await getAppIcon(0, mostRelevantItem.id);
 		gid('seprw-appname').innerText = mostRelevantItem.name;
 		gid('seprw-openb').onclick = function () {
 			openfile(mostRelevantItem.id);
