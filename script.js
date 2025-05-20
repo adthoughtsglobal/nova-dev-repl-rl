@@ -594,6 +594,9 @@ async function applyIconPack(iconPack) {
 		console.error("Failed to apply icon pack", err);
 	}
 	appicns = {};
+	gid("appsindeck").innerHTML = "";
+	genTaskBar();
+	genDesktop();
 }
 
 async function fetchData(url) {
@@ -1035,7 +1038,7 @@ async function initialiseOS() {
 				let textcontentwelcome = await fetch("appdata/welcome.html");
 				textcontentwelcome = await textcontentwelcome.text();
 				await createFile('Downloads/', 'Welcome.html', 'html', textcontentwelcome)
-				notify("Welcome to NovaOS, " + CurrentUsername + "!", "We really hope you would enjoy it!", "NovaOS")
+				notify("Welcome to NovaOS, " + CurrentUsername + "!", "I really think you'd enjoy it!", "NovaOS")
 				initialization = false;
 			})
 	})
@@ -1086,26 +1089,23 @@ async function installdefaultapps() {
 	}
 
 	await waitForNonNull().then(async () => {
-		const hangMessages = ["Hang in tight...", "Almost there...", "Just a moment more...", "Patience, young grasshopper..."];
+		const hangMessages = ["Hang in tight...", "Almost there...", "Just a moment more...", "Patience, young grasshopper...", "await fellow padawan...", "Let's see if the stars are with us today...", "what's the meaning of it all...", "just a sec, let me get ready...", "So, what have you been doing lately?", "What are you doing after this?", "Some apps aren't installing, i'm trying again...", "Let's take it slow and precise right?"];
+
+		const interval = setInterval(() => {
+			const randomIndex = Math.floor(Math.random() * hangMessages.length);
+			gid('startupterms').innerText = hangMessages[randomIndex];
+		}, 1000);
+
 		for (let i = 0; i < defAppsList.length; i++) {
 			await new Promise(res => setTimeout(res, 300));
 			const appName = defAppsList[i];
 			const appUpdatePromise = updateApp(appName);
-			let delay = 0;
-			const interval = setInterval(() => {
-				if (delay >= 3000) {
-					gid('startupterms').innerText = hangMessages[(delay / 2000) % hangMessages.length];
-				}
-				delay += 2000;
-			}, 200);
+
 			await Promise.race([appUpdatePromise, new Promise(res => setTimeout(res, 3000))]);
-			clearInterval(interval);
-			if (gid('startupterms')) {
-				gid('startupterms').innerText = "Installing " + appName + "...";
-			}
 			setsrtpprgbr(Math.round((i + 1) / defAppsList.length * 100));
 		}
-
+		clearInterval(interval);
+		
 		let fetchupdatedata = await fetch("versions.json");
 		if (fetchupdatedata.ok) {
 			let fetchupdatedataver = (await fetchupdatedata.json()).osver;
@@ -1663,9 +1663,9 @@ async function opensearchpanel(preset = "") {
 		document.querySelector(".previewsside").style.display = "none";
 	}
 	if (await getSetting("smartsearch")) {
-		gid('searchiconthingy').style = `background: linear-gradient(-34deg, #79afff, #f66eff);opacity: 1; color: white;padding: 0.1rem 0.3rem; margin: 0.3rem; border-radius: 0.5rem;aspect-ratio: 1 / 1;display: grid;cursor: default; margin-right: 0.5rem;box-shadow: 0 0 6px inset #ffffff6b;`
+		gid('searchiconthingy').setAttribute("type", "smart")
 	} else {
-		gid('searchiconthingy').style = ``;
+		gid('searchiconthingy').setAttribute("type", "regular")
 	}
 	if (window.innerWidth > 500) {
 		gid("strtsear").focus()
@@ -1883,8 +1883,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 	}
 
 	startfunctions();
-
-	gid("versionswitcher")?.remove();
 	gid("novanav").style.display = "none";
 	async function waitForNonNull() {
 		const startTime = Date.now();
@@ -1904,6 +1902,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 		try {
 			if (result || result == 3) {
 				await showloginmod();
+	gid("versionswitcher").showModal()
 			} else {
 				await cleanupram();
 				CurrentUsername = 'Admin';

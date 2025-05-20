@@ -365,7 +365,7 @@ nav [navobj] div {
 	background-color: var(--colors-BG-normal);
 	border: 1px solid #ffffff0c;
 	padding-bottom: 9px;
-    height: 300px;
+	min-height: 300px;
 }
 
 #appdmod::backdrop {
@@ -541,7 +541,7 @@ nav [navobj] div {
 	display: flex;
 	background: transparent;
 	border-radius: var(--sizing-border-radius);
-	width: calc(100% - 5px);
+	width: 100%;
 	color: inherit;
 	animation: pop var(--time-action);
 	overflow-y: auto;
@@ -550,33 +550,35 @@ nav [navobj] div {
 	padding-right: 5px;
 	gap: 3px;
 	flex-direction: column;
-}
+	min-height: fit-content;
 
-.strtappsugs svg {
-	width: 17px;
-	height: 20px;
-	margin-right: 0.3rem;
-}
+	& svg {
+		width: 17px;
+		height: 20px;
+		margin-right: 0.3rem;
+	}
 
-.strtappsugs div {
-	text-align: left;
-	display: flex;
-	justify-content: space-between;
-	padding: 3px;
-	border-radius: var(--sizing-border-radius);
-	align-items: center;
-	cursor: pointer;
+	& div {
+		text-align: left;
+		display: flex;
+		justify-content: space-between;
+		padding: 3px;
+		border-radius: var(--sizing-border-radius);
+		align-items: center;
+		cursor: pointer;
 
-	&:hover {
-		background-color: var(--colors-BG-section);
+		&:hover {
+			background-color: var(--colors-BG-section);
+		}
+
+		& span {
+			font-size: var(--font-size-normal);
+			margin-right: 5px;
+			opacity: .5;
+		}
 	}
 }
 
-.strtappsugs div span {
-	font-size: var(--font-size-normal);
-	margin-right: 5px;
-	opacity: .5;
-}
 @keyframes pop {
 	from {
 		opacity: 0;
@@ -818,7 +820,7 @@ nav [navobj] div {
 
 #edison img {
 	width: 20vw;
-	aspect-ratio: 2 / 2;
+	aspect-ratio: 1/1;
 }
 
 @keyframes closeEffect {
@@ -1002,6 +1004,26 @@ input#novamenusearchinp {
 	height: 27px;
 	border-radius: var(--sizing-border-radius) !important;
 	gap: 0.3rem;
+}
+
+#searchiconthingy {
+	color: var(--colors-text-normal);
+	margin: 8px;
+	padding: 0;
+	padding-right: 5px;
+	font-size: 20px;
+	aspect-ratio: 1 / 1;
+	display: grid;
+	cursor: default;
+	border-right: 1px solid #80808073;
+	opacity: .5;
+
+	&[type="smart"] {
+		background: linear-gradient(145deg, rgb(76 149 255), rgb(255 29 200));
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		opacity: 1;
+	}
 }
 
 #bobthedropdown {
@@ -1451,9 +1473,13 @@ dialog#terminal {
 	overflow-y: auto;
 	width: 100%;
 	padding: 0.5rem;
+	padding-top: 0;
 	box-sizing: border-box;
 	scroll-snap-type: y mandatory;
 	scroll-behavior: smooth;
+	gap: .5em;
+	display: flex;
+	flex-direction: column-reverse;
 }
 
 .notiflistnav {
@@ -1472,13 +1498,16 @@ dialog#terminal {
 }
 
 .searchside .notiflist {
+	flex: 1;
 	color: #a1a1a1;
 	font-size: var(--font-size-normal);
 	display: flex;
 	flex-direction: column;
 	align-items: flex-start;
 	width: 100%;
-	max-height: 6rem;
+	overflow: hidden;
+	overflow-y: auto;
+	gap: .5em;
 }
 
 .searchside .notification {
@@ -1489,11 +1518,12 @@ dialog#terminal {
 	display: flex;
 	flex-direction: column;
 	align-items: flex-start;
-	width: calc(100% - var(--sizing-normal));
 	overflow: hidden;
 	word-break: break-word;
 	text-align: left;
-	scroll-snap-align: start;
+	scroll-snap-align: end;
+	border: 1px solid #ffffff0c;
+	min-height: fit-content;
 }
 
 .searchside .notifTitle {
@@ -1518,6 +1548,7 @@ dialog#terminal {
 	display: flex;
 	flex-direction: row;
 	width: 100%;
+	border: 1px solid #ffffff0c;
 }
 
 .searchinputcont span {
@@ -1553,6 +1584,7 @@ dialog#terminal {
 	border-radius: var(--sizing-border-radius);
 	margin-left: 0.7rem;
 	background: linear-gradient(90deg, #00000021 0%, transparent 30%);
+	height: 100%;
 }
 
 #seprw-icon {
@@ -1577,14 +1609,16 @@ dialog#terminal {
 	display: block;
 	margin: auto;
 	margin-top: 0.5rem;
+	border: 1px solid #ffffff0c;
+
+	&:hover {
+		filter: brightness(120%);
+	}
 }
 
 div#seapppreview {
 	width: 100%;
-}
-
-#seprw-openb:hover {
-	background-color: #b8b8b8c0;
+	margin-top: 20%;
 }
 
 #partrecentapps {
@@ -2199,7 +2233,7 @@ noscript {
 }
 
 #versionswitcher::backdrop {
-	background-image: url("Dev.png");
+	background-image: url("https://images.unsplash.com/photo-1533852990198-bdd4082bf8c0?q=80&w=1933&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
 	background-size: cover;
 }
 

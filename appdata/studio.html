@@ -334,7 +334,7 @@
 		window.addEventListener('message', async (event) => {
 			if (event.data.action === 'loadlocalfile') {
 				if (event.data.id === myWindow.windowID) {
-					const file = await ntxSession.send("fileGet.byID",event.data.returned);
+					const file = await ntxSession.send("fileGet.byId",event.data.returned);
 					readthefile(file);
 				}
 			}
@@ -699,7 +699,7 @@
 				if (myWindow.params.appid == myWindow.appID) {
 					editor.setValue("Loading...");
 					defile = myWindow.params.data;
-					const file = await ntxSession.send("fileGet.byID",defile);
+					const file = await ntxSession.send("fileGet.byId",defile);
 					readthefile(file);
 				}
 			} catch (error) {

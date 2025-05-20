@@ -3232,8 +3232,8 @@
 				<div class="inpbox" type="textInput">
 					<span>Change your wallpaper:</span>
 					<div class="inputwithbtn">
-						<input placeholder="Paste a URL here..." id="wallpaperurl" class="inputtype1">
-						<button onclick="savewallpap()">Save</button>
+						<input placeholder="Paste a URL or file ID here..." id="wallpaperurl" class="inputtype1">
+						<button onclick="savewallpap()">Change</button>
 					</div>
 				</div>
 			</segr>
@@ -3243,18 +3243,29 @@
 				<div class="inpbox" type="textInput">
 					<span>Apply an icon pack: </span>
 					<div class="inputwithbtn">
-						<input placeholder="Paste the file ID here..." id="iconpackidinp" class="inputtype1">
-						<button onclick="saveiconpack()">Save</button>
+						<input placeholder="Paste a file ID here..." id="iconpackidinp" class="inputtype1">
+						<button onclick="saveiconpack()">Change</button>
 					</div>
 				</div>
 			</segr>
 
 			<script>
-
 				async function saveiconpack() {
-					let iconp = await window.parent.getFileById(document.getElementById("iconpackidinp").value);
-					window.parent.applyIconPack(JSON.parse(window.parent.decodeBase64Content(iconp.content)));
-					window.parent.toast("Reload to apply icon pack")
+					if (document.getElementById("iconpackidinp").value == '') {
+						let packID = await ntxSession.send("olp.useHandler", "file_manager", { "opener": 'any', "dir": "Downloads/" })
+						document.getElementById("iconpackidinp").value = (packID) ? packID : '';
+					}
+					let iconp;
+					try {
+						iconp = await window.parent.getFileById(document.getElementById("iconpackidinp").value);
+						window.parent.applyIconPack(JSON.parse(window.parent.decodeBase64Content(iconp.content)));
+						window.parent.toast(`Icon pack "${iconp.fileName}" applied`)
+					} catch (err) {
+						console.warn(err);
+						window.parent.toast(`"${iconp.fileName}" isn't an icon pack`);
+						document.getElementById("iconpackidinp").value = "";
+					}
+
 				}
 
 				const debouncedSaveColor = debounce((picker, variableName) => {
