@@ -449,7 +449,7 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
     @font-face {
         font-family: 'Material Symbols Rounded';
         font-style: normal;
-        src: url("http://adthoughtsglobal.github.io/resources/MaterialSymbolsRounded.woff2") format('woff2');
+        src: url("https://adthoughtsglobal.github.io/resources/MaterialSymbolsRounded.woff2") format('woff2');
     }
     .material-symbols-rounded {
         font-family: 'Material Symbols Rounded';
