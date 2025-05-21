@@ -488,19 +488,26 @@
             document.getElementById("stop-btn").onclick = stopRecording;
         }
 
+function saveRecording() {
 
-        function saveRecording() {
+    async function createFileWithTimestamp() {
+        let now = new Date();
+        let timestamp = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}, ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+        let filename = `video_${timestamp} ${await ntxSession.send("utility.genUID")}`;
 
-            async function createFileWithTimestamp() {
-                let now = new Date();
-                let timestamp = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}, ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-                let filename = `video_${timestamp} ${await ntxSession.send("utility.genUID",)}`;
+        let blob = new Blob(recordedChunks, { type: 'video/webm' });
 
-                await ntxSession.send("fileSet.createFile", "Media/", filename, "webm", recordedChunks);
-            }
+        let reader = new FileReader();
+        reader.onloadend = async function () {
+            let dataUri = reader.result;
+            await ntxSession.send("fileSet.createFile", "Media/", filename, "webm", dataUri);
+        };
+        reader.readAsDataURL(blob);
+    }
 
-            createFileWithTimestamp();
-        }
+    createFileWithTimestamp();
+}
+
 
         function updateStopwatch() {
             if (!isRecording || isPaused) return; // Don't update if paused

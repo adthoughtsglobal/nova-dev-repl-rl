@@ -114,9 +114,10 @@ function base64ToArrayBuffer(base64) {
 
 function compressString(input) {
     try {
-        const inputUint8Array = new TextEncoder().encode(JSON.stringify(input));
-        const compressed = fflate.gzipSync(inputUint8Array);
-        return arrayBufferToBase64(compressed);
+        // const inputUint8Array = new TextEncoder().encode(JSON.stringify(input));
+        // const compressed = fflate.gzipSync(inputUint8Array);
+        // return arrayBufferToBase64(compressed);
+        return input;
     } catch (error) {
         console.error("Compression Error:", error);
         throw error;
@@ -125,9 +126,10 @@ function compressString(input) {
 
 function decompressString(compressedBase64) {
     try {
-        const compressedData = base64ToArrayBuffer(compressedBase64);
-        const decompressed = fflate.gunzipSync(compressedData);
-        return JSON.parse(new TextDecoder().decode(decompressed));
+        // const compressedData = base64ToArrayBuffer(compressedBase64);
+        // const decompressed = fflate.gunzipSync(compressedData);
+        // return JSON.parse(new TextDecoder().decode(decompressed));
+        return compressedBase64;
     } catch (error) {
         console.error("Decompression Error:", error);
         throw error;

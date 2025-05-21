@@ -92,27 +92,21 @@ async function enqueueRequest(action, args) {
         processQueue();
     });
 }
-
 const baseURL = location.href;
 
 const workerScript = `
-importScripts('${baseURL}/scripts/fflate.js', '${baseURL}/scripts/encdec.js');
-
-let password = "${window.password}"
-const encoder = new TextEncoder();
-const decoder = new TextDecoder();
+importScripts('${baseURL}/scripts/encdec.js');
 
 self.addEventListener('message', async (e) => {
     const { type, content, key } = e.data;
     try {
         let result;
         switch (type) {
-            case 'encrypt-compress':
-                result = await encryptData(key, compressString(content));
+            case 'encrypt':
+                result = await encryptData(key, content);
                 break;
-            case 'decrypt-decompress':
-                const decrypted = await decryptData(key, content);
-                result = decompressString(decrypted);
+            case 'decrypt':
+                result = await decryptData(key, content);
                 break;
             default:
                 throw new Error('Unknown operation');
@@ -154,13 +148,9 @@ async function getFileContents(id) {
     return new Promise((resolve, reject) => {
         request.onsuccess = async () => {
             if (request.result) {
-                const { value, encrypted } = request.result;
+                const { value } = request.result;
                 try {
-                    if (!encrypted) {
-                        resolve(value);
-                        return;
-                    }
-                    const result = await runWorker('decrypt-decompress', value, cryptoKeyCache);
+                    const result = await runWorker('decrypt', value, cryptoKeyCache);
                     resolve(result);
                 } catch (error) {
                     reject(error);
@@ -177,11 +167,11 @@ async function setFileContents(id, content) {
     if (!dbCache) dbCache = await openDB(CurrentUsername, 1);
     if (!cryptoKeyCache) cryptoKeyCache = await getKey(password);
 
-    const dataToStore = await runWorker('encrypt-compress', content, cryptoKeyCache);
+    const dataToStore = await runWorker('encrypt', content, cryptoKeyCache);
 
     const transaction = dbCache.transaction('contentpool', 'readwrite');
     const store = transaction.objectStore('contentpool');
-    const request = store.put({ key: id, value: dataToStore, encrypted: true });
+    const request = store.put({ key: id, value: dataToStore });
 
     return new Promise((resolve, reject) => {
         request.onsuccess = resolve;

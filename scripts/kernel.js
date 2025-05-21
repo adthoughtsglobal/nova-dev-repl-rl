@@ -535,7 +535,7 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
                     transactionId: message.transactionId,
                     error: error.message,
                     success: false
-                }, datevent.origin);
+                }, '*');
             }
         }
 
