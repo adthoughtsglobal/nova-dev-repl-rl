@@ -1433,7 +1433,8 @@ dialog#terminal {
 }
 
 .searchwincont {
-	height: 100%;
+    height: calc(300px);
+    box-sizing: border-box;
 	display: flex;
 	flex-direction: row;
 	flex-wrap: nowrap;
@@ -1448,6 +1449,7 @@ dialog#terminal {
 	width: 0;
 	transition: 0.3s;
 	gap: 0.5rem;
+	height: 100%;
 }
 
 .searchside .smalltitl {
@@ -1461,7 +1463,7 @@ dialog#terminal {
 	overflow-y: hidden;
 	text-align: left;
 	display: flex;
-	flex-wrap: nowrap;
+	flex-wrap: wrap;
 	justify-content: flex-start;
 	white-space: nowrap;
 	width: 100%;
@@ -1579,7 +1581,7 @@ dialog#terminal {
 	flex-direction: column;
 	padding: var(--sizing-normal);
 	align-items: center;
-	justify-content: center;
+    justify-content: flex-start;
 	transition: 0.3s;
 	border-radius: var(--sizing-border-radius);
 	margin-left: 0.7rem;
@@ -1629,6 +1631,7 @@ div#seapppreview {
 #partrecentapps span.smalltitl {
 	font-size: var(--font-size-small);
 	opacity: 0.5;
+    margin-left: 19px;
 }
 
 @media only screen and (max-width: 1000px) {

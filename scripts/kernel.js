@@ -476,6 +476,7 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
 
         let perms = registry.perms;
         async function handleNtxSessionMessage(event) {
+            const datevent = event;
             const message = event.data;
 
             try {
@@ -522,7 +523,7 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
                         transactionId: message.transactionId,
                         result,
                         success: true
-                    }, event.origin);
+                    }, '*');
                 } else {
                     throw new Error(`Invalid NTX action: ${message.action}`);
                 }
@@ -534,7 +535,7 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
                     transactionId: message.transactionId,
                     error: error.message,
                     success: false
-                }, event.origin);
+                }, datevent.origin);
             }
         }
 

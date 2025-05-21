@@ -1485,6 +1485,7 @@
 				flex-direction: row;
 				gap: .5em;
 				align-items: center;
+				flex: 1;
 
 				& .app_icon {
 					display: flex;
@@ -2204,7 +2205,7 @@
 							const handlerCell = document.createElement('div');
 							handlerCell.className = 'cell handler-cell';
 							handlerCell.title = handlers;
-							handlerCell.innerHTML = await ntxSession.send("apps.getIcon", 0, handlers[0], true);
+							handlerCell.innerHTML = await ntxSession.send("apps.getIcon", false, handlers);
 							handlerCell.onclick = async () => {
 								replaceableHandler = handlers;
 								clickedRowId = `row-${type}`;
@@ -2593,6 +2594,11 @@
 				</div>
 			</div>
 			<script>
+				function handleAppClick(event, key) {
+					openCity(event, 'appsets');
+					loadAppSettings(key);
+				}
+
 				async function loadappslist() {
 					let registry = await window.parent.getSetting('full', "AppRegistry.json");
 
@@ -2605,25 +2611,21 @@
 						let riskLevel = perms.length + " permissions";
 						let singularApp = document.createElement("div");
 						singularApp.className = "singular_app";
-						singularApp.onclick = async () => {
-							openCity(event, 'appsets');
-							await loadAppSettings(key);
-						};
 
 						singularApp.innerHTML = `
-        <div class="app_left">
-            <div class="app_icon">${await window.parent.getAppIcon(0, key)}</div>
-            <div class="app_detail">
-                <div class="app_name">${await window.parent.getFileNameByID(key)}</div>
-                <div class="app_risk">${riskLevel || "Installed"}</div>
-            </div>
+    <div class="app_left" onclick="handleAppClick(event, '${key}')">
+        <div class="app_icon">${await window.parent.getAppIcon(0, key)}</div>
+        <div class="app_detail">
+            <div class="app_name">${await window.parent.getFileNameByID(key)}</div>
+            <div class="app_risk">${riskLevel || "Installed"}</div>
         </div>
-        <div class="app_options">
-            <span class="material-symbols-rounded">
-                more_vert
-            </span>
-        </div>
-    `;
+    </div>
+    <div class="app_options">
+        <span class="material-symbols-rounded">
+            more_vert
+        </span>
+    </div>
+`;
 						appslist.appendChild(singularApp);
 					}
 				}
