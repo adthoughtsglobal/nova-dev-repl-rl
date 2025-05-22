@@ -173,19 +173,22 @@ function removeSWs() {
     }
 }
 
-// helper functions for database management
-
-
 // Password and security
 
 async function saveMagicStringInLocalStorage(password) {
     const cryptoKey = await getKey(password);
     const encryptedMagicString = await encryptData(cryptoKey, "magicString");
+
     const magicStrings = JSON.parse(localStorage.getItem('magicStrings')) || {};
 
-    magicStrings[CurrentUsername] = encryptedMagicString;
+    magicStrings[CurrentUsername] = {
+        iv: bufferToBase64(encryptedMagicString.iv),
+        data: bufferToBase64(encryptedMagicString.data)
+    };
+
     localStorage.setItem('magicStrings', JSON.stringify(magicStrings));
 }
+
 
 async function removeInvalidMagicStrings() {
     const validUsernames = new Set(await getallusers());

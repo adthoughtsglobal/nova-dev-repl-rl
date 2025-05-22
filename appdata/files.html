@@ -1376,10 +1376,9 @@
 			ev.dataTransfer.setData("Text", obj.getAttribute('unid'));
 		}
 
-		let cachedFiles = {}; // To store the cached files per folder
+		let cachedFiles = {};
 
 		async function listFiles(folderName, gen) {
-			console.log(52)
 			// myWindow.setTitle("Files");
 			const startTime = performance.now();
 			if (currentPath == folderName && gen) {
@@ -1948,20 +1947,16 @@
 			});
 		}
 
-		async function geticon(x, name) {
-
+		async function geticon(x, id) {
 			let i, c;
 			if (x == "txt") {
 				i = "description"
 				c = "#42A5F5"
 			} else if (x == "app") {
-
-				if (window.parent.appicns[name]) {
-					i = window.parent.appicns[name];
+				let iconreg = await window.parent.getAppIcon(0, id);
+				if (iconreg) {
+					i = iconreg;
 					c = "#ffffff";
-				} else {
-					i = "rocket_launch";
-					c = "#4CAF50";
 				}
 			} else if (await ntxSession.send("utility.getBaseFileType", x) == "image") {
 				i = "image"
@@ -1981,7 +1976,7 @@
 			} else if (await ntxSession.send("utility.getBaseFileType", x) == "code") {
 				i = "developer_board"
 				c = "#hh83j2"
-			} else if (!name) {
+			} else if (!id) {
 				i = "folder"
 				c = "#FDD835"
 			} else {

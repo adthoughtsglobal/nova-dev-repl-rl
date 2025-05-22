@@ -51,8 +51,8 @@ async function encryptData(key, data) {
 async function decryptData(key, encryptedData) {
     return new Promise(async (resolve, reject) => {
         try {
-            const iv = encryptedData.iv instanceof ArrayBuffer ? new Uint8Array(encryptedData.iv) : base64ToBuffer(encryptedData.iv);
-            const data = encryptedData.data instanceof ArrayBuffer ? encryptedData.data : base64ToBuffer(encryptedData.data);
+            const iv = encryptedData.iv instanceof ArrayBuffer ? new Uint8Array(encryptedData.iv) : base64ToArrayBuffer(encryptedData.iv);
+            const data = encryptedData.data instanceof ArrayBuffer ? encryptedData.data : base64ToArrayBuffer(encryptedData.data);
 
             const decrypted = await crypto.subtle.decrypt(
                 { name: "AES-GCM", iv },
@@ -72,17 +72,6 @@ async function decryptData(key, encryptedData) {
             reject('Incorrect password or corrupted data');
         }
     });
-}
-
-
-let decryptWorkerRegistered = false;
-function base64ToBuffer(base64) {
-    const binary = atob(base64);
-    const buffer = new Uint8Array(binary.length);
-    for (let i = 0; i < binary.length; i++) {
-        buffer[i] = binary.charCodeAt(i);
-    }
-    return buffer;
 }
 
 function arrayBufferToBase64(buffer) {

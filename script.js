@@ -1,4 +1,4 @@
-var batteryLevel, winds = {}, rp, flwint = true, contentpool = {}, memory = {}, _nowapp, fulsapp = false, nowappdo, appsHistory = [], nowwindow, appicns = {}, dev = true, appfound = 'files', fileslist = [], sessionSettings = {}, badlaunch = false, really = false, initmenuload = true, fileTypeAssociations = {}, handlers = {}, Gtodo, notifLog = {}, initialization = false, onstartup = [], novaFeaturedImage = `Dev.png`, defAppsList = [
+var batteryLevel, winds = {}, memory = {}, _nowapp, fulsapp = false, appsHistory = [], nowwindow, appicns = {}, fileslist = [], badlaunch = false, initmenuload = true, fileTypeAssociations = {}, handlers = {}, Gtodo, notifLog = {}, initialization = false, onstartup = [], novaFeaturedImage = `Dev.png`, defAppsList = [
 	"store",
 	"files",
 	"settings",
@@ -1192,7 +1192,6 @@ async function strtappse(event) {
 		if (searchValue === "i love nova") {
 			gid("searchwindow").close();
 			notify("Aw i read what you just typed in,", "I love you too! :)", "Nova just replied you:");
-			really = true;
 			return;
 		}
 		if (appToOpen) {
@@ -1725,7 +1724,6 @@ async function cleanupram() {
 	closeallwindows();
 	document.querySelectorAll('dialog[open].onramcloseable').forEach(dialog => dialog.close());
 	memory = null;
-	contentpool = null;
 	CurrentUsername = null;
 	password = 'nova';
 	winds = {};

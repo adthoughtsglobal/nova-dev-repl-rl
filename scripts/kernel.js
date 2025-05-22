@@ -717,7 +717,6 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
         winds[winuid]["visualState"] = "free";
     }
 
-    nowwindow = 'window' + winuid;
     windowDiv.appendChild(windowLoader);
     windowDiv.appendChild(windowHeader);
     windowDiv.appendChild(windowContent);
