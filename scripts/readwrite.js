@@ -111,32 +111,41 @@ self.addEventListener('message', async (e) => {
             default:
                 throw new Error('Unknown operation');
         }
-        self.postMessage({ success: true, result });
+        self.postMessage({ success: true, result }, 
+            result && result.data instanceof ArrayBuffer && result.iv instanceof ArrayBuffer
+                ? [result.data, result.iv]
+                : []
+        );
     } catch (err) {
         self.postMessage({ success: false, error: err.message });
     }
 });
 `;
+const worker = new Worker(URL.createObjectURL(new Blob([workerScript], { type: 'application/javascript' })));
 
 function runWorker(type, content, key) {
     return new Promise((resolve, reject) => {
-        const blob = new Blob([workerScript], { type: 'application/javascript' });
-        const worker = new Worker(URL.createObjectURL(blob));
-        
         worker.onmessage = (e) => {
             const { success, result, error } = e.data;
             success ? resolve(result) : reject(new Error(error));
-            worker.terminate();
         };
 
         worker.onerror = (err) => {
             reject(err);
-            worker.terminate();
         };
 
-        worker.postMessage({ type, content, key });
+        const transferables = [];
+        if (type === 'encrypt' && content instanceof Uint8Array) {
+            transferables.push(content.buffer);
+        } else if (type === 'decrypt') {
+            if (content.data instanceof ArrayBuffer) transferables.push(content.data);
+            if (content.iv instanceof ArrayBuffer) transferables.push(content.iv);
+        }
+
+        worker.postMessage({ type, content, key }, transferables);
     });
 }
+
 async function getFileContents(id) {
     if (!dbCache) dbCache = await openDB(CurrentUsername, 1);
     if (!cryptoKeyCache) cryptoKeyCache = await getKey(password);

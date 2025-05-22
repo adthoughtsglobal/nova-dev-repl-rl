@@ -23,7 +23,6 @@ async function getKey(password) {
 function bufferToBase64(buffer) {
     return btoa(String.fromCharCode(...new Uint8Array(buffer)));
 }
-
 async function encryptData(key, data) {
     const iv = crypto.getRandomValues(new Uint8Array(12));
     let encoded;
@@ -45,27 +44,15 @@ async function encryptData(key, data) {
     );
 
     return {
-        iv: bufferToBase64(iv.buffer),
-        data: bufferToBase64(encrypted)
+        iv: iv.buffer,
+        data: encrypted
     };
 }
-
-
-let decryptWorkerRegistered = false;
-function base64ToBuffer(base64) {
-    const binary = atob(base64);
-    const buffer = new Uint8Array(binary.length);
-    for (let i = 0; i < binary.length; i++) {
-        buffer[i] = binary.charCodeAt(i);
-    }
-    return buffer;
-}
-
 async function decryptData(key, encryptedData) {
     return new Promise(async (resolve, reject) => {
         try {
-            const iv = base64ToBuffer(encryptedData.iv);
-            const data = base64ToBuffer(encryptedData.data);
+            const iv = encryptedData.iv instanceof ArrayBuffer ? new Uint8Array(encryptedData.iv) : base64ToBuffer(encryptedData.iv);
+            const data = encryptedData.data instanceof ArrayBuffer ? encryptedData.data : base64ToBuffer(encryptedData.data);
 
             const decrypted = await crypto.subtle.decrypt(
                 { name: "AES-GCM", iv },
@@ -87,6 +74,16 @@ async function decryptData(key, encryptedData) {
     });
 }
 
+
+let decryptWorkerRegistered = false;
+function base64ToBuffer(base64) {
+    const binary = atob(base64);
+    const buffer = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) {
+        buffer[i] = binary.charCodeAt(i);
+    }
+    return buffer;
+}
 
 function arrayBufferToBase64(buffer) {
     const bytes = new Uint8Array(buffer);
