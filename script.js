@@ -515,7 +515,6 @@ function getAppAspectRatio(unshrunkContent) {
 	return content.includes("aspect-ratio") ? getMetaTagContent(content, 'aspect-ratio', false) : null;
 }
 async function getAppIcon(content, id, lazy = 0) {
-	console.log(content, id, lazy)
 	const withTimeout = (promise) =>
 		Promise.race([promise, new Promise((_, reject) => setTimeout(() => reject(), 3000))]);
 
@@ -1761,7 +1760,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 	let localupdatedataver = parseFloat(localStorage.getItem("updver"));
 	if (localupdatedataver <= 1.7) {
 		console.log("Preparing NovaOS2 switch.");
-		gid("versionswitcher")?.showModal();
 		return;
 	}
 	const searchInput5342 = document.querySelector('#novamenusearchinp');
