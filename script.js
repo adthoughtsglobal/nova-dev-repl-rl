@@ -1640,7 +1640,7 @@ async function realgenDesktop() {
 			setbgimagetourl(unshrinkbsfX);
 		}
 		document.getElementById("bgimage").onerror = async function (event) {
-			console.log("wallpaper error", event)
+			toast("It doesn't seem to work as the wallpaper...")
 			setbgimagetourl(novaFeaturedImage);
 			if (await getSetting("wall")) {
 				remSetting("wall");
