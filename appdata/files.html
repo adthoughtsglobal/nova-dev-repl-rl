@@ -2312,7 +2312,7 @@
 			const targetElement = event.target.closest('.file');
 			const menuItems = getMenuItems(targetElement);
 
-			menuItems.slice(0, 4).forEach(item => {
+			menuItems.slice(0, 6).forEach(item => {
 				const menuItem = document.createElement('div');
 				menuItem.innerHTML = `<span class="material-symbols-rounded">${item.icon || ""}</span>
         <span>${item.label}</span>`;
@@ -2326,7 +2326,7 @@
 				contextMenu.appendChild(menuItem);
 			});
 
-			if (menuItems.length > 4) {
+			if (menuItems.length > 6) {
 				const moreButton = document.createElement('div');
 				moreButton.innerHTML = `<span class="material-symbols-rounded">more_vert</span>
         <span>More</span>`;
@@ -2334,7 +2334,7 @@
 				moreButton.style.padding = '5px 10px';
 				moreButton.style.cursor = 'pointer';
 
-				const dropdownMenu = createDropdownMenu(menuItems.slice(4));
+				const dropdownMenu = createDropdownMenu(menuItems.slice(6));
 				contextMenu.appendChild(moreButton);
 				document.body.appendChild(dropdownMenu);
 

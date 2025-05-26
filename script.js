@@ -732,66 +732,89 @@ async function extractAndRegisterCapabilities(appId, content) {
 		}
 		let parser = new DOMParser();
 		let doc = parser.parseFromString(content, "text/html");
+
 		let metaTag = doc.querySelector('meta[name="capabilities"]');
+		let capabilities = [];
 		if (metaTag) {
-			let capabilities = metaTag.getAttribute("content").split(',');
-			await registerApp(appId, capabilities);
+			capabilities = metaTag.getAttribute("content").split(',').map(s => s.trim());
 		} else {
 			console.log(`No capabilities: ${appId}`);
 		}
 
 		let totalperms = ['utility', 'sysUI'];
 		let metaTag2 = doc.querySelector('meta[name="permissions"]');
+		let requestedperms = [];
 		if (metaTag2) {
-			let requestedperms = metaTag2.getAttribute("content").split(',').map(s => s.trim());
-			let permissions = totalperms;
-			// confirm perms in bulk
-			let modal = gid("AppInstDia");
-			gid("app_inst_dia_icon").innerHTML = await getAppIcon(0, appId);
-			gid("app_inst_mod_app_name").innerText = await getFileNameByID(appId);
-			let listelement = gid("app_inst_mod_li");
-			listelement.innerHTML = '';
-			permissions = Array.from(new Set([...permissions, ...requestedperms]));
+			requestedperms = metaTag2.getAttribute("content").split(',').map(s => s.trim());
+		} else {
+			console.log(`No permissions: ${appId}`);
+		}
 
-			permissions.sort((a, b) => getNamespaceRisk(b) - getNamespaceRisk(a));
+		let permissions = Array.from(new Set([...totalperms, ...requestedperms]));
 
+		let modal = gid("AppInstDia");
+		gid("app_inst_dia_icon").innerHTML = await getAppIcon(0, appId);
+		gid("app_inst_mod_app_name").innerText = await getFileNameByID(appId);
+		let listelement = gid("app_inst_mod_li");
+		listelement.innerHTML = '';
+
+		if (capabilities.length > 0) {
+			let handlerList = capabilities.filter(c => !c.startsWith('.')).join(', ');
+			if (handlerList) {
+				let span = document.createElement("li");
+				span.innerHTML = `Function as ${handlerList}`;
+				listelement.appendChild(span);
+			}
+
+			let fileTypes = capabilities.filter(c => c.startsWith('.')).join(', ');
+			if (fileTypes) {
+				let span = document.createElement("li");
+				span.innerHTML = `Open ${fileTypes} by default`;
+				listelement.appendChild(span);
+			}
+		}
+
+		permissions.sort((a, b) => getNamespaceRisk(b) - getNamespaceRisk(a));
+
+		if (permissions.includes("unsandboxed")) {
+			let span = document.createElement("li");
+			span.innerHTML = describeNamespaces("unsandboxed").replace(/^./, c => c.toUpperCase());
+			span.innerHTML += `<small>Only recommended for apps you trust.</small>`;
+			listelement.appendChild(span);
+		} else {
 			permissions.forEach((perm) => {
 				let span = document.createElement("li");
 				span.innerHTML = describeNamespaces(perm).replace(/^./, c => c.toUpperCase());
-				if (perm == "unsandboxed") {
-					span.innerHTML += `<small>Only recommended for apps you trust.</small>`
-				}
 				listelement.appendChild(span);
 			});
+		}
 
-			let yesButton = gid("app_inst_mod_agbtn");
-			let noButton = gid("app_inst_mod_nobtn");
-			let condition = await new Promise((resolve) => {
-				if (initialization) {
-					resolve(true);
-				} else {
-					modal.showModal();
-				}
-				yesButton.onclick = () => {
-					modal.close();
-					resolve(true);
-				};
-				noButton.onclick = () => {
-					modal.close();
-					resolve(false);
-				};
-			});
+		let yesButton = gid("app_inst_mod_agbtn");
+		let noButton = gid("app_inst_mod_nobtn");
 
-			if (condition) {
-				console.log("requestedperms")
-				requestedperms.forEach((perm) => {
-					if (!totalperms.includes(perm)) {
-						totalperms.push(perm);
-					}
-				});
+		let condition = await new Promise((resolve) => {
+			if (initialization) {
+				resolve(true);
+			} else {
+				modal.showModal();
 			}
-		} else {
-			console.log(`No permissions: ${appId}`);
+			yesButton.onclick = () => {
+				modal.close();
+				resolve(true);
+			};
+			noButton.onclick = () => {
+				modal.close();
+				resolve(false);
+			};
+		});
+
+		if (condition) {
+			requestedperms.forEach((perm) => {
+				if (!totalperms.includes(perm)) {
+					totalperms.push(perm);
+				}
+			});
+			await registerApp(appId, capabilities);
 		}
 
 		let registry = {};
@@ -823,6 +846,7 @@ async function registerApp(appId, capabilities) {
 	await setSetting('fileTypeAssociations', fileTypeAssociations);
 	await setSetting('handlers', handlers);
 	notify(await getFileNameByID(appId) + " installed", "Registered " + capabilities.toString(), "NovaOS System");
+	return capabilities.toString();
 }
 
 async function cleanupInvalidAssociations() {
@@ -1104,7 +1128,7 @@ async function installdefaultapps() {
 			setsrtpprgbr(Math.round((i + 1) / defAppsList.length * 100));
 		}
 		clearInterval(interval);
-		
+
 		let fetchupdatedata = await fetch("versions.json");
 		if (fetchupdatedata.ok) {
 			let fetchupdatedataver = (await fetchupdatedata.json()).osver;
@@ -1898,7 +1922,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 		try {
 			if (result || result == 3) {
 				await showloginmod();
-	gid("versionswitcher").showModal()
+				gid("versionswitcher").showModal()
 			} else {
 				await cleanupram();
 				CurrentUsername = 'Admin';

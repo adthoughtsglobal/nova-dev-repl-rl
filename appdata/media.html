@@ -96,7 +96,7 @@
 	</dialog>
 
 	<nav>
-		<button><span id="tils"></span></button><button id="usebrowser">Use Browser</button>
+		<button><span id="tils"></span></button><button onclick="openInBrowser()">Open in browser</button>
 	</nav>
 	<div id="displays">
 		<img id="thedisplay" alt="Nova" src="">
@@ -206,6 +206,10 @@
 			});
 		}
 
+		function openInBrowser() {
+			let source = document.createElement("source");
+			window.open(source.src, "_blank")
+		}
 	</script>
 </body>
 

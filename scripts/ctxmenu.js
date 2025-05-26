@@ -212,7 +212,6 @@ function adjustDropdownPositionRelativeToTrigger(triggerElement, dropdownMenu) {
 	dropdownMenu.style.display = 'block';
 }
 
-
 document.addEventListener('contextmenu', async (event) => {
 	event.preventDefault();
 
@@ -221,7 +220,7 @@ document.addEventListener('contextmenu', async (event) => {
 	const targetElement = event.target.closest('.ctxAvail');
 	const menuItems = await getMenuItems(targetElement);
 
-	menuItems.slice(0, 4).forEach(item => {
+	menuItems.slice(0, 6).forEach(item => {
 		const menuItem = document.createElement('div');
 		menuItem.innerHTML = `<span class="material-symbols-rounded">${item.icon || ""}</span>
         <span>${item.label}</span>`;
@@ -235,7 +234,7 @@ document.addEventListener('contextmenu', async (event) => {
 		contextMenu.appendChild(menuItem);
 	});
 
-	if (menuItems.length > 4) {
+	if (menuItems.length > 6) {
 		const moreButton = document.createElement('div');
 		moreButton.innerHTML = `<span class="material-symbols-rounded">more_vert</span>
         <span>More</span>`;
@@ -243,7 +242,7 @@ document.addEventListener('contextmenu', async (event) => {
 		moreButton.style.padding = '5px 10px';
 		moreButton.style.cursor = 'pointer';
 
-		const dropdownMenu = createDropdownMenu(menuItems.slice(4));
+		const dropdownMenu = createDropdownMenu(menuItems.slice(6));
 		contextMenu.appendChild(moreButton);
 		document.body.appendChild(dropdownMenu);
 
