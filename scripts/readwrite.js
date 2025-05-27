@@ -18,8 +18,83 @@ async function openDB(CurrentUsername = "Admin", version) {
             }
         };
 
+        request.onsuccess = async (event) => {
+            const db = event.target.result;
+            await addUserToSharedList(CurrentUsername);
+            resolve(db);
+        };
+
+        request.onerror = (event) => reject(event.target.error);
+    });
+}
+
+async function openSharedDB(version = 1) {
+    return new Promise((resolve, reject) => {
+        const request = indexedDB.open('sharedDB', version);
+
+        request.onupgradeneeded = (event) => {
+            const db = event.target.result;
+
+            if (!db.objectStoreNames.contains('data')) {
+                const store = db.createObjectStore('data', { keyPath: 'key' });
+                store.add({ key: 'userList', usernames: [] });
+            }
+        };
+
         request.onsuccess = (event) => resolve(event.target.result);
         request.onerror = (event) => reject(event.target.error);
+    });
+}
+
+async function addUserToSharedList(username) {
+    const sharedDB = await openSharedDB();
+    const tx = sharedDB.transaction('data', 'readwrite');
+    const store = tx.objectStore('data');
+    const request = store.get('userList');
+
+    return new Promise((resolve, reject) => {
+        request.onsuccess = () => {
+            const result = request.result || { key: 'userList', usernames: [] };
+            if (!result.usernames.includes(username)) {
+                result.usernames.push(username);
+                const updateRequest = store.put(result);
+                updateRequest.onsuccess = resolve;
+                updateRequest.onerror = () => reject(updateRequest.error);
+            } else {
+                resolve();
+            }
+        };
+        request.onerror = () => reject(request.error);
+    });
+}
+async function removeUserFromSharedList(username) {
+    if (username === 'all') {
+        return new Promise((resolve, reject) => {
+            const deleteRequest = indexedDB.deleteDatabase('sharedDB');
+            deleteRequest.onsuccess = resolve;
+            deleteRequest.onerror = () => reject(deleteRequest.error);
+            deleteRequest.onblocked = () => reject(new Error('Database delete blocked'));
+        });
+    }
+
+    const sharedDB = await openSharedDB();
+    const tx = sharedDB.transaction('data', 'readwrite');
+    const store = tx.objectStore('data');
+    const request = store.get('userList');
+
+    return new Promise((resolve, reject) => {
+        request.onsuccess = () => {
+            const result = request.result;
+            if (result && result.usernames.includes(username)) {
+                result.usernames = result.usernames.filter(u => u !== username);
+                const updateRequest = store.put(result);
+                updateRequest.onsuccess = resolve;
+                updateRequest.onerror = () => reject(updateRequest.error);
+            } else {
+                resolve();
+            }
+        };
+        request.onerror = () => reject(request.error);
     });
 }
 

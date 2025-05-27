@@ -116,6 +116,7 @@ async function readAllData(db, storeName) {
 
 async function erdbsfull(x) {
     if (x === "nowarning" || await justConfirm("Are you really sure?", "Removing all the users' data includes your settings, files, and other data. Click cancel to keep it.")) {
+        await removeUserFromSharedList('all');
         localStorage.removeItem('todo');
         localStorage.removeItem('magicStrings');
         localStorage.removeItem('updver');
