@@ -69,6 +69,7 @@ async function decryptData(key, encryptedData) {
 
             resolve(result);
         } catch (error) {
+            console.log(error)
             reject('Incorrect password or corrupted data');
         }
     });
@@ -76,26 +77,24 @@ async function decryptData(key, encryptedData) {
 
 function arrayBufferToBase64(buffer) {
     const bytes = new Uint8Array(buffer);
-    if (bytes.length < 10000) {
-        return btoa(String.fromCharCode(...bytes));
-    }
     let binary = '';
-    const chunkSize = 8192;
-    for (let i = 0; i < bytes.length; i += chunkSize) {
-        binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunkSize));
-    }
+    bytes.forEach(b => binary += String.fromCharCode(b));
     return btoa(binary);
 }
 
 function base64ToArrayBuffer(base64) {
-    const binaryString = atob(base64);
-    const length = binaryString.length;
-    const buffer = new ArrayBuffer(length);
-    const bytes = new Uint8Array(buffer);
-    for (let i = 0; i < length; i++) {
-        bytes[i] = binaryString.charCodeAt(i);
+    try {
+        const binary = atob(base64);
+        const len = binary.length;
+        const bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary.charCodeAt(i);
+        }
+        return bytes.buffer;
+    } catch (e) {
+        console.error("Invalid base64 input:", base64);
+        throw e;
     }
-    return bytes;
 }
 
 function compressString(input) {

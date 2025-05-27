@@ -42,7 +42,7 @@ class NTXSession {
             removeInvalidMagicStrings: wrapAsync(removeInvalidMagicStrings),
             changePassword: wrapAsync(checkPassword),
             password: wrapAsync(password),
-            getAllUsers: wrapAsync(getallusers),
+            getAllUsers: wrapAsync(sharedStore.getAllUsers),
             username: wrapAsync(CurrentUsername)
         };
         this.apps = {

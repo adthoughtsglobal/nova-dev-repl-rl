@@ -122,7 +122,7 @@ async function showloginmod() {
 			usersChooser.appendChild(userDiv);
 		});
 	}
-	let users = await getallusers();
+	let users = await sharedStore.getAllUsers();
 	createUserDivs(users);
 	if (users.length > 0) {
 		document.querySelector('.user').focus();
@@ -168,7 +168,6 @@ async function startup() {
 	let localupdatedataverstring = parseFloat(localStorage.getItem("updver"));
 	if (localupdatedataverstring <= 1.7 || !localupdatedataverstring) {
 		console.log("Preparing NovaOS2 switch.");
-		gid("versionswitcher")?.showModal();
 		return;
 	}
 
@@ -1774,9 +1773,25 @@ function launchbios() {
 	document.getElementById('novasetupusernamedisplay').innerText = CurrentUsername;
 	document.getElementById('bios').showModal();
 }
+function domLoad_checkedgecases() {
+	const request = indexedDB.deleteDatabase('trojencat');
 
+	let existed = false;
+
+	request.onblocked = function () {};
+
+	request.onsuccess = function (event) {
+		if (event.oldVersion > 0) existed = true;
+		if (existed) location.reload();
+	};
+
+	request.onerror = function () {
+		console.error('Failed to delete database trojencat');
+	};
+}
 document.addEventListener("DOMContentLoaded", async function () {
 	sysLog("DOM", "Loaded");
+	domLoad_checkedgecases()
 
 	genTaskBar = debounce(realgenTaskBar, 500);
 	genDesktop = debounce(realgenDesktop, 500);

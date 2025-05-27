@@ -97,7 +97,7 @@ if (!window._workerForwarderAttached) {
                 delete iframeReferences[id];
             }
         }
-        
+
     });
     window._workerForwarderAttached = true;
 }
@@ -116,7 +116,6 @@ async function readAllData(db, storeName) {
 
 async function erdbsfull(x) {
     if (x === "nowarning" || await justConfirm("Are you really sure?", "Removing all the users' data includes your settings, files, and other data. Click cancel to keep it.")) {
-        await removeUserFromSharedList('all');
         localStorage.removeItem('todo');
         localStorage.removeItem('magicStrings');
         localStorage.removeItem('updver');
@@ -124,6 +123,12 @@ async function erdbsfull(x) {
 
         const indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB || window.shimIndexedDB;
         const deleteRequest = indexedDB.deleteDatabase(CurrentUsername);
+
+        const request = indexedDB.deleteDatabase('sharedDB');
+
+        request.onerror = function () {
+            console.error('Failed to delete database trojencat');
+        };
 
         deleteRequest.onsuccess = () => location.reload();
         deleteRequest.onerror = deleteRequest.onblocked = () => location.reload();
@@ -180,27 +185,42 @@ async function saveMagicStringInLocalStorage(password) {
     const cryptoKey = await getKey(password);
     const encryptedMagicString = await encryptData(cryptoKey, "magicString");
 
-    const magicStrings = JSON.parse(localStorage.getItem('magicStrings')) || {};
-
-    magicStrings[CurrentUsername] = {
-        iv: bufferToBase64(encryptedMagicString.iv),
-        data: bufferToBase64(encryptedMagicString.data)
+    let magicStrings = {
+        iv: arrayBufferToBase64(encryptedMagicString.iv),
+        data: arrayBufferToBase64(encryptedMagicString.data)
     };
 
-    localStorage.setItem('magicStrings', JSON.stringify(magicStrings));
+    sharedStore.set(0, "magic", JSON.stringify(magicStrings));
+}
+async function checkPassword(password) {
+    const encryptedMagicStringJSON = await sharedStore.get(0, "magic");
+    if (!encryptedMagicStringJSON) {
+        console.error(`Magic string not found for user: ${CurrentUsername}`);
+        return false;
+    }
+    const encryptedMagicString = JSON.parse(encryptedMagicStringJSON);
+    const cryptoKey = await getKey(password);
+    try {
+        console.log(536, encryptedMagicString)
+        const decryptedMagicString = await decryptData(
+            cryptoKey,
+            {
+                iv: base64ToArrayBuffer(encryptedMagicString.iv),
+                data: base64ToArrayBuffer(encryptedMagicString.data)
+            }
+        );
+        return decryptedMagicString === "magicString";
+    } catch (error){
+        return console.error(error);
+        ;
+    }
 }
 
 
 async function removeInvalidMagicStrings() {
-    const validUsernames = new Set(await getallusers());
-    const magicStrings = JSON.parse(localStorage.getItem('magicStrings'));
+    const magicStrings = JSON.parse(await sharedStore.get(0, "magic"));
     if (!magicStrings) return;
-    for (const username in magicStrings) {
-        if (!validUsernames.has(username)) {
-            delete magicStrings[username];
-        }
-    }
-    localStorage.setItem('magicStrings', JSON.stringify(magicStrings));
+    localStorage.setItem('magicStrings', null);
 }
 async function changePassword(oldPassword, newPassword) {
     lethalpasswordtimes = true;
@@ -280,38 +300,6 @@ async function changePassword(oldPassword, newPassword) {
     lethalpasswordtimes = false;
     return true;
 }
-
-async function checkPassword(password) {
-    const magicStrings = JSON.parse(localStorage.getItem('magicStrings')) || {};
-
-    const encryptedMagicString = magicStrings[CurrentUsername];
-    if (!encryptedMagicString) {
-        console.error(`Magic string not found for user: ${CurrentUsername}`);
-        return false;
-    }
-    const cryptoKey = await getKey(password);
-    try {
-        const decryptedMagicString = await decryptData(cryptoKey, encryptedMagicString);
-        if (decryptedMagicString === "magicString") {
-            return true;
-        } else {
-            return false;
-        }
-    } catch (error) {
-        return false;
-    }
-}
-async function getallusers() {
-    try {
-        const magicStrings = JSON.parse(localStorage.getItem('magicStrings')) || {};
-        return Object.keys(magicStrings);
-    } catch (error) {
-        console.error("Error in getAllUsers function:", error);
-        throw error;
-    }
-}
-
-
 
 // memory collector
 
@@ -828,7 +816,7 @@ async function remfile(ID) {
                 }
             }
             return false;
-        }``
+        } ``
         let filedat = await getFileNameByID(ID);
         if (mtpetxt(filedat) == "app") {
             await remSetting(ID, "AppRegistry.json")

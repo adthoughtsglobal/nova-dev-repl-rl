@@ -20,7 +20,6 @@ async function openDB(CurrentUsername = "Admin", version) {
 
         request.onsuccess = async (event) => {
             const db = event.target.result;
-            await addUserToSharedList(CurrentUsername);
             resolve(db);
         };
 
@@ -31,72 +30,98 @@ async function openDB(CurrentUsername = "Admin", version) {
 async function openSharedDB(version = 1) {
     return new Promise((resolve, reject) => {
         const request = indexedDB.open('sharedDB', version);
-
         request.onupgradeneeded = (event) => {
             const db = event.target.result;
-
             if (!db.objectStoreNames.contains('data')) {
-                const store = db.createObjectStore('data', { keyPath: 'key' });
-                store.add({ key: 'userList', usernames: [] });
+                db.createObjectStore('data', { keyPath: 'key' });
             }
         };
-
         request.onsuccess = (event) => resolve(event.target.result);
         request.onerror = (event) => reject(event.target.error);
     });
 }
-
-async function addUserToSharedList(username) {
-    const sharedDB = await openSharedDB();
-    const tx = sharedDB.transaction('data', 'readwrite');
-    const store = tx.objectStore('data');
-    const request = store.get('userList');
-
-    return new Promise((resolve, reject) => {
-        request.onsuccess = () => {
-            const result = request.result || { key: 'userList', usernames: [] };
-            if (!result.usernames.includes(username)) {
-                result.usernames.push(username);
-                const updateRequest = store.put(result);
-                updateRequest.onsuccess = resolve;
-                updateRequest.onerror = () => reject(updateRequest.error);
-            } else {
-                resolve();
-            }
-        };
-        request.onerror = () => reject(request.error);
-    });
-}
-async function removeUserFromSharedList(username) {
-    if (username === 'all') {
+const sharedStore = {
+    async get(username, key) {
+        if (username === 0 || username === undefined) username = CurrentUsername;
+        const db = await openSharedDB();
+        const tx = db.transaction('data', 'readonly');
+        const store = tx.objectStore('data');
+        const request = store.get(username);
         return new Promise((resolve, reject) => {
-            const deleteRequest = indexedDB.deleteDatabase('sharedDB');
-            deleteRequest.onsuccess = resolve;
-            deleteRequest.onerror = () => reject(deleteRequest.error);
-            deleteRequest.onblocked = () => reject(new Error('Database delete blocked'));
+            request.onsuccess = () => {
+                const data = request.result ? request.result.value : {};
+                resolve(key ? data[key] : data);
+            };
+            request.onerror = () => reject(request.error);
+        });
+    },
+
+    async set(username, key, value) {
+        if (username === 0 || username === undefined) username = CurrentUsername;
+        const db = await openSharedDB();
+        const tx = db.transaction('data', 'readwrite');
+        const store = tx.objectStore('data');
+        const getRequest = store.get(username);
+        return new Promise((resolve, reject) => {
+            getRequest.onsuccess = () => {
+                const data = getRequest.result ? getRequest.result.value : {};
+                data[key] = value;
+                const putRequest = store.put({ key: username, value: data });
+                putRequest.onsuccess = resolve;
+                putRequest.onerror = () => reject(putRequest.error);
+            };
+            getRequest.onerror = () => reject(getRequest.error);
+        });
+    },
+
+    async remove(username, key) {
+        if (username === 0 || username === undefined) username = CurrentUsername;
+        const db = await openSharedDB();
+        const tx = db.transaction('data', 'readwrite');
+        const store = tx.objectStore('data');
+        const getRequest = store.get(username);
+        return new Promise((resolve, reject) => {
+            getRequest.onsuccess = () => {
+                const data = getRequest.result ? getRequest.result.value : {};
+                if (key in data) {
+                    delete data[key];
+                    const putRequest = store.put({ key: username, value: data });
+                    putRequest.onsuccess = resolve;
+                    putRequest.onerror = () => reject(putRequest.error);
+                } else {
+                    resolve();
+                }
+            };
+            getRequest.onerror = () => reject(getRequest.error);
+        });
+    },
+
+    async deleteUser(username) {
+        if (username === 0 || username === undefined) username = CurrentUsername;
+        const db = await openSharedDB();
+        const tx = db.transaction('data', 'readwrite');
+        const store = tx.objectStore('data');
+        const request = store.delete(username);
+        return new Promise((resolve, reject) => {
+            request.onsuccess = resolve;
+            request.onerror = () => reject(request.error);
+        });
+    },
+
+    async getAllUsers() {
+        const db = await openSharedDB();
+        const tx = db.transaction('data', 'readonly');
+        const store = tx.objectStore('data');
+        const request = store.getAllKeys();
+        return new Promise((resolve, reject) => {
+            request.onsuccess = () => {
+                const keys = request.result.filter(key => key !== 'userList');
+                resolve(keys);
+            };
+            request.onerror = () => reject(request.error);
         });
     }
-
-    const sharedDB = await openSharedDB();
-    const tx = sharedDB.transaction('data', 'readwrite');
-    const store = tx.objectStore('data');
-    const request = store.get('userList');
-
-    return new Promise((resolve, reject) => {
-        request.onsuccess = () => {
-            const result = request.result;
-            if (result && result.usernames.includes(username)) {
-                result.usernames = result.usernames.filter(u => u !== username);
-                const updateRequest = store.put(result);
-                updateRequest.onsuccess = resolve;
-                updateRequest.onerror = () => reject(updateRequest.error);
-            } else {
-                resolve();
-            }
-        };
-        request.onerror = () => reject(request.error);
-    });
-}
+};
 
 async function flushDB(value) {
     if (!dbCache) dbCache = await openDB(CurrentUsername, 1);
