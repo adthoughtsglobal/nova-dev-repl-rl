@@ -739,7 +739,7 @@ async function extractAndRegisterCapabilities(appId, content) {
 		} else {
 			console.log(`No capabilities: ${appId}`);
 		}
-
+		let onlyDefPerms = false;
 		let totalperms = ['utility', 'sysUI'];
 		let metaTag2 = doc.querySelector('meta[name="permissions"]');
 		let requestedperms = [];
@@ -747,74 +747,92 @@ async function extractAndRegisterCapabilities(appId, content) {
 			requestedperms = metaTag2.getAttribute("content").split(',').map(s => s.trim());
 		} else {
 			console.log(`No permissions: ${appId}`);
+			onlyDefPerms = true
+		}
+
+		function arraysEqualIgnoreOrder(arr1, arr2) {
+			if (arr1.length !== arr2.length) return false;
+			let sorted1 = [...arr1].sort();
+			let sorted2 = [...arr2].sort();
+			for (let i = 0; i < sorted1.length; i++) {
+				if (sorted1[i] !== sorted2[i]) return false;
+			}
+			return true;
+		}
+
+		onlyDefPerms = (onlyDefPerms) ? true : arraysEqualIgnoreOrder(requestedperms, totalperms);
+		if (onlyDefPerms) {
+			console.log("only def perms");
 		}
 
 		let permissions = Array.from(new Set([...totalperms, ...requestedperms]));
 
-		let modal = gid("AppInstDia");
-		gid("app_inst_dia_icon").innerHTML = await getAppIcon(0, appId);
-		gid("app_inst_mod_app_name").innerText = await getFileNameByID(appId);
-		let listelement = gid("app_inst_mod_li");
-		listelement.innerHTML = '';
+		if (!onlyDefPerms) {
+			let modal = gid("AppInstDia");
+			gid("app_inst_dia_icon").innerHTML = await getAppIcon(0, appId);
+			gid("app_inst_mod_app_name").innerText = await getFileNameByID(appId);
+			let listelement = gid("app_inst_mod_li");
+			listelement.innerHTML = '';
 
-		if (capabilities.length > 0) {
-			let handlerList = capabilities.filter(c => !c.startsWith('.')).join(', ');
-			if (handlerList) {
-				let span = document.createElement("li");
-				span.innerHTML = `Function as ${handlerList}`;
-				listelement.appendChild(span);
-			}
-
-			let fileTypes = capabilities.filter(c => c.startsWith('.')).join(', ');
-			if (fileTypes) {
-				let span = document.createElement("li");
-				span.innerHTML = `Open ${fileTypes} by default`;
-				listelement.appendChild(span);
-			}
-		}
-
-		permissions.sort((a, b) => getNamespaceRisk(b) - getNamespaceRisk(a));
-
-		if (permissions.includes("unsandboxed")) {
-			let span = document.createElement("li");
-			span.innerHTML = describeNamespaces("unsandboxed").replace(/^./, c => c.toUpperCase());
-			span.innerHTML += `<small>Only recommended for apps you trust.</small>`;
-			listelement.appendChild(span);
-		} else {
-			permissions.forEach((perm) => {
-				let span = document.createElement("li");
-				span.innerHTML = describeNamespaces(perm).replace(/^./, c => c.toUpperCase());
-				listelement.appendChild(span);
-			});
-		}
-
-		let yesButton = gid("app_inst_mod_agbtn");
-		let noButton = gid("app_inst_mod_nobtn");
-
-		let condition = await new Promise((resolve) => {
-			if (initialization) {
-				resolve(true);
-			} else {
-				modal.showModal();
-			}
-			yesButton.onclick = () => {
-				modal.close();
-				resolve(true);
-			};
-			noButton.onclick = () => {
-				modal.close();
-				resolve(false);
-			};
-		});
-
-		if (condition) {
-			requestedperms.forEach((perm) => {
-				if (!totalperms.includes(perm)) {
-					totalperms.push(perm);
+			if (capabilities.length > 0) {
+				let handlerList = capabilities.filter(c => !c.startsWith('.')).join(', ');
+				if (handlerList) {
+					let span = document.createElement("li");
+					span.innerHTML = `Function as ${handlerList}`;
+					listelement.appendChild(span);
 				}
+
+				let fileTypes = capabilities.filter(c => c.startsWith('.')).join(', ');
+				if (fileTypes) {
+					let span = document.createElement("li");
+					span.innerHTML = `Open ${fileTypes} by default`;
+					listelement.appendChild(span);
+				}
+			}
+
+			permissions.sort((a, b) => getNamespaceRisk(b) - getNamespaceRisk(a));
+
+			if (permissions.includes("unsandboxed")) {
+				let span = document.createElement("li");
+				span.innerHTML = describeNamespaces("unsandboxed").replace(/^./, c => c.toUpperCase());
+				span.innerHTML += `<small>Only recommended for apps you trust.</small>`;
+				listelement.appendChild(span);
+			} else {
+				permissions.forEach((perm) => {
+					let span = document.createElement("li");
+					span.innerHTML = describeNamespaces(perm).replace(/^./, c => c.toUpperCase());
+					listelement.appendChild(span);
+				});
+			}
+
+			let yesButton = gid("app_inst_mod_agbtn");
+			let noButton = gid("app_inst_mod_nobtn");
+
+			let condition = await new Promise((resolve) => {
+				if (initialization) {
+					resolve(true);
+				} else {
+					modal.showModal();
+				}
+				yesButton.onclick = () => {
+					modal.close();
+					resolve(true);
+				};
+				noButton.onclick = () => {
+					modal.close();
+					resolve(false);
+				};
 			});
-			await registerApp(appId, capabilities);
+
+			if (!condition) return;
 		}
+
+		requestedperms.forEach((perm) => {
+			if (!totalperms.includes(perm)) {
+				totalperms.push(perm);
+			}
+		});
+		await registerApp(appId, capabilities);
 
 		let registry = {};
 		registry.perms = totalperms;
@@ -1778,7 +1796,7 @@ function domLoad_checkedgecases() {
 
 	let existed = false;
 
-	request.onblocked = function () {};
+	request.onblocked = function () { };
 
 	request.onsuccess = function (event) {
 		if (event.oldVersion > 0) existed = true;

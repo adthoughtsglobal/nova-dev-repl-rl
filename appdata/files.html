@@ -1230,6 +1230,10 @@
 				event.preventDefault();
 
 				const files = event.dataTransfer.files;
+				let data = event.dataTransfer?.getData("Text");
+				if (data) {
+					return;
+				}
 				const fileInput = document.getElementById('filupin');
 
 				const dataTransfer = new DataTransfer();
@@ -1736,8 +1740,8 @@
 						const itemuid = fileData.id;
 						const visibleLinks = [];
 
-						Object.values(fileActions).forEach(action => {
-							if (action.condition(fileData)) {
+						await Object.values(fileActions).forEach(async (action) => {
+							if (await action.condition(fileData)) {
 								const option = document.createElement("a");
 								option.classList.add("dropdownerthebob");
 								option.title = action.label;
@@ -2148,7 +2152,7 @@
 				icon: 'wallpaper',
 				label: 'Set As Wallpaper',
 				action: (itemuid) => window.parent.makewall(itemuid),
-				condition: async (file) => await ntxSession.send("utility.getBaseFileType", ptypext(file.fileName)) === 'image',
+				condition: async (file) => (await ntxSession.send("utility.getBaseFileType", ptypext(file.fileName))) === 'image',
 			},
 			move: {
 				icon: 'drive_file_move',
@@ -2184,24 +2188,29 @@
 			},
 		};
 
-		function getMenuItems(target) {
+		async function getMenuItems(target) {
 			if (target.classList.contains('file')) {
 				const itemuid = target.getAttribute("unid");
 				slfileID = itemuid;
 				const file = { unid: itemuid, type: 'app', fileName: window.parent.getFileNameByID(itemuid) };
-				return Object.values(window.fileActions)
-					.filter(action => action.condition(file))
-					.map(action => ({
-						icon: action.icon,
-						color: action.color,
-						label: action.label,
-						action: (itemuid) => action.action(itemuid),
-					}));
+				console.log(file, (await ntxSession.send("utility.getBaseFileType", ptypext(file.fileName))) === 'image');
+
+				const actions = Object.values(window.fileActions);
+				const conditions = await Promise.all(actions.map(action => action.condition(file)));
+				const filteredActions = actions.filter((_, index) => conditions[index]);
+
+				return filteredActions.map(action => ({
+					icon: action.icon,
+					color: action.color,
+					label: action.label,
+					action: (itemuid) => action.action(itemuid),
+				}));
 			}
 			return [
 				{ label: 'Inspect', action: () => console.log('Inspect clicked') },
 			];
 		}
+
 
 		var contextMenu;
 
@@ -2304,13 +2313,13 @@
 			dropdownMenu.style.display = 'block';
 		}
 
-		document.addEventListener('contextmenu', (event) => {
+		document.addEventListener('contextmenu', async (event) => {
 			event.preventDefault();
 
 			contextMenu = createContextMenu(event);
 			contextMenu.innerHTML = '';
 			const targetElement = event.target.closest('.file');
-			const menuItems = getMenuItems(targetElement);
+			const menuItems = await getMenuItems(targetElement);
 
 			menuItems.slice(0, 6).forEach(item => {
 				const menuItem = document.createElement('div');

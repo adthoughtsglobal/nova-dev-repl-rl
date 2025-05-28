@@ -1833,6 +1833,7 @@ class RoturExtension {
             payload: {
               amount: args.AMOUNT,
               recipient: args.USER,
+              note: args.NOTE
             },
             id: this.userToken,
             client: this.my_client,

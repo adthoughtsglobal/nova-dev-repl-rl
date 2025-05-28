@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>NRPA</title>
+    <meta name="nova-include" content="material-symbols-rounded nova.css">
+    <meta name="nova-icon"
+        content="<svg version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='129.60521' height='129.60523' viewBox='0,0,129.60521,129.60523'><defs><linearGradient x1='240.00001' y1='121.5497' x2='240.00001' y2='238.4503' gradientUnits='userSpaceOnUse' id='color-1'><stop offset='0' stop-color='#ffdf66'/><stop offset='1' stop-color='#ffc966'/></linearGradient></defs><g transform='translate(-175.19739,-115.19739)'><g stroke-miterlimit='10'><path d='M176.22209,168.5838c6.30499,-35.22355 39.97053,-58.66668 75.19409,-52.36169c35.22356,6.30499 58.66669,39.97053 52.3617,75.19409c-6.30499,35.22356 -39.97053,58.66669 -75.19408,52.3617c-35.22355,-6.30499 -58.66668,-39.97052 -52.36169,-75.19407z' fill='#93803b' stroke='none' stroke-width='NaN'/><path d='M182.47397,169.70287c5.68694,-31.77074 36.05239,-52.91584 67.82314,-47.2289c31.77075,5.68694 52.91586,36.05239 47.22891,67.82315c-5.68694,31.77075 -36.05239,52.91586 -67.82313,47.22892c-31.77074,-5.68694 -52.91584,-36.05239 -47.22891,-67.82313z' fill='url(#color-1)' stroke='none' stroke-width='NaN'/><path d='M261.67683,183.88014c-3.91498,21.87151 -16.79375,37.86468 -28.76553,35.72174c-11.97177,-2.14294 -18.50311,-21.6105 -14.58812,-43.48201c3.91498,-21.87151 16.79375,-37.86468 28.76553,-35.72174c11.97177,2.14294 18.50311,21.6105 14.58812,43.48201z' fill='none' stroke='#987d1d' stroke-width='5'/><path d='M254.7687,163.6652c16.48151,14.90135 23.23024,34.29461 15.07371,43.31607c-8.15652,9.02145 -28.1296,4.25488 -44.61111,-10.64647c-16.48151,-14.90135 -23.23024,-34.29461 -15.07371,-43.31607c8.15652,-9.02145 28.1296,-4.25488 44.61111,10.64647z' fill='none' stroke='#987d1d' stroke-width='5'/><path d='M248.29637,200.39879c-20.58199,8.37088 -40.9814,6.02397 -45.56337,-5.24197c-4.58195,-11.26592 8.38864,-27.18473 28.97063,-35.55561c20.58199,-8.37088 40.9814,-6.02397 45.56337,5.24197c4.58195,11.26592 -8.38864,27.18473 -28.97063,35.55561z' fill='none' stroke='#987d1d' stroke-width='5'/></g></g></svg>">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <meta name="permissions" content="unsandboxed">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        html {
+            width: 100%;
+            height: 100%;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Noto Sans", serif;
+            background-color: var(--colors-BG-normal);
+        }
+
+        input,
+        button,
+        textarea {
+            outline: 0;
+            border: 0;
+            background-color: inherit;
+            color: inherit;
+        }
+
+        .navBar {
+            display: flex;
+            flex-direction: row;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            align-items: stretch;
+        }
+
+        .navBar .searchContainer {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            background-color: var(--colors-BG-section);
+            flex: 1;
+            justify-content: space-between;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            align-items: stretch;
+        }
+
+        .navBar .searchContainer input {
+            font-size: 1rem;
+            flex: 1;
+        }
+
+        .navBar .searchContainer .button {
+            color: var(--colors-text-normal);
+            border-radius: 0.5rem;
+            display: flex;
+            cursor: pointer;
+            align-items: center;
+            opacity: .5;
+        }
+
+        .navBar .pfpOnNavBar {
+            aspect-ratio: 1 / 1;
+            height: auto;
+            width: 3rem;
+            overflow: hidden;
+            border-radius: 0.5rem;
+        }
+
+        .navBar .pfpOnNavBar img {
+            height: 100%;
+            width: 100%;
+            object-fit: cover;
+            background-color: transparent;
+
+        }
+
+        .widgets {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+            flex: 1;
+        }
+
+        .widget {
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            gap: 0.3rem;
+            padding: 0.5rem;
+            background: var(--colors-BG-section);
+            border-radius: 0.5rem;
+        }
+
+        .widget .value {
+            font-size: 3rem;
+            font-weight: 400;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .widget .value svg {
+            height: 2rem;
+            width: 2rem;
+        }
+
+        .mainUI {
+            display: flex;
+            flex-direction: row;
+            align-items: stretch;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            padding-top: 0;
+            justify-content: space-between;
+        }
+
+        .chart {
+            flex: 3;
+
+            padding: 0.5rem;
+            background: var(--colors-BG-section);
+            border-radius: 0.5rem;
+        }
+
+        .chart canvas {
+            width: 100%;
+        }
+
+        div#paymentscreen {
+            position: absolute;
+            top: 0;
+            z-index: 2;
+            background: var(--colors-BG-normal);
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1em;
+        }
+
+        input#sendmoneyvalue {
+            text-align: center;
+            min-width: 0;
+            width: 4em;
+            font-size: 4em;
+            background: var(--colors-BG-section);
+            border-radius: .3em;
+            border-bottom: 3px solid transparent;
+            transition: .5s border;
+
+            &:focus {
+                border-radius: .3em .3em 0 0;
+                border-bottom: 3px solid var(--colors-BG-highlighted);
+            }
+        }
+
+        small#sendmoneystat {
+            font-size: 1em;
+            opacity: .7;
+        }
+
+        input#sendmoneynote {
+            width: 5em;
+            text-align: center;
+            background-color: var(--colors-BG-section);
+            padding: .5em;
+            border-radius: 2em;
+        }
+
+        .aboutotsend {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: .5em;
+        }
+
+        button#sendmoneybtn {
+            background-color: var(--colors-BG-highlighted);
+            color: var(--colors-text-high);
+            display: inline-flex;
+            padding: .5em;
+            border-radius: 50%;
+        }
+
+        .sendmoneycancel {
+            background-color: var(--colors-BG-section);
+            border-radius: 2em;
+            padding: .5em 1em;
+            margin-top: 2em;
+        }
+
+        div#accgainlossdisp {
+    font-size: 24px;
+        }
+
+        #gainorloss {
+            padding: 5px;
+            display: flex;
+            font-size: 15px;
+            background-color: rgb(165, 81, 81);
+            color: white;
+            border-radius: 50%;
+        }
+
+        .label {
+    display: flex
+;
+    flex-direction: row;
+    align-items: center;
+    gap: .5em;
+    justify-content: space-between;
+}
+    </style>
+</head>
+
+<body>
+    <div class="navBar">
+        <div class="searchContainer">
+            <input placeholder="Enter a username...">
+            <div class="button" onclick="makepayment()">
+                <span class="material-symbols-rounded">
+                    send_money
+                </span>
+            </div>
+        </div>
+        <div class="pfpOnNavBar">
+            <img src="https://avatars.rotur.dev/o" alt="Profile" id="pfponnav">
+        </div>
+    </div>
+
+    <div class="mainUI">
+        <div class="widgets">
+            <div class="widget">
+                <div class="label">
+                    Balance
+                </div>
+                <div class="value">
+                    <div id="accbaldisp"></div>
+                    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                        width="104.35659" height="110.277" viewBox="0,0,104.35659,110.277">
+                        <g transform="translate(-187.82171,-124.8615)">
+                            <g fill="none" stroke="var(--colors-text-normal)" stroke-width="7" stroke-miterlimit="10">
+                                <path
+                                    d="M262.65053,183.48337c-4.37573,28.45309 -18.06394,49.95931 -30.57348,48.0355c-12.50955,-1.92381 -19.10331,-26.54915 -14.72758,-55.00223c4.37573,-28.45309 18.06394,-49.95931 30.57348,-48.0355c12.50955,1.92381 19.10331,26.54915 14.72758,55.00223z" />
+                                <path
+                                    d="M254.76033,162.46966c22.02122,18.5416 33.26453,41.42113 25.11262,51.10287c-8.15191,9.68174 -32.61206,2.49941 -54.63328,-16.04218c-22.02122,-18.5416 -33.26453,-41.42113 -25.11262,-51.10287c8.15191,-9.68174 32.61206,-2.49941 54.63328,16.04218z" />
+                                <path
+                                    d="M231.80553,158.59834c26.88428,-10.29371 52.34708,-9.05656 56.87277,2.76325c4.52568,11.81982 -13.59954,29.74636 -40.48382,40.04006c-26.88428,10.29371 -52.34708,9.05656 -56.87277,-2.76325c-4.52568,-11.81982 13.59954,-29.74636 40.48382,-40.04006z" />
+                            </g>
+                        </g>
+                    </svg>
+
+                </div>
+            </div>
+            <div class="widget">
+                <div class="label">
+                    Gain-loss ratio
+                        <span class="material-symbols-rounded" id="gainorloss">
+                            arrow_upward
+                        </span>
+                </div>
+                    <div class="value">
+                        <div id="accgainlossdisp">20 / 10</div>
+                    </div>
+            </div>
+        </div>
+        <div class="chart">
+            <canvas id="transactionChart"></canvas>
+        </div>
+    </div>
+    <div id="paymentscreen">
+        <small id="sendmoneystat">Sending <span id="sendmoneyusrchip">darkdot</span>:</small>
+        <input id="sendmoneyvalue" value="01.00" placeholder="01.00">
+        <div class="aboutotsend">
+            <input id="sendmoneynote" placeholder="Note...">
+            <button id="sendmoneybtn" onclick="sendmoneyfr()">
+                <span class="material-symbols-rounded">
+                    arrow_forward
+                </span></button>
+        </div>
+        <button class="sendmoneycancel" onclick="cancelpayment()">
+            Cancel</button>
+    </div>
+    <script>
+        async function greenflag() {
+            const rawData = await window.parent.roturExtension.getTransactions();
+            const currentBalance = await window.parent.roturExtension.getBalance();
+
+            const rootStyles = getComputedStyle(document.documentElement);
+
+            const borderColor = rootStyles.getPropertyValue('--colors-BG-highlighted').trim();
+            const backgroundColor = rootStyles.getPropertyValue('--colors-BG-sub').trim();
+
+            document.getElementById("accbaldisp").innerText = currentBalance;
+            const transactions = JSON.parse(rawData);
+            let balance = currentBalance;
+            let totalGain = 0;
+            let totalLoss = 0;
+            const dataPoints = [{ balance, transaction: 'Current Balance' }];
+
+            transactions.forEach(transaction => {
+                console.log(JSON.stringify(transaction));
+               if (typeof transaction === 'string') {
+    const match = transaction.match(/([-+]?\d*\.?\d+)/);
+    if (match) {
+        const amount = parseFloat(match[0]);
+        balance -= amount;
+
+        if (amount > 0) {
+            totalGain += amount;
+        } else if (amount < 0) {
+            totalLoss += Math.abs(amount);
+        }
+
+        dataPoints.unshift({ balance, transaction });
+    }
+} else if (typeof transaction === 'object' && transaction !== null) {
+                    const amount = transaction.amount || 0;
+                    const type = transaction.type;
+                    const signedAmount = type === 'out' ? -amount : amount;
+                    balance -= signedAmount;
+
+                    if (type === 'in') {
+                        totalGain += amount;
+                    } else if (type === 'out') {
+                        totalLoss += amount;
+                    }
+
+                    const user = transaction.user || 'unknown';
+                    const note = transaction.note ? ` (${transaction.note})` : '';
+                    const direction = type === 'out' ? 'to' : 'from';
+                    const readable = `${type === 'out' ? '-' : '+'}${amount} ${direction} ${user}${note}`;
+
+                    dataPoints.unshift({ balance, transaction: readable });
+                }
+            });
+
+            while (dataPoints.length < 10) {
+                const earliest = dataPoints[0];
+                dataPoints.unshift({ balance: earliest ? earliest.balance : 0, transaction: 'No Data' });
+            }
+
+            const gainLossDisplay = document.getElementById('accgainlossdisp');
+            const gainLossIcon = document.getElementById('gainorloss');
+
+            gainLossDisplay.textContent = `${totalGain} / ${totalLoss}`;
+
+            if (totalGain >= totalLoss) {
+                gainLossIcon.textContent = 'arrow_upward';
+                gainLossIcon.style.backgroundColor = 'rgb(81, 165, 81)';
+            } else {
+                gainLossIcon.textContent = 'arrow_downward';
+                gainLossIcon.style.backgroundColor = 'rgb(165, 81, 81)';
+            }
+
+
+            const ctx = document.getElementById('transactionChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: dataPoints.map((_, i) => i),
+                    datasets: [{
+                        label: 'Balance',
+                        data: dataPoints.map(dp => dp.balance),
+                        borderColor: borderColor,
+                        backgroundColor: backgroundColor,
+                        borderWidth: 2,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: { display: false },
+                        y: { display: true, title: { display: true, text: 'Balance' } }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function (tooltipItem) {
+                                    const dp = dataPoints[tooltipItem.dataIndex];
+                                    return `Balance: ${dp.balance}   Transaction: ${dp.transaction}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            document.getElementById("pfponnav").src = "https://avatars.rotur.dev/" + window.parent.roturExtension.user.username;
+        }
+
+        var payment_screen = document.getElementById("paymentscreen");
+
+        function makepayment() {
+            payment_screen.style.display = "flex";
+        }
+
+        function cancelpayment() {
+            payment_screen.style.display = "none";
+        }
+    </script>
+</body>
+
+</html>
