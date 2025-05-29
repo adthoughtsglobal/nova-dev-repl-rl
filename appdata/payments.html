@@ -583,7 +583,7 @@
         function sendmoneyfr() {
             window.parent.roturExtension.transferCurrency({AMOUNT:payment_screen_amt.value, USER:target_un_inp.value, NOTE:payment_screen_note.value}).then((result) => {
                 if (result == "Success") {
-
+                    window.parent.toast("Paid :3")
                 }
             })
         }

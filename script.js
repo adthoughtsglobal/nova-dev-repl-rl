@@ -1300,8 +1300,26 @@ function calculateSimilarity(string1, string2) {
 }
 function containsSmallSVGElement(str) {
 	var svgRegex = /^<svg\s*[^>]*>[\s\S]*<\/svg>$/i;
-	return svgRegex.test(str) && str.length <= 10000;
+	if (!svgRegex.test(str) || str.length > 10000) return false;
+
+	var idMap = {};
+	var idRegex = /\bid="([^"]+)"/g;
+	var urlRefRegex = /url\(#([^")]+)\)/g;
+
+	str = str.replace(idRegex, function(match, id) {
+		if (!idMap[id]) {
+			idMap[id] = 'svguid_' + Math.random().toString(36).substr(2, 8);
+		}
+		return `id="${idMap[id]}"`;
+	});
+
+	str = str.replace(urlRefRegex, function(match, id) {
+		return idMap[id] ? `url(#${idMap[id]})` : match;
+	});
+
+	return str;
 }
+
 let countdown, countdown2;
 function startTimer(minutes) {
 	document.getElementById("sleepbtns").style.display = "none";
