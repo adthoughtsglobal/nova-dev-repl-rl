@@ -30,6 +30,8 @@
             margin: 0;
             font-family: "Noto Sans", serif;
             background-color: var(--colors-BG-normal);
+            display: flex;
+            flex-direction: column;
         }
 
         input,
@@ -109,7 +111,7 @@
         }
 
         .widget .value {
-            font-size: 3rem;
+            font-size: 2em;
             font-weight: 400;
             display: flex;
             flex-direction: row;
@@ -144,18 +146,26 @@
             width: 100%;
         }
 
-        div#paymentscreen {
+        .screen {
             position: absolute;
             top: 0;
             z-index: 2;
             background: var(--colors-BG-normal);
             width: 100%;
             height: 100%;
-            display: flex;
+            display: none;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             gap: 1em;
+            animation: fadein .3s;
+        }
+
+        div#paymentscreen {
+            &>input,
+            button {
+                animation: pop .3s;
+            }
         }
 
         input#sendmoneyvalue {
@@ -199,7 +209,29 @@
             color: var(--colors-text-high);
             display: inline-flex;
             padding: .5em;
-            border-radius: 50%;
+            border-radius: 2em;
+            align-items: center;
+
+            &:hover>.totalPaymentdisp {
+                width: 5em;
+            }
+
+            & .totalPaymentdisp {
+                width: 0;
+                overflow: hidden;
+                transition: width .3s;
+                white-space: nowrap;
+            }
+        }
+
+        @keyframes cancelbtn {
+            0% {
+                margin-top: 0;
+            }
+
+            100% {
+                margin-top: 2em;
+            }
         }
 
         .sendmoneycancel {
@@ -207,10 +239,7 @@
             border-radius: 2em;
             padding: .5em 1em;
             margin-top: 2em;
-        }
-
-        div#accgainlossdisp {
-    font-size: 24px;
+            animation: cancelbtn .3s !important;
         }
 
         #gainorloss {
@@ -223,20 +252,96 @@
         }
 
         .label {
-    display: flex
-;
-    flex-direction: row;
-    align-items: center;
-    gap: .5em;
-    justify-content: space-between;
-}
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: .5em;
+            justify-content: space-between;
+            opacity: .5;
+            font-size: small;
+        }
+
+        .loader {
+            width: calc(100% - 1rem);
+            height: 0px;
+            display: inline-block;
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            margin: 0 .5em;
+            transition: .5s;
+        }
+
+        .loader::after {
+            content: '';
+            width: 96px;
+            height: 3px;
+            background: #ffffff4e;
+            position: absolute;
+            border-radius: 5px;
+            top: 0;
+            left: 0;
+            box-sizing: border-box;
+            animation: hitZak 0.6s ease-in-out infinite alternate;
+        }
+
+        @keyframes hitZak {
+            0% {
+                left: 0;
+                transform: translateX(-1%);
+            }
+
+            100% {
+                left: 100%;
+                transform: translateX(-99%);
+            }
+        }
+
+
+        @keyframes pop {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+
+            to {
+                opacity: 1;
+                transform: none;
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: auto;
+            }
+        }
+
+        .rtr {
+            display: inline;
+
+            &>svg {
+                height: 17px;
+                width: 17px;
+                transform: translateY(3px);
+            }
+        }
+
+        div#note_abt_tax {
+            background: #ff67672b;
+            padding: .3em .7em;
+            border-radius: 2em;
+        }
     </style>
 </head>
 
 <body>
     <div class="navBar">
         <div class="searchContainer">
-            <input placeholder="Enter a username...">
+            <input placeholder="Enter a username..." id="usersearchbar">
             <div class="button" onclick="makepayment()">
                 <span class="material-symbols-rounded">
                     send_money
@@ -247,6 +352,7 @@
             <img src="https://avatars.rotur.dev/o" alt="Profile" id="pfponnav">
         </div>
     </div>
+    <span class="loader" id="loaderElement"></span>
 
     <div class="mainUI">
         <div class="widgets">
@@ -256,8 +362,9 @@
                 </div>
                 <div class="value">
                     <div id="accbaldisp"></div>
-                    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-                        width="104.35659" height="110.277" viewBox="0,0,104.35659,110.277">
+                    <svg id="rtrsvg" version="1.1" xmlns="http://www.w3.org/2000/svg"
+                        xmlns:xlink="http://www.w3.org/1999/xlink" width="104.35659" height="110.277"
+                        viewBox="0,0,104.35659,110.277">
                         <g transform="translate(-187.82171,-124.8615)">
                             <g fill="none" stroke="var(--colors-text-normal)" stroke-width="7" stroke-miterlimit="10">
                                 <path
@@ -275,25 +382,31 @@
             <div class="widget">
                 <div class="label">
                     Gain-loss ratio
-                        <span class="material-symbols-rounded" id="gainorloss">
-                            arrow_upward
-                        </span>
+                    <span class="material-symbols-rounded" id="gainorloss">
+                        arrow_upward
+                    </span>
                 </div>
-                    <div class="value">
-                        <div id="accgainlossdisp">20 / 10</div>
-                    </div>
+                <div class="value">
+                    <div id="accgainlossdisp">20 / 10</div>
+                </div>
             </div>
         </div>
         <div class="chart">
             <canvas id="transactionChart"></canvas>
         </div>
     </div>
-    <div id="paymentscreen">
+    <div class="screen" id="paymentscreen">
         <small id="sendmoneystat">Sending <span id="sendmoneyusrchip">darkdot</span>:</small>
-        <input id="sendmoneyvalue" value="01.00" placeholder="01.00">
+        <input id="sendmoneyvalue" onkeyup="recalculatepaycheck()" value="01.00" placeholder="01.00">
+        <div id="note_abt_tax">
+            +1 <div class="rtr"></div> taxes
+        </div>
         <div class="aboutotsend">
             <input id="sendmoneynote" placeholder="Note...">
             <button id="sendmoneybtn" onclick="sendmoneyfr()">
+                <span class="totalPaymentdisp">Pay <span id="totalpaymentfr">no</span>
+                    <div class="rtr"></div>
+                </span>
                 <span class="material-symbols-rounded">
                     arrow_forward
                 </span></button>
@@ -301,8 +414,31 @@
         <button class="sendmoneycancel" onclick="cancelpayment()">
             Cancel</button>
     </div>
-    <script>
+    <div class="screen" id="donescreen">
+
+    </div>
+    <script defer>
+        const rtrElements = document.querySelectorAll('.rtr');
+        const rtrsvg = document.querySelector('#rtrsvg');
+
+        rtrElements.forEach(element => {
+            const clone = rtrsvg.cloneNode(true);
+            element.appendChild(clone);
+        });
+
+        var payment_screen = document.getElementById("paymentscreen");
+        var payment_screen_un = document.getElementById("sendmoneyusrchip");
+        var target_un_inp = document.getElementById("usersearchbar");
+        var payment_screen_amt = document.getElementById("sendmoneyvalue");
+        var payment_screen_note = document.getElementById("sendmoneynote");
+
+        function recalculatepaycheck() {
+            let element = document.getElementById("totalpaymentfr");
+            element.innerText = parseFloat(payment_screen_amt.value) + 1;
+        }
+
         async function greenflag() {
+
             const rawData = await window.parent.roturExtension.getTransactions();
             const currentBalance = await window.parent.roturExtension.getBalance();
 
@@ -320,21 +456,21 @@
 
             transactions.forEach(transaction => {
                 console.log(JSON.stringify(transaction));
-               if (typeof transaction === 'string') {
-    const match = transaction.match(/([-+]?\d*\.?\d+)/);
-    if (match) {
-        const amount = parseFloat(match[0]);
-        balance -= amount;
+                if (typeof transaction === 'string') {
+                    const match = transaction.match(/([-+]?\d*\.?\d+)/);
+                    if (match) {
+                        const amount = parseFloat(match[0]);
+                        balance -= amount;
 
-        if (amount > 0) {
-            totalGain += amount;
-        } else if (amount < 0) {
-            totalLoss += Math.abs(amount);
-        }
+                        if (amount > 0) {
+                            totalGain += amount;
+                        } else if (amount < 0) {
+                            totalLoss += Math.abs(amount);
+                        }
 
-        dataPoints.unshift({ balance, transaction });
-    }
-} else if (typeof transaction === 'object' && transaction !== null) {
+                        dataPoints.unshift({ balance, transaction });
+                    }
+                } else if (typeof transaction === 'object' && transaction !== null) {
                     const amount = transaction.amount || 0;
                     const type = transaction.type;
                     const signedAmount = type === 'out' ? -amount : amount;
@@ -355,7 +491,7 @@
                 }
             });
 
-            while (dataPoints.length < 10) {
+            while (dataPoints.length < 6) {
                 const earliest = dataPoints[0];
                 dataPoints.unshift({ balance: earliest ? earliest.balance : 0, transaction: 'No Data' });
             }
@@ -410,14 +546,46 @@
             document.getElementById("pfponnav").src = "https://avatars.rotur.dev/" + window.parent.roturExtension.user.username;
         }
 
-        var payment_screen = document.getElementById("paymentscreen");
 
-        function makepayment() {
+        async function makepayment() {
+            loader.start();
+            let doesexists = await fetch(`https://social.rotur.dev/profile?name=${target_un_inp.value}&limit=1`);
+            doesexists = await doesexists.text();
+            loader.stop();
+            if (JSON.parse(doesexists)?.error) {
+                window.parent.toast("There's no such user");
+                return;
+            }
             payment_screen.style.display = "flex";
+            payment_screen_un.innerText = target_un_inp.value;
+            payment_screen_amt.value = '';
+            payment_screen_amt.focus();
+            target_un_inp.value = '';
         }
 
         function cancelpayment() {
             payment_screen.style.display = "none";
+        }
+
+        var loader_element = document.getElementById("loaderElement")
+
+        var loader = {
+            start: () => {
+                loader_element.style.height = "6px";
+                loader_element.style.opacity = "1";
+            },
+            stop: () => {
+                loader_element.style.height = "0px";
+                loader_element.style.opacity = "0";
+            }
+        }
+
+        function sendmoneyfr() {
+            window.parent.roturExtension.transferCurrency({AMOUNT:payment_screen_amt.value, USER:target_un_inp.value, NOTE:payment_screen_note.value}).then((result) => {
+                if (result == "Success") {
+
+                }
+            })
         }
     </script>
 </body>
