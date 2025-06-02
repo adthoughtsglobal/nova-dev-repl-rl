@@ -507,6 +507,23 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
                         }
                         return true;
                     }
+                    function sendLargeMessage(target, data, transactionId, chunkSize = 64 * 1024) {
+    const json = JSON.stringify(data);
+    const totalChunks = Math.ceil(json.length / chunkSize);
+
+    for (let i = 0; i < totalChunks; i++) {
+        const chunk = json.slice(i * chunkSize, (i + 1) * chunkSize);
+        target.postMessage({
+            transactionId,
+            chunk,
+            chunkIndex: i,
+            totalChunks,
+            isJson: true,
+            success: true
+        }, '*');
+    }
+}
+
                     const hasPermission = await checkAndSetPermission(appid, namespace, title);
                     if (!hasPermission) return;
 
@@ -519,11 +536,9 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
 
                     const result = await fn(...args);
 
-                    event.source.postMessage({
-                        transactionId: message.transactionId,
-                        result,
-                        success: true
-                    }, '*');
+                    await sendLargeMessage(event.source, result, message.transactionId);
+
+
                 } else {
                     throw new Error(`Invalid NTX action: ${message.action}`);
                 }
@@ -555,6 +570,7 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
             myWindow = {
                 ...data,
                 close: () => {
+                    console.log("clwin543", myWindow.windowID)
                     ntxSession.send("sysUI.clwin", myWindow.windowID);
                 }
             };
@@ -570,18 +586,45 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
             this.transactionIdCounter = 0;
             this.pendingRequests = {};
             this.listeners = {};
-            window.addEventListener("message", (event) => {
-                if (event.data.transactionId && typeof event.data.success === "boolean") {
-                    const { transactionId, result, error, success } = event.data;
-                    if (this.pendingRequests[transactionId]) {
-                        success
-                            ? this.pendingRequests[transactionId].resolve(result)
-                            : this.pendingRequests[transactionId].reject(error);
-                        delete this.pendingRequests[transactionId];
-                    }
-                }
+            const chunkBuffer = {};
 
-            });
+window.addEventListener("message", (event) => {
+    const { transactionId, chunk, chunkIndex, totalChunks, isJson, success, error } = event.data;
+
+    if (transactionId && typeof success === "boolean") {
+        if (isJson && chunk !== undefined) {
+            if (!chunkBuffer[transactionId]) {
+                chunkBuffer[transactionId] = { chunks: [], received: 0, total: totalChunks };
+            }
+
+            chunkBuffer[transactionId].chunks[chunkIndex] = chunk;
+            chunkBuffer[transactionId].received++;
+
+            if (chunkBuffer[transactionId].received === totalChunks) {
+                const fullData = chunkBuffer[transactionId].chunks.join('');
+                delete chunkBuffer[transactionId];
+
+                const result = JSON.parse(fullData);
+
+                if (this.pendingRequests[transactionId]) {
+                    this.pendingRequests[transactionId].resolve(result);
+                    delete this.pendingRequests[transactionId];
+                }
+            }
+        } else {
+            if (this.pendingRequests[transactionId]) {
+                if (success) {
+                    this.pendingRequests[transactionId].resolve(event.data.result);
+                } else {
+                    this.pendingRequests[transactionId].reject(error);
+                }
+                delete this.pendingRequests[transactionId];
+            }
+        }
+    }
+});
+
+
         }
 
         generateTransactionId() {

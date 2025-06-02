@@ -478,8 +478,10 @@ function closeElementedis() {
 	}, 500);
 }
 function clwin(x) {
-	snappingconthide();
-	const el = isElement(x) ? x : document.getElementById(x);
+	snappingconthide(); 
+	const el = isElement(x) ? x : document.getElementById(x.startsWith("window") ? x : "window." + x);
+
+	console.log(43, x)
 	if (!el) return;
 
 	const windKey = el.getAttribute("data-winuid");
@@ -1306,14 +1308,14 @@ function containsSmallSVGElement(str) {
 	var idRegex = /\bid="([^"]+)"/g;
 	var urlRefRegex = /url\(#([^")]+)\)/g;
 
-	str = str.replace(idRegex, function(match, id) {
+	str = str.replace(idRegex, function (match, id) {
 		if (!idMap[id]) {
 			idMap[id] = 'svguid_' + Math.random().toString(36).substr(2, 8);
 		}
 		return `id="${idMap[id]}"`;
 	});
 
-	str = str.replace(urlRefRegex, function(match, id) {
+	str = str.replace(urlRefRegex, function (match, id) {
 		return idMap[id] ? `url(#${idMap[id]})` : match;
 	});
 
@@ -1973,7 +1975,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 		try {
 			if (result || result == 3) {
 				await showloginmod();
-				gid("versionswitcher").showModal()
 			} else {
 				await cleanupram();
 				CurrentUsername = 'Admin';

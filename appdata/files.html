@@ -1384,6 +1384,10 @@
 
 		async function listFiles(folderName, gen) {
 			// myWindow.setTitle("Files");
+
+			if (sessiontype == "directory") {
+				return;
+			}
 			const startTime = performance.now();
 			if (currentPath == folderName && gen) {
 				const previousFiles = cachedFiles[currentPath] || [];
@@ -2067,12 +2071,47 @@
 			}
 		});
 
+		async function directorySelector() {
+			document.body.style.display = 'none';
+			const getFolderNames = (memory, parentPath = '', level = 0) => {
+				let folders = [];
+				Object.keys(memory).forEach(key => {
+					const fullPath = parentPath + key;
+					if (fullPath.endsWith('/')) {
+						const indent = '-'.repeat(level * 2);
+						folders.push(indent + fullPath);
+						folders = folders.concat(getFolderNames(memory[key], fullPath, level + 1));
+					}
+				});
+				return folders;
+			};
+
+
+			let folders = getFolderNames(window.parent.memory.root);
+
+			let selectedFolder = await window.parent.showDropdownModal("Choose a folder", "to continue your action", folders);
+			window.parent.OLPreturn(selectedFolder, sessionreturnreqid);
+			myWindow.close();
+		}
+
 		function greenflag() {
 			const data = myWindow?.params?.data;
 			if (data?.opener) {
-				sessiontype = data.opener === 'showFile' ? 'showFile' : 'opener';
-				// myWindow.setTitle(data.opener === 'showFile' ? "View File" : "Choose File");
 				sessionreturnreqid = myWindow.params.trid;
+				sessiontype = data.opener === 'showFile' ? 'showFile' : 'opener';
+				switch (data.opener) {
+					case "showFile":
+						sessiontype = "showFile"
+						break;
+					case "opener":
+						sessiontype = "opener"
+						break;
+					case "directory":
+						directorySelector();
+						return;
+						break;
+				}
+				// myWindow.setTitle(data.opener === 'showFile' ? "View File" : "Choose File");
 				document.getElementById("choosefile").style.display = data.opener === 'showFile' ? "none" : "flex";
 
 				if (data.opener === 'showFile') {

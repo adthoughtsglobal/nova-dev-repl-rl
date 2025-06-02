@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<meta name="nova-include" content="nova.css material-symbols-rounded">
+	<meta name="nova-icon"
+		content="<svg width='214' height='214' viewBox='0 0 214 214' fill='none' xmlns='http://www.w3.org/2000/svg'> <g clip-path='url(#clip0_6_2)'> <path d='M0 214V0H214V214H0Z' fill='white'/> <ellipse cx='124.5' cy='107' rx='35.5' ry='35' fill='#FFC853'/> <path d='M58.4553 81L142.75 133.171L108.631 214H-0.25V133.171L58.4553 81Z' fill='#9DACFF'/> <path d='M183.879 47L214 88.75V214H21L80.1272 138.85L109.691 156.835L183.879 47Z' fill='#6179FF'/> </g> <defs> <clipPath id='clip0_6_2'> <rect width='214' height='214' fill='white'/> </clipPath> </defs> </svg>">
+		<meta name="capabilities" content=".zip">
+    <meta name="permissions" content="fileGet, unsandboxed">
+	<title>Zipper</title>
+	<style>
+		body {
+			color: var(--colors-text-normal);
+			font-weight: 400;
+			font-style: normal;
+			background-color: var(--colors-BG-normal);
+			padding: 0 var(--sizing-huge);
+		}
+	</style>
+</head>
+
+<body>
+    <div id="zip">
+    <h1>Choose a directory:</h1>
+    <button onclick="choosedir('zip')">Choose</button> <input id="zip_dir">
+    <h1>Choose a destination:</h1>
+    <button onclick="choosedest('zip')">Choose</button> <input id="zip_dest">
+    <button onclick="zipFiles()">Zip</button>
+</div>
+<div id="unzip">
+    <h1>Choose a zip file:</h1>
+    <button onclick="choosefile()">Choose</button> <input id="zip_file">
+    <h1>Choose a destination:</h1>
+    <button onclick="choosedest('unzip')">Choose</button> <input id="unzip_dest">
+    <button onclick="unzipFile()">Unzip</button>
+</div>
+
+<script>
+let zipDirPath = '';
+let zipDestPath = '';
+let unzipFileID = '';
+let unzipDestPath = '';
+
+async function choosedir(mode) {
+    const path = await ntxSession.send("olp.useHandler", "file_manager", { "opener": 'directory', "dir": "Downloads/" });
+    if (mode === 'zip') {
+        zipDirPath = path;
+        document.getElementById('zip_dir').value = path;
+    }
+}
+
+async function choosedest(mode) {
+    const path = await ntxSession.send("olp.useHandler", "file_manager", { "opener": 'directory', "dir": "Downloads/" });
+    if (mode === 'zip') {
+        zipDestPath = path;
+        document.getElementById('zip_dest').value = path;
+    } else {
+        unzipDestPath = path;
+        document.getElementById('unzip_dest').value = path;
+    }
+}
+
+async function choosefile() {
+    const fileID = await ntxSession.send("olp.useHandler", "file_manager", { "opener": 'any', "dir": "Downloads/" });
+    unzipFileID = fileID;
+    document.getElementById('zip_file').value = fileID;
+}
+
+async function zipFiles() {
+    const files = await ntxSession.send("fileGet.listDirectory", zipDirPath);
+    const zipped = {};
+    for (const file of files) {
+        if (!file.isDirectory) {
+            const f = await ntxSession.send("fileGet.byId", file.id);
+            const binary = Uint8Array.from(atob(f.content.split(',')[1]), c => c.charCodeAt(0));
+            zipped[file.name] = binary;
+        }
+    }
+    const zippedData = window.parent.fflate.zipSync(zipped);
+    const zippedUri = 'data:application/zip;base64,' + btoa(String.fromCharCode(...zippedData));
+    await ntxSession.send("fileSet.createFile", zipDestPath, 'archive.zip', false, zippedUri);
+    alert('Zip complete');
+}
+
+async function unzipFile() {
+    const file = await ntxSession.send("fileGet.byId", unzipFileID);
+    const binary = Uint8Array.from(atob(file.content.split(',')[1]), c => c.charCodeAt(0));
+    const unzipped = window.parent.fflate.unzipSync(binary);
+
+    const entries = Object.entries(unzipped);
+
+    let i = 0;
+
+    async function processNext() {
+        if (i >= entries.length) {
+            alert('Unzip complete');
+            return;
+        }
+
+        const [path, content] = entries[i++];
+        if (content == null) {
+            return setTimeout(processNext, 500);
+        }
+
+        const parts = path.split('/');
+        const fileName = parts.pop();
+        const subDir = parts.join('/');
+        const fullPath = subDir ? `${unzipDestPath}/${subDir}` : unzipDestPath;
+
+        const dataUri = 'data:application/octet-stream;base64,' + btoa(String.fromCharCode(...content));
+        await ntxSession.send("fileSet.createFile", fullPath, fileName, false, dataUri);
+
+        setTimeout(processNext, 500);
+    }
+
+    processNext();
+}
+
+</script>
+
+</body>
+
+</html>
