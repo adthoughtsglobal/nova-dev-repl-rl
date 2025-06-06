@@ -864,7 +864,7 @@ nav [navobj] div {
 }
 
 #loginmod {
-	background: #5555557d;
+    background: #0000008a;
 	backdrop-filter: blur(1.5rem);
 	border: none;
 	color: var(--colors-text-normal);
@@ -1180,10 +1180,10 @@ input#novamenusearchinp {
 	overflow: hidden;
 }
 
+/* snap transition */
 .snapping {
-	transition: 0.4s;
+	transition: 0.4s ease-out;
 }
-
 
 .transp2 {
 	transition: 0.4s;

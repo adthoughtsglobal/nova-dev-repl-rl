@@ -508,21 +508,23 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
                         return true;
                     }
                     function sendLargeMessage(target, data, transactionId, chunkSize = 64 * 1024) {
-    const json = JSON.stringify(data);
-    const totalChunks = Math.ceil(json.length / chunkSize);
+                        try {
+                            const json = JSON.stringify(data);
+                            const totalChunks = Math.ceil(json.length / chunkSize);
 
-    for (let i = 0; i < totalChunks; i++) {
-        const chunk = json.slice(i * chunkSize, (i + 1) * chunkSize);
-        target.postMessage({
-            transactionId,
-            chunk,
-            chunkIndex: i,
-            totalChunks,
-            isJson: true,
-            success: true
-        }, '*');
-    }
-}
+                            for (let i = 0; i < totalChunks; i++) {
+                                const chunk = json.slice(i * chunkSize, (i + 1) * chunkSize);
+                                target.postMessage({
+                                    transactionId,
+                                    chunk,
+                                    chunkIndex: i,
+                                    totalChunks,
+                                    isJson: true,
+                                    success: true
+                                }, '*');
+                            }
+                        } catch { }
+                    }
 
                     const hasPermission = await checkAndSetPermission(appid, namespace, title);
                     if (!hasPermission) return;

@@ -426,21 +426,23 @@ function makedefic(str) {
 		}
 	});
 	return result.join('').slice(0, 3);
-}
-function updateBattery() {
+}function updateBattery() {
 	var batteryPromise;
 	if ('getBattery' in navigator) {
 		batteryPromise = navigator.getBattery();
 	} else if ('battery' in navigator) {
 		batteryPromise = Promise.resolve(navigator.battery);
 	} else {
-		console.log('No Battery API');
-		gid("batterydisdiv").style.display = "none";
+		document.getElementById("batterydisdiv").style.display = "none";
 		return;
 	}
 	batteryPromise.then(function (battery) {
-		var batteryLevel = Math.floor(battery.level * 100);
-		var isCharging = battery.charging;
+		if (typeof battery.level !== 'number' || isNaN(battery.level)) {
+			document.getElementById("batterydisdiv").style.display = "none";
+			return;
+		}
+		var batteryLevel = Math.round(battery.level * 100);
+		var isCharging = !!battery.charging;
 		if ((batteryLevel === 100 && isCharging) || (batteryLevel === 0 && isCharging)) {
 			document.getElementById("batterydisdiv").style.display = "none";
 		} else {
@@ -459,13 +461,13 @@ function updateBattery() {
 		var batteryDisplayElement = document.getElementById('battery-display');
 		var batteryPDisplayElement = document.getElementById('battery-p-display');
 		if (batteryDisplayElement && batteryPDisplayElement) {
-			if (iconClass !== batteryDisplayElement.innerText) {
+			if (iconClass !== batteryDisplayElement.innerText || batteryPDisplayElement.innerText !== batteryLevel + "%") {
 				batteryDisplayElement.innerHTML = iconClass;
 				batteryPDisplayElement.innerHTML = batteryLevel + "%";
 			}
 		}
-	}).catch(function (error) {
-		console.log("Battery Error: " + error);
+	}).catch(function () {
+		document.getElementById("batterydisdiv").style.display = "none";
 	});
 }
 

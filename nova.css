@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;800&display=swap&family=IBM+Plex+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;800&display=swap');
 
 :root {
 	--font-size-base: 1rem;
@@ -94,16 +94,12 @@ body {
 	background-color: var(--colors-BG-normal);
 	color: var(--colors-text-normal);
 	user-select: none;
-	font-family: "IBM Plex Sans", sans-serif;
+	font-family: 'Poppins', sans-serif;
 }
 
 body * {
 	transition-timing-function: cubic-bezier(0.7, 0, 1, 1);
 	animation-timing-function: cubic-bezier(0.7, 0, 1, 1);
-}
-
-h1, h2, h3, h4, h5, b {
-	font-family: 'Poppins', sans-serif;
 }
 
 input::placeholder,
