@@ -864,7 +864,7 @@ nav [navobj] div {
 }
 
 #loginmod {
-    background: #0000008a;
+	background: #0000008a;
 	backdrop-filter: blur(1.5rem);
 	border: none;
 	color: var(--colors-text-normal);
@@ -1433,8 +1433,8 @@ dialog#terminal {
 }
 
 .searchwincont {
-    height: calc(300px);
-    box-sizing: border-box;
+	height: calc(300px);
+	box-sizing: border-box;
 	display: flex;
 	flex-direction: row;
 	flex-wrap: nowrap;
@@ -1581,7 +1581,7 @@ dialog#terminal {
 	flex-direction: column;
 	padding: var(--sizing-normal);
 	align-items: center;
-    justify-content: flex-start;
+	justify-content: flex-start;
 	transition: 0.3s;
 	border-radius: var(--sizing-border-radius);
 	margin-left: 0.7rem;
@@ -1631,7 +1631,7 @@ div#seapppreview {
 #partrecentapps span.smalltitl {
 	font-size: var(--font-size-small);
 	opacity: 0.5;
-    margin-left: 19px;
+	margin-left: 19px;
 }
 
 @media only screen and (max-width: 1000px) {
@@ -2097,24 +2097,25 @@ noscript {
 	align-items: center;
 	border-radius: var(--sizing-border-radius);
 	cursor: pointer;
+
+	&:focus {
+		outline: none;
+		background: #ffffff1c;
+	}
+
+	&>.icon svg {
+		height: 2rem;
+		object-fit: contain;
+		background: rgb(125 125 125 / 24%);
+		border-radius: 0.3rem;
+		padding: 0.3rem;
+		aspect-ratio: 1 / 1;
+		width: auto;
+	}
 }
 
-.user:focus {
-	background: #ffffff1c;
-}
 
-.userselect .user .icon svg {
-	height: 2rem;
-	object-fit: contain;
-	background: rgb(125 125 125 / 24%);
-	border-radius: 0.3rem;
-	padding: 0.3rem;
-	aspect-ratio: 1 / 1;
-	width: auto;
-	margin-bottom: 0.3rem;
-}
-
-.userselect .user .name {
+.userselect .user .userselect .user .name {
 	width: 100%;
 	text-wrap: nowrap;
 	text-overflow: ellipsis;

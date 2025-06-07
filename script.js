@@ -426,7 +426,7 @@ function makedefic(str) {
 		}
 	});
 	return result.join('').slice(0, 3);
-}function updateBattery() {
+} function updateBattery() {
 	var batteryPromise;
 	if ('getBattery' in navigator) {
 		batteryPromise = navigator.getBattery();
@@ -480,7 +480,7 @@ function closeElementedis() {
 	}, 500);
 }
 function clwin(x) {
-	snappingconthide(); 
+	snappingconthide();
 	const el = isElement(x) ? x : document.getElementById(x.startsWith("window") ? x : "window." + x);
 
 	console.log(43, x)
@@ -1235,7 +1235,19 @@ async function strtappse(event) {
 		event.preventDefault();
 		if (searchValue === "i love nova") {
 			gid("searchwindow").close();
-			notify("Aw i read what you just typed in,", "I love you too! :)", "Nova just replied you:");
+			let x = await ask("What can i call you?");
+			say("i love you too, " + x);
+			let y = await justConfirm("wanna tell me why? ", "I'd love to hear it...");
+			if (y) {
+				let z = await ask("All ears! (shared with Nova Developers)");
+				try {
+					gtag('event', 'exception', {
+						'name': x,
+						'description': z,
+						'fatal': false
+					});
+				} catch { }
+			}
 			return;
 		}
 		if (appToOpen) {
