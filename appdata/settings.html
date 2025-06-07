@@ -1073,7 +1073,7 @@
 		.datasmall svg {
 			aspect-ratio: 1/1;
 			width: 35px;
-    height: auto;
+			height: auto;
 		}
 
 		.datasmall p {
@@ -1396,6 +1396,11 @@
 			flex-direction: row;
 			gap: 0.5rem;
 			margin-top: 0.5rem;
+
+			&>button {
+				min-width: 7rem;
+				padding: 5px;
+			}
 		}
 
 		input.inputtype1 {
@@ -2006,6 +2011,22 @@
 						} else {
 							console.log("No wallpaper set ", storedwall);
 						}
+
+						async function savewallpaperalginment() {
+							let newValue = document.getElementById("wallpaperPos").value
+							await ntxSession.send("settings.set", "wallpaperPos", newValue);
+						}
+
+						document.getElementById("wallpaperPos").addEventListener("change", savewallpaperalginment);
+
+						try {
+							let currentSettings = await ntxSession.send("settings.get", "wallpaperPos");
+							if (currentSettings) {
+								document.getElementById("wallpaperPos").checked = currentSettings;
+							}
+						} catch (error) {
+							console.error(error);
+						}
 					}
 
 					async function defs5() {
@@ -2510,7 +2531,49 @@
 			</segr>
 			<h3>Credits</h3>
 			<small class="datasmall">
-				<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="187.07103" height="102.19663" viewBox="0,0,187.07103,102.19663"><g transform="translate(-172.62897,-123.93874)"><g stroke="#ffffff" stroke-width="5" stroke-miterlimit="10"><path d="M224.55461,139.12731c1.93512,-7.91302 9.91863,-12.75906 17.83165,-10.82393c7.91302,1.93512 12.75905,9.91863 10.82393,17.83165c-1.93512,7.91302 -9.91863,12.75905 -17.83165,10.82393c-7.91302,-1.93512 -12.75905,-9.91862 -10.82393,-17.83164z" fill="none" stroke-linecap="butt"/><path d="M246.49068,155.89542c0,0 4.7239,11.04796 4.92031,11.67681c1.99131,6.37553 3.32831,15.46815 3.32831,15.46815" fill="none" stroke-linecap="round"/><path d="M242.11522,183.16604c0,0 14.09508,-15.22999 8.80374,-14.12642c-5.29134,1.10357 -23.06743,11.26253 -23.06743,11.26253" fill="none" stroke-linecap="round"/><path d="M241.6347,221.38082c0,0 1.37914,-14.26659 4.59275,-20.76964c2.97931,-6.02892 8.61209,-16.19399 8.61209,-16.19399l10.91045,38.58282" fill="none" stroke-linecap="round"/><path d="M207.32435,137.26268c1.93512,7.91302 -2.91091,15.89652 -10.82393,17.83164c-7.91302,1.93512 -15.89653,-2.91091 -17.83165,-10.82393c-1.93512,-7.91302 2.91091,-15.89653 10.82393,-17.83165c7.91302,-1.93513 15.89653,2.91091 17.83165,10.82393z" fill="none" stroke-linecap="butt"/><path d="M186.13966,183.67574c0,0 1.337,-9.09262 3.32831,-15.46815c0.19641,-0.62885 0.92031,-12.67681 0.92031,-12.67681" fill="none" stroke-linecap="round"/><path d="M199.26374,184.8014c0,0 -14.59508,-16.22999 -9.30374,-15.12642c5.29134,1.10357 20.56743,5.76253 20.56743,5.76253" fill="none" stroke-linecap="round"/><path d="M175.12897,223.63537l10.91045,-38.58282c0,0 5.63278,10.16507 8.61209,16.19399c3.21361,6.50305 4.59275,20.76964 4.59275,20.76964" fill="none" stroke-linecap="round"/><path d="M203.53334,187.83333v-11.66667h34.66667v11.66667z" fill="#ffffff" stroke-linecap="butt"/><path d="M258.86667,218.84396v-11.66667h34.66666v11.66667z" fill="#ffffff" stroke-linecap="butt"/><path d="M301.2,218.84396v-11.66667h34.66667v11.66667z" fill="#ffffff" stroke-linecap="butt"/><path d="M280.53334,200.17729v-11.66667h34.66667v11.66667z" fill="#ffffff" stroke-linecap="butt"/><path d="M322.53334,199.84396v-11.66667h34.66666v11.66667z" fill="#ffffff" stroke-linecap="butt"/><path d="M301.53334,180.84396v-11.66667h34.66666v11.66667z" fill="#ffffff" stroke-linecap="butt"/></g></g></svg>
+				<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+					width="187.07103" height="102.19663" viewBox="0,0,187.07103,102.19663">
+					<g transform="translate(-172.62897,-123.93874)">
+						<g stroke="#ffffff" stroke-width="5" stroke-miterlimit="10">
+							<path
+								d="M224.55461,139.12731c1.93512,-7.91302 9.91863,-12.75906 17.83165,-10.82393c7.91302,1.93512 12.75905,9.91863 10.82393,17.83165c-1.93512,7.91302 -9.91863,12.75905 -17.83165,10.82393c-7.91302,-1.93512 -12.75905,-9.91862 -10.82393,-17.83164z"
+								fill="none" stroke-linecap="butt" />
+							<path
+								d="M246.49068,155.89542c0,0 4.7239,11.04796 4.92031,11.67681c1.99131,6.37553 3.32831,15.46815 3.32831,15.46815"
+								fill="none" stroke-linecap="round" />
+							<path
+								d="M242.11522,183.16604c0,0 14.09508,-15.22999 8.80374,-14.12642c-5.29134,1.10357 -23.06743,11.26253 -23.06743,11.26253"
+								fill="none" stroke-linecap="round" />
+							<path
+								d="M241.6347,221.38082c0,0 1.37914,-14.26659 4.59275,-20.76964c2.97931,-6.02892 8.61209,-16.19399 8.61209,-16.19399l10.91045,38.58282"
+								fill="none" stroke-linecap="round" />
+							<path
+								d="M207.32435,137.26268c1.93512,7.91302 -2.91091,15.89652 -10.82393,17.83164c-7.91302,1.93512 -15.89653,-2.91091 -17.83165,-10.82393c-1.93512,-7.91302 2.91091,-15.89653 10.82393,-17.83165c7.91302,-1.93513 15.89653,2.91091 17.83165,10.82393z"
+								fill="none" stroke-linecap="butt" />
+							<path
+								d="M186.13966,183.67574c0,0 1.337,-9.09262 3.32831,-15.46815c0.19641,-0.62885 0.92031,-12.67681 0.92031,-12.67681"
+								fill="none" stroke-linecap="round" />
+							<path
+								d="M199.26374,184.8014c0,0 -14.59508,-16.22999 -9.30374,-15.12642c5.29134,1.10357 20.56743,5.76253 20.56743,5.76253"
+								fill="none" stroke-linecap="round" />
+							<path
+								d="M175.12897,223.63537l10.91045,-38.58282c0,0 5.63278,10.16507 8.61209,16.19399c3.21361,6.50305 4.59275,20.76964 4.59275,20.76964"
+								fill="none" stroke-linecap="round" />
+							<path d="M203.53334,187.83333v-11.66667h34.66667v11.66667z" fill="#ffffff"
+								stroke-linecap="butt" />
+							<path d="M258.86667,218.84396v-11.66667h34.66666v11.66667z" fill="#ffffff"
+								stroke-linecap="butt" />
+							<path d="M301.2,218.84396v-11.66667h34.66667v11.66667z" fill="#ffffff"
+								stroke-linecap="butt" />
+							<path d="M280.53334,200.17729v-11.66667h34.66667v11.66667z" fill="#ffffff"
+								stroke-linecap="butt" />
+							<path d="M322.53334,199.84396v-11.66667h34.66666v11.66667z" fill="#ffffff"
+								stroke-linecap="butt" />
+							<path d="M301.53334,180.84396v-11.66667h34.66666v11.66667z" fill="#ffffff"
+								stroke-linecap="butt" />
+						</g>
+					</g>
+				</svg>
 
 				<p>NovaOS uses <span style="font-weight: bold;">FFlate</span>, a fast (de)compression library. Our bug hunters, community, and critical users provided valuable feedback and raised issues that helped make NovaOS better than ever before.</p>
 			</small>
@@ -2798,10 +2861,11 @@
 						<b>Initialize rotur</b>
 						<button onclick="initrotur()">Start</button>
 					</div>
-					<small>RoturTW is a third party service, which offers APIs. NovaOS supports it but isn't affiliated or
-					endorsing. Visit rotur.dev for details.</small>
+					<small>RoturTW is a third party service, which offers APIs. NovaOS supports it but isn't affiliated
+						or
+						endorsing. Visit rotur.dev for details.</small>
 				</segr>
-				
+
 				<segr id="rtrsignedinsec" style="display:none;">
 					<div setting class="spread">
 						<b id="rtruserstatsi">Signed in</b>
@@ -3243,6 +3307,16 @@
 						<input placeholder="Paste a URL or file ID here..." id="wallpaperurl" class="inputtype1">
 						<button onclick="savewallpap()">Change</button>
 					</div>
+				</div>
+				<div setting class="colorsetting">
+					<b>Wallpaper position</b>
+					<select id="wallpaperPos">
+						<option value="center" selected>Center</option>
+						<option value="flex-start">Left</option>
+						<option value="flex-end">Right</option>
+						<option value="flex-end">Top</option>
+						<option value="flex-end">Bottom</option>
+					</select>
 				</div>
 			</segr>
 

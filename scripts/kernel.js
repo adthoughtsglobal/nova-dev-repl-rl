@@ -419,8 +419,11 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
         };
 
         let styleBlock = '';
-        if (contentString.includes("nova-include") && getMetaTagContent(contentString, 'nova-include')?.includes('nova.css')) {
-            let updatedCss = novadotcsscache;
+        if (
+            contentString.includes("nova-include") &&
+            getMetaTagContent(contentString, 'nova-include')?.includes('nova.css')
+        ) {
+            let updatedCss = novadotcsscache || '';
             const novaCssTag = document.getElementById('novacsstag');
             if (novaCssTag) {
                 const customCss = novaCssTag.textContent;
@@ -439,7 +442,7 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
                     return `:root { ${updated} }`;
                 });
             }
-            styleBlock += `<style>${updatedCss}</style>`;
+            styleBlock = `<style>${updatedCss}</style>`;
         }
 
 
@@ -566,6 +569,16 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
     var myWindow = {};
 
     window.addEventListener("message", async (event) => {
+         if (event.data?.type === 'nova-style' && typeof event.data.css === 'string') {
+    let style = document.getElementById('novacsstag');
+    if (!style) {
+      style = document.createElement('style');
+      style.id = 'novacsstag';
+      document.head.appendChild(style);
+    }
+    style.textContent = event.data.css;
+  }
+
         if (event.data.type === "myWindow") {
             const data = event.data.data;
 
