@@ -170,6 +170,8 @@ async function checkdmode() {
 	if (CurrentUsername) {
 		const themeColors = await getSetting("themeColors") || {};
 		applyTheme(themeColors, document);
+		const wallpos = await getSetting("wallpaperPos") || "center";
+		gid("bgimage").style.objectPosition = wallpos;
 	}
 }
 
@@ -181,60 +183,62 @@ function applyThemeNonVisual(data, doc) {
 	}
 
 	window.top.setSetting("themeColors", data.colors);
-} const appliedThemeVars = new Set();
+} 
+
+const appliedThemeVars = new Set();
 let themeStyleTag = null;
 
 function applyTheme(colors, doc) {
-  if (!themeStyleTag) {
-    themeStyleTag = document.createElement('style');
-    themeStyleTag.id = "novacsstag";
-  }
+	if (!themeStyleTag) {
+		themeStyleTag = document.createElement('style');
+		themeStyleTag.id = "novacsstag";
+	}
 
-  if (!document.getElementById("novacsstag")) {
-    document.head.appendChild(themeStyleTag);
-  }
+	if (!document.getElementById("novacsstag")) {
+		document.head.appendChild(themeStyleTag);
+	}
 
-  if (doc && doc !== document && !doc.getElementById("novacsstag")) {
-    doc.head.appendChild(themeStyleTag.cloneNode(true));
-  }
+	if (doc && doc !== document && !doc.getElementById("novacsstag")) {
+		doc.head.appendChild(themeStyleTag.cloneNode(true));
+	}
 
-  const cssVars = Object.fromEntries(
-    [...novadotcsscache.matchAll(/(--[\w-]+):\s*([^;]+)/g)]
-      .map(([_, key, value]) => [key, value.trim()])
-  );
+	const cssVars = Object.fromEntries(
+		[...novadotcsscache.matchAll(/(--[\w-]+):\s*([^;]+)/g)]
+			.map(([_, key, value]) => [key, value.trim()])
+	);
 
-  const textColor = colors["--colors-text-normal"] ?? cssVars["--colors-text-normal"];
-  const textSelectors = [
-    "--colors-text-section",
-    "--colors-text-sub"
-  ];
+	const textColor = colors["--colors-text-normal"] ?? cssVars["--colors-text-normal"];
+	const textSelectors = [
+		"--colors-text-section",
+		"--colors-text-sub"
+	];
 
-  let cssText = '';
-  for (const variableName in cssVars) {
-    let colorValue = colors[variableName] ?? cssVars[variableName];
-    if (textSelectors.includes(variableName)) {
-      colorValue = textColor;
-    }
-    cssText += `${variableName}: ${colorValue};\n`;
-    appliedThemeVars.add(variableName);
-  }
+	let cssText = '';
+	for (const variableName in cssVars) {
+		let colorValue = colors[variableName] ?? cssVars[variableName];
+		if (textSelectors.includes(variableName)) {
+			colorValue = textColor;
+		}
+		cssText += `${variableName}: ${colorValue};\n`;
+		appliedThemeVars.add(variableName);
+	}
 
-  themeStyleTag.textContent = `:root { ${cssText} }`;
+	themeStyleTag.textContent = `:root { ${cssText} }`;
 
-  if (doc && doc !== document) {
-    const docStyle = doc.getElementById("novacsstag");
-    if (docStyle) docStyle.textContent = themeStyleTag.textContent;
-  }
+	if (doc && doc !== document) {
+		const docStyle = doc.getElementById("novacsstag");
+		if (docStyle) docStyle.textContent = themeStyleTag.textContent;
+	}
 
-  broadcastStyleToIframes(themeStyleTag.textContent);
+	broadcastStyleToIframes(themeStyleTag.textContent);
 };
 
 const broadcastStyleToIframes = (css) => {
-  document.querySelectorAll('iframe').forEach((iframe) => {
-    if (iframe.contentWindow) {
-      iframe.contentWindow.postMessage({ type: 'nova-style', css }, '*');
-    }
-  });
+	document.querySelectorAll('iframe').forEach((iframe) => {
+		if (iframe.contentWindow) {
+			iframe.contentWindow.postMessage({ type: 'nova-style', css }, '*');
+		}
+	});
 };
 
 function removeTheme() {

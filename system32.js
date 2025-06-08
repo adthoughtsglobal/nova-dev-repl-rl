@@ -210,7 +210,7 @@ async function checkPassword(password) {
             }
         );
         return decryptedMagicString === "magicString";
-    } catch (error){
+    } catch (error) {
         return console.error(error);
         ;
     }
@@ -233,50 +233,68 @@ async function changePassword(oldPassword, newPassword) {
     try {
         const oldKey = await getKey(oldPassword);
         const newKey = await getKey(newPassword);
-
+        1
         if (!dbCache) {
             dbCache = await openDB(CurrentUsername, 1);
         }
 
-        const transaction = dbCache.transaction('dataStore', 'readonly');
-        const store = transaction.objectStore('dataStore');
-        const request = store.get(CurrentUsername);
+        const transaction = dbCache.transaction('contentpool', 'readonly');
+        const store = transaction.objectStore('contentpool');
 
-        const contentPool = await new Promise((resolve, reject) => {
-            request.onsuccess = () => {
-                const result = request.result;
-                resolve(result && result.contentpool ? result.contentpool : {});
+        const contentPool = {};
+
+        await new Promise((resolve, reject) => {
+            const request = store.openCursor();
+            request.onsuccess = (event) => {
+                const cursor = event.target.result;
+                if (cursor) {
+                    contentPool[cursor.key] = cursor.value;
+                    cursor.continue();
+                } else {
+                    resolve();
+                }
             };
             request.onerror = () => reject(request.error);
         });
 
         const updatedContentPool = {};
 
-        for (const [id, encryptedData] of Object.entries(contentPool)) {
+        for (const [id, record] of Object.entries(contentPool)) {
+            const encryptedData = record.value;  // unwrap here
+
+            if (
+                !encryptedData ||
+                !(encryptedData.iv instanceof ArrayBuffer) ||
+                !(encryptedData.data instanceof ArrayBuffer)
+            ) {
+                console.warn(`Skipping invalid entry ${id}:`, encryptedData);
+                continue;
+            }
+
             try {
                 const decryptedContent = await decryptData(oldKey, encryptedData);
                 const reEncryptedData = await encryptData(newKey, decryptedContent);
-                updatedContentPool[id] = reEncryptedData;
+                updatedContentPool[id] = { key: id, value: reEncryptedData }; // wrap on write
             } catch (error) {
                 console.error(`Error processing file ${id}:`, error);
                 throw error;
             }
         }
 
-        const writeTransaction = dbCache.transaction('dataStore', 'readwrite');
-        const writeStore = writeTransaction.objectStore('dataStore');
-        const writeRequest = writeStore.get(CurrentUsername);
+
+
+        const writeTransaction = dbCache.transaction('contentpool', 'readwrite');
+        const writeStore = writeTransaction.objectStore('contentpool');
 
         await new Promise((resolve, reject) => {
-            writeRequest.onsuccess = () => {
-                const result = writeRequest.result || { key: CurrentUsername || 'Admin', contentpool: {} };
-                result.contentpool = updatedContentPool;
+            writeTransaction.oncomplete = resolve;
+            writeTransaction.onerror = () => reject(writeTransaction.error);
+            writeTransaction.onabort = () => reject(writeTransaction.error);
 
-                const updateRequest = writeStore.put(result);
-                updateRequest.onsuccess = resolve;
-                updateRequest.onerror = () => reject(updateRequest.error);
-            };
-            writeRequest.onerror = () => reject(writeRequest.error);
+           for (const wrappedData of Object.values(updatedContentPool)) {
+    writeStore.put(wrappedData);
+}
+
         });
 
         password = newPassword;
@@ -300,6 +318,7 @@ async function changePassword(oldPassword, newPassword) {
     lethalpasswordtimes = false;
     return true;
 }
+
 
 // memory collector
 
@@ -1045,10 +1064,6 @@ async function createFile(folderName, fileName, type, content, metadata = {}) {
             memory.root = { ...memory.root };
             folder[fileNameWithExtension] = { id: uid, type, metadata };
             await ctntMgr.set(uid, contentData);
-
-            if (ext === "app") {
-                await extractAndRegisterCapabilities(uid, contentData);
-            }
 
             await setdb("handling file: " + fileNameWithExtension);
             eventBusWorker.deliver({ type: "memory", event: "update", id: "updateFile", key: folderName });

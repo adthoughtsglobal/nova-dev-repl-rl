@@ -1182,7 +1182,7 @@ input#novamenusearchinp {
 
 /* snap transition */
 .snapping {
-	transition: 0.4s ease-out;
+	transition: .5s cubic-bezier(0.36, 0.38, 0, 0.94);
 }
 
 .transp2 {
@@ -2084,6 +2084,12 @@ noscript {
 	margin-bottom: 1rem;
 }
 
+.userselect .divider {
+	width: 1px;
+	height: 50px;
+	background-color: rgba(126, 126, 126, 0.482);
+}
+
 .userselect .user {
 	width: 75px;
 	overflow: hidden;
@@ -2097,13 +2103,24 @@ noscript {
 	align-items: center;
 	border-radius: var(--sizing-border-radius);
 	cursor: pointer;
+	border: 1px solid transparent;
+	padding-top: .7rem;
+
+	&> .name {
+		width: 100%;
+		text-wrap: nowrap;
+		text-overflow: ellipsis;
+		overflow: hidden;
+		text-align: center;
+	}
 
 	&:focus {
 		outline: none;
+		border: 1px solid #ffffff6b;
 		background: #ffffff1c;
 	}
 
-	&>.icon svg {
+	&>.icon>.user_pfp {
 		height: 2rem;
 		object-fit: contain;
 		background: rgb(125 125 125 / 24%);
@@ -2111,21 +2128,19 @@ noscript {
 		padding: 0.3rem;
 		aspect-ratio: 1 / 1;
 		width: auto;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+
+		&.material-symbols-rounded {
+			font-size: 25px;
+			opacity: .7;
+		}
 	}
-}
-
-
-.userselect .user .userselect .user .name {
-	width: 100%;
-	text-wrap: nowrap;
-	text-overflow: ellipsis;
-	overflow: hidden;
-	text-align: center;
 }
 
 .userselect .user:hover {
 	background: #80808052;
-	box-shadow: #0000002f;
 }
 
 .userselect .newusbtn {
@@ -2138,7 +2153,12 @@ noscript {
 	width: fit-content;
 	flex-direction: column;
 	margin-left: 1rem;
-	transition: .3s;
+
+	&:focus {
+		outline: none;
+		border: 1px solid #ffffff6b;
+		background: #ffffff1c;
+	}
 }
 
 .userselect .newusbtn .name {
@@ -2164,6 +2184,7 @@ noscript {
 	flex-direction: row;
 	align-items: center;
 	justify-content: center;
+	gap: .5em;
 }
 
 #userschooser {

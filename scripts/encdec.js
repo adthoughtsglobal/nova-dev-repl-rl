@@ -32,7 +32,7 @@ async function encryptData(key, data) {
     } else if (data instanceof Blob) {
         encoded = new Uint8Array(await data.arrayBuffer());
     } else if (data instanceof Uint8Array || ArrayBuffer.isView(data)) {
-        encoded = data;
+        encoded = new Uint8Array(data.buffer);
     } else {
         throw new Error("Unsupported data type for encryption");
     }
@@ -48,31 +48,30 @@ async function encryptData(key, data) {
         data: encrypted
     };
 }
+
 async function decryptData(key, encryptedData) {
-    return new Promise(async (resolve, reject) => {
+    try {
+        const iv = new Uint8Array(encryptedData.iv);
+        const data = encryptedData.data;
+
+        console.log('iv length:', iv.byteLength);
+console.log('data byteLength:', data.byteLength);
+
+        const decrypted = await crypto.subtle.decrypt(
+            { name: "AES-GCM", iv },
+            key,
+            data
+        );
+
         try {
-            const iv = encryptedData.iv instanceof ArrayBuffer ? new Uint8Array(encryptedData.iv) : base64ToArrayBuffer(encryptedData.iv);
-            const data = encryptedData.data instanceof ArrayBuffer ? encryptedData.data : base64ToArrayBuffer(encryptedData.data);
-
-            const decrypted = await crypto.subtle.decrypt(
-                { name: "AES-GCM", iv },
-                key,
-                data
-            );
-
-            let result;
-            try {
-                result = new TextDecoder().decode(decrypted);
-            } catch {
-                result = new Uint8Array(decrypted);
-            }
-
-            resolve(result);
-        } catch (error) {
-            console.log(error)
-            reject('Incorrect password or corrupted data');
+            return new TextDecoder().decode(decrypted);
+        } catch {
+            return new Uint8Array(decrypted);
         }
-    });
+    } catch (error) {
+        console.error("Decryption failed:", error);
+        throw new Error('Incorrect password or corrupted data');
+    }
 }
 
 function arrayBufferToBase64(buffer) {
