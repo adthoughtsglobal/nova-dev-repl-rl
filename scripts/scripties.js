@@ -151,7 +151,7 @@ async function setuprotur() {
 	if (roturExtension.is_connected) {
 		return true;
 	}
-	await roturExtension.connectToServer({ DESIGNATION: "nva", SYSTEM: "novaOS", VERSION: "2" });
+	roturExtension.connectToServer({ DESIGNATION: "nva", SYSTEM: "novaOS", VERSION: "2" });
 }
 
 async function logoutofrtr() {

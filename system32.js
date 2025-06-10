@@ -291,9 +291,9 @@ async function changePassword(oldPassword, newPassword) {
             writeTransaction.onerror = () => reject(writeTransaction.error);
             writeTransaction.onabort = () => reject(writeTransaction.error);
 
-           for (const wrappedData of Object.values(updatedContentPool)) {
-    writeStore.put(wrappedData);
-}
+            for (const wrappedData of Object.values(updatedContentPool)) {
+                writeStore.put(wrappedData);
+            }
 
         });
 
@@ -692,26 +692,25 @@ async function ensureAllSettingsFilesExist() {
 // memory management
 
 async function getFileNamesByFolder(folderPath) {
+    console.log(folderPath)
     folderPath = folderPath.endsWith('/') ? folderPath : folderPath + '/';
     try {
         const root = memory["root"];
         const folderNames = folderPath.split('/').filter(Boolean);
         let currentFolder = root;
+
         for (const name of folderNames) {
             if (!currentFolder[name + '/']) {
+                console.warn("Key not found:", name + '/');
                 return [];
             }
             currentFolder = currentFolder[name + '/'];
         }
+
         return Object.entries(currentFolder).map(([fileName, file]) => {
             const fileData = { name: fileName };
-
-            if (file.id) {
-                fileData.id = file.id;
-            }
-            if (file.metadata) {
-                fileData.metadata = file.metadata;
-            }
+            if (file.id) fileData.id = file.id;
+            if (file.metadata) fileData.metadata = file.metadata;
             return fileData;
         });
     } catch (error) {
@@ -719,6 +718,45 @@ async function getFileNamesByFolder(folderPath) {
         return null;
     }
 }
+
+async function getAllItemsInFolder(folderPath) {
+    console.log(folderPath);
+    folderPath = folderPath.endsWith('/') ? folderPath : folderPath + '/';
+
+    try {
+        const root = memory["root"];
+        const folderNames = folderPath.split('/').filter(Boolean);
+        let currentFolder = root;
+
+        for (const name of folderNames) {
+            const key = name + '/';
+            if (!currentFolder[key]) {
+                console.warn("Key not found:", key);
+                return [];
+            }
+            currentFolder = currentFolder[key];
+        }
+
+        return Object.entries(currentFolder).map(([key, value]) => {
+            const isFolder = typeof value === 'object' && !value.id;
+            const item = {
+                name: key,
+                type: isFolder ? 'folder' : 'file'
+            };
+
+            if (!isFolder) {
+                if (value.id) item.id = value.id;
+                if (value.metadata) item.metadata = value.metadata;
+            }
+
+            return item;
+        });
+    } catch (error) {
+        console.error("Error fetching data:", error);
+        return null;
+    }
+}
+
 async function getFileByPath(path) {
     await updateMemoryData();
     const segments = path.split('/').filter(segment => segment);

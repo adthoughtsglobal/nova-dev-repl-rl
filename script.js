@@ -547,7 +547,7 @@ async function getAppIcon(content, id, lazy = 0) {
 
 		if (!content) {
 			if (id == undefined)
-				return null;
+				return `<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="var(--colors-text-normal)"><path d="M160-160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h207q16 0 30.5 6t25.5 17l57 57h360q17 0 28.5 11.5T880-680q0 17-11.5 28.5T840-640H447l-80-80H160v480l79-263q8-26 29.5-41.5T316-560h516q41 0 64.5 32.5T909-457l-72 240q-8 26-29.5 41.5T760-160H160Zm84-80h516l72-240H316l-72 240Zm-84-262v-218 218Zm84 262 72-240-72 240Z"/></svg>`;
 			const file = await withTimeout(getFileById(id));
 			if (!file || !file.content) throw new Error("File content unavailable " + id);
 			content = file.content;
@@ -1609,8 +1609,10 @@ async function realgenTaskBar() {
 				)).filter(Boolean);
 			}
 			x.forEach(async function (app, index) {
-				index++
+				index++;
 				var islnk = false;
+
+
 				var appShortcutDiv = document.createElement("biv");
 				appShortcutDiv.setAttribute("draggable", true);
 				appShortcutDiv.setAttribute("ondragstart", "dragfl(event, this)");
@@ -1619,8 +1621,7 @@ async function realgenTaskBar() {
 
 				let lnkappidcatched = app.id;
 				if (mtpetxt(app.name) == "lnk") {
-					// LNK file usage
-					app = await getFileById(app.id)
+					app = await getFileById(app.id);
 					let z = JSON.parse(decodeBase64Content(app.content));
 					app = await getFileById(z.open);
 					if (!app) {
@@ -1631,7 +1632,6 @@ async function realgenTaskBar() {
 					}
 					islnk = true;
 				}
-				appShortcutDiv.addEventListener("click", () => openfile(app.id));
 
 				var iconSpan = document.createElement("span");
 				iconSpan.classList.add("appicnspan");
@@ -1646,9 +1646,26 @@ async function realgenTaskBar() {
 				await getAppIcon(0, app.id, 0)
 					.then(icon => iconSpan.innerHTML = icon)
 					.catch(error => console.error(error));
+
+				if (!app.id) {
+					let folderName = app.name;
+					appShortcutDiv.addEventListener("click", async () => {
+
+						let filesInFolder = await getFileNamesByFolder(`Dock/${folderName}`);
+        console.log(45, filesInFolder, folderName)
+						let appIds = filesInFolder.map(file => file.id);
+						appGroupModal(folderName, appIds);
+					});
+				} else {
+					appShortcutDiv.addEventListener("click", () => openfile(app.id));
+				}
+
 			});
 			gid("dock").style.display = "flex";
-		} catch (err) { }
+
+		} catch (err) {
+			console.log(err)
+		}
 		document.querySelector('#taskbarloaderprime').remove();
 	}
 }
@@ -2004,3 +2021,52 @@ document.addEventListener("DOMContentLoaded", async function () {
 		nowapp = '';
 	});
 });
+
+async function appGroupModal(name, list) {
+	const modal = gid("appgrpmodal");
+	const listElement = gid("appgrp_list");
+	const heading = gid("appgrp_name");
+
+	listElement.innerHTML = '';
+
+	if (name) {
+		heading.innerText = name;
+		heading.style.display = "block";
+	} else {
+		heading.style.display = "none";
+	}
+
+	if (list) {
+		modal.showModal();
+	}
+
+	list.forEach(async (appid) => {
+		let app = await getFileById(appid, "fileName");
+
+		var appShortcutDiv = document.createElement("div");
+		appShortcutDiv.className = "app-shortcut sizableuielement";
+		appShortcutDiv.setAttribute("unid", app.id || '');
+		appShortcutDiv.dataset.appId = app.id;
+		appShortcutDiv.addEventListener("click", () => openfile(app.id));
+
+		var iconSpan = document.createElement("span");
+		iconSpan.classList.add("appicnspan");
+		iconSpan.innerHTML = "<span class='taskbarloader'></span>";
+		getAppIcon(false, app.id).then((appIcon) => {
+			iconSpan.innerHTML = appIcon;
+		});
+
+		function getapnme(x) {
+			return x.split(".")[0];
+		}
+
+		var nameSpan = document.createElement("span");
+		nameSpan.className = "appname";
+		nameSpan.textContent = getapnme(app.fileName);
+
+		appShortcutDiv.appendChild(iconSpan);
+		appShortcutDiv.appendChild(nameSpan);
+
+		listElement.appendChild(appShortcutDiv);
+	})
+}

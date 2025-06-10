@@ -505,10 +505,9 @@
 			align-items: flex-start;
 			border-radius: 5px;
 			overflow: auto;
-			justify-content: space-around;
+    justify-content: flex-start;
 		}
 
-		/* Links inside the dropup */
 		a.dropdownerthebob {
 			color: var(--colors-text-section);
 			text-decoration: none;
@@ -525,6 +524,7 @@
 			font-size: 11px;
 			padding: 0.3rem .5rem;
 			flex: 1;
+			max-width: 70px;
 		}
 
 		a.dropdownerthebob.disabled {
@@ -1346,7 +1346,117 @@
 			return traverse(memory, parentPath);
 		}
 
+		function fillDropup(folderPath) {
+	const dropupDiv = document.getElementById("filetools");
+	dropupDiv.innerHTML = "";
 
+	const dropupContentDiv = document.createElement("div");
+	dropupContentDiv.className = "dropup-content";
+
+	const moreToolsDiv = document.getElementById("moretoolsdropdwn");
+	moreToolsDiv.innerHTML = "";
+
+	const pathSegments = folderPath.split('/').filter(Boolean);
+	const isSystemFolder = folderPath === "System/" || folderPath === "";
+	const isRootLevel = pathSegments.length <= 1;
+
+	const actions = [
+		{
+			id: "search",
+			title: "Search files",
+			onclick: window.parent.opensearchpanel,
+			innerHTML: `<span class="material-symbols-rounded">search</span> <b>Search</b>`,
+			disabled: isSystemFolder
+		},
+		{
+			id: "deleteFolder",
+			title: "Delete folder",
+			onclick: isSystemFolder ? (e) => e.preventDefault() : remfold,
+			innerHTML: `<span class="material-symbols-rounded">delete</span> <b>Delete</b>`,
+			disabled: isSystemFolder
+		},
+		{
+			id: "createFolder",
+			title: "Create folder",
+			onclick: () => document.getElementById('makefoldia').showModal(),
+			innerHTML: `<span class="material-symbols-rounded">add</span> <b>Folder</b>`
+		},
+		{
+			id: "createFile",
+			title: "Create File",
+			onclick: () => document.getElementById('makefiledia').showModal(),
+			innerHTML: `<span class="material-symbols-rounded">add</span> <b>New File</b>`
+		},
+		{
+			id: "parentFolder",
+			title: "Parent folder",
+			onclick: () => {
+				if (!isRootLevel) {
+					const parentPath = folderPath.substring(0, folderPath.lastIndexOf('/', folderPath.lastIndexOf('/') - 1) + 1);
+					listFiles(parentPath);
+				}
+			},
+			innerHTML: `<span class="material-symbols-rounded">keyboard_return</span> <b>Parent</b>`,
+			disabled: isRootLevel
+		},
+		{
+			id: "toggleView",
+			title: flmode === 'grid' ? 'List view' : 'Grid view',
+			onclick: function () {
+				flmode = flmode === 'grid' ? 'list' : 'grid';
+				changeview(flmode);
+				this.title = flmode === 'grid' ? 'List view' : 'Grid view';
+				this.innerHTML = flmode === 'grid'
+					? `<span class="material-symbols-rounded">view_list</span> <b>List View</b>`
+					: `<span class="material-symbols-rounded">grid_view</span> <b>Grid View</b>`;
+			},
+			innerHTML: flmode === 'grid'
+				? `<span class="material-symbols-rounded">view_list</span> <b>List View</b>`
+				: `<span class="material-symbols-rounded">grid_view</span> <b>Grid View</b>`
+		}
+	];
+
+	const actionLinks = [];
+
+	actions.forEach(({ id, title, onclick, innerHTML, disabled }) => {
+		const link = document.createElement("a");
+		link.classList.add("dropdownerthebob");
+		link.title = title;
+		link.onclick = onclick;
+		link.innerHTML = innerHTML;
+		link.id = `topbarAction-${id}`;
+		if (disabled) link.classList.add("disabled");
+		actionLinks.push(link);
+		dropupContentDiv.appendChild(link);
+	});
+
+	dropupDiv.appendChild(dropupContentDiv);
+
+	requestAnimationFrame(() => {
+		let overflowStarted = false;
+
+		while (dropupDiv.scrollHeight > dropupDiv.clientHeight && actionLinks.length > 0) {
+			const linkToMove = actionLinks.pop();
+			dropupContentDiv.removeChild(linkToMove);
+			moreToolsDiv.appendChild(linkToMove);
+			overflowStarted = true;
+		}
+
+		if (overflowStarted) {
+			const moreToggle = document.createElement("a");
+			moreToggle.classList.add("dropdownerthebob");
+			moreToggle.title = "More Tools";
+			moreToggle.innerHTML = `<span class="material-symbols-rounded">more_vert</span> <b>More</b>`;
+			moreToggle.onclick = () => {
+				moreToolsDiv.classList.toggle("visible");
+			};
+			dropupContentDiv.appendChild(moreToggle);
+		}
+	});
+
+	currentPath = folderPath;
+	updpth();
+}
 		async function refresh() {
 			window.parent.updateMemoryData();
 			const refreshButton = document.getElementById('ogrefreshbtn');
@@ -1427,117 +1537,10 @@
 
 			const folder = findFolder(folderName, window.parent.memory.root);
 			if (folder) {
-				function filldropup() {
-					const dropupDiv = document.getElementById("filetools");
-					dropupDiv.innerHTML = "";
 
-					const dropupContentDiv = document.createElement("div");
-					dropupContentDiv.className = "dropup-content";
+				fillDropup(folderName);
 
-					const moreToolsDiv = document.getElementById("moretoolsdropdwn");
-					moreToolsDiv.innerHTML = "";
-
-					const actions = [
-						{
-							id: "search",
-							title: "Search files",
-							onclick: window.parent.opensearchpanel,
-							innerHTML: `<span class="material-symbols-rounded">search</span> <b>Search</b>`,
-							disabled: folderName === "System/" || folderName === ""
-						},
-						{
-							id: "deleteFolder",
-							title: "Delete folder",
-							onclick: folderName === "System/" || folderName === "" ? (e) => e.preventDefault() : remfold,
-							innerHTML: `<span class="material-symbols-rounded">delete</span> <b>Delete</b>`,
-							disabled: folderName === "System/" || folderName === ""
-						},
-						{
-							id: "createFolder",
-							title: "Create folder",
-							onclick: () => {
-								document.getElementById('makefoldia').showModal();
-							},
-							innerHTML: `<span class="material-symbols-rounded">add</span> <b>Folder</b>`
-						},
-						{
-							id: "createFile",
-							title: "Create File",
-							onclick: () => {
-								document.getElementById('makefiledia').showModal();
-							},
-							innerHTML: `<span class="material-symbols-rounded">add</span> <b>New File</b>`
-						},
-						{
-							id: "parentFolder",
-							title: "Parent folder",
-							onclick: () => {
-								if (currentPath.split('/').length > 1) {
-									listFiles(currentPath.substring(0, currentPath.lastIndexOf('/', currentPath.lastIndexOf('/') - 1) + 1));
-								}
-							},
-							innerHTML: `<span class="material-symbols-rounded">keyboard_return</span> <b>Parent</b>`,
-							disabled: currentPath.split('/').length <= 1
-						},
-						{
-							id: "toggleView",
-							title: flmode === 'grid' ? 'List view' : 'Grid view',
-							onclick: function () {
-								flmode = flmode === 'grid' ? 'list' : 'grid';
-								changeview(flmode);
-								this.title = flmode === 'grid' ? 'List view' : 'Grid view';
-								this.innerHTML = flmode === 'grid' ?
-									`<span class="material-symbols-rounded">view_list</span> <b>List View</b>` :
-									`<span class="material-symbols-rounded">grid_view</span> <b>Grid View</b>`;
-							},
-							innerHTML: flmode === 'grid' ? `<span class="material-symbols-rounded">view_list</span> <b>List View</b>` : `<span class="material-symbols-rounded">grid_view</span> <b>Grid View</b>`
-						}
-					];
-
-					const actionLinks = [];
-
-					actions.forEach(({ id, title, onclick, innerHTML, disabled }) => {
-						const link = document.createElement("a");
-						link.classList.add("dropdownerthebob");
-						link.title = title;
-						link.onclick = onclick;
-						link.innerHTML = innerHTML;
-						link.id = `topbarAction-${id}`;
-						if (disabled) link.classList.add("disabled");
-						actionLinks.push(link);
-						dropupContentDiv.appendChild(link);
-					});
-
-					dropupDiv.appendChild(dropupContentDiv);
-
-					requestAnimationFrame(() => {
-						let overflowStarted = false;
-						while (dropupDiv.scrollHeight > dropupDiv.clientHeight && actionLinks.length > 0) {
-							const linkToMove = actionLinks.pop();
-							dropupContentDiv.removeChild(linkToMove);
-							moreToolsDiv.appendChild(linkToMove);
-							overflowStarted = true;
-						}
-
-						if (overflowStarted) {
-							const moreToggle = document.createElement("a");
-							moreToggle.classList.add("dropdownerthebob");
-							moreToggle.title = "More Tools";
-							moreToggle.innerHTML = `<span class="material-symbols-rounded">more_vert</span> <b>More</b>`;
-							moreToggle.onclick = () => {
-								moreToolsDiv.classList.toggle("visible");
-							};
-							dropupContentDiv.appendChild(moreToggle);
-						}
-					});
-
-					currentPath = folderName;
-					updpth();
-				}
-
-				filldropup();
-
-				const filesInFolder = await window.parent.getFileNamesByFolder(folderName);
+				const filesInFolder = await window.parent.getAllItemsInFolder(folderName);
 				if (filesInFolder) {
 					if (filesInFolder.length > 0) {
 						if (!gen) {
@@ -1566,52 +1569,54 @@
 				(document.getElementById("listfilesloader")) ? document.getElementById("listfilesloader").remove() : null;
 			}
 		}
-
 		async function createFileElement(file) {
+			console.log(file);
+
 			const fileElement = document.createElement('div');
-			fileElement.classList.add("file");
+			fileElement.classList.add('file');
 			fileElement.setAttribute(flmode, '');
+
 			if (file.id) fileElement.setAttribute("unid", file.id);
-			fileElement.setAttribute("draggable", !file.name.endsWith('/'));
-			fileElement.setAttribute("onclick", `slfile(this, '${file.id}');`);
-			if (!file.name.endsWith('/')) {
-				fileElement.setAttribute("ondragstart", "dragfl(event, this)");
+
+			const isFolder = file.type === 'folder';
+
+			fileElement.setAttribute('draggable', !isFolder);
+			fileElement.setAttribute('onclick', `slfile(this, '')`);
+			if (!isFolder) {
+				fileElement.setAttribute('ondragstart', 'dragfl(event, this)');
 			}
+
 			const icon = await geticon(ptypext(file.name), file.id);
+
 			const iconSpan = document.createElement('span');
 			iconSpan.className = 'fileicons';
 			iconSpan.innerHTML = icon;
-			const flnameSpan = document.createElement('span');
-			flnameSpan.setAttribute('flname', '');
+
 			const filenameSpan = document.createElement('span');
 			filenameSpan.className = 'flfrname';
 			filenameSpan.textContent = file.name;
+
 			const timeSmall = document.createElement('small');
-			const dateTime = file?.metadata?.datetime;
-			if (file.name.endsWith('/')) {
+			if (isFolder) {
+				fileElement.classList.add('folder');
 				timeSmall.textContent = '>';
-				timeSmall.title = "Open folder";
+				timeSmall.title = 'Open folder';
 			} else {
-				const timeAgoCache = window.parent.timeAgo(dateTime);
-				if (timeAgoCache) {
-					timeSmall.textContent = timeAgoCache;
-					timeSmall.title = "Last modified";
-				} else {
-					timeSmall.textContent = file.id;
-					timeSmall.title = "File ID";
-				}
+				timeSmall.textContent = '';
+				timeSmall.title = 'File';
 			}
+
+			const flnameSpan = document.createElement('span');
+			flnameSpan.setAttribute('flname', '');
 			flnameSpan.appendChild(filenameSpan);
 			flnameSpan.appendChild(timeSmall);
+
 			fileElement.appendChild(iconSpan);
 			fileElement.appendChild(flnameSpan);
-			fileElement.setAttribute("title", `${file.name}\nID: ${file.id}` || 'Folder');
-			fllist.appendChild(fileElement);
 
-			if (fileToSelect && fileToSelect == file.id) {
-				fileToSelect = null;
-				slfile(fileElement, file.id);
-			}
+			fileElement.setAttribute('title', `${file.name}\n${isFolder ? 'Folder' : 'File'}`);
+
+			fllist.appendChild(fileElement);
 		}
 
 
@@ -1663,156 +1668,158 @@
 		}
 
 
-		async function slfile(y, z) {
-			let x = y;
-			y.scrollIntoView({
-				behavior: "smooth",
-				block: "nearest"
-			});
+		async function slfile(element, param) {
+			element.scrollIntoView({ behavior: "smooth", block: "nearest" });
 
-			if (x.id === "slfile") {
-				if (x.getAttribute("unid") === null || x.getAttribute("unid") === "") {
-					let folderPath = x.querySelector(".flfrname").innerText.trim();
-					listFiles(currentPath + folderPath)
+			const isSelected = element.id === "slfile";
+			const uniqueId = element.getAttribute("unid");
+			(!param) ? param = uniqueId : null;
+			const isFolder = !uniqueId;
+
+			if (isSelected) {
+				if (isFolder) {
+					const folderName = element.querySelector(".flfrname").innerText.trim();
+					listFiles(currentPath + folderName);
 					return;
 				}
 
-				if (sessiontype == "opener") {
+				if (sessiontype === "opener") {
 					choosefile();
-					return;
-				}
-
-				openfile(z);
-			} else {
-				slfileID = x.getAttribute("unid");
-				if (document.getElementById("slfile")) { document.getElementById("slfile").id = null; }
-				nowfile = x;
-
-				var fileSize
-				x.id = "slfile";
-				let fileData;
-				if (!(x.getAttribute("unid") === null || x.getAttribute("unid") === "")) {
-					if (sessiontype == "opener") {
-						document.getElementById("choosefileinp").value = x.getAttribute("unid");
-						return;
-					}
-					try {
-						fileData = await ntxSession.send("fileGet.byId", x.getAttribute("unid"));
-
-						if (fileData && fileData.content) {
-							fileSize = new TextEncoder().encode(fileData.content).length;
-						} else {
-							console.error("Safe Error: Unable to retrieve file content.");
-
-						}
-					} catch (error) {
-						console.error("Safe Error:", error);
-					}
-
-					if (fileSize !== 0) {
-						try {
-							var units = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-							var unitIndex = 0;
-
-							while (fileSize > 1024 && unitIndex < units.length - 1) {
-								fileSize /= 1024;
-								unitIndex++;
-							}
-
-							fileSize = fileSize.toFixed(2);
-						} catch (error) {
-							console.error(error)
-							fileSize = 0
-						}
-					}
-
-					document.getElementById("fileinfobn").style.opacity = 1;
-
-					try {
-						const fileInfoContainer = document.getElementById("fileinfobn");
-						fileInfoContainer.innerHTML = fileSize + ' ' + units[unitIndex];
-
-						const dropupDiv = document.getElementById("filetools");
-						dropupDiv.innerHTML = "";
-
-						const dropupContentDiv = document.createElement("div");
-						dropupContentDiv.className = "dropup-content";
-
-						const moreToolsDiv = document.getElementById("moretoolsdropdwn");
-						moreToolsDiv.innerHTML = "";
-
-						const itemuid = fileData.id;
-						const visibleLinks = [];
-
-						await Object.values(fileActions).forEach(async (action) => {
-							if (await action.condition(fileData)) {
-								const option = document.createElement("a");
-								option.classList.add("dropdownerthebob");
-								option.title = action.label;
-								option.onclick = () => action.action(itemuid);
-								option.innerHTML = `<span class="material-symbols-rounded" style="color: ${action.color}">${action.icon}</span> <b>${action.label}</b>`;
-								visibleLinks.push(option);
-								dropupContentDiv.appendChild(option);
-							}
-						});
-
-						const moreToggle = document.createElement("a");
-						moreToggle.classList.add("dropdownerthebob");
-						moreToggle.title = "More Tools";
-						moreToggle.innerHTML = `<span class="material-symbols-rounded">more_vert</span> <b>More</b>`;
-						moreToggle.onclick = () => {
-							moreToolsDiv.classList.toggle("visible");
-						};
-						moreToggle.style.visibility = "hidden";
-						dropupContentDiv.appendChild(moreToggle);
-
-
-						dropupDiv.appendChild(dropupContentDiv);
-
-						requestAnimationFrame(() => {
-							let overflowStarted = false;
-
-							while (visibleLinks.length > 0) {
-								if (dropupContentDiv.scrollWidth <= dropupContentDiv.clientWidth) break;
-
-								const linkToMove = visibleLinks.pop();
-								dropupContentDiv.removeChild(linkToMove);
-								moreToolsDiv.appendChild(linkToMove);
-								overflowStarted = true;
-							}
-
-							if (overflowStarted) {
-								moreToggle.style.visibility = "visible";
-							} else {
-								dropupContentDiv.removeChild(moreToggle);
-							}
-						});
-
-
-
-					} catch (error) {
-						document.getElementById("fileinfobn").innerHTML += "Safe Error 0006";
-						await ntxSession.send("sysUI.say", `<h1>File Error</h1><p>Nova files couldn't process that file</p><small>(Error 0006)</small>`, "warning")
-						refresh()
-						console.error("An error occurred:", error);
-					}
-
 				} else {
-					const dropupDiv = document.getElementById("filetools");
-					dropupDiv.innerHTML = "";
-					const dropupContentDiv = document.createElement("div");
-					dropupContentDiv.className = "dropup-content";
-					const wallpaperOption = document.createElement("a");
-					wallpaperOption.classList.add("dropdownerthebob");
-					wallpaperOption.title = "Info";
-					wallpaperOption.onclick = () => ntxSession.send("sysUI.say", "The item selected is a folder. A folder can store multiple items.");
-					wallpaperOption.innerHTML = `<span class="material-symbols-rounded">info</span> Folder`;
-					dropupContentDiv.appendChild(wallpaperOption);
-					dropupDiv.appendChild(dropupContentDiv);
-					document.getElementById("fileinfobn").innerHTML = x.querySelector(".flfrname").innerText.trim();
+					openfile(param);
 				}
+				return;
+			}
+
+			updateSelectedFileElement(element, uniqueId);
+
+			if (isFolder) {
+				showFolderInfo(element);
+			} else {
+				await handleFileSelection(uniqueId);
 			}
 		}
+
+		function updateSelectedFileElement(element, uniqueId) {
+			if (document.getElementById("slfile")) {
+				document.getElementById("slfile").id = null;
+			}
+
+			nowfile = element;
+			slfileID = uniqueId;
+			element.id = "slfile";
+
+			if (sessiontype === "opener") {
+				document.getElementById("choosefileinp").value = uniqueId;
+			}
+		}
+
+		function showFolderInfo(element) {
+				fillDropup(element.querySelector(".flfrname").innerText.trim());
+		}
+
+		async function handleFileSelection(uniqueId) {
+			let fileData, fileSize = 0;
+
+			try {
+				fileData = await ntxSession.send("fileGet.byId", uniqueId);
+				if (fileData?.content) {
+					fileSize = new TextEncoder().encode(fileData.content).length;
+				} else {
+					console.error("Safe Error: Unable to retrieve file content.");
+				}
+			} catch (error) {
+				console.error("Safe Error:", error);
+			}
+
+			const readableSize = formatFileSize(fileSize);
+			document.getElementById("fileinfobn").style.opacity = 1;
+			document.getElementById("fileinfobn").innerHTML = readableSize;
+
+			try {
+				await populateFileActions(fileData);
+			} catch (error) {
+				document.getElementById("fileinfobn").innerHTML += "Safe Error 0006";
+				await ntxSession.send(
+					"sysUI.say",
+					`<h1>File Error: 0006</h1><p>NovaOS Files couldn't handle that file.</p>`,
+					"warning"
+				);
+				refresh();
+				console.error("An error occurred:", error);
+			}
+		}
+
+		function formatFileSize(size) {
+			if (!size) return "0 Bytes";
+
+			const units = ["Bytes", "KB", "MB", "GB", "TB"];
+			let index = 0;
+
+			while (size > 1024 && index < units.length - 1) {
+				size /= 1024;
+				index++;
+			}
+
+			return `${size.toFixed(2)} ${units[index]}`;
+		}
+
+		async function populateFileActions(fileData) {
+			const toolsContainer = document.getElementById("filetools");
+			const moreToolsContainer = document.getElementById("moretoolsdropdwn");
+
+			toolsContainer.innerHTML = "";
+			moreToolsContainer.innerHTML = "";
+
+			const contentDiv = document.createElement("div");
+			contentDiv.className = "dropup-content";
+			toolsContainer.appendChild(contentDiv);
+
+			const visibleOptions = [];
+
+			for (const action of Object.values(fileActions)) {
+				if (await action.condition(fileData)) {
+					const option = document.createElement("a");
+					option.classList.add("dropdownerthebob");
+					option.title = action.label;
+					option.onclick = () => action.action(fileData.id);
+					option.innerHTML = `<span class="material-symbols-rounded" style="color: ${action.color}">${action.icon}</span> <b>${action.label}</b>`;
+
+					visibleOptions.push(option);
+					contentDiv.appendChild(option);
+				}
+			}
+
+			const moreToggle = document.createElement("a");
+			moreToggle.classList.add("dropdownerthebob");
+			moreToggle.title = "More Tools";
+			moreToggle.innerHTML = `<span class="material-symbols-rounded">more_vert</span> <b>More</b>`;
+			moreToggle.onclick = () => {
+				moreToolsContainer.classList.toggle("visible");
+			};
+			moreToggle.style.visibility = "hidden";
+			contentDiv.appendChild(moreToggle);
+
+			requestAnimationFrame(() => {
+				let overflow = false;
+
+				while (visibleOptions.length > 0) {
+					if (contentDiv.scrollWidth <= contentDiv.clientWidth) break;
+
+					const last = visibleOptions.pop();
+					contentDiv.removeChild(last);
+					moreToolsContainer.appendChild(last);
+					overflow = true;
+				}
+
+				if (overflow) {
+					moreToggle.style.visibility = "visible";
+				} else {
+					contentDiv.removeChild(moreToggle);
+				}
+			});
+		}
+
 
 		async function remfile(ID) {
 			try {
@@ -1955,44 +1962,54 @@
 			});
 		}
 
-		async function geticon(x, id) {
-			let i, c;
-			if (x == "txt") {
-				i = "description"
-				c = "#42A5F5"
-			} else if (x == "app") {
-				let iconreg = await window.parent.getAppIcon(0, id);
-				if (iconreg) {
-					i = iconreg;
-					c = "#ffffff";
+		async function geticon(extension, id = false) {
+			let iconName = "insert_drive_file";
+			let color = "#BDBDBD";
+
+			if (extension) {
+				if (extension === "txt") {
+					iconName = "description";
+					color = "#42A5F5";
+				} else if (extension === "app") {
+					const iconFromRegistry = await window.parent.getAppIcon(0, id);
+					if (iconFromRegistry) {
+						iconName = iconFromRegistry;
+						color = "#ffffff";
+					}
+				} else if (extension === "json") {
+					iconName = "data_object";
+					color = "red";
+				} else if (extension === "lnk") {
+					iconName = "reply";
+					color = "green";
+				} else {
+					const baseType = await ntxSession.send("utility.getBaseFileType", extension);
+
+					switch (baseType) {
+						case "image":
+							iconName = "image";
+							color = "#FFEE58";
+							break;
+						case "music":
+							iconName = "graphic_eq";
+							color = "violet";
+							break;
+						case "video":
+							iconName = "videocam";
+							color = "lightblue";
+							break;
+						case "code":
+							iconName = "developer_board";
+							color = "#8E24AA";
+							break;
+					}
 				}
-			} else if (await ntxSession.send("utility.getBaseFileType", x) == "image") {
-				i = "image"
-				c = "#FFEE58"
-			} else if (await ntxSession.send("utility.getBaseFileType", x) == "music") {
-				i = "graphic_eq"
-				c = "violet"
-			} else if (await ntxSession.send("utility.getBaseFileType", x) == "video") {
-				i = "videocam"
-				c = "lightblue"
-			} else if (x == "json") {
-				i = "data_object"
-				c = "red"
-			} else if (x == "lnk") {
-				i = "reply"
-				c = "green"
-			} else if (await ntxSession.send("utility.getBaseFileType", x) == "code") {
-				i = "developer_board"
-				c = "#hh83j2"
 			} else if (!id) {
-				i = "folder"
-				c = "#FDD835"
-			} else {
-				i = window.parent.defaultAppIcon
+				iconName = "folder";
+				color = "#FDD835";
 			}
-			return `<span class="material-symbols-rounded" style="color:` + c + `">
-		`+ i + `
-		</span>`
+
+			return `<span class="material-symbols-rounded" style="color: ${color}">${iconName}</span>`;
 		}
 
 		function getfolicon(x) {

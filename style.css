@@ -410,8 +410,10 @@ nav [navobj] div {
 	max-height: 80%;
 	width: 80%;
 	max-width: 280px;
-	box-shadow: 0 0 10px black;
+	box-shadow: 0 0 10px #00000075;
+	border: 1px solid #78787840;
 	animation: pop var(--time-action);
+	outline: 0;
 
 	& .button-container {
 		gap: .5em;
@@ -2106,7 +2108,7 @@ noscript {
 	border: 1px solid transparent;
 	padding-top: .7rem;
 
-	&> .name {
+	&>.name {
 		width: 100%;
 		text-wrap: nowrap;
 		text-overflow: ellipsis;
@@ -2471,5 +2473,32 @@ div#toastdiv {
 	& small {
 		opacity: .5;
 		display: block;
+	}
+}
+
+div#appgrp_list {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(80px, 85px));
+	justify-content: space-around;
+	align-items: start;
+}
+
+#appgrpmodal {
+	padding: 1em;
+	min-height: 300px;
+	min-width: 300px;
+}
+
+.modal_close_btn {
+	position: absolute;
+	top: .5em;
+	font-size: 1.3em;
+	padding: 5px;
+	border-radius: var(--sizing-border-radius);
+	right: .5em;
+	display: flex;
+
+	&:hover {
+		background-color: var(--colors-BG-sub);
 	}
 }
