@@ -741,12 +741,15 @@ async function getAllItemsInFolder(folderPath) {
             const isFolder = typeof value === 'object' && !value.id;
             const item = {
                 name: key,
-                type: isFolder ? 'folder' : 'file'
+                type: isFolder ? 'folder' : 'file',
+                path: folderPath
             };
 
             if (!isFolder) {
                 if (value.id) item.id = value.id;
                 if (value.metadata) item.metadata = value.metadata;
+            } else {
+                item.path += item.name;
             }
 
             return item;
@@ -1131,7 +1134,7 @@ async function processCreateFolderQueue() {
     try {
         await updateMemoryData();
 
-        let folderList = Array.isArray(folderNames) || folderNames instanceof Set
+        const folderList = Array.isArray(folderNames) || folderNames instanceof Set
             ? Array.from(folderNames)
             : [folderNames];
 
@@ -1139,36 +1142,28 @@ async function processCreateFolderQueue() {
             const parts = folderName.split('/').filter(Boolean);
             let current = memory.root;
 
-            let folderExists = true;
             for (let i = 0; i < parts.length; i++) {
                 const folderKey = parts[i] + '/';
-
-                if (!current[folderKey]) {
-                    folderExists = false;
-                    current[folderKey] = {};
-                }
-
+                current[folderKey] = current[folderKey] || {};
                 current = current[folderKey];
             }
 
-            if (folderExists) {
-                resolve(true);
-                return;
+            const insertData = (target, data) => {
+                for (const key in data) {
+                    if (typeof data[key] === 'object' && data[key] !== null) {
+                        target[key] = target[key] || {};
+                        insertData(target[key], data[key]);
+                    } else {
+                        target[key] = data[key];
+                    }
+                }
+            };
+
+            if (folderData && typeof folderData === 'object') {
+                insertData(current, folderData);
             }
         }
 
-        const insertData = (target, data) => {
-            for (const key in data) {
-                if (typeof data[key] === 'object' && data[key] !== null) {
-                    target[key] = target[key] || {};
-                    insertData(target[key], data[key]);
-                } else {
-                    target[key] = data[key];
-                }
-            }
-        };
-
-        insertData(memory.root, folderData);
         await setdb("making folders");
 
         eventBusWorker.deliver({
@@ -1178,7 +1173,7 @@ async function processCreateFolderQueue() {
             key: folderList,
         });
 
-        resolve();
+        resolve(true);
     } catch (error) {
         console.error("Error creating folders and data:", error);
         reject(error);
@@ -1187,6 +1182,7 @@ async function processCreateFolderQueue() {
         processCreateFolderQueue();
     }
 }
+
 
 // other
 

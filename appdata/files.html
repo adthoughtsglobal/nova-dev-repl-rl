@@ -505,7 +505,7 @@
 			align-items: flex-start;
 			border-radius: 5px;
 			overflow: auto;
-    justify-content: flex-start;
+			justify-content: flex-start;
 		}
 
 		a.dropdownerthebob {
@@ -932,7 +932,7 @@
 			<div class="themainstuff">
 				<div flap-sidenav id="flap-sidenav">
 					<div class="drivenav">
-						<small onclick="listFiles('')" id="dirviewbtn">IndexedDB</small>
+						<small onclick="listFiles('/')" id="dirviewbtn"></small>
 						<small class="newfoldbtn" onclick="toggletree()"><span class="material-symbols-rounded "
 								id="treeviewchevron">chevron_left</span>
 						</small>
@@ -1005,7 +1005,6 @@
 		}
 
 		.classydialog label {
-			text-transform: capitalize;
 			font-weight: normal;
 			opacity: 0.8;
 			margin-bottom: 0.3rem;
@@ -1142,7 +1141,7 @@
 	<dialog id="makefoldia" class="classydialog">
 		<div class="makefilediv">
 			<inpg>
-				<label>New Folder: </label>
+				<label>New Folder at <span id="make_fold_pre_path"></span>: </label>
 				<input id="makfolname" value="" placeholder="Folder path">
 			</inpg>
 			<div class="btncont">
@@ -1208,7 +1207,13 @@
 
 		async function createfol() {
 			let fname = document.getElementById("makfolname").value;
-			window.parent.createFolder(fname);
+			if (fname.length > 1) {
+				await window.parent.createFolder(currentPath + fname);
+				document.getElementById('makefoldia').close();
+				window.parent.toast("Folder created!");
+			} else {
+				window.parent.toast("Folder names can't be that short.");
+			}
 		}
 
 		var currentPath = 'Downloads/', nowfile, flmode = 'grid', onlyshow = false, fileToSelect = null, currentProc = null, slfileID = null;
@@ -1347,116 +1352,118 @@
 		}
 
 		function fillDropup(folderPath) {
-	const dropupDiv = document.getElementById("filetools");
-	dropupDiv.innerHTML = "";
+			const dropupDiv = document.getElementById("filetools");
+			dropupDiv.innerHTML = "";
 
-	const dropupContentDiv = document.createElement("div");
-	dropupContentDiv.className = "dropup-content";
+			const dropupContentDiv = document.createElement("div");
+			dropupContentDiv.className = "dropup-content";
 
-	const moreToolsDiv = document.getElementById("moretoolsdropdwn");
-	moreToolsDiv.innerHTML = "";
+			const moreToolsDiv = document.getElementById("moretoolsdropdwn");
+			moreToolsDiv.innerHTML = "";
 
-	const pathSegments = folderPath.split('/').filter(Boolean);
-	const isSystemFolder = folderPath === "System/" || folderPath === "";
-	const isRootLevel = pathSegments.length <= 1;
+			const pathSegments = folderPath.split('/').filter(Boolean);
+			const isSystemFolder = folderPath === "System/" || folderPath === "";
+			const isRootLevel = pathSegments.length <= 1;
 
-	const actions = [
-		{
-			id: "search",
-			title: "Search files",
-			onclick: window.parent.opensearchpanel,
-			innerHTML: `<span class="material-symbols-rounded">search</span> <b>Search</b>`,
-			disabled: isSystemFolder
-		},
-		{
-			id: "deleteFolder",
-			title: "Delete folder",
-			onclick: isSystemFolder ? (e) => e.preventDefault() : remfold,
-			innerHTML: `<span class="material-symbols-rounded">delete</span> <b>Delete</b>`,
-			disabled: isSystemFolder
-		},
-		{
-			id: "createFolder",
-			title: "Create folder",
-			onclick: () => document.getElementById('makefoldia').showModal(),
-			innerHTML: `<span class="material-symbols-rounded">add</span> <b>Folder</b>`
-		},
-		{
-			id: "createFile",
-			title: "Create File",
-			onclick: () => document.getElementById('makefiledia').showModal(),
-			innerHTML: `<span class="material-symbols-rounded">add</span> <b>New File</b>`
-		},
-		{
-			id: "parentFolder",
-			title: "Parent folder",
-			onclick: () => {
-				if (!isRootLevel) {
-					const parentPath = folderPath.substring(0, folderPath.lastIndexOf('/', folderPath.lastIndexOf('/') - 1) + 1);
-					listFiles(parentPath);
+			const actions = [
+				{
+					id: "search",
+					title: "Search files",
+					onclick: window.parent.opensearchpanel,
+					innerHTML: `<span class="material-symbols-rounded">search</span> <b>Search</b>`,
+				},
+				{
+					id: "deleteFolder",
+					title: "Delete folder",
+					onclick: isSystemFolder ? (e) => e.preventDefault() : remfold,
+					innerHTML: `<span class="material-symbols-rounded">delete</span> <b>Delete</b>`,
+					disabled: isSystemFolder
+				},
+				{
+					id: "createFolder",
+					title: "Create folder",
+					onclick: () => {
+						document.getElementById("make_fold_pre_path").innerText = folderPath;
+						document.getElementById('makefoldia').showModal()
+					},
+					innerHTML: `<span class="material-symbols-rounded">add</span> <b>Folder</b>`
+				},
+				{
+					id: "createFile",
+					title: "Create File",
+					onclick: () => document.getElementById('makefiledia').showModal(),
+					innerHTML: `<span class="material-symbols-rounded">add</span> <b>New File</b>`
+				},
+				{
+					id: "parentFolder",
+					title: "Parent folder",
+					onclick: () => {
+						if (!isRootLevel) {
+							const parentPath = folderPath.substring(0, folderPath.lastIndexOf('/', folderPath.lastIndexOf('/') - 1) + 1);
+							listFiles(parentPath);
+						}
+					},
+					innerHTML: `<span class="material-symbols-rounded">keyboard_return</span> <b>Parent</b>`,
+					disabled: isRootLevel
+				},
+				{
+					id: "toggleView",
+					title: flmode === 'grid' ? 'List view' : 'Grid view',
+					onclick: function () {
+						flmode = flmode === 'grid' ? 'list' : 'grid';
+						changeview(flmode);
+						this.title = flmode === 'grid' ? 'List view' : 'Grid view';
+						this.innerHTML = flmode === 'grid'
+							? `<span class="material-symbols-rounded">view_list</span> <b>List View</b>`
+							: `<span class="material-symbols-rounded">grid_view</span> <b>Grid View</b>`;
+					},
+					innerHTML: flmode === 'grid'
+						? `<span class="material-symbols-rounded">view_list</span> <b>List View</b>`
+						: `<span class="material-symbols-rounded">grid_view</span> <b>Grid View</b>`
 				}
-			},
-			innerHTML: `<span class="material-symbols-rounded">keyboard_return</span> <b>Parent</b>`,
-			disabled: isRootLevel
-		},
-		{
-			id: "toggleView",
-			title: flmode === 'grid' ? 'List view' : 'Grid view',
-			onclick: function () {
-				flmode = flmode === 'grid' ? 'list' : 'grid';
-				changeview(flmode);
-				this.title = flmode === 'grid' ? 'List view' : 'Grid view';
-				this.innerHTML = flmode === 'grid'
-					? `<span class="material-symbols-rounded">view_list</span> <b>List View</b>`
-					: `<span class="material-symbols-rounded">grid_view</span> <b>Grid View</b>`;
-			},
-			innerHTML: flmode === 'grid'
-				? `<span class="material-symbols-rounded">view_list</span> <b>List View</b>`
-				: `<span class="material-symbols-rounded">grid_view</span> <b>Grid View</b>`
+			];
+
+			const actionLinks = [];
+
+			actions.forEach(({ id, title, onclick, innerHTML, disabled }) => {
+				const link = document.createElement("a");
+				link.classList.add("dropdownerthebob");
+				link.title = title;
+				link.onclick = onclick;
+				link.innerHTML = innerHTML;
+				link.id = `topbarAction-${id}`;
+				if (disabled) link.classList.add("disabled");
+				actionLinks.push(link);
+				dropupContentDiv.appendChild(link);
+			});
+
+			dropupDiv.appendChild(dropupContentDiv);
+
+			requestAnimationFrame(() => {
+				let overflowStarted = false;
+
+				while (dropupDiv.scrollHeight > dropupDiv.clientHeight && actionLinks.length > 0) {
+					const linkToMove = actionLinks.pop();
+					dropupContentDiv.removeChild(linkToMove);
+					moreToolsDiv.appendChild(linkToMove);
+					overflowStarted = true;
+				}
+
+				if (overflowStarted) {
+					const moreToggle = document.createElement("a");
+					moreToggle.classList.add("dropdownerthebob");
+					moreToggle.title = "More Tools";
+					moreToggle.innerHTML = `<span class="material-symbols-rounded">more_vert</span> <b>More</b>`;
+					moreToggle.onclick = () => {
+						moreToolsDiv.classList.toggle("visible");
+					};
+					dropupContentDiv.appendChild(moreToggle);
+				}
+			});
+
+			currentPath = folderPath;
+			updpth();
 		}
-	];
-
-	const actionLinks = [];
-
-	actions.forEach(({ id, title, onclick, innerHTML, disabled }) => {
-		const link = document.createElement("a");
-		link.classList.add("dropdownerthebob");
-		link.title = title;
-		link.onclick = onclick;
-		link.innerHTML = innerHTML;
-		link.id = `topbarAction-${id}`;
-		if (disabled) link.classList.add("disabled");
-		actionLinks.push(link);
-		dropupContentDiv.appendChild(link);
-	});
-
-	dropupDiv.appendChild(dropupContentDiv);
-
-	requestAnimationFrame(() => {
-		let overflowStarted = false;
-
-		while (dropupDiv.scrollHeight > dropupDiv.clientHeight && actionLinks.length > 0) {
-			const linkToMove = actionLinks.pop();
-			dropupContentDiv.removeChild(linkToMove);
-			moreToolsDiv.appendChild(linkToMove);
-			overflowStarted = true;
-		}
-
-		if (overflowStarted) {
-			const moreToggle = document.createElement("a");
-			moreToggle.classList.add("dropdownerthebob");
-			moreToggle.title = "More Tools";
-			moreToggle.innerHTML = `<span class="material-symbols-rounded">more_vert</span> <b>More</b>`;
-			moreToggle.onclick = () => {
-				moreToolsDiv.classList.toggle("visible");
-			};
-			dropupContentDiv.appendChild(moreToggle);
-		}
-	});
-
-	currentPath = folderPath;
-	updpth();
-}
 		async function refresh() {
 			window.parent.updateMemoryData();
 			const refreshButton = document.getElementById('ogrefreshbtn');
@@ -1491,6 +1498,7 @@
 		}
 
 		let cachedFiles = {};
+		var PrevPath = "Downloads";
 
 		async function listFiles(folderName, gen) {
 			// myWindow.setTitle("Files");
@@ -1511,25 +1519,14 @@
 			await window.parent.updateMemoryData();
 
 			function findFolder(path, obj) {
-				let parts = path.split('/').map((part, index, array) => {
-					if (part === '' && array[index + 1] === '') {
-						return '/';
-					}
-					if (part !== '' && index < array.length - 1 && array[index + 1] === '') {
-						return part + '/';
-					}
-					return part;
-				});
-
-				for (let part of parts) {
-					if (part) {
-						if (obj[part + '/']) {
-							obj = obj[part + '/'];
-						} else if (obj[part]) {
-							obj = obj[part];
-						} else {
-							return null;
-						}
+				console.log(45, path)
+				let parts = path.split('/').filter(p => p !== '');
+				for (let i = 0; i < parts.length; i++) {
+					let key = parts[i] + '/';
+					if (obj[key]) {
+						obj = obj[key];
+					} else {
+						return null;
 					}
 				}
 				return obj;
@@ -1537,7 +1534,7 @@
 
 			const folder = findFolder(folderName, window.parent.memory.root);
 			if (folder) {
-
+				PrevPath = folder;
 				fillDropup(folderName);
 
 				const filesInFolder = await window.parent.getAllItemsInFolder(folderName);
@@ -1555,9 +1552,10 @@
 								fileElement?.remove();
 							});
 
-							addedFiles.forEach(async (newFile) => {
+							for (const newFile of addedFiles) {
 								await createFileElement(newFile);
-							});
+							}
+
 						} else {
 							cachedFiles[currentPath] = filesInFolder;
 						}
@@ -1567,6 +1565,9 @@
 				}
 
 				(document.getElementById("listfilesloader")) ? document.getElementById("listfilesloader").remove() : null;
+			} else {
+				console.error("No such path.")
+				listFiles(PrevPath);
 			}
 		}
 		async function createFileElement(file) {
@@ -1581,6 +1582,7 @@
 			const isFolder = file.type === 'folder';
 
 			fileElement.setAttribute('draggable', !isFolder);
+			fileElement.setAttribute("path", file.path)
 			fileElement.setAttribute('onclick', `slfile(this, '')`);
 			if (!isFolder) {
 				fileElement.setAttribute('ondragstart', 'dragfl(event, this)');
@@ -1679,7 +1681,7 @@
 			if (isSelected) {
 				if (isFolder) {
 					const folderName = element.querySelector(".flfrname").innerText.trim();
-					listFiles(currentPath + folderName);
+					listFiles(element.getAttribute("path"));
 					return;
 				}
 
@@ -1715,7 +1717,7 @@
 		}
 
 		function showFolderInfo(element) {
-				fillDropup(element.querySelector(".flfrname").innerText.trim());
+			fillDropup(element.getAttribute("path"));
 		}
 
 		async function handleFileSelection(uniqueId) {
@@ -1825,11 +1827,8 @@
 			try {
 
 				window.parent.remfile(ID);
-
-				document.getElementById("fileinfobn").style.opacity = 1;
-				document.getElementById("fileinfobn").innerHTML = "Deleting file...";
 				await window.parent.updateMemoryData().then(() => {
-					document.getElementById("fileinfobn").innerHTML = "File Deleted";
+					window.parent.toast("Removed " + ID);
 				});
 				document.querySelector(`[unid="${ID}"]`).style.opacity = 0.2;
 			} catch (error) {
@@ -1865,7 +1864,6 @@
 		}
 
 		async function renamef(x) {
-			document.getElementById("fileinfobn").style.opacity = 1;
 			try {
 				const fileId = x.getAttribute("unid");
 
@@ -1874,11 +1872,10 @@
 				file.fileName = await ntxSession.send("sysUI.ask", "New Name:", file.fileName);
 				await window.parent.updateFile(currentPath, fileId, file);
 
-				document.getElementById("fileinfobn").innerHTML = "File renamed successfully.";
-
+				window.parent.toast("File was renamed");
 			} catch (error) {
 				console.error("Safe Error renaming file:", error);
-				document.getElementById("fileinfobn").innerHTML = "Failed to rename file.";
+				window.parent.toast("Can't rename file")
 			}
 		}
 
@@ -1889,20 +1886,16 @@
 			if (selectedFolder) {
 				await liststuff();
 				listFiles(selectedFolder)
-				document.getElementById("fileinfobn").innerHTML = "Shortcut was created in " + selectedFolder;
+				window.parent.toast("Shortcut created at " + selectedFolder);
 			}
 		}
 
 		async function moveFileToFolder(flid, dest) {
 			await window.parent.moveFileToFolder(flid, dest);
-
-			document.getElementById("fileinfobn").style.opacity = 1;
-			document.getElementById("fileinfobn").innerHTML = "File was moved to " + dest;
+			window.parent.toast("It was moved to " + dest);
 		}
 
-
 		async function movefile(flid) {
-
 			const getFolderNames = (memory, parentPath = '', level = 0) => {
 				let folders = [];
 				Object.keys(memory).forEach(key => {
@@ -1929,7 +1922,6 @@
 
 					await liststuff();
 					listFiles(selectedFolder)
-					document.getElementById("fileinfobn").innerHTML = "File was moved to " + selectedFolder;
 				} else {
 					console.error("File not found!");
 				}
@@ -2054,7 +2046,7 @@
 			let x = await ntxSession.send("sysUI.confirm", "Remove folder?", "Remove '" + currentPath + "' permanently from your device?")
 			if (x) {
 				await window.parent.remfolder(currentPath).then(function () {
-					document.getElementById("fileinfobn").innerHTML = currentPath + " was removed"
+					window.parent.toast("Removed " + currentPath);
 				})
 				listFiles('', true)
 				liststuff()
@@ -2113,6 +2105,7 @@
 
 		function greenflag() {
 			const data = myWindow?.params?.data;
+			document.getElementById("dirviewbtn").innerText = window.parent.CurrentUsername;
 			if (data?.opener) {
 				sessionreturnreqid = myWindow.params.trid;
 				sessiontype = data.opener === 'showFile' ? 'showFile' : 'opener';

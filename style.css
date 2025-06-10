@@ -352,7 +352,7 @@ nav [navobj] div {
 #appdmod {
 	padding: 5px;
 	margin-bottom: 60px;
-	animation: dmodthingy var(--time-action);
+	animation: dmodthingy .5s cubic-bezier(0.36, 0.38, 0, 0.94);
 	padding-bottom: 1.2rem;
 	background-color: var(--colors-BG-normal);
 	border: 1px solid #ffffff0c;
