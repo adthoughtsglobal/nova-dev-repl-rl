@@ -393,6 +393,10 @@
 			color: white;
 			font-family: inherit;
 			cursor: pointer;
+
+			&:hover {
+				filter: brightness(115%);
+			}
 		}
 
 		dialog::backdrop {
@@ -738,6 +742,8 @@
 			flex-direction: row;
 			gap: .5em;
 			padding: .5em .8em;
+			max-width: none;
+			width: fit-content;
 		}
 
 		#file-info {

@@ -40,7 +40,6 @@ const eventBusBlob = new Blob([`
 
 const eventBusURL = URL.createObjectURL(eventBusBlob);
 const eventBusWorkerE = new Worker(eventBusURL);
-
 const eventBusWorker = {
     handlers: new Map(),
     deliver: (message) => {
@@ -54,16 +53,26 @@ const eventBusWorker = {
             eventBusWorker.handlers.delete(id);
         };
 
-        eventBusWorkerE.addEventListener('message', (event) => {
-            const { type: eventType, detail } = event.data;
+        const listener = (event) => {
+            const { type: eventType, detail, action, id: msgId } = event.data;
 
-            for (const [id, { type, handler }] of eventBusWorker.handlers.entries()) {
-                if (eventType === type) {
-                    handler(detail);
+            if (action === 'removeListener') {
+                eventBusWorker.handlers.delete(msgId);
+                return;
+            }
+
+            if (action === 'addListener') {
+                return;
+            }
+
+            for (const [handlerId, entry] of eventBusWorker.handlers.entries()) {
+                if (eventType === entry.type) {
+                    entry.handler(detail);
                 }
             }
-        });
+        };
 
+        eventBusWorkerE.addEventListener('message', listener);
         eventBusWorkerE.postMessage({ action: 'addListener', type, id });
         eventBusWorker.handlers.set(id, { type, handler });
 
@@ -635,7 +644,7 @@ async function resetSettings(fileName = "preferences.json", dirPath = "System/")
 
             await setdb(`reset settings in ${fileName}`);
             eventBusWorksettingser.deliver({
-                type: "",
+                type: "settings",
                 event: "reset",
                 file: fileName
             });
@@ -1148,16 +1157,21 @@ async function processCreateFolderQueue() {
                 current = current[folderKey];
             }
 
-            const insertData = (target, data) => {
+            const insertData = (target, data, seen = new WeakSet()) => {
+                if (seen.has(data)) return;
+                seen.add(data);
+
                 for (const key in data) {
-                    if (typeof data[key] === 'object' && data[key] !== null) {
+                    const value = data[key];
+                    if (typeof value === 'object' && value !== null) {
                         target[key] = target[key] || {};
-                        insertData(target[key], data[key]);
+                        insertData(target[key], value, seen);
                     } else {
-                        target[key] = data[key];
+                        target[key] = value;
                     }
                 }
             };
+
 
             if (folderData && typeof folderData === 'object') {
                 insertData(current, folderData);

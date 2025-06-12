@@ -136,7 +136,7 @@ function snappingconthide() {
 }
 
 
-async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
+function initializeWindowState(title, appid, params) {
     appsHistory.push(title);
     if (appsHistory.length > 5) {
         appsHistory = appsHistory.slice(-5);
@@ -144,26 +144,135 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
 
     sysLog(title, `at ${appid}${(params) ? " opened with " + Object.keys(params).length + " params." : ""}`);
 
-    let winuid = genUID();
-    if (!winds[winuid]) { winds[winuid] = {} };
+    const winuid = genUID();
+    if (!winds[winuid]) { winds[winuid] = {}; }
     winds[winuid].title = title;
     winds[winuid].appid = appid;
 
-    var windowDiv = document.createElement("div");
+    return winuid;
+}
+
+function createWindowShell(winuid, appid) {
+    const windowDiv = document.createElement("div");
     windowDiv.id = "window" + winuid;
+    windowDiv.className = "window";
     windowDiv.setAttribute("data-winuid", winuid);
     windowDiv.setAttribute("data-appid", appid);
     windowDiv.style.position = "absolute";
 
-    windowDiv.onclick = function () {
-        nowapp = title;
+    const windowHeader = document.createElement("div");
+    windowHeader.id = "window" + winuid + "header";
+    windowHeader.className = "windowheader ctxAvail";
+
+    const windowContent = document.createElement("div");
+    windowContent.className = "windowcontent";
+
+    const windowLoader = document.createElement("div");
+    windowLoader.className = "windowloader";
+    const loaderSpinner = document.createElement("div");
+    loaderSpinner.className = "loader33";
+    windowLoader.appendChild(loaderSpinner);
+
+    windowDiv.appendChild(windowLoader);
+    windowDiv.appendChild(windowHeader);
+    windowDiv.appendChild(windowContent);
+
+    return { windowDiv, windowHeader, windowContent, windowLoader, loaderSpinner };
+}
+
+function populateWindowHeader(header, title, ic, winuid) {
+    const dataSpan = document.createElement("div");
+    dataSpan.className = "windowdataspan";
+    dataSpan.innerHTML = ic != null ? ic : "";
+
+    const titleSpan = document.createElement("div");
+    titleSpan.className = "title";
+    titleSpan.id = "window" + winuid + "titlespan";
+    titleSpan.innerHTML = toTitleCase(basename(title));
+
+    dataSpan.appendChild(titleSpan);
+    header.appendChild(dataSpan);
+}
+
+function createHeaderControls(winuid, windowDiv) {
+    const controlsContainer = document.createElement("div");
+    controlsContainer.className = "ibtnsside";
+
+    const isMobile = matchMedia('(pointer: coarse)').matches;
+
+    const createButton = (title, icon, ...classes) => {
+        const button = document.createElement("button");
+        button.setAttribute("title", title);
+        const span = document.createElement("span");
+        span.classList.add("material-symbols-rounded", ...classes);
+        span.textContent = icon;
+        button.appendChild(span);
+        return button;
     };
 
-    document.body.appendChild(windowDiv);
+    const closeButton = createButton("Close", "close", "wincl", "winclosebtn");
+    closeButton.onclick = () => {
+        clwin("window" + winuid);
+        loadtaskspanel();
+    };
 
-    var iframeOverlay = null;
+    const minimizeButton = createButton("Minimize", "remove", "wincl", "flbtn");
+    minimizeButton.onclick = () => {
+        snappingconthide();
+        minim(winuid);
+    };
 
-    var resizers = [
+    controlsContainer.appendChild(closeButton);
+
+    if (!isMobile) {
+        const maximizeButton = createButton("Maximize", "open_in_full", "wincl", "flbtn");
+        maximizeButton.querySelector('span').style.fontSize = '0.7rem';
+        maximizeButton.onclick = () => {
+            snappingconthide();
+            flwin(windowDiv);
+        };
+        controlsContainer.appendChild(maximizeButton);
+    }
+
+    controlsContainer.appendChild(minimizeButton);
+    return controlsContainer;
+}
+
+async function applyWindowAppearance(windowDiv, header, theme, aspectratio) {
+    const isMobile = matchMedia('(pointer: coarse)').matches;
+    const sizeStyles = !isMobile ? calculateWindowSize(aspectratio) : { left: '0', top: '0', width: 'calc(100% - 0px)', height: 'calc(100% - 58px)' };
+    Object.assign(windowDiv.style, sizeStyles);
+
+    let bgColor = await getSetting("WindowBgColor");
+    windowDiv.style.background = bgColor || 'transparent';
+
+    if (theme != null) {
+        header.style.backgroundColor = theme;
+        windowDiv.style.border = `1px solid ${theme}`;
+        header.style.color = isDark(theme) ? "white" : "black";
+    }
+}
+function attachDragHandler(windowDiv, header, winuid) {
+    header.addEventListener("mousedown", () => {
+        putwinontop('window' + winuid);
+        winds[winuid].zIndex = windowDiv.style.zIndex;
+    });
+
+    dragElement(windowDiv);
+
+    header.addEventListener("mouseup", (event) => {
+        let target = event.target;
+        while (target) {
+            if (target.classList?.contains('wincl')) return;
+            target = target.parentElement;
+        }
+        checksnapping(document.getElementById('window' + winuid), event, winuid);
+        snappingconthide();
+    });
+}
+
+function attachResizeHandlers(windowDiv) {
+    const resizers = [
         { class: "resizer top-left", cursor: "nwse-resize", width: "10px", height: "10px", top: "-5px", left: "-5px" },
         { class: "resizer top-right", cursor: "nesw-resize", width: "10px", height: "10px", top: "-5px", right: "-5px" },
         { class: "resizer bottom-left", cursor: "nesw-resize", width: "10px", height: "10px", bottom: "-5px", left: "-5px" },
@@ -175,41 +284,37 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
     ];
 
     resizers.forEach(resizer => {
-        var div = document.createElement("div");
+        const div = document.createElement("div");
         div.className = resizer.class;
-        div.style.position = "absolute";
-        div.style.width = resizer.width;
-        div.style.height = resizer.height;
-        div.style.cursor = resizer.cursor;
-        div.style.background = "transparent";
-
-        if (resizer.top) div.style.top = resizer.top;
-        if (resizer.bottom) div.style.bottom = resizer.bottom;
-        if (resizer.left) div.style.left = resizer.left;
-        if (resizer.right) div.style.right = resizer.right;
-
+        Object.assign(div.style, {
+            position: "absolute",
+            width: resizer.width,
+            height: resizer.height,
+            cursor: resizer.cursor,
+            background: "transparent",
+            top: resizer.top,
+            bottom: resizer.bottom,
+            left: resizer.left,
+            right: resizer.right
+        });
         windowDiv.appendChild(div);
 
-        div.addEventListener("mousedown", function (e) {
+        div.addEventListener("mousedown", (e) => {
             e.preventDefault();
-            var startX = e.clientX, startY = e.clientY;
-            var startWidth = windowDiv.offsetWidth, startHeight = windowDiv.offsetHeight;
-            var startLeft = windowDiv.offsetLeft, startTop = windowDiv.offsetTop;
+            let startX = e.clientX, startY = e.clientY;
+            let startWidth = windowDiv.offsetWidth, startHeight = windowDiv.offsetHeight;
+            let startLeft = windowDiv.offsetLeft, startTop = windowDiv.offsetTop;
 
-            iframeOverlay = document.createElement('div');
-            iframeOverlay.style.position = 'absolute';
-            iframeOverlay.style.top = 0;
-            iframeOverlay.style.left = 0;
-            iframeOverlay.style.width = '100%';
-            iframeOverlay.style.height = '100%';
-            iframeOverlay.style.zIndex = 999;
-            iframeOverlay.style.backgroundColor = 'transparent';
-            iframeOverlay.style.cursor = resizer.cursor;
+            const iframeOverlay = document.createElement('div');
+            Object.assign(iframeOverlay.style, {
+                position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
+                zIndex: 999, backgroundColor: 'red', cursor: resizer.cursor
+            });
             document.body.appendChild(iframeOverlay);
 
             function resizeMove(ev) {
-                var dx = ev.clientX - startX;
-                var dy = ev.clientY - startY;
+                let dx = ev.clientX - startX;
+                let dy = ev.clientY - startY;
 
                 if (resizer.class.includes("right")) windowDiv.style.width = startWidth + dx + "px";
                 if (resizer.class.includes("bottom")) windowDiv.style.height = startHeight + dy + "px";
@@ -226,17 +331,11 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
             function stopResize(event) {
                 document.removeEventListener("mousemove", resizeMove);
                 document.removeEventListener("mouseup", stopResize);
-
-                snappingconthide()
+                snappingconthide();
                 if (iframeOverlay) {
                     document.body.removeChild(iframeOverlay);
-                    iframeOverlay = null;
                 }
-
-                const mouseUpEvent = new MouseEvent('mouseup', {
-                    clientX: event.clientX,
-                    clientY: event.clientY,
-                });
+                const mouseUpEvent = new MouseEvent('mouseup', { clientX: event.clientX, clientY: event.clientY });
                 windowDiv.dispatchEvent(mouseUpEvent);
             }
 
@@ -244,555 +343,199 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
             document.addEventListener("mouseup", stopResize);
         });
     });
+}
 
-
-    nowapp = title;
-    windowDiv.classList += "window";
-
-    const isitmob = matchMedia('(pointer: coarse)').matches;
-    const sizeStyles = !isitmob ? calculateWindowSize(aspectratio) : { left: '0', top: '0', width: 'calc(100% - 0px)', height: 'calc(100% - 58px)' };
-
-    Object.assign(windowDiv.style, sizeStyles);
-
-    (async function () {
-        let x = await getSetting("WindowBgColor");
-        windowDiv.style.background = (x) ? x : 'transparent';
-    })();
-
-    var windowHeader = document.createElement("div");
-    windowHeader.id = "window" + winuid + "header";
-    windowHeader.classList += "windowheader ctxAvail";
-    let windowdataspan = document.createElement("div");
-    windowdataspan.classList += "windowdataspan";
-    windowdataspan.innerHTML = ic != null ? ic : "";
-    let windowtitlespan = document.createElement("div");
-    windowtitlespan.classList.add("title")
-    windowtitlespan.id = "window" + winuid + "titlespan";
-    windowtitlespan.innerHTML += toTitleCase(basename(title));
-    windowdataspan.appendChild(windowtitlespan);
-    windowHeader.appendChild(windowdataspan);
-
-    if (theme != null) {
-        windowHeader.style.backgroundColor = theme;
-        windowDiv.style.border = `1px solid ` + theme;
-        if (isDark(theme)) {
-            windowHeader.style.color = "white";
-        } else {
-            windowHeader.style.color = "black";
+async function buildIframeApiBridge(appid, title, winuid, perms) {
+    async function checkAndSetPermission(namespace) {
+        if (!Array.isArray(perms)) {
+            perms = [];
+            await setSetting(appid, { perms }, "AppRegistry.json");
         }
+        if (perms.includes(namespace)) return true;
+
+        const confirmed = await justConfirm(
+            `Allow ${namespace} permission?`,
+            `${toTitleCase(basename(title))} asks permission to ${describeNamespaces(namespace)}. Allow it?`
+        );
+        if (confirmed) {
+            perms.push(namespace);
+            await setSetting(appid, { perms }, "AppRegistry.json");
+            return true;
+        }
+        return false;
     }
-    windowHeader.setAttribute("title", title + winuid);
-    windowHeader.addEventListener("mouseup", function (event) {
-        let target = event.target;
-        while (target) {
-            if (target.classList && target.classList.contains('wincl')) {
-                return;
-            }
-            target = target.parentElement;
-        }
-        checksnapping(document.getElementById('window' + winuid), event, winuid);
-        snappingconthide();
-    });
 
-    windowHeader.addEventListener("mousedown", function (event) {
-        putwinontop('window' + winuid);
-        winds[winuid].zIndex = windowDiv.style.zIndex;
-
-        let holdStart = Date.now();
-        let offsetX = event.clientX - windowDiv.getBoundingClientRect().left;
-        let offsetY = event.clientY - windowDiv.getBoundingClientRect().top;
-
-        function onMouseMove(event) {
-            if (Date.now() - holdStart >= 500) {
-                snappingIndicator.style.opacity = "0.8";
-                document.getElementById('snappingIndicator').style.display = "block";
-            }
-
-            windowDiv.style.left = event.clientX - offsetX + "px";
-            windowDiv.style.top = event.clientY - offsetY + "px";
-
-            snappingDivs.forEach(div => {
-                const rect = div.getBoundingClientRect();
-                const isHovered =
-                    event.clientX >= rect.left &&
-                    event.clientX <= rect.right &&
-                    event.clientY >= rect.top &&
-                    event.clientY <= rect.bottom;
-
-                div.style.opacity = isHovered ? 0.8 : 0.2;
-            });
-        }
-
-        document.addEventListener("mousemove", onMouseMove);
-
-        document.addEventListener("mouseup", function () {
-            document.removeEventListener("mousemove", onMouseMove);
-        }, { once: true });
-    });
-
-
-    var ibtnsside = document.createElement("div");
-    ibtnsside.classList += "ibtnsside";
-
-    var minimbtn = document.createElement("button");
-    minimbtn.setAttribute("title", "Minimize");
-    var minimSpan = document.createElement("span");
-    minimSpan.classList.add("material-symbols-rounded", "wincl", "flbtn");
-    minimSpan.textContent = "remove";
-    minimbtn.appendChild(minimSpan);
-    minimbtn.onclick = function () {
-        snappingconthide();
-        minim(winuid);
-    };
-
-    var flButton = document.createElement("button");
-    flButton.setAttribute("title", "Maximize");
-    var flSpan = document.createElement("span");
-    flSpan.classList.add("material-symbols-rounded", "wincl", "flbtn");
-    flSpan.textContent = "open_in_full";
-    flSpan.style = `font-size: 0.7rem !important;`;
-    flButton.appendChild(flSpan);
-    flButton.onclick = function () {
-        snappingconthide();
-        flwin(windowDiv);
-    };
-
-    var closeButton = document.createElement("button");
-    closeButton.setAttribute("title", "Close");
-    var closeSpan = document.createElement("span");
-    closeSpan.classList.add("material-symbols-rounded", "wincl", "winclosebtn");
-    closeSpan.textContent = "close";
-    closeButton.appendChild(closeSpan);
-    closeButton.onclick = function () {
-        clwin("window" + winuid);
-        loadtaskspanel();
-    };
-
-    ibtnsside.appendChild(closeButton);
-    if (!isitmob) {
-        ibtnsside.appendChild(flButton);
-    }
-    ibtnsside.appendChild(minimbtn);
-
-    windowHeader.appendChild(ibtnsside);
-
-    var windowContent = document.createElement("div");
-    windowContent.classList += "windowcontent";
-
-    var windowLoader = document.createElement("div");
-    windowLoader.classList += "windowloader";
-    var loaderdiv = document.createElement("div");
-    loaderdiv.classList = "loader33";
-
-    async function loadIframeContent(windowLoader, windowContent, iframe) {
-        const content2 = cont;
-        let contentString = isBase64(content2) ? decodeBase64Content(content2) : content2;
-
-        if (content2 === undefined) {
-            contentString = "<center><h1>Unavailable</h1>App Data cannot be read.</center>";
-        }
-
-        if (windowLoader) {
-            windowLoader.innerHTML = await getAppIcon(0, appid) || defaultAppIcon;
-            windowLoader.appendChild(loaderdiv);
-        }
-
-        const computedStyles = getComputedStyle(document.body);
-        const variables = {
-            '--font-size-small': computedStyles.getPropertyValue('--font-size-small'),
-            '--font-size-normal': computedStyles.getPropertyValue('--font-size-normal'),
-            '--font-size-big': computedStyles.getPropertyValue('--font-size-big'),
-            '--colors-BG-normal': computedStyles.getPropertyValue('--colors-BG-normal'),
-            '--colors-BG-sub': computedStyles.getPropertyValue('--colors-BG-sub'),
-            '--colors-BG-section': computedStyles.getPropertyValue('--colors-BG-section'),
-            '--colors-BG-highlighted': computedStyles.getPropertyValue('--colors-BG-highlighted'),
-            '--colors-text-section': computedStyles.getPropertyValue('--colors-text-section'),
-            '--colors-text-normal': computedStyles.getPropertyValue('--colors-text-normal'),
-            '--colors-text-sub': computedStyles.getPropertyValue('--colors-text-sub'),
-            '--colors-text-high': computedStyles.getPropertyValue('--colors-text-high'),
-            '--sizing-border-radius': computedStyles.getPropertyValue('--sizing-border-radius'),
-            '--sizing-normal': computedStyles.getPropertyValue('--sizing-normal'),
-            '--sizing-nano': computedStyles.getPropertyValue('--sizing-nano'),
-            '--vw': computedStyles.getPropertyValue('--vw'),
-            '--vh': computedStyles.getPropertyValue('--vh'),
-            '--font-size-default': computedStyles.getPropertyValue('--font-size-default')
-        };
-
-        let styleBlock = '';
-        if (
-            contentString.includes("nova-include") &&
-            getMetaTagContent(contentString, 'nova-include')?.includes('nova.css')
-        ) {
-            let updatedCss = novadotcsscache || '';
-            const novaCssTag = document.getElementById('novacsstag');
-            if (novaCssTag) {
-                const customCss = novaCssTag.textContent;
-                const variableRegex = /--([\w-]+)\s*:\s*([^;]+);/g;
-                let customVariables = {};
-                let match;
-                while ((match = variableRegex.exec(customCss)) !== null) {
-                    customVariables[`--${match[1]}`] = match[2].trim();
-                }
-                updatedCss = novadotcsscache.replace(/:root\s*{([^}]*)}/, (match, declarations) => {
-                    let updated = declarations.trim();
-                    for (const [key, val] of Object.entries(customVariables)) {
-                        const regex = new RegExp(`(${key}\\s*:\\s*).*?;`, 'g');
-                        updated = updated.replace(regex, `$1${val};`);
-                    }
-                    return `:root { ${updated} }`;
-                });
-            }
-            styleBlock = `<style>${updatedCss}</style>`;
-        }
-
-
-        if (contentString.includes("nova-include") && getMetaTagContent(contentString, 'nova-include')?.includes('material-symbols-rounded')) {
-            styleBlock += `
-    <style>
-    @font-face {
-        font-family: 'Material Symbols Rounded';
-        font-style: normal;
-        src: url("https://adthoughtsglobal.github.io/resources/MaterialSymbolsRounded.woff2") format('woff2');
-    }
-    .material-symbols-rounded {
-        font-family: 'Material Symbols Rounded';
-        font-weight: normal;
-        font-style: normal;
-        font-size: 24px;
-        line-height: 1;
-        display: inline-block;
-        white-space: nowrap;
-        direction: ltr;
-        -webkit-font-smoothing: antialiased;
-    }
-    </style>`;
-        }
-
-        let ctxScript = '';
-        if (contentString.includes("nova-include") && getMetaTagContent(contentString, 'nova-include')?.includes('contextMenu')) {
-            ctxScript = await fetch('scripts/ctxmenu.js').then(res => res.text());
-        }
-        let registry = await getSetting(appid, "AppRegistry.json");
-        if (registry == null) {
-            registry = { perms: [] };
-        }
-
-        let perms = registry.perms;
-        async function handleNtxSessionMessage(event) {
-            const datevent = event;
-            const message = event.data;
-
-            try {
-                const [namespace, method] = message.action.split(".");
-
-                if (ntxWrapper[namespace] && typeof ntxWrapper[namespace][method] === "function") {
-                    async function checkAndSetPermission(appid, namespace, title) {
-
-                        if (!Array.isArray(perms)) {
-                            registry.perms = [];
-                            await setSetting(appid, registry, "AppRegistry.json");
-                            return checkAndSetPermission(appid, namespace, title);
-                        }
-
-                        let condition = perms.includes(namespace);
-                        if (!condition) {
-                            let confirmperm = await justConfirm(
-                                "Allow " + namespace + " permission?",
-                                toTitleCase(basename(title)) + " asks permission to " + describeNamespaces(namespace) + ". Allow it?"
-                            );
-                            if (confirmperm) {
-                                registry.perms.push(namespace);
-                                await setSetting(appid, registry, "AppRegistry.json");
-                                return true;
-                            } else {
-                                return false;
-                            }
-                        }
-                        return true;
-                    }
-                    function sendLargeMessage(target, data, transactionId, chunkSize = 64 * 1024) {
-                        try {
-                            const json = JSON.stringify(data);
-                            const totalChunks = Math.ceil(json.length / chunkSize);
-
-                            for (let i = 0; i < totalChunks; i++) {
-                                const chunk = json.slice(i * chunkSize, (i + 1) * chunkSize);
-                                target.postMessage({
-                                    transactionId,
-                                    chunk,
-                                    chunkIndex: i,
-                                    totalChunks,
-                                    isJson: true,
-                                    success: true
-                                }, '*');
-                            }
-                        } catch { }
-                    }
-
-                    const hasPermission = await checkAndSetPermission(appid, namespace, title);
-                    if (!hasPermission) return;
-
-                    const fn = ntxWrapper[namespace][method];
-                    const args = [...message.params];
-
-                    if (fn.appIdSupport) {
-                        args.push(appid);
-                    }
-
-                    const result = await fn(...args);
-
-                    await sendLargeMessage(event.source, result, message.transactionId);
-
-
-                } else {
-                    throw new Error(`Invalid NTX action: ${message.action}`);
-                }
-
-            } catch (error) {
-                console.error("Error handling NTX message:", error);
-
-                event.source.postMessage({
-                    transactionId: message.transactionId,
-                    error: error.message,
-                    success: false
+    function sendLargeMessage(target, data, transactionId, chunkSize = 65536) {
+        try {
+            const json = JSON.stringify(data);
+            const totalChunks = Math.ceil(json.length / chunkSize);
+            for (let i = 0; i < totalChunks; i++) {
+                const chunk = json.slice(i * chunkSize, (i + 1) * chunkSize);
+                target.postMessage({
+                    transactionId, chunk, chunkIndex: i, totalChunks, isJson: true, success: true
                 }, '*');
             }
-        }
-
-        const ntxScript = `
-    <script defer>
-    document.addEventListener('mousedown', function(event) {
-        const winuid = myWindow.windowID;
-        window.parent.postMessage({ type: 'iframeClick', iframeId: winuid }, '*');
-    });
-
-    var myWindow = {};
-
-    window.addEventListener("message", async (event) => {
-         if (event.data?.type === 'nova-style' && typeof event.data.css === 'string') {
-    let style = document.getElementById('novacsstag');
-    if (!style) {
-      style = document.createElement('style');
-      style.id = 'novacsstag';
-      document.head.appendChild(style);
-    }
-    style.textContent = event.data.css;
-  }
-
-        if (event.data.type === "myWindow") {
-            const data = event.data.data;
-
-            myWindow = {
-                ...data,
-                close: () => {
-                    console.log("clwin543", myWindow.windowID)
-                    ntxSession.send("sysUI.clwin", myWindow.windowID);
-                }
-            };
-
-            let greenflagResult;
-            try { greenflagResult = await greenflag() } catch (e) { }
-            window.parent.postMessage({ data:"gfdone", iframeId: myWindow.windowID }, "*");
-        }
-    });
-
-    class NTXSession {
-        constructor() {
-            this.transactionIdCounter = 0;
-            this.pendingRequests = {};
-            this.listeners = {};
-            const chunkBuffer = {};
-
-window.addEventListener("message", (event) => {
-    const { transactionId, chunk, chunkIndex, totalChunks, isJson, success, error } = event.data;
-
-    if (transactionId && typeof success === "boolean") {
-        if (isJson && chunk !== undefined) {
-            if (!chunkBuffer[transactionId]) {
-                chunkBuffer[transactionId] = { chunks: [], received: 0, total: totalChunks };
-            }
-
-            chunkBuffer[transactionId].chunks[chunkIndex] = chunk;
-            chunkBuffer[transactionId].received++;
-
-            if (chunkBuffer[transactionId].received === totalChunks) {
-                const fullData = chunkBuffer[transactionId].chunks.join('');
-                delete chunkBuffer[transactionId];
-
-                const result = JSON.parse(fullData);
-
-                if (this.pendingRequests[transactionId]) {
-                    this.pendingRequests[transactionId].resolve(result);
-                    delete this.pendingRequests[transactionId];
-                }
-            }
-        } else {
-            if (this.pendingRequests[transactionId]) {
-                if (success) {
-                    this.pendingRequests[transactionId].resolve(event.data.result);
-                } else {
-                    this.pendingRequests[transactionId].reject(error);
-                }
-                delete this.pendingRequests[transactionId];
-            }
+        } catch (error) {
+            console.error("Failed to send large message:", error);
         }
     }
-});
 
+    async function handleNtxSessionMessage(event) {
+        const { action, params, transactionId } = event.data;
+        try {
+            const [namespace, method] = action.split(".");
+            if (ntxWrapper[namespace]?.[method]) {
+                if (!await checkAndSetPermission(namespace)) return;
 
+                const fn = ntxWrapper[namespace][method];
+                const args = [...params];
+                if (fn.appIdSupport) args.push(appid);
+
+                const result = await fn(...args);
+                await sendLargeMessage(event.source, result, transactionId);
+            } else {
+                throw new Error(`Invalid NTX action: ${action}`);
+            }
+        } catch (error) {
+            console.error("Error handling NTX message:", error);
+            event.source.postMessage({ transactionId, error: error.message, success: false }, '*');
         }
+    }
 
-        generateTransactionId() {
-            return \`txn_\${Date.now()}_\${this.transactionIdCounter++}\`;
+    function handleMessage(event) {
+        if (!event.data || event.data.iframeId !== winuid) return;
+
+        if (event.data.data === "gfdone") {
+            const loader = document.querySelector(`#window${CSS.escape(winuid)} .windowloader`);
+            if (loader) {
+                loader.classList.add("transp5");
+                setTimeout(() => loader.remove(), 500);
+            }
+        } else if (event.data.type === "iframeClick") {
+            const targetWindow = document.querySelector(`[data-winuid="${winuid}"]`);
+            putwinontop("window" + winuid);
+            winds[winuid].zIndex = targetWindow.style.zIndex;
+        } else if (event.data.transactionId && event.data.action) {
+            handleNtxSessionMessage(event);
+        } else if (event.data.isEventBus && event.data.type) {
+            eventBusWorker.deliver(event.data);
         }
+    }
 
-        send(action, ...params) {
-            return new Promise((resolve, reject) => {
-                const transactionId = this.generateTransactionId();
-                this.pendingRequests[transactionId] = { resolve, reject };
-                const winuid = "${winuid}";
-                window.parent.postMessage({ transactionId, action, params, iframeId: winuid }, "*");
+    if (window._messageListeners?.[winuid]) {
+        window.removeEventListener("message", window._messageListeners[winuid]);
+    }
+    window.addEventListener("message", handleMessage);
+    if (!window._messageListeners) window._messageListeners = {};
+    window._messageListeners[winuid] = handleMessage;
+}
+
+async function prepareIframeContent(cont, appid, winuid) {
+    let contentString = isBase64(cont) ? decodeBase64Content(cont) : (cont || "<center><h1>Unavailable</h1>App Data cannot be read.</center>");
+
+    let styleBlock = '';
+    if (getMetaTagContent(contentString, 'nova-include')?.includes('nova.css')) {
+        let updatedCss = novadotcsscache || '';
+        const novaCssTag = document.getElementById('novacsstag');
+        if (novaCssTag) {
+            const customCss = novaCssTag.textContent;
+            const variableRegex = /--([\w-]+)\s*:\s*([^;]+);/g;
+            let customVariables = {};
+            let match;
+            while ((match = variableRegex.exec(customCss)) !== null) {
+                customVariables[`--${match[1]}`] = match[2].trim();
+            }
+            updatedCss = novadotcsscache.replace(/:root\s*{([^}]*)}/, (match, declarations) => {
+                let updated = declarations.trim();
+                for (const [key, val] of Object.entries(customVariables)) {
+                    const regex = new RegExp(`(${key}\\s*:\\s*).*?;`, 'g');
+                    updated = updated.replace(regex, `$1${val};`);
+                }
+                return `:root { ${updated} }`;
             });
         }
-
-        eventBus = {
-            send: (action, ...params) => {
-                return new Promise((resolve, reject) => {
-                    const transactionId = this.generateTransactionId();
-                    this.pendingRequests[transactionId] = { resolve, reject };
-                    window.parent.postMessage({ transactionId, action, params, iframeId: winuid }, "*");
-                });
-            },
-
-            listen: (type, handler) => {
-                if (!this.listeners[type]) {
-                    this.listeners[type] = [];
-                }
-                this.listeners[type].push(handler);
-            }
-        };
+        styleBlock += `<style>${updatedCss}</style>`;
     }
 
-    var ntxSession = new NTXSession();
-    </script>
-`;
-
-        const fullBlobHTML = `
-    <!DOCTYPE html>
-    <html>
-    <head>
-    <meta charset="utf-8">
-    ${styleBlock}
-    </head>
-    <body>
-    ${contentString}
-    ${ctxScript ? `<script>${ctxScript}</script>` : ''}
-    ${ntxScript}
-    <script defer>
-        window.parent.postMessage({
-            type: "iframeReady",
-            windowID: "${winuid}",
-            element: "${windowDiv.id}",
-            titleElement: "${windowtitlespan.id}"
-        }, "*");
-    </script>
-    </body>
-    </html>`;
-
-        const blob = new Blob([fullBlobHTML], { type: 'text/html' });
-        const blobURL = URL.createObjectURL(blob);
-
-        iframe = document.createElement("iframe");
-        if (!perms?.includes("unsandboxed")) {
-            iframe.setAttribute("sandbox", "allow-scripts allow-modals");
-            iframe.setAttribute("allow", "camera; microphone");
-        }
-        iframe.src = blobURL;
-        windowContent.appendChild(iframe);
-        function attachWindowMessageListener(winuidfr) {
-            if (!winuidfr) return;
-
-            if (window._messageListeners?.[winuidfr]) {
-                window.removeEventListener("message", window._messageListeners[winuidfr]);
-            }
-
-            function handleMessage(event) {
-                if (!event.data || event.data.iframeId !== winuidfr) return;
-                if (event.data.data == "gfdone") {
-                    if (windowLoader) {
-                        windowLoader.classList.add("transp5");
-                        windowLoader.remove()
-                    }
-                }
-
-                if (event.data.type === "iframeClick") {
-                    putwinontop("window" + winuidfr);
-                    winds[winuidfr].zIndex = document.querySelector(`[data-winuid="${winuidfr}"]`).style.zIndex;
-                } else if (event.data.transactionId && event.data.action) {
-                    handleNtxSessionMessage(event);
-                }
-
-            }
-
-            window.addEventListener("message", handleMessage);
-
-            if (!window._messageListeners) {
-                window._messageListeners = {};
-            }
-            window._messageListeners[winuidfr] = handleMessage;
-        }
-        iframeReferences[winuid] = iframe.contentWindow;
-        iframe.onload = async () => {
-            const tmpmyWindowData = {
-                appID: appid,
-                windowID: winuid,
-                eventBusURL,
-                setTitle: "later",
-                ...(params && { params })
-            };
-
-            iframe.contentWindow.postMessage({
-                type: "myWindow",
-                data: tmpmyWindowData
-            }, "*");
-
-            attachWindowMessageListener(winuid);
-
-            eventBusWorkerE.addEventListener('message', (event) => {
-                const { type, detail } = event.data;
-                if (!type) return;
-
-                iframe.contentWindow.postMessage({
-                    type,
-                    payload: detail
-                }, '*');
-            });
-
-        };
-
-        if (!winds[winuid]) winds[winuid] = {};
-        winds[winuid]["src"] = blobURL;
-        winds[winuid]["visualState"] = "free";
+    if (getMetaTagContent(contentString, 'nova-include')?.includes('material-symbols-rounded')) {
+        styleBlock += `<style>@font-face{font-family:'Material Symbols Rounded';font-style:normal;src:url(https://adthoughtsglobal.github.io/resources/MaterialSymbolsRounded.woff2) format('woff2');}.material-symbols-rounded{font-family:'Material Symbols Rounded';font-weight:normal;font-style:normal;font-size:24px;line-height:1;display:inline-block;white-space:nowrap;direction:ltr;-webkit-font-smoothing:antialiased;}</style>`;
     }
 
-    windowDiv.appendChild(windowLoader);
-    windowDiv.appendChild(windowHeader);
-    windowDiv.appendChild(windowContent);
+    const ctxScript = getMetaTagContent(contentString, 'nova-include')?.includes('contextMenu') ? await fetch('scripts/ctxmenu.js').then(res => res.text()) : '';
 
+    const ntxScript = `<script defer>document.addEventListener('mousedown',()=>window.parent.postMessage({type:'iframeClick',iframeId:'${winuid}'},'*'));var myWindow={};window.addEventListener("message",async e=>{if("myWindow"===e.data.type){myWindow={...e.data.data,close:()=>ntxSession.send("sysUI.clwin",myWindow.windowID)};try{await greenflag()}catch(t){}window.parent.postMessage({data:"gfdone",iframeId:myWindow.windowID},"*")}else if("nova-style"===e.data?.type&&"string"==typeof e.data.css){let t=document.getElementById("novacsstag");t||(t=document.createElement("style"),t.id="novacsstag",document.head.appendChild(t)),t.textContent=e.data.css}});class NTXSession{constructor(){this.transactionIdCounter=0,this.pendingRequests={},this.listeners={};const e={};window.addEventListener("message",t=>{const{transactionId:s,chunk:n,chunkIndex:i,totalChunks:o,isJson:a,success:d,error:r,type:c,payload:l}=t.data;if(s&&"boolean"==typeof d)if(a&&void 0!==n){e[s]||(e[s]={chunks:[],received:0,total:o}),e[s].chunks[i]=n,e[s].received++;if(e[s].received===o){const n=e[s].chunks.join("");delete e[s];const i=JSON.parse(n);this.pendingRequests[s]&&(this.pendingRequests[s].resolve(i),delete this.pendingRequests[s])}}else this.pendingRequests[s]&&(d?this.pendingRequests[s].resolve(t.data.result):this.pendingRequests[s].reject(r),delete this.pendingRequests[s]);else c&&void 0!==l&&this.listeners[c]&&this.listeners[c].forEach(e=>e(l))})}generateTransactionId(){return\`txn_\${Date.now()}_\${this.transactionIdCounter++}\`}send(e,...t){return new Promise((s,n)=>{const i=this.generateTransactionId();this.pendingRequests[i]={resolve:s,reject:n},window.parent.postMessage({transactionId:i,action:e,params:t,iframeId:'${winuid}'},"*")})}eventBus={send:(e,t)=>{window.parent.postMessage({type:e,detail:t,isEventBus:!0,iframeId:'${winuid}'},"*")},listen:(e,t)=>{this.listeners[e]||(this.listeners[e]=[]),this.listeners[e].push(t)}}}var ntxSession=new NTXSession;</script>`;
+
+    const fullBlobHTML = `<!DOCTYPE html><html><head><meta charset="utf-8">${styleBlock}</head><body>${contentString}${ctxScript ? `<script>${ctxScript}</script>` : ''}${ntxScript}<script defer>window.parent.postMessage({type:"iframeReady",windowID:"${winuid}"}, "*");</script></body></html>`;
+
+    return new Blob([fullBlobHTML], { type: 'text/html' });
+}
+
+async function loadIframe(windowContent, windowLoader, loaderSpinner, cont, appid, winuid, title, params) {
+    const iconHtml = await getAppIcon(0, appid) || defaultAppIcon;
+    loaderSpinner.insertAdjacentHTML('beforebegin', iconHtml);
+
+    let registry = await getSetting(appid, "AppRegistry.json") || { perms: [] };
+    const contentBlob = await prepareIframeContent(cont, appid, winuid);
+    const blobURL = URL.createObjectURL(contentBlob);
+
+    const iframe = document.createElement("iframe");
+    if (!registry.perms?.includes("unsandboxed")) {
+        iframe.setAttribute("sandbox", "allow-scripts allow-modals");
+        iframe.setAttribute("allow", "camera; microphone");
+    }
+    iframe.src = blobURL;
+    iframe.onload = async () => {
+        const myWindowData = { appID: appid, windowID: winuid, eventBusURL, setTitle: "later", ...(params && { params }) };
+        iframe.contentWindow.postMessage({ type: "myWindow", data: myWindowData }, "*");
+        await buildIframeApiBridge(appid, title, winuid, registry.perms);
+
+        eventBusWorkerE.addEventListener('message', (event) => {
+            const { type, detail } = event.data;
+            if (type) {
+                iframe.contentWindow.postMessage({ type, payload: detail }, '*');
+            }
+        });
+    };
+
+    windowContent.appendChild(iframe);
+    iframeReferences[winuid] = iframe.contentWindow;
+    if (!winds[winuid]) winds[winuid] = {};
+    winds[winuid].src = blobURL;
+    winds[winuid].visualState = "free";
+}
+
+function finalizeWindow(windowDiv, winuid) {
     document.body.appendChild(windowDiv);
 
+    const zIndexes = Object.values(winds).map(w => Number(w.zIndex) || 0);
+    const maxZ = Math.max(0, ...zIndexes);
+    windowDiv.style.zIndex = maxZ + 1;
 
-    const windValues = Object.values(winds).map(wind => Number(wind.zIndex) || 0);
-    const maxWindValue = Math.max(...windValues);
-    windowDiv.style.zIndex = maxWindValue + 1;
-
-    await loadIframeContent(windowLoader, windowContent);
-
-
-    dragElement(windowDiv);
     putwinontop('window' + winuid);
     loadtaskspanel();
 }
+
+async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
+    const winuid = initializeWindowState(title, appid, params);
+
+    const { windowDiv, windowHeader, windowContent, windowLoader, loaderSpinner } = createWindowShell(winuid, appid);
+
+    populateWindowHeader(windowHeader, title, ic, winuid);
+    const controls = createHeaderControls(winuid, windowDiv);
+    windowHeader.appendChild(controls);
+
+    await applyWindowAppearance(windowDiv, windowHeader, theme, aspectratio);
+
+    windowDiv.onclick = () => { nowapp = title; };
+
+    attachDragHandler(windowDiv, windowHeader, winuid);
+    attachResizeHandlers(windowDiv);
+
+    await loadIframe(windowContent, windowLoader, loaderSpinner, cont, appid, winuid, title, params);
+
+    finalizeWindow(windowDiv, winuid);
+}
+
 function resetWindow(id) {
     const x = document.getElementById("window" + id);
     x.classList.add("snapping");
@@ -802,7 +545,6 @@ function resetWindow(id) {
 
     Object.assign(x.style, sizeStyles);
     x.getElementsByClassName("flbtn")[0].innerHTML = "open_in_full";
-    fulsapp = false;
 
     winds[id]["visualState"] = "free";
 
@@ -819,7 +561,6 @@ function maximizeWindow(id) {
     x.style.height = "calc(100% - " + navheight + "px)";
     x.style.top = "0";
     x.style.left = "0";
-    fulsapp = true;
     x.getElementsByClassName("flbtn")[0].innerHTML = "close_fullscreen";
 
     winds[id]["visualState"] = "fullscreen";
@@ -827,6 +568,42 @@ function maximizeWindow(id) {
     setTimeout(() => {
         x.classList.remove("snapping");
     }, 1000);
+}
+
+function nudgeWindowIntoView(el) {
+    const rect = el.getBoundingClientRect();
+    const padding = 10;
+    let left = el.offsetLeft;
+    let top = el.offsetTop;
+
+    let nudged = false;
+
+    if (rect.right > window.innerWidth - padding) {
+        left -= (rect.right - window.innerWidth + padding);
+        nudged = true;
+    }
+    if (rect.left < padding) {
+        left += (padding - rect.left);
+        nudged = true;
+    }
+    if (rect.bottom > window.innerHeight - padding) {
+        top -= (rect.bottom - window.innerHeight + padding);
+        nudged = true;
+    }
+    if (rect.top < padding) {
+        top += (padding - rect.top);
+        nudged = true;
+    }
+
+    if (nudged) {
+        el.classList.add("snapping");
+        el.style.left = `${left}px`;
+        el.style.top = `${top}px`;
+
+        setTimeout(() => {
+            el.classList.remove("snapping");
+        }, 500);
+    }
 }
 
 async function checksnapping(x, event, winuid) {
@@ -840,7 +617,6 @@ async function checksnapping(x, event, winuid) {
         viewportWidth: window.innerWidth,
         viewportHeight: window.innerHeight,
         wsnappingSetting: await getSetting("wsnapping"),
-        isFullScreen: fulsapp,
     };
 
     if (!logData.wsnappingSetting) return;
@@ -868,7 +644,7 @@ async function checksnapping(x, event, winuid) {
     logData.widthVW = widthVW;
     logData.heightVH = heightVH;
 
-    if (fulsapp) {
+    if (winds[winuid]["visualState"] == "fullscreen" || winds[winuid]["visualState"] == "snapped") {
         resetWindow(winuid);
         return;
     }
@@ -878,7 +654,6 @@ async function checksnapping(x, event, winuid) {
     } else if (logData.cursorX < VWInPixels) {
         x.classList.add("snapping");
         x.style = `left: 0; top: 0; width: calc(50% - 0px); height: calc(100% - ${navheight}px);`;
-        fulsapp = true;
         x.getElementsByClassName("flbtn")[0].innerHTML = "open_in_full";
         winds[winuid]["visualState"] = "snapped";
         setTimeout(() => {
@@ -887,12 +662,14 @@ async function checksnapping(x, event, winuid) {
     } else if ((logData.viewportWidth - logData.cursorX) < VWInPixels) {
         x.classList.add("snapping");
         x.style = `right: 0; top: 0; width: calc(50% - 0px); height: calc(100% - ${navheight}px);`;
-        fulsapp = true;
         x.getElementsByClassName("flbtn")[0].innerHTML = "open_in_full";
         winds[winuid]["visualState"] = "snapped";
         setTimeout(() => {
             x.classList.remove("snapping");
         }, 1000);
+    } else {
+        nudgeWindowIntoView(x);
+
     }
 }
 function dragElement(elmnt) {
@@ -914,14 +691,15 @@ function dragElement(elmnt) {
         grabOffsetX = e.clientX - elmnt.getBoundingClientRect().left;
         grabOffsetY = e.clientY - elmnt.getBoundingClientRect().top;
 
+        console.log(456)
         iframeOverlay = document.createElement('div');
         iframeOverlay.style.position = 'fixed';
         iframeOverlay.style.top = 0;
         iframeOverlay.style.left = 0;
-        iframeOverlay.style.width = '100%';
-        iframeOverlay.style.height = '100%';
-        iframeOverlay.style.zIndex = 999;
-        iframeOverlay.style.backgroundColor = 'transparent';
+        iframeOverlay.style.width = '100vw';
+        iframeOverlay.style.height = '100vh';
+        iframeOverlay.style.zIndex = '9999';
+        iframeOverlay.style.backgroundColor = 'rgba(255, 0, 0, 0.1)';
         iframeOverlay.style.cursor = 'grabbing';
         document.body.appendChild(iframeOverlay);
 
