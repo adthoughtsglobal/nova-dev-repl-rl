@@ -1040,7 +1040,7 @@ async function updateFile(folderName, fileId, newData) {
             eventBusWorker.deliver({
                 "type": "memory",
                 "event": "update",
-                "id": "createFile"
+                "id": "`createFile`"
             });
         }
     } catch (error) {
@@ -1099,6 +1099,7 @@ async function createFile(folderName, fileName, type, content, metadata = {}) {
             const appData = await getFileByPath(`Apps/${fileNameWithExtension}`);
             if (appData) {
                 await updateFile("Apps/", appData.id, { metadata, content: contentData, fileName: fileNameWithExtension, type });
+                console.log(52084, fileNameWithExtension);
                 await extractAndRegisterCapabilities(appData.id, contentData);
                 return appData.id || null;
             }
@@ -1115,11 +1116,16 @@ async function createFile(folderName, fileName, type, content, metadata = {}) {
             folder[fileNameWithExtension] = { id: uid, type, metadata };
             await ctntMgr.set(uid, contentData);
 
+            if (ext === "app") {
+                await extractAndRegisterCapabilities(uid, contentData);
+            }
+
             await setdb("handling file: " + fileNameWithExtension);
             eventBusWorker.deliver({ type: "memory", event: "update", id: "updateFile", key: folderName });
             return uid;
         }
     }
+
 }
 
 
