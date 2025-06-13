@@ -70,7 +70,13 @@ function loginscreenbackbtn() {
 
 async function showloginmod() {
 	if (badlaunch) { return }
-	closeElementedis();
+	var imgprvtmp = gid("wallbgpreview");
+	imgprvtmp.onload = function handler() {
+		imgprvtmp.onload = null;
+		closeElementedis();
+	};
+	imgprvtmp.src = novaFeaturedImage;
+
 	document.getElementsByClassName("backbtnscont")[0].style.display = "none";
 	function createUserDivs(users) {
 		const usersChooser = document.getElementById('userschooser');
@@ -188,6 +194,7 @@ async function startup() {
 			gid('startupterms').innerHTML = "Startup completed";
 			closeElementedis();
 			genDesktop();
+			closeElementedis();
 
 			let fetchupdatedataver;
 			async function fetchDataAndUpdate() {
@@ -471,8 +478,10 @@ function makedefic(str) {
 	});
 }
 
-function closeElementedis() {
-	var element = document.getElementById("edison");
+function closeElementedis(element) {
+	if (!element) {
+		element = document.getElementById("edison");
+	}
 	element.classList.add("closeEffect");
 	setTimeout(function () {
 		element.close()
@@ -1652,7 +1661,7 @@ async function realgenTaskBar() {
 					appShortcutDiv.addEventListener("click", async () => {
 
 						let filesInFolder = await getFileNamesByFolder(`Dock/${folderName}`);
-        console.log(45, filesInFolder, folderName)
+						console.log(45, filesInFolder, folderName)
 						let appIds = filesInFolder.map(file => file.id);
 						appGroupModal(folderName, appIds);
 					});
@@ -1791,7 +1800,6 @@ async function checkifpassright() {
 	lethalpasswordtimes = true;
 	var trypass = gid("loginform1").value;
 	if (await checkPassword(trypass)) {
-		gid('loginmod').close();
 		password = trypass;
 		lethalpasswordtimes = false;
 		startup();

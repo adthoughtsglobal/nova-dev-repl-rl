@@ -812,12 +812,16 @@ nav [navobj] div {
 #edison {
 	width: 100%;
 	height: 100%;
-	padding: 20px;
 	border: 0px;
 	overflow: hidden;
 	text-align: center;
-	background: var(--colors-BG-normal);
 	transition: 0.8s;
+	background: var(--colors-BG-normal);
+	backdrop-filter: blur(1.5rem);
+	color: var(--colors-text-normal);
+	padding: 2rem 1.5rem;
+	margin: auto;
+	border-radius: var(--sizing-border-radius)
 }
 
 #edison img {
@@ -832,13 +836,11 @@ nav [navobj] div {
 
 	100% {
 		opacity: 0;
-		transform: translateY(10px);
 	}
 }
 
-#appdmod.closeEffect {
-	animation-name: closeEffect;
-	animation-duration: .2s;
+.closeEffect {
+	animation: closeEffect .6s;
 }
 
 .gradient-text {
@@ -874,7 +876,17 @@ nav [navobj] div {
 	height: 100%;
 	padding: 2rem 1.5rem;
 	margin: auto;
-	border-radius: var(--sizing-border-radius)
+	border-radius: var(--sizing-border-radius);
+
+	&>#wallbgpreview {
+		width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: -1;
+        filter: blur(1em) brightness(0.5);
+	}
 }
 
 #loginmod .logincard {
@@ -2049,6 +2061,7 @@ div#seapppreview {
 	display: flex;
 	flex-direction: column;
 	height: 100%;
+	animation: appshow .5s;
 
 	.logincard,
 	.userselect {

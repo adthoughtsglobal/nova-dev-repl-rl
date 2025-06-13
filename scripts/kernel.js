@@ -699,7 +699,7 @@ function dragElement(elmnt) {
         iframeOverlay.style.width = '100vw';
         iframeOverlay.style.height = '100vh';
         iframeOverlay.style.zIndex = '9999';
-        iframeOverlay.style.backgroundColor = 'rgba(255, 0, 0, 0.1)';
+        iframeOverlay.style.backgroundColor = 'transparent';
         iframeOverlay.style.cursor = 'grabbing';
         document.body.appendChild(iframeOverlay);
 
