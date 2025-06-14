@@ -240,18 +240,29 @@ console.log = function (...args) {
 const debounceMap = new Map();
 
 function debounce(func, delay = 300) {
-    return async function (...args) {
+    return function (...args) {
         const key = func.name;
+
         if (debounceMap.has(key)) {
-            clearTimeout(debounceMap.get(key));
+            clearTimeout(debounceMap.get(key).timeout);
         }
-        debounceMap.set(key, setTimeout(async () => {
+
+        let resolvePromise;
+        const promise = new Promise((resolve) => {
+            resolvePromise = resolve;
+        });
+
+        const timeout = setTimeout(async () => {
             debounceMap.delete(key);
-            await func(...args);
-        }, delay));
+            const result = await func(...args);
+            resolvePromise(result);
+        }, delay);
+
+        debounceMap.set(key, { timeout, promise });
+
+        return promise;
     };
 }
-
 function createBlobFromBase64(base64Data, mimeType) {
 	let byteString = atob(base64Data.split(',')[1]);
 	let ab = new ArrayBuffer(byteString.length);

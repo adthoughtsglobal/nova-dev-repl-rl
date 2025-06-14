@@ -36,12 +36,58 @@
 <body>
 	<div id="main">
 		<div class="container2">
-			<img id="bgimage" class="layer44" onerror="this.innerHTML = 'ok'">
+			<div id="bgimage">
+				<img id="bgimage1" class="bgimage"/>
+				<img id="bgimage2" class="bgimage"/>
+			</div>
+
 			<div id="snappingIndicator">
 				<div class="topsnappingind"></div>
 				<div class="leftsnappingind"></div>
 				<div class="rightsnappingind"></div>
 			</div>
+
+			<dialog id="loginmod" class="scalableui">
+				<img id="wallbgpreview">
+				<div class="loginscontain">
+					<div class="userselect">
+						<h1 id="loginusselctime">00:00</h1>
+						<div class="usersselector">
+
+
+							<div id="userschooser">
+
+							</div>
+							<div class="divider"></div>
+							<div class="user" tabindex="0" onclick="setandinitnewuser()"><span class="icon"><span
+										class="user_pfp material-symbols-rounded">
+										add
+									</span></span>
+								<div class="name">New</div>
+							</div>
+						</div>
+					</div>
+					<div class="logincard">
+						<span class="logincardwelt">Welcome Back!</span>
+						<div id="loginform">
+							<input placeholder="Enter your password" id="loginform1" type="password">
+							<button onclick="checkifpassright()">
+								<span class="material-symbols-rounded">
+									chevron_right
+								</span>
+							</button>
+						</div>
+						<div class="backbtnscont">
+							<button class="backbtnuserspg" onclick="loginscreenbackbtn()"><ion-icon
+									name="chevron-back-outline"></ion-icon> Login to a different account</button>
+							<button class="backbtnuserspg" onclick="removeUser()"><ion-icon
+									name="close-outline"></ion-icon>
+								Remove</button>
+						</div>
+
+					</div>
+				</div>
+			</dialog>
 			<dialog id="edison">
 				<div class="edisonrl">
 					<img src="n.png" alt="NovaOS Logo">
@@ -54,6 +100,7 @@
 				</div>
 
 			</dialog>
+
 			<script>
 				gid("edison").showModal();
 				document.querySelector('.progress-container').style.width = "50%";
@@ -76,7 +123,7 @@
 			</noscript>
 
 			<div class="layer44 ctxAvail" id="desktop">
-				<span class="deskloadspan">Desktop is trying to load...</span>
+				<span class="deskloadspan">Welcome back!</span>
 			</div>
 		</div>
 
@@ -260,45 +307,6 @@
 
 		</dialog>
 
-		<dialog id="loginmod" class="scalableui">
-			<img id="wallbgpreview">
-			<div class="loginscontain">
-				<div class="userselect">
-					<h1 id="loginusselctime">00:00</h1>
-					<div class="usersselector">
-
-
-						<div id="userschooser">
-
-						</div>
-						<div class="divider"></div>
-						<div class="user" tabindex="0" onclick="setandinitnewuser()"><span class="icon"><span class="user_pfp material-symbols-rounded">
-									add
-								</span></span>
-							<div class="name">New</div>
-						</div>
-					</div>
-				</div>
-				<div class="logincard">
-					<span class="logincardwelt">Welcome Back!</span>
-					<div id="loginform">
-						<input placeholder="Enter your password" id="loginform1" type="password">
-						<button onclick="checkifpassright()">
-							<span class="material-symbols-rounded">
-								chevron_right
-							</span>
-						</button>
-					</div>
-					<div class="backbtnscont">
-						<button class="backbtnuserspg" onclick="loginscreenbackbtn()"><ion-icon
-								name="chevron-back-outline"></ion-icon> Login to a different account</button>
-						<button class="backbtnuserspg" onclick="removeUser()"><ion-icon name="close-outline"></ion-icon>
-							Remove</button>
-					</div>
-
-				</div>
-			</div>
-		</dialog>
 		<dialog id="sleepwindow" class="scalableui onramcloseable">
 			<div class="sleepwincon">
 				<h1 id="sleeptimer">00:00</h1>
@@ -402,9 +410,9 @@
 			<div class="modal-content">
 				<h1 id="appgrp_name"></h1>
 				<div id="appgrp_list"></div>
-			<span class="material-symbols-rounded modal_close_btn" onclick="gid('appgrpmodal').close()">
-								close
-							</span>
+				<span class="material-symbols-rounded modal_close_btn" onclick="gid('appgrpmodal').close()">
+					close
+				</span>
 			</div>
 		</dialog>
 

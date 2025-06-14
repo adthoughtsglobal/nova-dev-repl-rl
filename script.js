@@ -13,12 +13,26 @@ var batteryLevel, winds = {}, memory = {}, _nowapp, fulsapp = false, appsHistory
 	"studio"
 ], timeFormat, timetypecondition = true, genTaskBar, genDesktop, nonotif;
 
-function setbgimagetourl(x) {
-	const bgImage = document.getElementById('bgimage');
-	if (!bgImage) return;
+let currentImage = 1;
 
-	bgImage.style.opacity = 0;
-	const transitionDuration = parseFloat(getComputedStyle(bgImage).transitionDuration) * 1000 || 300;
+function setbgimagetourl(x) {
+	const img1 = document.getElementById('bgimage1');
+	const img2 = document.getElementById('bgimage2');
+	if (!img1 || !img2) return;
+
+	const activeImg = currentImage === 1 ? img1 : img2;
+	const nextImg = currentImage === 1 ? img2 : img1;
+
+	nextImg.style.opacity = 0;
+
+	const setImageSrc = (url) => {
+		nextImg.src = url;
+		nextImg.onload = () => {
+			nextImg.style.opacity = 1;
+			activeImg.style.opacity = 0;
+			currentImage = currentImage === 1 ? 2 : 1;
+		};
+	};
 
 	if (x.startsWith('data:')) {
 		try {
@@ -33,23 +47,13 @@ function setbgimagetourl(x) {
 			const blob = new Blob([arrayBuffer], { type: mimeString });
 			const blobUrl = URL.createObjectURL(blob);
 
-			setTimeout(() => {
-				bgImage.src = blobUrl;
-				bgImage.onload = () => {
-					bgImage.style.opacity = 1;
-					setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
-				};
-			}, transitionDuration);
+			setImageSrc(blobUrl);
+			setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
 		} catch (e) {
 			console.error("Failed to decode base64 string:", e);
 		}
 	} else {
-		setTimeout(() => {
-			bgImage.src = x;
-			bgImage.onload = () => {
-				bgImage.style.opacity = 1;
-			};
-		}, transitionDuration);
+		setImageSrc(x);
 	}
 }
 
@@ -71,11 +75,17 @@ function loginscreenbackbtn() {
 async function showloginmod() {
 	if (badlaunch) { return }
 	var imgprvtmp = gid("wallbgpreview");
+	imgprvtmp.src = novaFeaturedImage;
 	imgprvtmp.onload = function handler() {
 		imgprvtmp.onload = null;
-		closeElementedis();
+
+		imgprvtmp.decode().then(() => {
+			closeElementedis();
+		}).catch(() => {
+			closeElementedis();
+		});
 	};
-	imgprvtmp.src = novaFeaturedImage;
+
 
 	document.getElementsByClassName("backbtnscont")[0].style.display = "none";
 	function createUserDivs(users) {
@@ -161,6 +171,19 @@ async function loadFileTypeAssociations() {
 	cleanupInvalidAssociations();
 }
 
+
+function closeElementedis(element) {
+	if (!element) {
+		element = document.getElementById("edison");
+	}
+	element.classList.add("closeEffect");
+	console.log(342, element)
+	setTimeout(function () {
+		element.close()
+		element.classList.remove("closeEffect");
+	}, 200);
+}
+
 async function startup() {
 	gid("edison").showModal();
 	if (badlaunch) { return }
@@ -192,8 +215,7 @@ async function startup() {
 			await genTaskBar();
 			setsrtpprgbr(100);
 			gid('startupterms').innerHTML = "Startup completed";
-			closeElementedis();
-			genDesktop();
+			await genDesktop();
 			closeElementedis();
 
 			let fetchupdatedataver;
@@ -478,16 +500,6 @@ function makedefic(str) {
 	});
 }
 
-function closeElementedis(element) {
-	if (!element) {
-		element = document.getElementById("edison");
-	}
-	element.classList.add("closeEffect");
-	setTimeout(function () {
-		element.close()
-		element.classList.remove("closeEffect");
-	}, 200);
-}
 function clwin(x) {
 	snappingconthide();
 	const el = isElement(x) ? x : document.getElementById(x.startsWith("window") ? x : "window." + x);
@@ -910,6 +922,7 @@ function makedialogclosable(ok) {
 	if (!myDialog.__originalClose) {
 		myDialog.__originalClose = myDialog.close;
 		myDialog.close = function () {
+			console.log(342, ok)
 			this.classList.add("closeEffect");
 
 			function handler() {
@@ -1704,9 +1717,9 @@ async function realgenTaskBar() {
 })();
 
 async function realgenDesktop() {
+		gid("desktop").innerHTML = ``;
 	let x;
 	try {
-		gid("desktop").innerHTML = ``;
 		let y = await getFileNamesByFolder("Desktop");
 
 		y.forEach(async function (app) {
@@ -1746,11 +1759,11 @@ async function realgenDesktop() {
 				unshrinkbsfX = await getFileById(x);
 				unshrinkbsfX = unshrinkbsfX.content;
 			}
-			setbgimagetourl(unshrinkbsfX);
+			await setbgimagetourl(unshrinkbsfX);
 		}
 		document.getElementById("bgimage").onerror = async function (event) {
 			toast("It doesn't seem to work as the wallpaper...")
-			setbgimagetourl(novaFeaturedImage);
+			await setbgimagetourl(novaFeaturedImage);
 			if (await getSetting("wall")) {
 				remSetting("wall");
 			}
