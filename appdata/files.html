@@ -1594,7 +1594,7 @@
 				fileElement.setAttribute('ondragstart', 'dragfl(event, this)');
 			}
 
-			const icon = await geticon(ptypext(file.name), file.id);
+			const icon = await geticon(getFileExtension(file.name), file.id);
 
 			const iconSpan = document.createElement('span');
 			iconSpan.className = 'fileicons';
@@ -2068,7 +2068,7 @@
 			}
 		}
 
-		function ptypext(str) {
+		function getFileExtension(str) {
 			try {
 				const parts = str.split('.');
 				return parts.length > 1 ? parts.pop() : '';
@@ -2201,13 +2201,13 @@
 				icon: 'download',
 				label: 'Reinstall',
 				action: (itemuid) => window.parent.extractAndRegisterCapabilities(itemuid),
-				condition: (file) => ptypext(file.fileName) === 'app',
+				condition: (file) => getFileExtension(file.fileName) === 'app',
 			},
 			setWallpaper: {
 				icon: 'wallpaper',
 				label: 'Set As Wallpaper',
 				action: (itemuid) => window.parent.makewall(itemuid),
-				condition: async (file) => (await ntxSession.send("utility.getBaseFileType", ptypext(file.fileName))) === 'image',
+				condition: async (file) => (await ntxSession.send("utility.getBaseFileType", getFileExtension(file.fileName))) === 'image',
 			},
 			move: {
 				icon: 'drive_file_move',
@@ -2247,11 +2247,11 @@
 			if (target.classList.contains('file')) {
 				const itemuid = target.getAttribute("unid");
 				slfileID = itemuid;
-				const file = { unid: itemuid, type: 'app', fileName: window.parent.getFileNameByID(itemuid) };
-				console.log(file, (await ntxSession.send("utility.getBaseFileType", ptypext(file.fileName))) === 'image');
+				const file = { unid: itemuid, type: 'app', fileName: await window.parent.getFileNameByID(itemuid) };
+				console.log("File:", file, target);
 
 				const actions = Object.values(window.fileActions);
-				const conditions = await Promise.all(actions.map(action => action.condition(file)));
+				const conditions = await Promise.all(actions.map(async (action) => await action.condition(file)));
 				const filteredActions = actions.filter((_, index) => conditions[index]);
 
 				return filteredActions.map(action => ({

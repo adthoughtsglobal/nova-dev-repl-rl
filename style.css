@@ -47,6 +47,10 @@ body {
 
 dialog {
 	user-select: none;
+
+	& > ::backdrop {
+		background: transparent !important;
+	}
 }
 
 #bgimage {
@@ -109,10 +113,12 @@ nav [navobj] {
 }
 
 nav [navobj] div {
-	display: inline-block;
 	margin: 5px 7px;
 	text-align: center;
 	font-size: 11px;
+	display: flex;
+	align-items: center;
+	flex-direction: column;
 }
 
 #battery-display {
@@ -335,13 +341,17 @@ nav [navobj] div {
 	text-transform: capitalize;
 }
 
+::backdrop {
+    background: transparent;
+}
+
 .navWindows {
 	width: 50%;
 	border-radius: var(--sizing-border-radius);
 	text-align: center;
 	border: none;
 	max-height: 70%;
-	transition: var(--time-action);
+	transition: .2s;
 	background: #7d7d7d73;
 	overflow: visible;
 	color: var(--colors-text-normal);
@@ -352,7 +362,7 @@ nav [navobj] div {
 #appdmod {
 	padding: 5px;
 	margin-bottom: 60px;
-	animation: dmodthingy .5s cubic-bezier(0.36, 0.38, 0, 0.94);
+	animation: dmodthingy .3s cubic-bezier(0.36, 0.38, 0, 0.94);
 	padding-bottom: 1.2rem;
 	background-color: var(--colors-BG-normal);
 	border: 1px solid #ffffff0c;
@@ -361,7 +371,7 @@ nav [navobj] div {
 #searchwindow {
 	padding: 0.7rem;
 	margin-bottom: 60px;
-	animation: dmodthingy var(--time-action);
+	animation: dmodthingy .3s;
 	background-color: var(--colors-BG-normal);
 	border: 1px solid #ffffff0c;
 	padding-bottom: 9px;
@@ -388,7 +398,7 @@ nav [navobj] div {
 
 @keyframes dmodthingy {
 	0% {
-		transform: translateY(50px);
+		transform: translateY(15px);
 		opacity: 0;
 	}
 
@@ -425,10 +435,6 @@ nav [navobj] div {
 #AppInstDia span.dangertext {
 	color: inherit;
 	font-weight: bold;
-}
-
-.modal::backdrop {
-	backdrop-filter: blur(5px) brightness(0.5);
 }
 
 .modal input {
@@ -829,18 +835,10 @@ nav [navobj] div {
 	aspect-ratio: 1/1;
 }
 
-@keyframes closeEffect {
-	0% {
-		opacity: 1;
-	}
-
-	100% {
-		opacity: 0;
-	}
-}
-
 .closeEffect {
-	animation: closeEffect .6s;
+	transition: .2s;
+	opacity: 0;
+	transform: translateY(5px);
 }
 
 .gradient-text {
@@ -880,12 +878,12 @@ nav [navobj] div {
 
 	&>#wallbgpreview {
 		width: 100%;
-        height: 100%;
-        position: absolute;
-        top: 0;
-        left: 0;
-        z-index: -1;
-        filter: blur(1em) brightness(0.5);
+		height: 100%;
+		position: absolute;
+		top: 0;
+		left: 0;
+		z-index: -1;
+		filter: blur(1em) brightness(0.5);
 	}
 }
 
@@ -2374,8 +2372,8 @@ div#toastdiv {
 }
 
 #snappingIndicator div {
-	background-color: white;
-	border-radius: .5rem;
+	background-color: rgba(255, 255, 255, 0.353);
+	border-radius: .5em;
 	border: 2px solid var(--colors-BG-highlighted);
 }
 

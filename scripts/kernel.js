@@ -308,7 +308,7 @@ function attachResizeHandlers(windowDiv) {
             const iframeOverlay = document.createElement('div');
             Object.assign(iframeOverlay.style, {
                 position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
-                zIndex: 999, backgroundColor: 'red', cursor: resizer.cursor
+                zIndex: 999, backgroundColor: 'transparent', cursor: resizer.cursor
             });
             document.body.appendChild(iframeOverlay);
 
@@ -676,6 +676,9 @@ function dragElement(elmnt) {
     var iframeOverlay = null;
     let grabOffsetX = 0;
     let grabOffsetY = 0;
+    let holdStart = 0;
+    const snappingIndicator = document.getElementById('snappingIndicator');
+    const snappingDivs = Array.from(document.querySelectorAll('.snappingDiv'));
 
     if (gid(elmnt.id + "header")) {
         gid(elmnt.id + "header").onmousedown = dragMouseDown;
@@ -688,10 +691,11 @@ function dragElement(elmnt) {
         if (isInsideIbtnsSide(e.target)) return;
         e.preventDefault();
 
+        holdStart = Date.now();
+
         grabOffsetX = e.clientX - elmnt.getBoundingClientRect().left;
         grabOffsetY = e.clientY - elmnt.getBoundingClientRect().top;
 
-        console.log(456)
         iframeOverlay = document.createElement('div');
         iframeOverlay.style.position = 'fixed';
         iframeOverlay.style.top = 0;
@@ -739,6 +743,18 @@ function dragElement(elmnt) {
         elmnt.style.position = 'absolute';
         elmnt.style.left = `${targetLeft}px`;
         elmnt.style.top = `${targetTop}px`;
+
+        if (Date.now() - holdStart >= 500) {
+            snappingIndicator.style.opacity = "0.8";
+            snappingIndicator.style.display = "block";
+        }
+
+        snappingDivs.forEach(div => {
+            const rect = div.getBoundingClientRect();
+            const isHovered = e.clientX >= rect.left && e.clientX <= rect.right &&
+                              e.clientY >= rect.top && e.clientY <= rect.bottom;
+            div.style.opacity = isHovered ? 0.8 : 0.2;
+        });
     }
 
     function closeDragElement(e) {
@@ -749,6 +765,14 @@ function dragElement(elmnt) {
             document.body.removeChild(iframeOverlay);
             iframeOverlay = null;
         }
+
+        if (snappingIndicator) {
+            snappingIndicator.style.display = "none";
+        }
+
+        snappingDivs.forEach(div => {
+            div.style.opacity = 0.2;
+        });
 
         if (gid(elmnt.id + "header")) {
             const mouseUpEvent = new MouseEvent('mouseup', {

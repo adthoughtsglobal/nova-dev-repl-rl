@@ -453,7 +453,7 @@ function makedefic(str) {
 		if ((batteryLevel === 100 && isCharging) || (batteryLevel === 0 && isCharging)) {
 			document.getElementById("batterydisdiv").style.display = "none";
 		} else {
-			document.getElementById("batterydisdiv").style.display = "block";
+			document.getElementById("batterydisdiv").style.display = "flex";
 		}
 		let iconClass;
 		if (batteryLevel >= 75) {
@@ -486,7 +486,7 @@ function closeElementedis(element) {
 	setTimeout(function () {
 		element.close()
 		element.classList.remove("closeEffect");
-	}, 500);
+	}, 200);
 }
 function clwin(x) {
 	snappingconthide();
@@ -905,16 +905,24 @@ async function getAllValidAppIds() {
 	return Object.keys(appsFolder || {}).map(appFileName => appsFolder[appFileName].id);
 }
 function makedialogclosable(ok) {
-	console.log('svtrigdiacl')
 	const myDialog = gid(ok);
-	document.addEventListener('click', (event) => {
-		console.log('trigdiacl')
-		if (event.target === myDialog) {
-			myDialog.classList.add("closeEffect");
-			setTimeout(() => {
-				myDialog.close();
+
+	if (!myDialog.__originalClose) {
+		myDialog.__originalClose = myDialog.close;
+		myDialog.close = function () {
+			this.classList.add("closeEffect");
+
+			function handler() {
+				myDialog.__originalClose();
 				myDialog.classList.remove("closeEffect");
-			}, 150);
+			};
+			setTimeout(handler, 200);
+		};
+	}
+
+	document.addEventListener('click', (event) => {
+		if (event.target === myDialog) {
+			myDialog.close();
 		}
 	});
 }
@@ -1243,7 +1251,7 @@ async function strtappse(event) {
 	if (event.key === "Enter") {
 		event.preventDefault();
 		if (searchValue === "i love nova") {
-			gid("searchwindow").close();
+			closeElementedis(gid("searchwindow"));
 			let x = await ask("What can i call you?");
 			say("i love you too, " + x);
 			let y = await justConfirm("wanna tell me why? ", "I'd love to hear it...");
