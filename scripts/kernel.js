@@ -316,17 +316,37 @@ function attachResizeHandlers(windowDiv) {
                 let dx = ev.clientX - startX;
                 let dy = ev.clientY - startY;
 
-                if (resizer.class.includes("right")) windowDiv.style.width = startWidth + dx + "px";
-                if (resizer.class.includes("bottom")) windowDiv.style.height = startHeight + dy + "px";
-                if (resizer.class.includes("left")) {
-                    windowDiv.style.width = startWidth - dx + "px";
-                    windowDiv.style.left = startLeft + dx + "px";
+                if (resizer.class.includes("right")) {
+                    let newWidth = startWidth + dx;
+                    if (newWidth > 50) {
+                        windowDiv.style.width = newWidth + "px";
+                    }
                 }
+
+                if (resizer.class.includes("bottom")) {
+                    let newHeight = startHeight + dy;
+                    if (newHeight > 50) {
+                        windowDiv.style.height = newHeight + "px";
+                    }
+                }
+
+                if (resizer.class.includes("left")) {
+                    let newWidth = startWidth - dx;
+                    if (newWidth > 50) {
+                        windowDiv.style.width = newWidth + "px";
+                        windowDiv.style.left = startLeft + dx + "px";
+                    }
+                }
+
                 if (resizer.class.includes("top")) {
-                    windowDiv.style.height = startHeight - dy + "px";
-                    windowDiv.style.top = startTop + dy + "px";
+                    let newHeight = startHeight - dy;
+                    if (newHeight > 50) {
+                        windowDiv.style.height = newHeight + "px";
+                        windowDiv.style.top = startTop + dy + "px";
+                    }
                 }
             }
+
 
             function stopResize(event) {
                 document.removeEventListener("mousemove", resizeMove);
@@ -528,12 +548,12 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
 
     windowDiv.onclick = () => { nowapp = title; };
 
-    attachDragHandler(windowDiv, windowHeader, winuid);
-    attachResizeHandlers(windowDiv);
 
     await loadIframe(windowContent, windowLoader, loaderSpinner, cont, appid, winuid, title, params);
 
     finalizeWindow(windowDiv, winuid);
+    attachDragHandler(windowDiv, windowHeader, winuid);
+    attachResizeHandlers(windowDiv);
 }
 
 function resetWindow(id) {
@@ -679,11 +699,10 @@ function dragElement(elmnt) {
     let holdStart = 0;
     const snappingIndicator = document.getElementById('snappingIndicator');
     const snappingDivs = Array.from(document.querySelectorAll('.snappingDiv'));
-
+    console.log(elmnt.id)
     if (gid(elmnt.id + "header")) {
+        console.log(gid(elmnt.id + "header"))
         gid(elmnt.id + "header").onmousedown = dragMouseDown;
-    } else {
-        elmnt.onmousedown = dragMouseDown;
     }
 
     function dragMouseDown(e) {
@@ -752,7 +771,7 @@ function dragElement(elmnt) {
         snappingDivs.forEach(div => {
             const rect = div.getBoundingClientRect();
             const isHovered = e.clientX >= rect.left && e.clientX <= rect.right &&
-                              e.clientY >= rect.top && e.clientY <= rect.bottom;
+                e.clientY >= rect.top && e.clientY <= rect.bottom;
             div.style.opacity = isHovered ? 0.8 : 0.2;
         });
     }

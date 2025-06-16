@@ -20,9 +20,16 @@
 			height: calc(100%);
 			font-family: "Poppins", sans-serif;
 			margin: 0;
-			background: #101010;
-			color: white;
+			background: var(--colors-BG-normal);
+			color: var(--colors-text-normal);
 			overflow: hidden;
+		}
+
+		.mainUI {
+			height: 100%;
+			width: 100%;
+			display: flex;
+			flex-direction: column;
 		}
 
 		.pagebody {
@@ -53,38 +60,73 @@
 			top: 0;
 			left: 0;
 			z-index: 1;
+			display: none;
 		}
 
-		.player {
-			display: flex;
-			align-items: center;
-			flex-direction: column;
-			justify-content: center;
-			width: 0;
-			flex-grow: 1;
-			margin: 2em;
-			max-width: 30em;
-		}
-
-		.details {
-			display: flex;
-			align-items: center;
-			flex-direction: column;
-			justify-content: center;
-			margin-top: 25px;
-			width: 100%;
-			overflow: visible;
-			flex-wrap: nowrap;
-		}
-
-		#baseimg {
+		#queue {
+			padding: 1em;
 			flex: 1;
 			height: 0;
-			width: 50%;
-			max-width: 150px;
-			border-radius: 1rem;
-			margin-bottom: 1em;
-			object-fit: cover;
+			display: flex;
+			flex-direction: column;
+			padding-bottom: 0;
+		}
+
+		.plrTools {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			border-bottom: 1px solid #ffffff1f;
+			gap: .5em;
+			padding-bottom: .5em;
+		}
+
+		div#player {
+			padding: 1em;
+			background-color: var(--colors-BG-section);
+			display: flex;
+			gap: .5em;
+			flex-direction: column;
+			z-index: 99;
+		}
+
+		.player_actions {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			justify-content: space-evenly;
+			gap: .5em;
+
+			&>#baseimg {
+				height: 50px;
+				width: 50px;
+				max-width: 150px;
+				border-radius: var(--sizing-border-radius);
+				object-fit: cover;
+			}
+
+			&>.details {
+				display: flex;
+				flex-direction: column;
+				justify-content: center;
+				flex-wrap: nowrap;
+				width: 0;
+				flex: 1;
+
+
+				&>.track-name {
+					font-size: 1em;
+					white-space: nowrap;
+					overflow: hidden;
+					text-overflow: ellipsis;
+					margin: 0;
+				}
+
+				&>.ArtistName {
+					opacity: 0.5;
+					font-size: 0.8rem;
+				}
+			}
 		}
 
 		.now-playing {
@@ -97,64 +139,66 @@
 		}
 
 		.buttons {
+
 			display: flex;
 			flex-direction: row;
 			align-items: center;
 			width: fit-content;
 			justify-content: space-evenly;
-			background: #34343445;
+			background: #ffffff1f;
 			border: 1px solid #ffffff1f;
-			backdrop-filter: blur(0.8rem);
-			border-radius: 3rem;
-			padding: 0.5rem;
-			margin-top: 1rem;
-			margin-bottom: 1rem;
-			gap: 1em;
-		}
+			border-radius: var(--sizing-border-radius);
+			overflow: hidden;
+			gap: 1px;
 
-		.playpause-track {
-			transform: scale(1.5);
+			&>span {
+				background-color: var(--colors-BG-section);
+				padding: 0.5rem;
+				font-size: 1.5em;
+			}
 		}
 
 		.playpause-track,
 		.prev-track,
 		.next-track {
-			padding: 5px;
 			opacity: 0.8;
 			transition: .2s;
 			cursor: pointer;
-			padding-bottom: 0;
-			padding-top: 7px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
 		}
 
 		.playpause-track:hover,
 		.prev-track:hover,
 		.next-track:hover {
 			opacity: 1.0;
+			filter: brightness(120%);
 		}
 
 		.slider_container {
-			width: 100%;
+			width: calc(100% - 2em);
 			display: flex;
-			justify-content: space-evenly;
+			justify-content: space-between;
 			align-items: center;
+			margin: auto;
+			gap: .5em;
 		}
 
-		/* Modify the appearance of the slider */
 		.seek_slider,
 		.volume_slider {
 			-webkit-appearance: none;
 			-moz-appearance: none;
 			appearance: none;
-			height: 0.5rem;
+			height: 2px;
 			border-radius: 1rem;
 			background: #272727;
 			opacity: 0.7;
 			-webkit-transition: .2s;
 			transition: opacity .2s;
+			width: 100%;
 		}
 
-		/* Modify the appearance of the slider thumb */
 		.seek_slider::-webkit-slider-thumb,
 		.volume_slider::-webkit-slider-thumb {
 			-webkit-appearance: none;
@@ -172,17 +216,8 @@
 			opacity: 1.0;
 		}
 
-		.seek_slider {
-			width: 60%;
-		}
-
-		.volume_slider {
-			width: 60%;
-		}
-
 		.current-time,
 		.total-duration {
-			padding: 10px;
 			font-size: 0.8rem;
 			opacity: 0.5;
 		}
@@ -210,7 +245,7 @@
 				padding: 1em;
 				border-radius: 1rem;
 				background: #34343445;
-			border: 1px solid #ffffff1f;
+				border: 1px solid #ffffff1f;
 				backdrop-filter: blur(0.8rem);
 				display: flex;
 				flex-direction: column;
@@ -240,25 +275,6 @@
 			padding-bottom: 0.5rem;
 		}
 
-		.queuewinnav .buttonside button {
-			background: inherit;
-			border: none;
-			color: white;
-			opacity: 0.8;
-			border-radius: 50%;
-			display: inline-grid;
-			justify-content: center;
-			justify-items: center;
-			align-items: center;
-			margin-left: 0.3rem;
-			aspect-ratio: 1/1;
-		}
-
-		.queuewinnav .buttonside button span {
-			font-size: 1.4rem;
-			font-weight: 200;
-		}
-
 		.queuewinnav .buttonside button:hover {
 			background: #1f1f1f;
 		}
@@ -274,10 +290,9 @@
 			justify-content: space-between;
 			align-items: center;
 			padding: 0.3rem 0.4rem;
-			background: #1f1f1f;
+			background: var(--colors-BG-section);
 			margin: 0.3rem 0;
-			border-radius: 0.5rem;
-			flex: 1;
+			border-radius: var(--sizing-border-radius);
 			border: 1px solid #ffffff1f;
 		}
 
@@ -305,7 +320,7 @@
 
 		.trackwid .icon {
 			padding: 0.5rem;
-			background: #181818;
+			background: var(--colors-BG-normal);
 			margin-right: 0.5rem;
 			border-radius: 0.3rem;
 			aspect-ratio: 1 / 1;
@@ -321,11 +336,6 @@
 			overflow-y: auto;
 			padding-bottom: 50px;
 			padding-right: 5px;
-		}
-
-		.ArtistName {
-			opacity: 0.5;
-			font-size: 0.8rem;
 		}
 
 		.rmtrfrqu {
@@ -356,17 +366,6 @@
 			display: flex;
 			flex-direction: row;
 			overflow: hidden;
-		}
-
-		.track-name {
-			font-size: 2rem;
-			text-align: center;
-			display: block;
-			white-space: nowrap;
-			margin: 0.5rem;
-			overflow: hidden;
-			width: 100%;
-			text-overflow: ellipsis;
 		}
 
 		#primaryalert {
@@ -495,45 +494,52 @@
 </head>
 
 <body>
-	<dialog id="primaryalert">
-		<p>You don't have any songs in your queue! Click here to open some:</p>
-		<button onclick="openfromfiles()"><span class="material-symbols-rounded">
-				add
-			</span></button>
-		<a onclick="theskibidiscan()">Scan everything for music</a>
-	</dialog>
 
-	<div class="pagebody">
+	<div class="mainUI">
+		<div id="queue">
+			<div class="queuewinnav">
+				<span class="queuenavtit">Queue
+					<div class="now-playing">Playing 1 / 1</div>
+				</span>
+				<div class="buttonside">
 
-		<canvas id="particleCanvas"></canvas>
-		<div class="main-flex-container">
-			<div class="player">
-				<div class="details">
-					<img id="baseimg" src="">
-					<div class="track-name">Track Name</div>
-					<div class="track-artist">Track Artist</div>
-				</div>
-				<div class="buttonscont">
 					<div class="buttons">
-						<div class="prev-track" onclick="prevTrack()"><span class="material-symbols-rounded">
-								skip_previous
-							</span></div>
-						<div class="playpause-track" onclick="playpauseTrack()"><span class="material-symbols-rounded">
-								play_circle
-							</span></div>
-						<div class="next-track" onclick="nextTrack()"><span class="material-symbols-rounded">
-								skip_next
-							</span></div>
+						<span onclick="toggleQueue()" class="material-symbols-rounded">
+							close
+						</span>
+						<span onclick="shuffle()" class="material-symbols-rounded">
+							shuffle
+						</span>
 					</div>
-					
-				</div>
 
+				</div>
+			</div>
+			<div id="tracklist">
+				<div class="trackwid">
+					<div class="icon">
+						<span class="material-symbols-rounded">
+							music_note
+						</span>
+					</div>
+					<div class="detailswid">
+						<b class="TrackName">Track Name</b>
+						<span class="ArtistName">Artist Name</span>
+					</div>
+					<span class="material-symbols-rounded rmtrfrqu">
+						close
+					</span>
+				</div>
+			</div>
+		</div>
+
+		<div id="player">
+			<div class="plrTools">
 				<div class="slider_container">
 					<div class="current-time">00:00</div>
 					<input type="range" min="1" max="100" value="0" class="seek_slider" onchange="seekTo()">
 					<div class="total-duration">00:00</div>
 				</div>
-				<div class="slider_container">
+				<!-- <div class="slider_container">
 					<span class="material-symbols-rounded">
 						no_sound
 					</span>
@@ -541,28 +547,48 @@
 					<span class="material-symbols-rounded">
 						volume_up
 					</span>
+				</div> -->
+				<div class="buttons">
+					<span class="audiefbtn material-symbols-rounded" onclick="toggleEff()">
+						graphic_eq
+					</span>
 				</div>
 			</div>
-			<div class="sidewindow_cont">
-				<div id="effectwindow" class="sidewindow">
+			<div class="player_actions">
 
-					<div id="audioEffects">
-						<button id="toggleReverb"> Reverb</button>
-						<button id="toggleChorus"> Chorus</button>
-						<button id="togglePhaser"> Phaser</button>
-						<button id="toggleVibrato"> Vibrato</button>
-					</div>
-
+				<canvas id="particleCanvas"></canvas>
+				<img id="baseimg" src="">
+				<div class="details">
+					<div class="track-name">Track Name</div>
+					<div class="track-artist">Track Artist</div>
 				</div>
-					<button class="createtrackbtn" onclick="openfromfiles()">
-						<span class="material-symbols-rounded">
-							add
-						</span>
-					</button>
+				<div class="buttons">
+					<span class="prev-track material-symbols-rounded" onclick="prevTrack()">
+						skip_previous
+					</span>
+					<span class="playpause-track material-symbols-rounded" onclick="playpauseTrack()">
+						play_circle
+					</span>
+					<span class="next-track material-symbols-rounded" onclick="nextTrack()">
+						skip_next
+					</span>
+				</div>
+				<div class="buttons">
+					<span class="audiefbtn material-symbols-rounded" onclick="toggleEff()">
+						arrow_drop_up
+					</span>
 				</div>
 			</div>
 		</div>
 	</div>
+
+	<dialog id="primaryalert">
+		<p>You don't have any songs in your queue! Click here to open some:</p>
+		<button onclick="openfromfiles()"><span class="material-symbols-rounded">
+				add
+			</span></button>
+		<a onclick="theskibidiscan()">Scan everything for music</a>
+	</dialog>
 
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jsmediatags/3.9.5/jsmediatags.min.js"></script>
 
@@ -819,16 +845,9 @@
 						if (metadata.picture && metadata.picture.data) {
 							const base64String = arrayBufferToBase64(metadata.picture.data);
 							baseimg.src = `data:${metadata.picture.format};base64,${base64String}`;
-							getDominantColor(baseimg.src, function (color) {
-								baseimg.style.boxShadow = "0 3px 1rem " + color;
-							});
 						} else {
 							generateGradientBlob(trackName);
-							getDominantColor(baseimg.src, function (color) {
-								baseimg.style.boxShadow = "0 3px 1rem " + color;
-							});
 						}
-
 						curr_track.src = URL.createObjectURL(blob);
 
 						curr_track.addEventListener("canplaythrough", () => {
@@ -973,9 +992,7 @@
 		function pauseTrack() {
 			curr_track.pause();
 			isPlaying = false;
-			playpause_btn.innerHTML = `<span class="material-symbols-rounded">
-	  play_circle
-	  </span>`;
+			playpause_btn.innerHTML = `play_circle`
 		}
 
 		function nextTrack() {
@@ -1104,20 +1121,6 @@
 			}
 		}
 
-		function getDominantColor(imageUrl, callback) {
-			const image = new Image();
-			image.crossOrigin = 'Anonymous';
-			image.src = imageUrl;
-			image.onload = function () {
-				const colorThief = new ColorThief();
-				const dominantColor = colorThief.getColor(image);
-				const hexColor = rgbToHex(dominantColor[0], dominantColor[1], dominantColor[2]);
-				callback(hexColor);
-			};
-		}
-		function rgbToHex(r, g, b) {
-			return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
-		}
 		const canvas = document.getElementById('particleCanvas');
 		const ctx = canvas.getContext('2d');
 
@@ -1337,9 +1340,7 @@
 						initParticles(baseNumParticles);
 						animate();
 						isPlaying = true;
-						playpause_btn.innerHTML = `<span class="material-symbols-rounded">
-                    pause_circle
-                </span>`;
+						playpause_btn.innerHTML = `pause_circle`;
 						console.log('Playback started successfully.');
 					})
 					.catch(error => {

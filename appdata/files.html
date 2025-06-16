@@ -1357,7 +1357,7 @@
 			return traverse(memory, parentPath);
 		}
 
-		function fillDropup(folderPath) {
+		function fillDropup(folderPath, silly = false) {
 			const dropupDiv = document.getElementById("filetools");
 			dropupDiv.innerHTML = "";
 
@@ -1467,8 +1467,10 @@
 				}
 			});
 
-			currentPath = folderPath;
-			updpth();
+			if (!silly) {
+				currentPath = folderPath;
+				updpth();
+			}
 		}
 		async function refresh() {
 			window.parent.updateMemoryData();
@@ -1546,6 +1548,7 @@
 				const filesInFolder = await window.parent.getAllItemsInFolder(folderName);
 				if (filesInFolder) {
 					if (filesInFolder.length > 0) {
+						document.getElementById("fileinfobn").innerHTML = filesInFolder.length + " items";
 						if (!gen) {
 							const previousFiles = cachedFiles[currentPath] || [];
 							const currentFileNames = new Set(filesInFolder.map(file => file.name));
@@ -1628,14 +1631,14 @@
 		}
 
 
-		function updpth() {
+		function updpth(currentPath2 = currentPath) {
 			const pathDisp = document.getElementById("pathdisp");
 			pathDisp.innerHTML = "/";
 
-			if (currentPath == "") {
+			if (currentPath2 == "") {
 				return
 			}
-			const parts = currentPath.split('/').filter(Boolean);
+			const parts = currentPath2.split('/').filter(Boolean);
 			let accumulatedPath = "";
 
 			parts.forEach((part, index) => {
@@ -1646,7 +1649,6 @@
 				span.textContent = currentPart;
 
 				if (index < parts.length - 1) {
-					// Create a closure to capture the current value of accumulatedPath
 					const pathToCall = accumulatedPath;
 					span.style.cursor = "pointer";
 					span.addEventListener("click", () => listFiles(pathToCall));
@@ -1703,6 +1705,7 @@
 
 			if (isFolder) {
 				showFolderInfo(element);
+				document.getElementById("fileinfobn").innerHTML = "Folder";
 			} else {
 				await handleFileSelection(uniqueId);
 			}
@@ -1723,7 +1726,8 @@
 		}
 
 		function showFolderInfo(element) {
-			fillDropup(element.getAttribute("path"));
+			fillDropup(element.getAttribute("path"), 1);
+			updpth(element.getAttribute("path"));
 		}
 
 		async function handleFileSelection(uniqueId) {
@@ -1746,6 +1750,7 @@
 
 			try {
 				await populateFileActions(fileData);
+				updpth();
 			} catch (error) {
 				document.getElementById("fileinfobn").innerHTML += "Safe Error 0006";
 				await ntxSession.send(
