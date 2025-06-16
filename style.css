@@ -359,18 +359,18 @@ nav [navobj] div {
 	text-align: center;
 	border: none;
 	max-height: 70%;
-	transition: .2s;
+	transition: .5s;
 	background: #7d7d7d73;
 	overflow: visible;
 	color: var(--colors-text-normal);
 	box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
 	outline: none;
+	animation: dmodthingy .5s cubic-bezier(0.36, 0.38, 0, 0.94);
 }
 
 #appdmod {
 	padding: 5px;
 	margin-bottom: 60px;
-	animation: dmodthingy .3s cubic-bezier(0.36, 0.38, 0, 0.94);
 	padding-bottom: 1.2rem;
 	background-color: var(--colors-BG-normal);
 	border: 1px solid #ffffff0c;
@@ -379,7 +379,6 @@ nav [navobj] div {
 #searchwindow {
 	padding: 0.7rem;
 	margin-bottom: 60px;
-	animation: dmodthingy .3s;
 	background-color: var(--colors-BG-normal);
 	border: 1px solid #ffffff0c;
 	padding-bottom: 9px;

@@ -75,7 +75,8 @@ html {
 
 button,
 input,
-textarea {
+textarea,
+select {
 	outline: none;
 	font-family: inherit;
 	font-size: inherit;

@@ -8,21 +8,39 @@
         content="<svg width='232' height='232' viewBox='0 0 232 232' fill='none' xmlns='http://www.w3.org/2000/svg'> <path d='M0 187.772C0 149.24 0 93.5136 0 73.0886C0 63.6775 9.67014 54.1013 19.7566 54.1013C26.7145 54.1013 40.1383 54.1013 56.9901 54.1013C66.254 54.1013 76.5538 26 87.3849 26C106.66 26 125.339 26 145.135 26C153.795 26 167.552 54.1013 175.53 54.1013C189.899 54.1013 199.734 54.1013 209.724 54.1013C222.854 54.1013 231 62.8095 231 71.5696C231 92.0769 231 150.106 231 187.772C231 198.955 222.582 206 213.523 206C187.743 206 65.4563 206 19.7566 206C9.32268 206 0 200.697 0 187.772Z' fill='#32364E'/> <path d='M0 110C0 110 0 93.8818 0 73.3454C0 63.883 9.67014 54.2545 19.7566 54.2545C26.7145 54.2545 40.1383 54.2545 56.9901 54.2545C66.254 54.2545 76.5538 26 87.3849 26C106.66 26 125.339 26 145.135 26C153.795 26 167.552 54.2545 175.53 54.2545C189.899 54.2545 199.734 54.2545 209.724 54.2545C222.854 54.2545 231 63.0102 231 71.8182C231 92.4373 231 110 231 110L0 110Z' fill='#6179FF'/> <path d='M54 128C54 93.7584 81.9822 66 116.5 66C151.018 66 179 93.7583 179 128C179 162.242 151.018 190 116.5 190C81.9822 190 54 162.242 54 128Z' fill='#E3E3E3'/> <path d='M70 128.5C70 102.819 90.8188 82 116.5 82C142.181 82 163 102.819 163 128.5C163 154.181 142.181 175 116.5 175C90.8188 175 70 154.181 70 128.5Z' fill='#464E79'/> <path d='M13 82C13 74.8203 18.8203 69 26 69C33.1797 69 39 74.8203 39 82C39 89.1797 33.1797 95 26 95C18.8203 95 13 89.1797 13 82Z' fill='white'/> </svg>">
     <meta name="capabilities" content="camera">
     <meta name="permissions" content="settings, unsandboxed">
+    <meta name="nova-include" content="nova.css material-symbols-rounded">
     <title>Camera App</title>
     <style>
+        html {
+            height: 100%;
+        }
+
         body {
+            display: flex;
+            justify-content: center;
+            align-items: stretch;
+            flex-direction: column;
+            margin: 0;
+            height: 100%;
+            background-color: var(--colors-BG-normal);
+            user-select: none;
+            overflow-y: hidden;
+        }
+
+        .mainUI {
             display: flex;
             justify-content: center;
             align-items: stretch;
             flex-direction: row;
             margin: 0;
-            height: 100vh;
-            background-color: black;
-            user-select: none;
+            height: 100%;
+            overflow-y: hidden;
         }
 
         .videopart {
             flex: 1;
+            display: flex;
+            flex-direction: column;
         }
 
         .toolpart {
@@ -30,35 +48,65 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
-            padding: 0.5rem;
-            gap: 0.5rem;
-            background: #101010;
+            height: fit-content;
+            height: 100%;
+            padding: 0 .5em;
+            background: var(--colors-BG-section);
+            border-left: 1px solid #7b7b7b4f;
+
+            &>.actionBtnPrt {
+                width: fit-content;
+                background-color: #ffffff0c;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                background-color: #ffffff0c;
+                gap: 2px;
+                overflow: hidden;
+                height: fit-content;
+                border-radius: var(--sizing-border-radius);
+            }
         }
 
         #video-container {
-
             width: 100%;
-            height: 100%;
+    height: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            flex: 1;
         }
 
         #video {
-            height: 100%;
-            border-radius: 0.5rem;
-            object-fit: contain;
-            width: 100%;
             transition: 0.2s ease-in-out;
+            max-width: calc(100% - 10px);
+            max-height: calc(100% - 10px);
+            border-radius: var(--sizing-border-radius);
+            overflow: hidden;
+            object-fit: cover;
+            width: fit-content;
+            height: fit-content;
+            object-fit: scale-down;
         }
 
         .floattopnav {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            border-radius: 7px;
-            padding: 4px;
             display: flex;
-            gap: 3px;
+            gap: 1px;
             transition: 0.2s ease-out;
-            height: 30px;
+            justify-content: center;
+            flex-direction: row;
+            padding: .2em;
+
+            &>.btnCont {
+                display: flex;
+                border-radius: var(--sizing-border-radius);
+                flex-direction: row;
+                gap: 1px;
+        background-color: #7b7b7b3b;
+                border: 1px solid #7b7b7b0c;
+                overflow: hidden;
+            }
         }
 
         .floattopnav:hover {
@@ -67,9 +115,8 @@
 
         .floattopnav select {
             max-width: 130px;
-            padding: 5px;
+            padding: 0 5px;
             overflow: hidden;
-            border-radius: 5px;
             text-overflow: ellipsis;
             display: inline-flex;
         }
@@ -78,10 +125,16 @@
         #mirror-btn,
         #flashlight-btn,
         #stopwatch-btn {
-            background-color: var(--colors-BG-section);
-            color: #d7d7d7;
+            color: var(--colors-text-normal);
             border: none;
             cursor: pointer;
+            padding: .3em;
+            border-radius: 0;
+            background-color: var(--colors-BG-section);
+
+            &:hover {
+                background-color: var(--colors-BG-sub);
+            }
         }
 
 
@@ -116,9 +169,9 @@
         #mirror-btn,
         #flashlight-btn,
         #stopwatch-btn {
-            padding: 4px 7px;
+            padding: .3em;
             display: inline-flex;
-            border-radius: 5px;
+            border-radius: 0;
             justify-items: center;
             align-items: center;
             flex-direction: row;
@@ -132,16 +185,22 @@
         }
 
         .captoolbtn {
-
-            height: 15%;
+            height: fit-content;
             border: none;
             aspect-ratio: 1 / 1;
             display: grid;
-            border-radius: 1rem;
             align-items: center;
             justify-items: center;
-            background: #ffffff14;
-            color: white;
+            background: var(--colors-BG-sub);
+            color: var(--colors-text-normal);
+            border: 1px solid #ffffff0c;
+            transition: box-shadow .5s;
+            padding: 1em;
+
+            &:hover {
+                box-shadow: 0 0 10px #0000001a;
+                filter: brightness(120%);
+            }
         }
 
         .captoolbtn:active {
@@ -161,7 +220,7 @@
             justify-content: center;
             align-items: center;
             align-content: center;
-            color: white;
+            color: var(--colors-text-normal);
             text-shadow: 0 0 1rem #0000007a;
             display: none;
         }
@@ -220,52 +279,56 @@
 </head>
 
 <body>
-    <div class="videopart">
 
-        <div id="video-container">
-            <video id="video" playsinline autoplay></video>
+    <div class="mainUI">
+        <div class="videopart">
+            <div class="floattopnav">
+                <div class="btnCont">
+                    <select id="camera-select"></select>
+                    <button id="mirror-btn" onclick="toggleMirror()"><span class="material-symbols-rounded">
+                            360
+                        </span></button>
+                    <button id="flashlight-btn" onclick="toggleFlashlight()"><span class="material-symbols-rounded">
+                            flash_on
+                        </span></button>
+                    <select id="timer-select">
+                        <option selected value="0">0s</option>
+                        <option value="2">3s</option>
+                        <option value="5">5s</option>
+                        <option value="10">10s</option>
+                    </select>
+
+                    <button id="stopwatch-btn">
+                        <span class="recording-blinker"></span>
+                        <span id="recording-stopwatch">00:00</span>
+                    </button>
+                </div>
+            </div>
+            <div id="video-container">
+                <video id="video" playsinline autoplay></video>
+            </div>
+            <div id="timer">
+                3
+            </div>
         </div>
-        <div id="timer">
-            3
+        <div class="toolpart">
+            <div class="actionBtnPrt">
+                <button class="captoolbtn" id="photo-btn" onclick="capture(this)">
+                    <span class="material-symbols-rounded">camera</span>
+                </button>
+                <button class="captoolbtn" id="video-btn" onclick="startRecording(this)">
+                    <span class="material-symbols-rounded">videocam</span>
+                </button>
+                <button class="captoolbtn" id="pause-btn" style="display: none;">
+                    <span class="material-symbols-rounded">
+                        pause
+                    </span>
+                    <button class="captoolbtn" id="stop-btn" style="display: none;">
+                        <span class="material-symbols-rounded">stop</span></button>
+            </div>
+
         </div>
     </div>
-    <div class="toolpart">
-        <div class="floattopnav">
-            <select id="camera-select"></select>
-            <button id="mirror-btn" onclick="toggleMirror()"><span class="material-symbols-rounded">
-                    360
-                </span></button>
-            <button id="flashlight-btn" onclick="toggleFlashlight()"><span class="material-symbols-rounded">
-                    flash_on
-                </span></button>
-            <select id="timer-select">
-                <option selected value="0">0s</option>
-                <option value="2">3s</option>
-                <option value="5">5s</option>
-                <option value="10">10s</option>
-            </select>
-
-            <button id="stopwatch-btn">
-                <span class="recording-blinker"></span>
-                <span id="recording-stopwatch">00:00</span>
-            </button>
-        </div>
-
-        <button class="captoolbtn" id="photo-btn" onclick="capture(this)">
-            <span class="material-symbols-rounded">camera</span>
-        </button>
-        <button class="captoolbtn" id="video-btn" onclick="startRecording(this)">
-            <span class="material-symbols-rounded">videocam</span>
-        </button>
-        <button class="captoolbtn" id="pause-btn" style="display: none;">
-            <span class="material-symbols-rounded">
-                pause
-            </span>
-            <button class="captoolbtn" id="stop-btn" style="display: none;">
-                <span class="material-symbols-rounded">stop</span></button>
-    </div>
-
-
     <script>
         let isMirrored = false;
         let isFlashlightOn = false;
@@ -488,25 +551,25 @@
             document.getElementById("stop-btn").onclick = stopRecording;
         }
 
-function saveRecording() {
+        function saveRecording() {
 
-    async function createFileWithTimestamp() {
-        let now = new Date();
-        let timestamp = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}, ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-        let filename = `video_${timestamp} ${await ntxSession.send("utility.genUID")}`;
+            async function createFileWithTimestamp() {
+                let now = new Date();
+                let timestamp = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}, ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+                let filename = `video_${timestamp} ${await ntxSession.send("utility.genUID")}`;
 
-        let blob = new Blob(recordedChunks, { type: 'video/webm' });
+                let blob = new Blob(recordedChunks, { type: 'video/webm' });
 
-        let reader = new FileReader();
-        reader.onloadend = async function () {
-            let dataUri = reader.result;
-            await ntxSession.send("fileSet.createFile", "Media/", filename, "webm", dataUri);
-        };
-        reader.readAsDataURL(blob);
-    }
+                let reader = new FileReader();
+                reader.onloadend = async function () {
+                    let dataUri = reader.result;
+                    await ntxSession.send("fileSet.createFile", "Media/", filename, "webm", dataUri);
+                };
+                reader.readAsDataURL(blob);
+            }
 
-    createFileWithTimestamp();
-}
+            createFileWithTimestamp();
+        }
 
 
         function updateStopwatch() {
