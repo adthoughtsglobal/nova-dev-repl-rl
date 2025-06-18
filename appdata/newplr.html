@@ -38,6 +38,7 @@
 
 		.material-symbols-rounded {
 			opacity: .7;
+			font-weight: 200 !important;
 		}
 
 		.main-flex-container {
@@ -56,20 +57,22 @@
 
 		#particleCanvas {
 			height: 100%;
-			position: absolute;
-			top: 0;
-			left: 0;
+			width: 100%;
 			z-index: 1;
-			display: none;
+			display: flex;
+			transition: opacity .3s;
 		}
 
 		#queue {
 			padding: 1em;
 			flex: 1;
-			height: 0;
 			display: flex;
 			flex-direction: column;
-			padding-bottom: 0;
+			padding-bottom: 0 !important;
+			gap: .5em;
+			transition: .5s cubic-bezier(0.36, 0.38, 0, 0.94);
+			overflow-y: hidden;
+			width: 0;
 		}
 
 		.plrTools {
@@ -176,10 +179,15 @@
 			filter: brightness(120%);
 		}
 
+		div#visualizer {
+			width: 0;
+			flex: 0;
+		}
+
 		.slider_container {
-			width: calc(100% - 2em);
+			width: calc(100% - 0em);
 			display: flex;
-			justify-content: space-between;
+			justify-content: space-around;
 			align-items: center;
 			margin: auto;
 			gap: .5em;
@@ -209,6 +217,17 @@
 			background: #ffffff;
 			cursor: pointer;
 			border-radius: 10px;
+		}
+
+		@keyframes pop {
+			0% {
+				opacity: 0;
+			}
+
+			100% {
+				opacity: 1;
+			}
+			
 		}
 
 		.seek_slider:hover,
@@ -401,6 +420,22 @@
 			animation: skibidibtn 10s infinite;
 		}
 
+		.screen {
+			display: flex;
+			flex-direction: row;
+			flex: 1;
+			align-items: stretch;
+			height: 0;
+
+			&>.single_scrn {
+				flex: 1;
+				display: flex;
+				flex-direction: column;
+				overflow: hidden;
+				position: relative;
+			}
+		}
+
 		@keyframes skibidibtn {
 			0% {
 				box-shadow: 5px 5px 1rem red inset, -5px -5px 1rem #ffe000 inset;
@@ -488,6 +523,39 @@
 				}
 			}
 		}
+
+		.divider_vert {
+			height: 10px;
+			background-color: #89898987;
+			width: 1px;
+		}
+
+		.volume_slider_container {
+			display: flex;
+			flex-direction: row;
+			width: fit-content;
+			gap: 0;
+    justify-content: space-between;
+
+			&>input {
+				width: 0;
+				flex: 0;
+				min-width: none;
+				transition: .5s cubic-bezier(0.36, 0.38, 0, 0.94);
+				overflow: hidden;
+			}
+
+			&:hover {
+				gap: .5em;
+			}
+
+			&:hover>input {
+				width: 200px;
+				flex: 1;
+				overflow: visible;
+			animation: pop .3s;
+			}
+		}
 	</style>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.0/color-thief.umd.js"></script>
 
@@ -496,42 +564,46 @@
 <body>
 
 	<div class="mainUI">
-		<div id="queue">
-			<div class="queuewinnav">
-				<span class="queuenavtit">Queue
-					<div class="now-playing">Playing 1 / 1</div>
-				</span>
-				<div class="buttonside">
+		<div class="screen">
+			<div id="queue" class="single_scrn">
+				<div class="queuewinnav">
+					<span class="queuenavtit">Queue
+						<div class="now-playing">Playing 1 / 1</div>
+					</span>
+					<div class="buttonside">
+						<div class="buttons">
+							<span class="material-symbols-rounded" onclick="openfromfiles()">
+								add
+							</span>
+							<span onclick="shuffle()" class="material-symbols-rounded">
+								shuffle
+							</span>
+						</div>
 
-					<div class="buttons">
-						<span onclick="toggleQueue()" class="material-symbols-rounded">
+					</div>
+				</div>
+				<div id="tracklist">
+					<div class="trackwid">
+						<div class="icon">
+							<span class="material-symbols-rounded">
+								music_note
+							</span>
+						</div>
+						<div class="detailswid">
+							<b class="TrackName">Track Name</b>
+							<span class="ArtistName">Artist Name</span>
+						</div>
+						<span class="material-symbols-rounded rmtrfrqu">
 							close
 						</span>
-						<span onclick="shuffle()" class="material-symbols-rounded">
-							shuffle
-						</span>
 					</div>
-
 				</div>
 			</div>
-			<div id="tracklist">
-				<div class="trackwid">
-					<div class="icon">
-						<span class="material-symbols-rounded">
-							music_note
-						</span>
-					</div>
-					<div class="detailswid">
-						<b class="TrackName">Track Name</b>
-						<span class="ArtistName">Artist Name</span>
-					</div>
-					<span class="material-symbols-rounded rmtrfrqu">
-						close
-					</span>
-				</div>
+
+			<div class="single_scrn" id="visualizer" onclick="vizchange()">
+				<canvas id="particleCanvas"></canvas>
 			</div>
 		</div>
-
 		<div id="player">
 			<div class="plrTools">
 				<div class="slider_container">
@@ -539,24 +611,15 @@
 					<input type="range" min="1" max="100" value="0" class="seek_slider" onchange="seekTo()">
 					<div class="total-duration">00:00</div>
 				</div>
-				<!-- <div class="slider_container">
-					<span class="material-symbols-rounded">
-						no_sound
-					</span>
+				<div class="divider_vert"></div>
+				<div class="slider_container volume_slider_container">
 					<input type="range" min="1" max="100" value="99" class="volume_slider" onchange="setVolume()">
-					<span class="material-symbols-rounded">
+					<span class="material-symbols-rounded" id="volume_status_icon">
 						volume_up
-					</span>
-				</div> -->
-				<div class="buttons">
-					<span class="audiefbtn material-symbols-rounded" onclick="toggleEff()">
-						graphic_eq
 					</span>
 				</div>
 			</div>
 			<div class="player_actions">
-
-				<canvas id="particleCanvas"></canvas>
 				<img id="baseimg" src="">
 				<div class="details">
 					<div class="track-name">Track Name</div>
@@ -575,6 +638,11 @@
 				</div>
 				<div class="buttons">
 					<span class="audiefbtn material-symbols-rounded" onclick="toggleEff()">
+						graphic_eq
+					</span>
+				</div>
+				<div class="buttons">
+					<span class="audiefbtn material-symbols-rounded" onclick="toggleQueue()">
 						arrow_drop_up
 					</span>
 				</div>
@@ -620,12 +688,6 @@
 		let track_list = {};
 
 		primaryalert.showModal();
-
-		playmoedrn = 'norm'
-
-		function gid(x) {
-			return document.getElementById(x)
-		}
 
 		function generateGradientBlob(trackName) {
 			const canvas = document.getElementById('blobCanvas');
@@ -837,10 +899,6 @@
 						track_name.textContent = trackName;
 						track_artist.textContent = metadata.artist || 'Unknown Artist';
 						now_playing.textContent = "Playing " + (Object.keys(track_list).indexOf(trackName) + 1) + " of " + Object.keys(track_list).length;
-						if (playmoedrn == 'mini') {
-							// myWindow.titleElement.innerTxt = "Playing " + (Object.keys(track_list).indexOf(trackName) + 1) + " of " + Object.keys(track_list).length;
-						}
-
 
 						if (metadata.picture && metadata.picture.data) {
 							const base64String = arrayBufferToBase64(metadata.picture.data);
@@ -911,24 +969,14 @@
 			}
 		}
 
-		function openfromfiles() {
-			currentreqID = window.parent.genUID();
-			let appIdToOpen = window.parent.handlers['file_manager'] || null;
-			window.parent.openlaunchprotocol(appIdToOpen, { "opener": 'any', "dir": "Downloads/" }, currentreqID, myWindow.windowID);
-			primaryalert.style.display = "none"
+		async function openfromfiles() {
+			const fileID = await ntxSession.send("olp.useHandler", "file_manager", { "opener": 'any', "dir": "Downloads/" });
+			const file = await ntxSession.send("fileGet.byId", fileID);
+			readthefile(file, file.fileName);
+			primaryalert.style.display = "none";
 		}
 
-		window.addEventListener('message', async (event) => {
-			if (event.data.action === 'loadlocalfile') {
-				if (event.data.id === myWindow.windowID) {
-					const file = await window.parent.getFileById(event.data.returned);
-					readthefile(file, file.fileName);
-				}
-			}
-		});
-
 		function readthefile(filethings, fileName = 'Unknown Title') {
-			console.log(547, fileName);
 			const base64String = filethings.content.split(',')[1];
 			const binaryString = atob(base64String);
 			const bytes = new Uint8Array(binaryString.length);
@@ -954,8 +1002,6 @@
 							fileRef: filethings
 						};
 
-						console.log('Updated track list:', track_list);
-
 
 						renderQueue();
 						if (Object.keys(track_list).length === 1) {
@@ -975,9 +1021,6 @@
 					artist: artistName,
 					fileRef: filethings
 				};
-
-				console.log('Updated track list:', track_list);
-
 
 				renderQueue();
 			}
@@ -1127,217 +1170,11 @@
 		canvas.width = window.innerWidth;
 		canvas.height = window.innerHeight;
 
-		let particlesArray = [];
-		let baseNumParticles = 50;
-		let maxParticles = 200;
-
-		function setupGrooveDetection() {
-			let beatThreshold = 1.05;
-			let energyHistory = new Array(60).fill(0);
-			let grooveDuration = 30;
-			let grooveCount = 0;
-			let particlesOnGroove = false;
-
-			function getAudioData() {
-				analyser.getByteFrequencyData(dataArray);
-
-				const bassStart = 2;
-				const bassEnd = 20;
-				let bassEnergy = dataArray.slice(bassStart, bassEnd).reduce((sum, v) => sum + v, 0) / (bassEnd - bassStart);
-
-				const highStart = bufferLength - 20;
-				const highEnd = bufferLength;
-				let highEnergy = dataArray.slice(highStart, highEnd).reduce((sum, v) => sum + v, 0) / (highEnd - highStart);
-
-				let totalEnergy = dataArray.reduce((sum, value) => sum + value, 0) / bufferLength;
-
-				let avgEnergy = energyHistory.reduce((sum, e) => sum + e, 0) / energyHistory.length;
-				let beatDetected = bassEnergy > avgEnergy * beatThreshold;
-
-				energyHistory.shift();
-				energyHistory.push(bassEnergy);
-
-				return { totalEnergy, beatDetected, bassEnergy, highEnergy };
-			}
-
-			function animate() {
-				ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-				const { totalEnergy, beatDetected, bassEnergy, highEnergy } = getAudioData();
-
-				let grooveDecay = 15;
-
-				if (beatDetected) {
-					grooveCount++;
-				} else {
-					grooveCount = Math.max(0, grooveCount - 1);
-				}
-
-				if (grooveCount < grooveDuration - grooveDecay && particlesOnGroove) {
-					particlesOnGroove = false;
-					removeOldParticles();
-				}
-
-				if (grooveCount >= grooveDuration && !particlesOnGroove) {
-					particlesOnGroove = true;
-					let newParticles = Math.floor(bassEnergy / 10);
-					console.log("gstart");
-					initParticles(newParticles);
-					grooveCount = 0;
-				}
-
-				particlesArray.forEach(particle => {
-					particle.update(totalEnergy / 255, bassEnergy, highEnergy, beatDetected);
-					particle.draw();
-				});
-
-				removeOldParticles();
-				maintainBaseParticles();
-
-				requestAnimationFrame(animate);
-			}
-
-			window.animate = animate;
-		}
-
-
-		class Particle {
-			constructor() {
-				this.reset();
-			}
-
-			reset() {
-				this.x = Math.random() * canvas.width;
-				this.y = Math.random() * canvas.height;
-				this.size = Math.random() * 2 + 5;
-				this.mass = this.size; // Assume mass is proportional to size
-				this.velocityX = (Math.random() - 0.5) * 0.5;
-				this.velocityY = (Math.random() - 0.5) * 0.5;
-				this.baseSize = 1;
-				this.lifespan = Math.random() * 100 + 50;
-				this.opacity = 0;
-				this.maxOpacity = Math.random() * 0.5 + 0.5;
-				this.fadeIn = true;
-			}
-
-			update(volume, bassEnergy, highEnergy, beatDetected) {
-				this.velocityX *= 0.99;
-				this.velocityY *= 0.99;
-
-				if (beatDetected) {
-					this.velocityX += (Math.random() - 0.5) * bassEnergy * 0.01;
-					this.velocityY += (Math.random() - 0.5) * bassEnergy * 0.01;
-				}
-
-				this.velocityY += highEnergy * 0.005;
-
-				let repulsionRadius = 50;
-				let repulsionStrength = 0.05;
-
-				particlesArray.forEach(other => {
-					if (other !== this) {
-						let dx = this.x - other.x;
-						let dy = this.y - other.y;
-						let dist = Math.sqrt(dx * dx + dy * dy);
-
-						if (dist < repulsionRadius && dist > 0) {
-							let force = (repulsionRadius - dist) / repulsionRadius * repulsionStrength;
-							this.velocityX += force * (dx / dist);
-							this.velocityY += force * (dy / dist);
-						}
-					}
-				});
-
-				this.x += this.velocityX;
-				this.y += this.velocityY;
-
-				if (this.x > canvas.width) this.x = 0;
-				if (this.x < 0) this.x = canvas.width;
-				if (this.y > canvas.height) this.y = 0;
-				if (this.y < 0) this.y = canvas.height;
-
-				this.size = this.baseSize + volume * 50;
-
-				if (this.fadeIn) {
-					this.opacity += 0.02;
-					if (this.opacity >= this.maxOpacity) {
-						this.fadeIn = false;
-					}
-				} else {
-					this.lifespan -= 1;
-					if (this.lifespan <= 0) {
-						this.opacity -= 0.02;
-					}
-				}
-
-				if (this.opacity <= 0) {
-					this.reset();
-				}
-			}
-
-			draw() {
-				ctx.fillStyle = `rgba(30, 30, 30, ${this.opacity})`;
-				ctx.beginPath();
-				ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-				ctx.closePath();
-				ctx.fill();
-			}
-
-			applyGravity(particles) {
-				const G = 0.3; // Gravitational constant (arbitrary scale)
-				particles.forEach(otherParticle => {
-					if (otherParticle !== this) {
-						const dx = otherParticle.x - this.x;
-						const dy = otherParticle.y - this.y;
-						const distance = Math.sqrt(dx * dx + dy * dy);
-
-						if (distance < 50) return; // Avoid collision, adjust if necessary
-
-						// Gravitational force magnitude
-						const force = (G * this.mass * otherParticle.mass) / (distance * distance);
-
-						// Calculate the angle of the force vector
-						const angle = Math.atan2(dy, dx);
-						const fx = Math.cos(angle) * force;
-						const fy = Math.sin(angle) * force;
-
-						// Apply the gravitational force to the particles
-						this.velocityX += fx / this.mass;
-						this.velocityY += fy / this.mass;
-
-						otherParticle.velocityX -= fx / otherParticle.mass;
-						otherParticle.velocityY -= fy / otherParticle.mass;
-					}
-				});
-			}
-		}
-
-		function initParticles(num) {
-			for (let i = 0; i < num; i++) {
-				if (particlesArray.length < maxParticles) {
-					particlesArray.push(new Particle());
-				}
-			}
-		}
-
-		function removeOldParticles() {
-			particlesArray = particlesArray.filter(particle => particle.opacity > 0);
-		}
-
-		function maintainBaseParticles() {
-			if (particlesArray.length < baseNumParticles) {
-				let needed = baseNumParticles - particlesArray.length;
-				initParticles(needed);
-			}
-		}
-
 		function playTrack() {
 			if (curr_track.readyState >= 2) {
 				curr_track.play()
 					.then(() => {
 						initAudioAnalyser();
-						setupGrooveDetection();
-						initParticles(baseNumParticles);
 						animate();
 						isPlaying = true;
 						playpause_btn.innerHTML = `pause_circle`;
@@ -1375,185 +1212,113 @@
 		let bufferLength;
 		let dataArray;
 
+		let currentVisualizer = null;
+		let visualizerModule = null;
+
 		function initAudioAnalyser() {
 			analyser.fftSize = 256;
 			bufferLength = analyser.frequencyBinCount;
 			dataArray = new Uint8Array(bufferLength);
 		}
 
-		function createReverbNode(callback) {
-			let convolver = context.createConvolver();
-			window.parent.fetch('http://adthoughtsglobal.github.io/resources/1st_baptist_nashville_far_close.wav')
-				.then(response => response.arrayBuffer())
-				.then(data => context.decodeAudioData(data))
-				.then(buffer => {
-					convolver.buffer = buffer;
-					callback(convolver);
-				});
+		async function vizchange() {
+			let fetched = await fetch("https://novaos-web.github.io/plr/visualizerDB.json");
+			let items = await fetched.json();
+			items.push("Custom URL");
+			const url = await window.parent.showDropdownModal("Choose a visualizer", "Click on custom URL to use a custom visualizer.", items);
+			if (url != "Custom URL") {
+				loadVisualizerFromURL(`https://novaos-web.github.io/plr/visualizers/${url}.js`);
+			} else {
+				const customUrl = await window.parent.ask("Custom Visualizer URL");
+				if (customUrl) {
+					loadVisualizerFromURL(customUrl);
+				} else {
+					window.parent.toast("No custom URL provided");
+				}
+			}
 		}
 
-		window.addEventListener('resize', function () {
-			canvas.width = window.innerWidth;
-			canvas.height = window.innerHeight;
-		});
+		async function loadVisualizerFromURL(url) {
+			try {
+				const module = await import(/* @vite-ignore */ url);
+				if (!module.default) throw new Error("Module has no default export");
+				if (currentVisualizer?.destroy) currentVisualizer.destroy();
+
+				currentVisualizer = new module.default(canvas, analyser, getAudioData);
+				visualizerModule = module;
+
+				console.log(`Visualizer loaded from ${url}`);
+			} catch (e) {
+				console.error("Failed to load visualizer:", e);
+			}
+		}
+
+		function animate() {
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+			if (currentVisualizer) {
+				currentVisualizer.update();
+				currentVisualizer.draw();
+			}
+
+			requestAnimationFrame(animate);
+		}
+
+		function getAudioData() {
+			analyser.getByteFrequencyData(dataArray);
+
+			const bassStart = 2;
+			const bassEnd = 20;
+			let bassEnergy = dataArray.slice(bassStart, bassEnd).reduce((sum, v) => sum + v, 0) / (bassEnd - bassStart);
+
+			const highStart = bufferLength - 20;
+			const highEnd = bufferLength;
+			let highEnergy = dataArray.slice(highStart, highEnd).reduce((sum, v) => sum + v, 0) / (highEnd - highStart);
+
+			let totalEnergy = dataArray.reduce((sum, value) => sum + value, 0) / bufferLength;
+
+			return { totalEnergy, bassEnergy, highEnergy };
+		}
+
+		function resizeupdate() {
+			document.getElementById("particleCanvas").style.opacity = "0";
+			setTimeout(() => {
+				canvas.width = canvas.clientWidth;
+				canvas.height = canvas.clientHeight;
+				document.getElementById("particleCanvas").style.opacity = "1";
+			}, 500)
+		}
+
+		window.addEventListener('resize', resizeupdate);
 
 		let e = 1;
 		function toggleQueue() {
 			if (e == 1) {
-				document.getElementById("queuewindow").style.display = "flex";
-				e = 0
+				const queue = document.getElementById("queue");
+				queue.style.display = "flex";
+				setTimeout(() => {
+					queue.style.opacity = "1";
+					queue.style.flex = "1";
+					document.getElementById("visualizer").style.flex = "0";
+				}, 10);
+				e = 0;
 			} else {
-				document.getElementById("queuewindow").style.display = "none";
-				e = 1
+				const queue = document.getElementById("queue");
+				queue.style.flex = "0";
+				queue.style.opacity = "0";
+				setTimeout(() => {
+					document.getElementById("visualizer").style.flex = "1";
+				}, 250);
+				setTimeout(() => {
+					queue.style.display = "none";
+				}, 500);
+				e = 1;
 			}
-			checksidewin();
+			resizeupdate();
 		}
+
 
 		toggleQueue();
-
-		function createReverbNode() {
-			let convolver = context.createConvolver();
-			let length = context.sampleRate * 3;
-			let impulse = context.createBuffer(2, length, context.sampleRate);
-			for (let i = 0; i < 2; i++) {
-				let channelData = impulse.getChannelData(i);
-				for (let j = 0; j < length; j++) {
-					channelData[j] = (Math.random() * 2 - 1) * Math.pow(1 - j / length, 0.2);
-				}
-			}
-			convolver.buffer = impulse;
-			return convolver;
-		}
-
-
-		function createChorusNode() {
-			let delayNode = context.createDelay();
-			let lfo = context.createOscillator();
-			let lfoGain = context.createGain();
-
-			lfo.frequency.value = 0.25;
-			lfoGain.gain.value = 0.005;
-
-			lfo.connect(lfoGain).connect(delayNode.delayTime);
-			lfo.start();
-
-			delayNode.delayTime.value = 0.03;
-			let chorusGain = context.createGain();
-			chorusGain.gain.value = 0.5;
-
-			sourceNode.connect(chorusGain).connect(delayNode);
-			return delayNode;
-		}
-
-		function createPhaserNode() {
-			let phaser = context.createBiquadFilter();
-			phaser.type = 'allpass';
-			phaser.frequency.value = 1000;
-			return phaser;
-		}
-
-		function createVibratoNode() {
-			let delay = context.createDelay();
-			let lfo = context.createOscillator();
-			let lfoGain = context.createGain();
-
-			lfo.frequency.value = 5;
-			lfoGain.gain.value = 0.002;
-
-			lfo.connect(lfoGain).connect(delay.delayTime);
-			lfo.start();
-
-			return delay;
-		}
-
-		let effects = {
-			reverb: false,
-			chorus: false,
-			phaser: false,
-			vibrato: false
-		};
-
-		function toggleEffect(type, event) {
-			if (event)
-				event.target.setAttribute("active", effects[type] ? "false" : "true");
-			if (effects[type]) {
-				removeEffect(type);
-			} else {
-				addEffect(type);
-			}
-			effects[type] = !effects[type];
-		}
-
-		function addEffect(type) {
-			let node;
-			switch (type) {
-				case 'reverb':
-					createReverbNode((node) => {
-						reverbNode = node;
-						dryGain.disconnect();
-						dryGain.connect(node).connect(effectChain);
-					});
-					return;
-
-				case 'chorus':
-					chorusNode = createChorusNode();
-					node = chorusNode;
-					break;
-				case 'phaser':
-					phaserNode = createPhaserNode();
-					node = phaserNode;
-					break;
-				case 'vibrato':
-					vibratoNode = createVibratoNode();
-					node = vibratoNode;
-					break;
-			}
-
-			if (node) {
-				dryGain.disconnect();
-				dryGain.connect(node).connect(effectChain);
-			}
-		}
-
-		function removeEffect(type) {
-			dryGain.disconnect();
-
-			switch (type) {
-				case 'reverb':
-					if (reverbNode) reverbNode.disconnect();
-					break;
-				case 'chorus':
-					if (chorusNode) chorusNode.disconnect();
-					break;
-				case 'phaser':
-					if (phaserNode) phaserNode.disconnect();
-					break;
-				case 'vibrato':
-					if (vibratoNode) vibratoNode.disconnect();
-					break;
-			}
-
-			dryGain.connect(effectChain);
-			wetGain.connect(effectChain);
-		}
-
-		document.getElementById('toggleReverb').addEventListener('click', (event) => toggleEffect('reverb', event));
-		document.getElementById('toggleChorus').addEventListener('click', (event) => toggleEffect('chorus', event));
-		document.getElementById('togglePhaser').addEventListener('click', (event) => toggleEffect('phaser', event));
-		document.getElementById('toggleVibrato').addEventListener('click', (event) => toggleEffect('vibrato', event));
-
-		function toggleEff() {
-			document.getElementById("effectwindow").classList.toggle("show");
-			checksidewin();
-		}
-
-		function checksidewin() {
-			if (!document.getElementById("effectwindow").classList?.contains("show") && document.getElementById("queuewindow").style.display == "none") {
-				document.querySelectorAll(".sidewindow_cont")[0].style.display = "none";
-			} else {
-				document.querySelectorAll(".sidewindow_cont")[0].style.display = "flex";
-			}
-		}
 	</script>
 </body>
 

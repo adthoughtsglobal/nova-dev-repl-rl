@@ -960,9 +960,11 @@ function openModal(type, { title = '', message, options = null, status = null, p
 			noButton.style.display = 'inline-block';
 			yesButton.textContent = 'Yes';
 		} else if (type === 'dropdown') {
-			dropdown.innerHTML = options.map(option => `<option value="${option}">${option}</option>`).join('');
+			let items = Array.isArray(options) ? options : Object.values(options);
+			dropdown.innerHTML = items.map(option => `<option value="${option}">${option}</option>`).join('');
 			dropdown.style.display = 'block';
 			noButton.style.display = 'inline-block';
+
 		} else if (type === 'say' && status) {
 			let ic = "warning";
 			if (status === "success") ic = "check_circle";
@@ -1717,7 +1719,7 @@ async function realgenTaskBar() {
 })();
 
 async function realgenDesktop() {
-		gid("desktop").innerHTML = ``;
+	gid("desktop").innerHTML = ``;
 	let x;
 	try {
 		let y = await getFileNamesByFolder("Desktop");

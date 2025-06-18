@@ -466,7 +466,7 @@ nav [navobj] div {
 
 .modal select {
 	background: var(--colors-BG-highlighted);
-	color: var(--colors-text-normal);
+	color: var(--colors-text-high);
 	border-radius: var(--sizing-border-radius);
 	padding: 0.5rem;
 	outline: none;
