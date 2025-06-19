@@ -1923,6 +1923,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 		"scripts/rotur.js",
 		"scripts/ctxmenu.js",
 		"scripts/edgecases.js",
+		"scripts/dompurify.js",
 		"scripts/scripties.js",
 		"scripts/ntx.js"
 	];
