@@ -337,6 +337,7 @@ async function openn() {
 			iconSpan.innerHTML = "<span class='taskbarloader'></span>";
 			getAppIcon(false, app.id).then((appIcon) => {
 				iconSpan.innerHTML = appIcon;
+insertSVG(appIcon, iconSpan);
 			});
 
 			function getapnme(x) {
@@ -939,66 +940,126 @@ function makedialogclosable(ok) {
 		}
 	});
 }
-
-function openModal(type, { title = '', message, options = null, status = null, preset = '' } = {}) {
+function openModal(type, { title = '', message, options = null, status = null, preset = '' } = {}, registerRef = false) {
 	if (badlaunch) { return }
 	return new Promise((resolve) => {
-		const modal = document.querySelector("#NaviconfDia");
-		const h1 = modal.querySelector('h1');
-		const p = modal.querySelector('p');
-		const dropdown = modal.querySelector('.dropdown');
-		const inputField = modal.querySelector('.input-field');
-		const yesButton = modal.querySelector('.yes-button');
-		const noButton = modal.querySelector('.notbn');
-		h1.textContent = title;
-		p.innerHTML = message;
-		dropdown.style.display = 'none';
-		inputField.style.display = 'none';
-		noButton.style.display = 'none';
-		yesButton.textContent = 'OK';
-		if (type === 'confirm') {
-			noButton.style.display = 'inline-block';
-			yesButton.textContent = 'Yes';
-		} else if (type === 'dropdown') {
-			let items = Array.isArray(options) ? options : Object.values(options);
-			dropdown.innerHTML = items.map(option => `<option value="${option}">${option}</option>`).join('');
-			dropdown.style.display = 'block';
-			noButton.style.display = 'inline-block';
+		const modal = document.createElement('div');
+		modal.classList.add('modal');
 
-		} else if (type === 'say' && status) {
-			let ic = "warning";
-			if (status === "success") ic = "check_circle";
-			else if (status === "failed") ic = "dangerous";
-			p.innerHTML = `<span class="material-symbols-rounded">${ic}</span> ${message}`;
-		} else if (type === 'ask') {
-			inputField.value = preset;
-			inputField.style.display = 'block';
+		modal.showModal = () => {
+			modal.style.display = 'flex';
+		};
+
+		modal.close = () => {
+			modal.style.display = 'none';
+		};
+
+		modal.show = () => {
+			modal.style.display = 'flex';
+		};
+
+		const modalItemsCont = document.createElement('div');
+		modalItemsCont.classList.add('modal-items');
+
+		const icon = document.createElement('span');
+		icon.classList.add('material-symbols-rounded');
+		let ic = "warning";
+		if (status === "success") ic = "check_circle";
+		else if (status === "failed") ic = "dangerous";
+		icon.textContent = ic;
+		icon.classList.add('modal-icon');
+		modalItemsCont.appendChild(icon);
+
+		if (title && title.length > 0) {
+			
+		const h1 = document.createElement('h1');
+		h1.textContent = title;
+		modalItemsCont.appendChild(h1);
 		}
-		// Button actions
+
+		const p = document.createElement('p');
+		if (type === 'say' && status) {
+			p.innerHTML = `${message}`;
+		} else {
+			p.textContent = message;
+		}
+		modalItemsCont.appendChild(p);
+
+		let dropdown = null;
+		if (type === 'dropdown') {
+			dropdown = document.createElement('select');
+			let items = Array.isArray(options) ? options : Object.values(options);
+			for (const option of items) {
+				const opt = document.createElement('option');
+				opt.value = option;
+				opt.textContent = option;
+				dropdown.appendChild(opt);
+			}
+			modalItemsCont.appendChild(dropdown);
+		}
+
+		let inputField = null;
+		if (type === 'ask') {
+			inputField = document.createElement('input');
+			inputField.type = 'text';
+			inputField.value = preset;
+			modalItemsCont.appendChild(inputField);
+		}
+
+		const btnContainer = document.createElement('div');
+		btnContainer.classList.add('button-container');
+		modalItemsCont.appendChild(btnContainer);
+
+		const yesButton = document.createElement('button');
+		yesButton.textContent = type === 'confirm' ? 'Yes' : 'OK';
+		btnContainer.appendChild(yesButton);
+
+		if (type === 'confirm' || type === 'dropdown') {
+			const noButton = document.createElement('button');
+			noButton.textContent = 'No';
+			btnContainer.appendChild(noButton);
+			noButton.onclick = () => {
+				modal.close();
+				modal.remove();
+				resolve(false);
+			};
+		}
+
 		yesButton.onclick = () => {
 			modal.close();
-			resolve(type === 'dropdown' ? dropdown.value : type === 'ask' ? inputField.value : true);
+			modal.remove();
+			if (type === 'dropdown') {
+				resolve(dropdown.value);
+			} else if (type === 'ask') {
+				resolve(inputField.value);
+			} else {
+				resolve(true);
+			}
 		};
 
-		noButton.onclick = () => {
-			modal.close();
-			resolve(false);
-		};
+		modal.appendChild(modalItemsCont);
 
-		modal.showModal();
+		if (registerRef) {
+			document.getElementById("window" + notificationContext[registerRef]?.windowID).querySelectorAll(".windowcontent")[0].appendChild(modal);
+			modal.show();
+		} else {
+			document.body.appendChild(modal);
+			modal.showModal();
+		}
 	});
 }
-function justConfirm(title, message) {
-	return openModal('confirm', { title, message });
+
+function justConfirm(title, message, registerRef = false) {
+	return openModal('confirm', { title, message }, registerRef);
 }
-function showDropdownModal(title, message, options) {
-	return openModal('dropdown', { title, message, options });
+function showDropdownModal(title, message, options, registerRef = false) {
+	return openModal('dropdown', { title, message, options }, registerRef);
 }
-function say(message, status = null) {
-	return openModal('say', { message, status });
+function say(message, status = null, registerRef = false) {
+	return openModal('say', { message, status }, registerRef);
 }
-function ask(question, preset = '') {
-	return openModal('ask', { message: question, preset });
+function ask(question, preset = '', registerRef = false) {
+	return openModal('ask', { message: question, preset }, registerRef);
 }
 async function loadtaskspanel() {
 	let appbarelement = gid("nowrunninapps");
@@ -1039,7 +1100,8 @@ async function loadtaskspanel() {
 
 		let iconSpan = document.createElement("span");
 		iconSpan.classList.add("appicnspan");
-		iconSpan.innerHTML = (await getAppIcon(0, winds[wid]?.appid)) || defaultAppIcon;
+		
+insertSVG((await getAppIcon(0, winds[wid]?.appid)) || defaultAppIcon,iconSpan);
 
 		let tooltisp = document.createElement("span");
 		tooltisp.className = "tooltiptext";
@@ -1431,12 +1493,15 @@ function displayTimeLeft(seconds) {
 
 async function notify(...args) {
 	if (nonotif) { return }
-	let [title = "Notification", description = "There is a notification", appname = "App", isid = 1, ...rest] = args;
-	appname = (!isid) ? basename(await getFileNameByID(appname)) : appname;
+	let appname = "System";
+	let [title = "Notification", description = "There is a notification", isid] = args;
+	let appID = notificationContext[isid]?.appID;
+	appname = (!(appID == undefined)) ? basename(await getFileNameByID(appID)) : appname;
+	console.log("Notification: ", isid, appID, appname);
+
 	if (document.getElementById("notification").style.display == "block") {
 		document.getElementById("notification").style.display = "none";
 		setTimeout(() => notify(title, description, appname), 2500);
-
 	}
 	var appnameb = document.getElementById('notifappName');
 	var descb = document.getElementById('notifappDesc');
@@ -1457,9 +1522,8 @@ async function notify(...args) {
 	}
 	const notificationID = genUID();
 	notifLog[notificationID] = { title, description, appname };
-
+	(isid) ? delete notificationContext[isid] : 0;
 }
-notify.appIdSupport = true;
 
 let toastInProgress = false;
 let totalDuration = 0;

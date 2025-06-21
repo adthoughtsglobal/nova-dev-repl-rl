@@ -1,6 +1,6 @@
 var dragging = false, remToPx = parseFloat(getComputedStyle(document.documentElement).fontSize), navheight;
 
-var novadotcsscache;
+var novadotcsscache, transactionLib = [], notificationContext = {};
 
 async function openlaunchprotocol(appid, data, id, winuid) {
     sysLog("OLP", `Opening "${data}" in "${appid}" for ${winuid || id || 'operation'}`);
@@ -364,7 +364,6 @@ function attachResizeHandlers(windowDiv) {
         });
     });
 }
-
 async function buildIframeApiBridge(appid, title, winuid, perms) {
     async function checkAndSetPermission(namespace) {
         if (!Array.isArray(perms)) {
@@ -396,12 +395,17 @@ async function buildIframeApiBridge(appid, title, winuid, perms) {
                 }, '*');
             }
         } catch (error) {
-            console.error("Failed to send large message:", error);
+            console.warn("Failed to send large message:", error);
         }
     }
 
     async function handleNtxSessionMessage(event) {
         const { action, params, transactionId } = event.data;
+        const contextID = genUID();
+        notificationContext[contextID] = {
+            appID: appid,
+            windowID: winuid
+        };
         try {
             const [namespace, method] = action.split(".");
             if (ntxWrapper[namespace]?.[method]) {
@@ -409,16 +413,19 @@ async function buildIframeApiBridge(appid, title, winuid, perms) {
 
                 const fn = ntxWrapper[namespace][method];
                 const args = [...params];
-                if (fn.appIdSupport) args.push(appid);
+                if (supportsXData(namespace, method)) args.push(contextID);
 
+                console.log(args, fn, contextID);
                 const result = await fn(...args);
-                await sendLargeMessage(event.source, result, transactionId);
+                sendLargeMessage(event.source, result, transactionId);
             } else {
                 throw new Error(`Invalid NTX action: ${action}`);
             }
         } catch (error) {
             console.error("Error handling NTX message:", error);
             event.source.postMessage({ transactionId, error: error.message, success: false }, '*');
+        } finally {
+            delete transactionLib[transactionId];
         }
     }
 
@@ -449,6 +456,7 @@ async function buildIframeApiBridge(appid, title, winuid, perms) {
     if (!window._messageListeners) window._messageListeners = {};
     window._messageListeners[winuid] = handleMessage;
 }
+
 
 async function prepareIframeContent(cont, appid, winuid) {
     let contentString = isBase64(cont) ? decodeBase64Content(cont) : (cont || "<center><h1>Unavailable</h1>App Data cannot be read.</center>");
@@ -711,9 +719,9 @@ function dragElement(elmnt) {
         e.preventDefault();
 
         holdStart = Date.now();
-
         grabOffsetX = e.clientX - elmnt.getBoundingClientRect().left;
         grabOffsetY = e.clientY - elmnt.getBoundingClientRect().top;
+        elmnt.style.position = 'absolute';
 
         iframeOverlay = document.createElement('div');
         iframeOverlay.style.position = 'fixed';

@@ -48,7 +48,7 @@ body {
 dialog {
 	user-select: none;
 
-	& > ::backdrop {
+	&> ::backdrop {
 		background: transparent !important;
 	}
 }
@@ -62,13 +62,13 @@ dialog {
 	position: relative;
 
 	&>.bgimage {
-	opacity: 0;
-	transition: opacity .5s;
-	height: 100vh;
-	width: 100%;
-	object-position: center;
-	object-fit: cover;
-        position: absolute;
+		opacity: 0;
+		transition: opacity .5s;
+		height: 100vh;
+		width: 100%;
+		object-position: center;
+		object-fit: cover;
+		position: absolute;
 	}
 }
 
@@ -218,6 +218,7 @@ nav [navobj] div {
 	flex: 1;
 	overflow: hidden;
 	border-radius: 0 0 var(--sizing-border-radius) var(--sizing-border-radius);
+	position: relative;
 }
 
 .windowloader {
@@ -350,7 +351,7 @@ nav [navobj] div {
 }
 
 ::backdrop {
-    background: transparent;
+	background: transparent;
 }
 
 .navWindows {
@@ -415,11 +416,12 @@ nav [navobj] div {
 	}
 }
 
+.realmodal, .modal {
+	z-index: 999;
+}
 
-.modal {
-	padding: 10px 25px;
-	padding-top: 0;
-	border: 0;
+.realmodal {
+	padding: 1em;
 	border-radius: var(--sizing-border-radius);
 	color: var(--colors-text-normal);
 	background: var(--colors-BG-section);
@@ -431,12 +433,41 @@ nav [navobj] div {
 	border: 1px solid #78787840;
 	animation: pop var(--time-action);
 	outline: 0;
+}
 
-	& .button-container {
-		gap: .5em;
-		margin: .5em 0;
-		display: flex;
+.modal {
+	background-color: transparent;
+	border: none;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	position: absolute;
+	top: 0;
+	left: 0;
+
+	&>.modal-items {
+
+		padding: 1em;
+		border-radius: var(--sizing-border-radius);
+		color: var(--colors-text-normal);
+		background: var(--colors-BG-section);
+		text-align: left;
+		max-height: 80%;
+		width: 80%;
+		max-width: 280px;
+		box-shadow: 0 0 10em #000000ba;
+		border: 1px solid #78787840;
+		animation: pop var(--time-action);
 	}
+
+}
+
+.modal-items {
+	outline: 0;
+	display: flex;
+	flex-direction: column;
 }
 
 #AppInstDia span.dangertext {
@@ -444,27 +475,36 @@ nav [navobj] div {
 	font-weight: bold;
 }
 
-.modal input {
-	width: 90%;
-	padding: 7px 10px;
-	color: inherit;
-	background: var(--colors-BG-normal);
-	border: none;
-	border-radius: var(--sizing-border-radius);
+.modal-items .button-container {
+	gap: .5em;
+	margin-top: .5em;
+	display: flex;
 }
 
-.modal p {
+.modal-items .modal-icon {
+	display: flex;
+	justify-content: flex-start;
+	align-items: center;
+	margin-bottom: 10px;
+	opacity: .8;
+	font-size: 2em;
+}
+
+.modal-items input {
+	padding: .5em .8em;
+	width: calc(100% - 1.7em);
+	color: inherit;
+	background: var(--colors-BG-normal);
+	border-radius: var(--sizing-border-radius);
+	border: 1px solid #78787840;
+}
+
+.modal-items p {
 	text-align: left;
 	overflow-wrap: normal;
 }
 
-.modal p span {
-	font-size: var(--font-size-normal);
-	transform: scale(1.5);
-	margin-right: 6px;
-}
-
-.modal select {
+.modal-items select {
 	background: var(--colors-BG-highlighted);
 	color: var(--colors-text-high);
 	border-radius: var(--sizing-border-radius);
@@ -472,30 +512,30 @@ nav [navobj] div {
 	outline: none;
 	display: block;
 	width: 100%;
-	border: 1px solid var(--colors-BG-sub);
+	border: 1px solid #78787840;
 }
 
-.modal button {
+.modal-items button {
 	padding: 8px 18px;
 	background: var(--colors-BG-sub);
-	border: 1px solid var(--colors-BG-sub);
 	color: inherit;
 	flex-grow: 1;
 	cursor: pointer;
 	border-radius: var(--sizing-border-radius);
 	width: 100%;
+	border: 1px solid #78787840;
 }
 
-.modal button:focus {
+.modal-items button:focus {
 	background: var(--colors-BG-highlighted);
 	color: var(--colors-text-high);
 }
 
-.modal .notbn {
+.modal-items .notbn {
 	background: transparent;
 }
 
-.modal a {
+.modal-items a {
 	color: #71bbff;
 }
 
@@ -889,7 +929,7 @@ nav [navobj] div {
 		width: 100%;
 		height: 100%;
 		position: absolute;
-	object-fit: cover;
+		object-fit: cover;
 		top: 0;
 		left: 0;
 		z-index: -1;
@@ -2454,7 +2494,6 @@ div#toastdiv {
 	flex-direction: row;
 	align-items: center;
 	gap: 1em;
-	margin-top: 1em;
 }
 
 #AppInstDia span {

@@ -119,6 +119,12 @@ function describeNamespaces(namespaceKey) {
     return null;
 }
 
+function supportsXData(wrapper, name) {
+    const arr = ["sysUI.notify", "sysUI.say", "sysUI.toast", "sysUI.ask", "sysUI.confirm", "sysUI.dropdown"];
+    return arr.includes(wrapper + "." + name);
+}
+
+
 function getNamespaceRisk(namespaceKey) {
     if (namespaceDetails[namespaceKey]) {
         return namespaceDetails[namespaceKey].risk;

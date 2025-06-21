@@ -272,3 +272,10 @@ function createBlobFromBase64(base64Data, mimeType) {
 	}
 	return new Blob([ab], { type: mimeType });
 }
+
+function insertSVG(svgString, targetElement) {
+	const parser = new DOMParser();
+	const svgDoc = parser.parseFromString(svgString, "image/svg+xml").documentElement;
+	targetElement.innerHTML = "";
+	targetElement.appendChild(svgDoc);
+}
