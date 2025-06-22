@@ -195,7 +195,6 @@ async function enqueueRequest(action, args) {
 const baseURL = location.href;
 
 const workerScript = `
-importScripts('${baseURL}/scripts/encdec.js');
 
 self.addEventListener('message', async (e) => {
     const { type, content, key } = e.data;

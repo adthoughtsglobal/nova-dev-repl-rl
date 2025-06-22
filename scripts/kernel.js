@@ -491,7 +491,120 @@ async function prepareIframeContent(cont, appid, winuid) {
 
     const ctxScript = getMetaTagContent(contentString, 'nova-include')?.includes('contextMenu') ? await fetch('scripts/ctxmenu.js').then(res => res.text()) : '';
 
-    const ntxScript = `<script defer>document.addEventListener('mousedown',()=>window.parent.postMessage({type:'iframeClick',iframeId:'${winuid}'},'*'));var myWindow={};window.addEventListener("message",async e=>{if("myWindow"===e.data.type){myWindow={...e.data.data,close:()=>ntxSession.send("sysUI.clwin",myWindow.windowID)};try{await greenflag()}catch(t){}window.parent.postMessage({data:"gfdone",iframeId:myWindow.windowID},"*")}else if("nova-style"===e.data?.type&&"string"==typeof e.data.css){let t=document.getElementById("novacsstag");t||(t=document.createElement("style"),t.id="novacsstag",document.head.appendChild(t)),t.textContent=e.data.css}});class NTXSession{constructor(){this.transactionIdCounter=0,this.pendingRequests={},this.listeners={};const e={};window.addEventListener("message",t=>{const{transactionId:s,chunk:n,chunkIndex:i,totalChunks:o,isJson:a,success:d,error:r,type:c,payload:l}=t.data;if(s&&"boolean"==typeof d)if(a&&void 0!==n){e[s]||(e[s]={chunks:[],received:0,total:o}),e[s].chunks[i]=n,e[s].received++;if(e[s].received===o){const n=e[s].chunks.join("");delete e[s];const i=JSON.parse(n);this.pendingRequests[s]&&(this.pendingRequests[s].resolve(i),delete this.pendingRequests[s])}}else this.pendingRequests[s]&&(d?this.pendingRequests[s].resolve(t.data.result):this.pendingRequests[s].reject(r),delete this.pendingRequests[s]);else c&&void 0!==l&&this.listeners[c]&&this.listeners[c].forEach(e=>e(l))})}generateTransactionId(){return\`txn_\${Date.now()}_\${this.transactionIdCounter++}\`}send(e,...t){return new Promise((s,n)=>{const i=this.generateTransactionId();this.pendingRequests[i]={resolve:s,reject:n},window.parent.postMessage({transactionId:i,action:e,params:t,iframeId:'${winuid}'},"*")})}eventBus={send:(e,t)=>{window.parent.postMessage({type:e,detail:t,isEventBus:!0,iframeId:'${winuid}'},"*")},listen:(e,t)=>{this.listeners[e]||(this.listeners[e]=[]),this.listeners[e].push(t)}}}var ntxSession=new NTXSession;</script>`;
+    const ntxScript = `<script defer>
+document.addEventListener('mousedown', () => {
+    window.parent.postMessage({ type: 'iframeClick', iframeId: '${winuid}' }, '*');
+});
+
+var myWindow = {};
+
+window.addEventListener("message", async e => {
+    if (e.data.type === "myWindow") {
+        myWindow = {
+            ...e.data.data,
+            close: () => ntxSession.send("sysUI.clwin", myWindow.windowID)
+        };
+        try {
+            await greenflag();
+        } catch (t) {}
+        window.parent.postMessage({ data: "gfdone", iframeId: myWindow.windowID }, "*");
+    } else if (e.data?.type === "nova-style" && typeof e.data.css === "string") {
+        let styleTag = document.getElementById("novacsstag");
+        if (!styleTag) {
+            styleTag = document.createElement("style");
+            styleTag.id = "novacsstag";
+            document.head.appendChild(styleTag);
+        }
+        styleTag.textContent = e.data.css;
+    }
+});
+
+class NTXSession {
+    constructor() {
+        this.transactionIdCounter = 0;
+        this.pendingRequests = {};
+        this.listeners = {};
+        const chunks = {};
+
+        window.addEventListener("message", t => {
+            const {
+                transactionId: s,
+                chunk: n,
+                chunkIndex: i,
+                totalChunks: o,
+                isJson: a,
+                success: d,
+                error: r,
+                type: c,
+                payload: l
+            } = t.data;
+
+            if (s && typeof d === "boolean") {
+                if (a && n !== undefined) {
+                    if (!chunks[s]) {
+                        chunks[s] = { chunks: [], received: 0, total: o };
+                    }
+                    chunks[s].chunks[i] = n;
+                    chunks[s].received++;
+                    if (chunks[s].received === o) {
+                        const fullData = chunks[s].chunks.join("");
+                        delete chunks[s];
+                        const result = JSON.parse(fullData);
+                        if (this.pendingRequests[s]) {
+                            this.pendingRequests[s].resolve(result);
+                            delete this.pendingRequests[s];
+                        }
+                    }
+                } else {
+                    if (this.pendingRequests[s]) {
+                        d ? this.pendingRequests[s].resolve(t.data.result) : this.pendingRequests[s].reject(r);
+                        delete this.pendingRequests[s];
+                    }
+                }
+            } else if (c && l !== undefined && this.listeners[c]) {
+                this.listeners[c].forEach(e => e(l));
+            }
+        });
+    }
+
+    generateTransactionId() {
+        return \`txn_${Date.now()}_${this.transactionIdCounter++}\`;
+    }
+
+    send(action, ...params) {
+        return new Promise((resolve, reject) => {
+            const txnId = this.generateTransactionId();
+            this.pendingRequests[txnId] = { resolve, reject };
+            window.parent.postMessage({
+                transactionId: txnId,
+                action: action,
+                params: params,
+                iframeId: '${winuid}'
+            }, "*");
+        });
+    }
+
+    eventBus = {
+        send: (type, detail) => {
+            window.parent.postMessage({
+                type: type,
+                detail: detail,
+                isEventBus: true,
+                iframeId: '${winuid}'
+            }, "*");
+        },
+        listen: (type, callback) => {
+            if (!this.listeners[type]) {
+                this.listeners[type] = [];
+            }
+            this.listeners[type].push(callback);
+        }
+    };
+}
+
+var ntxSession = new NTXSession();
+</script>
+`;
 
     const fullBlobHTML = `<!DOCTYPE html><html><head><meta charset="utf-8">${styleBlock}</head><body>${contentString}${ctxScript ? `<script>${ctxScript}</script>` : ''}${ntxScript}<script defer>window.parent.postMessage({type:"iframeReady",windowID:"${winuid}"}, "*");</script></body></html>`;
 

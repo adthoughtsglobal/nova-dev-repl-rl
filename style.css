@@ -366,7 +366,7 @@ nav [navobj] div {
 	color: var(--colors-text-normal);
 	box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
 	outline: none;
-	animation: dmodthingy .5s cubic-bezier(0.36, 0.38, 0, 0.94);
+	animation: dmodthingy .3s cubic-bezier(0.36, 0.38, 0, 0.94);
 }
 
 #appdmod {
@@ -468,6 +468,12 @@ nav [navobj] div {
 	outline: 0;
 	display: flex;
 	flex-direction: column;
+
+	&>h1 {
+    margin: 0;
+    border-bottom: 1px solid #80808082;
+    padding-bottom: .5em;
+}
 }
 
 #AppInstDia span.dangertext {

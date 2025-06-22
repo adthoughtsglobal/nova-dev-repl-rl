@@ -975,7 +975,7 @@ function openModal(type, { title = '', message, options = null, status = null, p
 		const h1 = document.createElement('h1');
 		h1.textContent = title;
 		modalItemsCont.appendChild(h1);
-		}
+		} 
 
 		const p = document.createElement('p');
 		if (type === 'say' && status) {
@@ -1016,7 +1016,7 @@ function openModal(type, { title = '', message, options = null, status = null, p
 
 		if (type === 'confirm' || type === 'dropdown') {
 			const noButton = document.createElement('button');
-			noButton.textContent = 'No';
+			noButton.textContent = type === 'confirm' ? 'No' : 'Cancel';
 			btnContainer.appendChild(noButton);
 			noButton.onclick = () => {
 				modal.close();

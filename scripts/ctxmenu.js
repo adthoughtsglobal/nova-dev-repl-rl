@@ -11,6 +11,12 @@ window.fileActions = {
 		action: (itemuid) => remfile(itemuid),
 		condition: (file) => true,
 	},
+	appSettings: {
+		icon: 'info',
+		label: 'App settings',
+		action: (itemuid) => useHandler("settings_manager", {"data":"appsets", "id":itemuid}),
+		condition: (file) => mtpetxt(file.fileName) === 'app',
+	},
 	rename: {
 		icon: 'save_as',
 		label: 'Rename',

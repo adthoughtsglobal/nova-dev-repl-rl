@@ -2700,6 +2700,7 @@
 				}
 
 				async function loadAppSettings(appID) {
+					await openCity(0, 'appsets');
 					document.querySelector("#appsets").style.filter = `opacity(20%)`;
 					let registry = await window.parent.getSetting('full', "AppRegistry.json");
 
@@ -3687,12 +3688,9 @@
 			var defile
 			try {
 				if (myWindow.params) {
-					let tmp = myWindow.params;
-					console.log(myWindow.params.data);
-					defile = tmp.data.openType;
-					if (defile == "appSettings") {
-						openCity(0, 'appsets');
-						loadAppSettings(tmp.data.data);
+				console.log( myWindow.params.data.id)
+					if (myWindow.params.data.data == "appsets" && myWindow.params.data.id) {
+						loadAppSettings(myWindow.params.data.id);
 					}
 				}
 			} catch (e) { }
