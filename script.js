@@ -943,20 +943,8 @@ function makedialogclosable(ok) {
 function openModal(type, { title = '', message, options = null, status = null, preset = '' } = {}, registerRef = false) {
 	if (badlaunch) { return }
 	return new Promise((resolve) => {
-		const modal = document.createElement('div');
+		const modal = document.createElement('dialog');
 		modal.classList.add('modal');
-
-		modal.showModal = () => {
-			modal.style.display = 'flex';
-		};
-
-		modal.close = () => {
-			modal.style.display = 'none';
-		};
-
-		modal.show = () => {
-			modal.style.display = 'flex';
-		};
 
 		const modalItemsCont = document.createElement('div');
 		modalItemsCont.classList.add('modal-items');
@@ -978,7 +966,7 @@ function openModal(type, { title = '', message, options = null, status = null, p
 		} 
 
 		const p = document.createElement('p');
-		if (type === 'say' && status) {
+		if (type === 'say') {
 			p.innerHTML = `${message}`;
 		} else {
 			p.textContent = message;
@@ -1037,13 +1025,14 @@ function openModal(type, { title = '', message, options = null, status = null, p
 			}
 		};
 
-		modal.appendChild(modalItemsCont);
 
 		if (registerRef) {
 			document.getElementById("window" + notificationContext[registerRef]?.windowID).querySelectorAll(".windowcontent")[0].appendChild(modal);
 			modal.show();
+		modal.appendChild(modalItemsCont);
 		} else {
 			document.body.appendChild(modal);
+		modal.appendChild(modalItemsCont);
 			modal.showModal();
 		}
 	});

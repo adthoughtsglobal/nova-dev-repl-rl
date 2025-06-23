@@ -416,7 +416,8 @@ nav [navobj] div {
 	}
 }
 
-.realmodal, .modal {
+.realmodal,
+.modal {
 	z-index: 999;
 }
 
@@ -467,13 +468,15 @@ nav [navobj] div {
 .modal-items {
 	outline: 0;
 	display: flex;
+	overflow: hidden;
 	flex-direction: column;
+	overflow-y: auto;
 
 	&>h1 {
-    margin: 0;
-    border-bottom: 1px solid #80808082;
-    padding-bottom: .5em;
-}
+		margin: 0;
+		border-bottom: 1px solid #80808082;
+		padding-bottom: .5em;
+	}
 }
 
 #AppInstDia span.dangertext {
@@ -484,7 +487,10 @@ nav [navobj] div {
 .modal-items .button-container {
 	gap: .5em;
 	margin-top: .5em;
-	display: flex;
+	display: flex;    
+	position: absolute;
+    bottom: 0;
+    width: 100%;
 }
 
 .modal-items .modal-icon {
