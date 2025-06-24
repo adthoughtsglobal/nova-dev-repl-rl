@@ -40,7 +40,8 @@ async function openSharedDB(version = 1) {
         request.onerror = (event) => reject(event.target.error);
     });
 }
-const sharedStore = {
+
+window.sharedStore = {
     async get(username, key) {
         if (username === 0 || username === undefined) username = CurrentUsername;
         const db = await openSharedDB();

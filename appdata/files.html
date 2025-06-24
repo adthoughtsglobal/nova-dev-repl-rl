@@ -1329,12 +1329,12 @@
 				let result = [];
 
 				for (let key in obj) {
-					if (obj.hasOwnProperty(key) && key.endsWith('/')) { // Only process folders
+					if (obj.hasOwnProperty(key) && key.endsWith('/')) {
 						let currentPath = parentPath ? `${parentPath}${key}` : key;
 
 						let node = {
-							id: `Treeitem${key}`, // Setting node ID
-							text: key,
+							id: `Treeitem${key}`,
+							text: removeEndSlash(key),
 							icon: getfolicon(key),
 							state: {
 								opened: false,
@@ -1509,7 +1509,7 @@
 		var PrevPath = "Downloads";
 
 		async function listFiles(folderName, gen) {
-			// myWindow.setTitle("Files");
+			myWindow.setTitle(removeEndSlash(folderName) + " - Files");
 
 			if (sessiontype == "directory") {
 				return;
@@ -2064,15 +2064,6 @@
 			}
 		}
 
-
-		function mtpetxt(str) {
-			try {
-				const parts = str.split('/');
-				return parts.length > 1 ? parts.pop() : '';
-			} catch (err) {
-			}
-		}
-
 		function getFileExtension(str) {
 			try {
 				const parts = str.split('.');
@@ -2080,6 +2071,10 @@
 			} catch (err) {
 			}
 		}
+		function removeEndSlash(str) {
+  return str.endsWith('/') ? str.slice(0, -1) : str;
+}
+
 
 		var currentreqID;
 
@@ -2132,7 +2127,7 @@
 						return;
 						break;
 				}
-				// myWindow.setTitle(data.opener === 'showFile' ? "View File" : "Choose File");
+				myWindow.setTitle(data.opener === 'showFile' ? "View File" : "Choose File");
 				document.getElementById("choosefile").style.display = data.opener === 'showFile' ? "none" : "flex";
 
 				if (data.opener === 'showFile') {
@@ -2143,7 +2138,7 @@
 
 				onlyshow = data.opener === 'onlyshow' ? data.opener : false;
 				if (onlyshow) {
-					// myWindow.setTitle("Choose " + onlyshow + " files");
+					myWindow.setTitle("Choose " + onlyshow + " files");
 				}
 			} else {
 				document.getElementById("choosefile").style.display = "none";

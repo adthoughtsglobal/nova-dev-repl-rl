@@ -61,7 +61,8 @@ class NTXSession {
             notify: wrapAsync(notify),
             genDesktop: wrapAsync(genDesktop),
             genTaskBar: wrapAsync(genTaskBar),
-            loadtaskspanel: wrapAsync(loadtaskspanel)
+            loadtaskspanel: wrapAsync(loadtaskspanel),
+            setTitle: wrapAsync(setTitle),
         };
         this.utility = {
             timeAgo: timeAgo,

@@ -400,6 +400,7 @@ async function buildIframeApiBridge(appid, title, winuid, perms) {
     }
 
     async function handleNtxSessionMessage(event) {
+        console.log(event.data)
         const { action, params, transactionId } = event.data;
         const contextID = genUID();
         notificationContext[contextID] = {
@@ -415,7 +416,6 @@ async function buildIframeApiBridge(appid, title, winuid, perms) {
                 const args = [...params];
                 if (supportsXData(namespace, method)) args.push(contextID);
 
-                console.log(args, fn, contextID);
                 const result = await fn(...args);
                 sendLargeMessage(event.source, result, transactionId);
             } else {
@@ -502,7 +502,8 @@ window.addEventListener("message", async e => {
     if (e.data.type === "myWindow") {
         myWindow = {
             ...e.data.data,
-            close: () => ntxSession.send("sysUI.clwin", myWindow.windowID)
+            close: () => ntxSession.send("sysUI.clwin", myWindow.windowID),
+            setTitle: (e) => ntxSession.send("sysUI.setTitle", myWindow.windowID, e)
         };
         try {
             await greenflag();

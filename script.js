@@ -91,7 +91,6 @@ async function showloginmod() {
 	function createUserDivs(users) {
 		const usersChooser = document.getElementById('userschooser');
 		usersChooser.innerHTML = '';
-		const defaultIcon = `<svg class="user_pfp" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="66" height="61" viewBox="0,0,66.9,61.3"><g transform="translate(-206.80919,-152.00164)"><g fill="#ffffff" stroke="none" stroke-miterlimit="10"><path d="M206.80919,213.33676c0,0 3.22013,-18.32949 21.37703,-24.2487c3.5206,-1.14773 5.89388,2.28939 12.33195,2.29893c6.51034,0.00899 8.33976,-3.45507 11.71219,-2.35934c18.01675,5.85379 21.54426,24.30912 21.54426,24.30912z" stroke-width="none"/><path d="M222.47948,169.52215c0,-9.67631 7.8442,-17.52052 17.52052,-17.52052c9.67631,0 17.52052,7.8442 17.52052,17.52052c0,9.67631 -7.8442,17.52052 -17.52052,17.52052c-9.67631,0 -17.52052,-7.8442 -17.52052,-17.52052z" stroke-width="0"/></g></g></svg>`
 		users.forEach(async (cacusername) => {
 			const userDiv = document.createElement('div');
 			userDiv.className = 'user';
@@ -127,9 +126,9 @@ async function showloginmod() {
 					selectUser();
 				}
 			});
-			const img = document.createElement('span');
+			const img = document.createElement('img');
 			img.className = 'icon';
-			img.innerHTML = defaultIcon;
+			sharedStore.get(cacusername, "icon").then((icon) => {img.src =icon});
 			const nameDiv = document.createElement('div');
 			nameDiv.className = 'name';
 			nameDiv.textContent = cacusername;
@@ -305,7 +304,7 @@ async function openn() {
 			`Did the OS initialization fail? If yes, we can re-initialize your OS and install all the default apps. \n\nNovaOS did not find any apps while the initial load of Nova Menu. \n\nRe-initializing your OS may delete your data.`
 		);
 		if (choicetoreinst) {
-			initialiseOS();
+			initializeOS();
 		}
 		return;
 	}
@@ -503,7 +502,7 @@ function makedefic(str) {
 
 function clwin(x) {
 	snappingconthide();
-	const el = isElement(x) ? x : document.getElementById(x.startsWith("window") ? x : "window." + x);
+	const el = isElement(x) ? x : document.getElementById(x.startsWith("window") ? x : "window" + x);
 
 	console.log(43, x)
 	if (!el) return;
@@ -1124,7 +1123,7 @@ async function makewall(deid) {
 	}
 	await setSetting("wall", deid);
 }
-async function initialiseOS() {
+async function initializeOS() {
 	if (badlaunch) { return }
 	dbCache = null;
 	cryptoKeyCache = null;
@@ -1160,6 +1159,7 @@ async function initialiseOS() {
 				console.error("Error during initialization:", error);
 			})
 			.then(async () => {
+				sharedStore.set(CurrentUsername, "icon", "data:image/svg+xml,%3C%3Fxml%20version%3D%221.0%22%20encoding%3D%22utf-8%22%3F%3E%3C!--%20License%3A%20CC%20Attribution.%20Made%20by%20Saeedworks%3A%20https%3A%2F%2Fdribbble.com%2Fsaeedworks%20--%3E%3Csvg%20width%3D%22800px%22%20height%3D%22800px%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20id%3D%22style%3Dfill%22%3E%3Cg%20id%3D%22profile%22%3E%3Cpath%20id%3D%22vector%20(Stroke)%22%20fill-rule%3D%22evenodd%22%20clip-rule%3D%22evenodd%22%20d%3D%22M6.75%206.5C6.75%203.6005%209.1005%201.25%2012%201.25C14.8995%201.25%2017.25%203.6005%2017.25%206.5C17.25%209.3995%2014.8995%2011.75%2012%2011.75C9.1005%2011.75%206.75%209.3995%206.75%206.5Z%22%20fill%3D%22%23ffffff%22%2F%3E%3Cpath%20id%3D%22rec%20(Stroke)%22%20fill-rule%3D%22evenodd%22%20clip-rule%3D%22evenodd%22%20d%3D%22M4.25%2018.5714C4.25%2015.6325%206.63249%2013.25%209.57143%2013.25H14.4286C17.3675%2013.25%2019.75%2015.6325%2019.75%2018.5714C19.75%2020.8792%2017.8792%2022.75%2015.5714%2022.75H8.42857C6.12081%2022.75%204.25%2020.8792%204.25%2018.5714Z%22%20fill%3D%22%23ffffff%22%2F%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E")
 				nonotif = false;
 				await startup();
 				let textcontentwelcome = await fetch("appdata/welcome.html");
@@ -1911,7 +1911,7 @@ async function setandinitnewuser() {
 	gid("edison").showModal()
 	await cleanupram();
 	CurrentUsername = await ask("Enter a username:", "");
-	await initialiseOS();
+	await initializeOS();
 	gid('loginmod').close();
 }
 async function novarefresh() {
@@ -2094,7 +2094,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 			} else {
 				await cleanupram();
 				CurrentUsername = 'Admin';
-				await initialiseOS();
+				await initializeOS();
 			}
 		} catch (error) {
 			console.error('Error in database operations:', error);
@@ -2154,4 +2154,17 @@ async function appGroupModal(name, list) {
 
 		listElement.appendChild(appShortcutDiv);
 	})
+}
+
+function setTitle(windowID, title) {
+	if (typeof title !== "string") {
+		console.error("Title must be a string.");
+		return;
+	}
+	const element = document.getElementById("window"+windowID + "titlespan");
+	if (element) {
+		element.innerText = title;
+	} else {
+		console.warn("Title element not found in the DOM.");
+	}
 }

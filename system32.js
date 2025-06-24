@@ -161,6 +161,7 @@ async function removeUser(username = CurrentUsername) {
         deleteRequest.onblocked = function () {
             console.warn(`Deletion of database for user ${username} is blocked.`);
         };
+        sharedStore.deleteUser(username);
     } catch (error) {
         console.error("Error in removeUser function:", error);
     }
