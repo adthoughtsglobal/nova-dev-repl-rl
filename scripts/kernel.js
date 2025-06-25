@@ -173,7 +173,7 @@ function createWindowShell(winuid, appid) {
     loaderSpinner.className = "loader33";
     windowLoader.appendChild(loaderSpinner);
 
-    windowDiv.appendChild(windowLoader);
+    windowContent.appendChild(windowLoader);
     windowDiv.appendChild(windowHeader);
     windowDiv.appendChild(windowContent);
 
@@ -433,11 +433,14 @@ async function buildIframeApiBridge(appid, title, winuid, perms) {
         if (!event.data || event.data.iframeId !== winuid) return;
 
         if (event.data.data === "gfdone") {
-            const loader = document.querySelector(`#window${CSS.escape(winuid)} .windowloader`);
-            if (loader) {
-                loader.classList.add("transp5");
-                setTimeout(() => loader.remove(), 500);
-            }
+            setTimeout(() => {
+                const loader = document.querySelector(`#window${CSS.escape(winuid)} .windowloader`);
+                if (loader) {
+                    console.log("Loader found, removing it.");
+                    loader.classList.add("transp5");
+                    setTimeout(() => loader.remove(), 500);
+                }
+            }, 500)
         } else if (event.data.type === "iframeClick") {
             const targetWindow = document.querySelector(`[data-winuid="${winuid}"]`);
             putwinontop("window" + winuid);
