@@ -27,7 +27,7 @@
 		body {
 			height: 100%;
 			margin: 0px;
-			background: var(--colors-BG-normal);
+			background: var(--col-bg1);
 		}
 
 		.tab {
@@ -41,9 +41,9 @@
 			flex-direction: column;
 			gap: 0.2rem;
 			transition: .3s ease-out;
-			background-color: var(--colors-BG-section);
+			background-color: var(--col-bg2);
 			padding: .5em;
-			border-radius: var(--sizing-border-radius);
+			border-radius: var(--siz-radius1);
 			border: 1px solid #ffffff0c;
 		}
 
@@ -54,7 +54,7 @@
 		.tab::after {
 			height: 10vh;
 			width: calc(100% - 10px);
-			background: linear-gradient(0deg, var(--colors-BG-normal), transparent);
+			background: linear-gradient(0deg, var(--col-bg1), transparent);
 			content: "";
 			display: block;
 			position: absolute;
@@ -72,7 +72,7 @@
 
 		/* Style the buttons inside the tab */
 		.tab button.active {
-			background-color: var(--colors-BG-sub);
+			background-color: var(--col-bg3);
 			color: var(--colors-text-sub);
 			opacity: 1;
 		}
@@ -86,7 +86,7 @@
 			color: inherit;
 			width: 100%;
 			flex-shrink: 0;
-			border-radius: var(--sizing-border-radius);
+			border-radius: var(--siz-radius1);
 		}
 
 		.tab button {
@@ -95,7 +95,7 @@
 			border: 2px solid transparent;
 			display: block;
 			width: 100%;
-			border-radius: var(--sizing-border-radius);
+			border-radius: var(--siz-radius1);
 			outline: none;
 			text-align: left;
 			cursor: pointer;
@@ -110,7 +110,7 @@
 
 		/* Change background color of buttons on hover */
 		.tab button:hover {
-			background-color: var(--colors-BG-sub);
+			background-color: var(--col-bg3);
 			color: var(--colors-text-sub);
 		}
 
@@ -145,7 +145,7 @@
 			background-color: inherit;
 			animation: drop .2s ease-out;
 			border-left: none;
-			border-radius: var(--sizing-border-radius);
+			border-radius: var(--siz-radius1);
 			height: calc(100% - 5px);
 			animation: tab .2s;
 			overflow-y: auto;
@@ -181,7 +181,7 @@
 		td b,
 		ul li {
 			color: var(--colors-text-sub);
-			background: var(--colors-BG-sub);
+			background: var(--col-bg3);
 			padding: 0.2rem 0.4rem;
 			border-radius: var(--sizing-nano);
 			cursor: pointer;
@@ -200,7 +200,7 @@
 
 		supportb {
 			border-radius: var(--sizing-normal);
-			background: radial-gradient(circle at 0% 0%, var(--colors-BG-section), var(--colors-BG-sub));
+			background: radial-gradient(circle at 0% 0%, var(--col-bg2), var(--col-bg3));
 			display: block;
 			padding: var(--sizing-huge);
 			margin-bottom: 0.5rem;
@@ -218,7 +218,7 @@
 
 		supportb a {
 			display: inline-block;
-			border-radius: var(--sizing-border-radius);
+			border-radius: var(--siz-radius1);
 			background: #ffffff;
 			width: fit-content;
 			padding: var(--sizing-normal) var(--sizing-huge);
@@ -270,14 +270,14 @@
 		small {
 			display: block;
 			padding: var(--sizing-normal);
-			background: var(--colors-BG-section);
+			background: var(--col-bg2);
 			color: var(--colors-text-section);
-			border-radius: var(--sizing-border-radius);
+			border-radius: var(--siz-radius1);
 		}
 
 		segr small {
-			background: var(--colors-BG-normal);
-			color: var(--colors-text-normal);
+			background: var(--col-bg1);
+			color: var(--col-txt1);
 		}
 
 		small b {
@@ -342,7 +342,7 @@
 		}
 
 		.checkbox-wrapper-51 input[type="checkbox"]:checked+.toggle:before {
-			background: var(--colors-special-good);
+			background: var(--col-good);
 			box-shadow: 0 2px var(--sizing-normal) #79e57947;
 		}
 
@@ -351,7 +351,7 @@
 		}
 
 		.checkbox-wrapper-51 input[type="checkbox"]:checked+.toggle span path {
-			stroke: var(--colors-special-good);
+			stroke: var(--col-good);
 			stroke-dasharray: 25;
 			stroke-dashoffset: 25;
 		}
@@ -363,13 +363,13 @@
 			gap: var(--spacing-gap);
 
 			margin: 0;
-			background: var(--colors-BG-section);
+			background: var(--col-bg2);
 			color: var(--colors-text-section);
 			padding: var(--sizing-normal);
 		}
 
 		[setting] {
-			border-bottom: 1px solid var(--colors-BG-sub);
+			border-bottom: 1px solid var(--col-bg3);
 			display: flex;
 			flex-direction: row;
 			align-items: center;
@@ -389,8 +389,8 @@
 
 		[setting][type="advsetnav"] .advseticon {
 			padding: 0.5rem;
-			background: var(--colors-BG-normal);
-			border-radius: var(--sizing-border-radius);
+			background: var(--col-bg1);
+			border-radius: var(--siz-radius1);
 			display: flex;
 			align-items: center;
 			justify-content: center;
@@ -442,7 +442,7 @@
 			background: #054305;
 			color: #4fb64f;
 			margin-left: 5px;
-			border-radius: var(--sizing-border-radius);
+			border-radius: var(--siz-radius1);
 			display: inline-grid;
 		}
 
@@ -461,7 +461,7 @@
 
 
 		.appli {
-			background-color: var(--colors-BG-section);
+			background-color: var(--col-bg2);
 			padding: 9px;
 			margin-bottom: 0;
 			border-radius: 0;
@@ -470,7 +470,7 @@
 
 		#appdi {
 			margin: 5px 0;
-			border-radius: var(--sizing-border-radius);
+			border-radius: var(--siz-radius1);
 			overflow: hidden;
 		}
 
@@ -496,7 +496,7 @@
 			position: relative;
 			width: 18px;
 			height: 18px;
-			border-radius: var(--sizing-border-radius);
+			border-radius: var(--siz-radius1);
 			transform: scale(1);
 			vertical-align: middle;
 			border: 1px solid #9098A9;
@@ -562,9 +562,9 @@
 
 		.progbarma {
 			width: 100%;
-			background-color: var(--colors-BG-sub);
+			background-color: var(--col-bg3);
 			height: 20px;
-			border-radius: var(--sizing-border-radius);
+			border-radius: var(--siz-radius1);
 			overflow: hidden;
 			margin: 10px 0px;
 		}
@@ -577,15 +577,15 @@
 			width: 1%;
 			height: 30px;
 			min-width: 2px;
-			background-color: var(--colors-special-good);
+			background-color: var(--col-good);
 		}
 
 		button {
-			color: var(--colors-text-high);
-			border-radius: var(--sizing-border-radius);
+			color: var(--col-txth);
+			border-radius: var(--siz-radius1);
 			border: none;
 			padding: 7px 15px;
-			background: var(--colors-BG-highlighted);
+			background: var(--col-bgh);
 			border: 1px solid #ffffff0c;
 			font-size: inherit;
 			cursor: pointer;
@@ -596,18 +596,18 @@
 		}
 
 		[danger] {
-			background: var(--colors-BG-highlighted);
+			background: var(--col-bgh);
 			opacity: 1;
 			cursor: pointer;
 		}
 
 		.inpbox {
-			background: var(--colors-BG-section);
+			background: var(--col-bg2);
 			padding: var(--sizing-normal);
 			color: var(--colors-text-section);
 			outline: none;
 			display: flex;
-			border-bottom: 1px solid var(--colors-BG-sub);
+			border-bottom: 1px solid var(--col-bg3);
 			flex-direction: row;
 			flex-wrap: nowrap;
 			align-items: flex-start;
@@ -619,10 +619,10 @@
 		}
 
 		select {
-			background: var(--colors-BG-sub);
+			background: var(--col-bg3);
 			color: var(--colors-text-sub);
-			border: 1px solid var(--colors-BG-sub);
-			border-radius: var(--sizing-border-radius);
+			border: 1px solid var(--col-bg3);
+			border-radius: var(--siz-radius1);
 			font-size: var(--font-size-normal);
 			padding: 7px 3px 5px 5px !important;
 			outline: none;
@@ -675,16 +675,16 @@
 		segr {
 			margin-bottom: var(--sizing-normal);
 			overflow: hidden;
-			border-radius: var(--sizing-border-radius);
+			border-radius: var(--siz-radius1);
 			display: block;
-			border: 1px solid var(--colors-BG-sub);
+			border: 1px solid var(--col-bg3);
 			box-shadow: 0 3px 5px #0000007e;
 		}
 
 		span.advancedsetsbackbtn.material-symbols-rounded {
 			display: inline-flex;
 			font-size: 20px;
-			background: var(--colors-BG-section);
+			background: var(--col-bg2);
 			color: var(--colors-text-section);
 			padding: 0.3rem;
 			border-radius: 50%;
@@ -712,7 +712,7 @@
 			padding: var(--spacing-normal);
 			gap: var(--spacing-gap);
 			align-items: stretch;
-			background-color: var(--colors-BG-section);
+			background-color: var(--col-bg2);
 		}
 
 		.btngrpelem {
@@ -722,7 +722,7 @@
 			flex: 1;
 			padding: var(--sizing-normal);
 			color: inherit;
-			border-radius: var(--sizing-border-radius);
+			border-radius: var(--siz-radius1);
 			background: inherit;
 		}
 
@@ -759,7 +759,7 @@
 			height: 20px;
 			border-radius: 50%;
 			display: inline-block;
-			border-top: 3px solid var(--colors-text-normal);
+			border-top: 3px solid var(--col-txt1);
 			border-right: 3px solid transparent;
 			box-sizing: border-box;
 			animation: slideIn .3s ease-out, rotation 1s linear infinite;
@@ -783,7 +783,7 @@
 			display: flex;
 			flex-direction: row;
 			align-items: center;
-			background-color: var(--colors-BG-sub);
+			background-color: var(--col-bg3);
 			padding: 2px 5px;
 			gap: 0.3rem;
 			border-radius: 0.5rem;
@@ -794,7 +794,7 @@
 
 		.searchInputSec input {
 			background-color: transparent;
-			color: var(--colors-text-normal);
+			color: var(--col-txt1);
 			outline: 0;
 			border: 0;
 			min-width: 0;
@@ -840,7 +840,7 @@
 
 		div#myProgress3 {
 			height: 1em;
-			background: var(--colors-BG-sub);
+			background: var(--col-bg3);
 			border-radius: 1em;
 			display: flex;
 			align-items: stretch;
@@ -877,9 +877,9 @@
 			flex-direction: row;
 			align-items: center;
 			gap: 5px;
-			background: var(--colors-BG-sub);
+			background: var(--col-bg3);
 			padding: 1px 7px;
-			border-radius: var(--sizing-border-radius);
+			border-radius: var(--siz-radius1);
 		}
 
 		.compositionitem:hover {
@@ -910,7 +910,7 @@
 		}
 
 		.newthemebtn {
-			background: var(--colors-text-high);
+			background: var(--col-txth);
 			padding: 1.5rem;
 			border-radius: 0.5rem;
 			display: flex;
@@ -928,16 +928,16 @@
 		}
 
 		.newthemebtn {
-			background: var(--colors-BG-section);
+			background: var(--col-bg2);
 			color: var(--colors-text-section);
 			padding: 1.5rem;
 			border-radius: 0.5rem;
 			display: flex;
 			align-items: center;
 			justify-content: center;
-			color: var(--colors-text-high);
-			text-shadow: 0 0 9px var(--colors-BG-highlighted);
-			border: 1px solid var(--colors-BG-sub);
+			color: var(--col-txth);
+			text-shadow: 0 0 9px var(--col-bgh);
+			border: 1px solid var(--col-bg3);
 		}
 
 		.newthemebtn i {
@@ -956,12 +956,12 @@
 		.jscolor {
 			width: 7rem;
 			height: 35px;
-			border-radius: var(--sizing-border-radius);
+			border-radius: var(--siz-radius1);
 			font-family: monospace;
 			font-size: var(--font-size-default);
-			background-color: var(--colors-BG-normal);
+			background-color: var(--col-bg1);
 			border: 0;
-			color: var(--colors-text-normal);
+			color: var(--col-txt1);
 		}
 
 		/* Styles for the color picker itself */
@@ -1000,11 +1000,11 @@
 
 		.numinp {
 			width: 7rem;
-			border-radius: var(--sizing-border-radius);
+			border-radius: var(--siz-radius1);
 			min-width: 0;
 			border: 0;
-			background-color: var(--colors-BG-normal);
-			color: var(--colors-text-normal);
+			background-color: var(--col-bg1);
+			color: var(--col-txt1);
 			padding: 0.3rem;
 			text-align: center;
 		}
@@ -1014,7 +1014,7 @@
 			justify-content: space-between;
 			align-items: center;
 			padding: 4px 10px;
-			background: var(--colors-BG-section);
+			background: var(--col-bg2);
 			color: var(--colors-text-section);
 			border-radius: var(--sizing-normal);
 		}
@@ -1026,7 +1026,7 @@
 		}
 
 		.lclstr {
-			border-bottom: 2px solid var(--colors-BG-sub);
+			border-bottom: 2px solid var(--col-bg3);
 			color: var(--colors-text-sub);
 			padding: 0.2rem var(--sizing-normal);
 			margin-top: 0.2rem;
@@ -1102,10 +1102,10 @@
 			padding: 2px 8px;
 			font-size: 13px;
 			border-radius: 5px;
-			background-color: var(--colors-BG-section);
+			background-color: var(--col-bg2);
 			color: var(--colors-text-section);
 			display: inline-block;
-			border: 1px solid var(--colors-BG-sub);
+			border: 1px solid var(--col-bg3);
 			margin-left: 10px;
 			transform: translate(5px, -10px);
 		}
@@ -1136,7 +1136,7 @@
 			}
 
 			.header-row {
-				background-color: var(--colors-BG-section);
+				background-color: var(--col-bg2);
 				color: var(--colors-text-section);
 				font-weight: normal;
 				opacity: 0.7;
@@ -1177,7 +1177,7 @@
 
 			.subapps {
 				.material-symbols-rounded {
-					color: var(--colors-text-normal);
+					color: var(--col-txt1);
 					opacity: 0.5;
 					font-size: var(--sizing-huge) !important;
 					transform: translateY(-2px);
@@ -1198,7 +1198,7 @@
 		}
 
 		.pfp {
-			background-color: var(--colors-BG-section);
+			background-color: var(--col-bg2);
 			aspect-ratio: 1 / 1;
 			height: 80px;
 			border-radius: .5rem;
@@ -1226,7 +1226,7 @@
 
 		.pfp span {
 			padding: .3em;
-			background: var(--colors-BG-section);
+			background: var(--col-bg2);
 			border-radius: 2em;
 			opacity: 0;
 			font-size: 1.3em;
@@ -1257,15 +1257,15 @@
 		.doablestep {
 			display: flex;
 			justify-content: space-between;
-			background: var(--colors-BG-normal);
-			border-radius: var(--sizing-border-radius);
+			background: var(--col-bg1);
+			border-radius: var(--siz-radius1);
 			padding: .3rem;
 			align-items: center;
 		}
 
 		.doablestep button {
 			padding: .3rem;
-			background-color: var(--colors-BG-section);
+			background-color: var(--col-bg2);
 			color: var(--colors-text-section);
 			display: flex;
 			align-items: center;
@@ -1289,15 +1289,15 @@
 		}
 
 		#supportexpandbtn {
-			background-color: var(--colors-BG-highlighted);
-			color: var(--colors-text-high);
+			background-color: var(--col-bgh);
+			color: var(--col-txth);
 		}
 
 		.task {
 			padding: var(--sizing-normal);
-			background: var(--colors-BG-section);
+			background: var(--col-bg2);
 			color: var(--colors-text-section);
-			border-radius: var(--sizing-border-radius);
+			border-radius: var(--siz-radius1);
 			margin: 5px 0;
 			box-shadow: 0 3px 5px #0000007e;
 			display: flex;
@@ -1309,9 +1309,9 @@
 			cursor: pointer;
 			width: fit-content;
 			padding: 0.3rem;
-			background: var(--colors-BG-sub);
-			border-radius: var(--sizing-border-radius);
-			color: var(--colors-special-bad);
+			background: var(--col-bg3);
+			border-radius: var(--siz-radius1);
+			color: var(--col-bad);
 		}
 
 		.task .tasknamespan {
@@ -1348,9 +1348,9 @@
 
 		.device {
 			padding: var(--sizing-normal);
-			background: var(--colors-BG-section);
+			background: var(--col-bg2);
 			color: var(--colors-text-section);
-			border-radius: var(--sizing-border-radius);
+			border-radius: var(--siz-radius1);
 			margin: 5px 0;
 		}
 
@@ -1407,12 +1407,12 @@
 		}
 
 		input.inputtype1 {
-			background-color: var(--colors-BG-normal);
-			color: var(--colors-text-normal);
+			background-color: var(--col-bg1);
+			color: var(--col-txt1);
 			flex: 1;
 			border: none;
 			padding: var(--sizing-nano) var(--sizing-normal);
-			border-radius: var(--sizing-border-radius);
+			border-radius: var(--siz-radius1);
 		}
 
 		#UISIZErangeslid {
@@ -1459,9 +1459,9 @@
 			animation: apppop .2s ease-out;
 			display: flex;
 			flex-direction: row;
-			background-color: var(--colors-BG-section);
+			background-color: var(--col-bg2);
 			padding: .5em;
-			border-radius: var(--sizing-border-radius);
+			border-radius: var(--siz-radius1);
 			border: 1px solid #ffffff0c;
 			justify-content: space-between;
 			align-items: center;
@@ -1477,7 +1477,7 @@
 				}
 
 				&:hover {
-					background-color: var(--colors-BG-sub);
+					background-color: var(--col-bg3);
 				}
 			}
 
@@ -1540,7 +1540,7 @@
 				opacity: .5;
 
 				&:hover {
-					background-color: var(--colors-BG-sub);
+					background-color: var(--col-bg3);
 				}
 			}
 		}
@@ -1553,7 +1553,7 @@
     width: 100%;
     height: 100%;
 	object-fit: cover;
-	border-radius: var(--sizing-border-radius);
+	border-radius: var(--siz-radius1);
 }
 	</style>
 </head>
@@ -2985,30 +2985,30 @@
 			<segr>
 				<div setting class="colorsetting">
 					<b>Primary Background</b>
-					<input class="colorpickerui" id="normal-bg" data-variable="--colors-BG-normal"></input>
+					<input class="colorpickerui" id="normal-bg" data-variable="--col-bg1"></input>
 				</div>
 				<div setting class="colorsetting">
 					<b>Secondary Background</b>
-					<input class="colorpickerui" id="section-bg" data-variable="--colors-BG-section"></input>
+					<input class="colorpickerui" id="section-bg" data-variable="--col-bg2"></input>
 				</div>
 				<div setting class="colorsetting">
 					<b>Tertiary Background</b>
-					<input class="colorpickerui" id="sub-bg" data-variable="--colors-BG-sub"></input>
+					<input class="colorpickerui" id="sub-bg" data-variable="--col-bg3"></input>
 				</div>
 				<div setting class="colorsetting">
 					<b>Highlighted Background</b>
-					<input class="colorpickerui" id="high-bg" data-variable="--colors-BG-highlighted"></input>
+					<input class="colorpickerui" id="high-bg" data-variable="--col-bgh"></input>
 				</div>
 
 			</segr>
 			<segr>
 				<div setting class="colorsetting">
 					<b>Primary text</b>
-					<input class="colorpickerui" id="text-normal" data-variable="--colors-text-normal"></input>
+					<input class="colorpickerui" id="text-normal" data-variable="--col-txt1"></input>
 				</div>
 				<div setting class="colorsetting">
 					<b>Highlighted text</b>
-					<input class="colorpickerui" id="text-high" data-variable="--colors-text-high"></input>
+					<input class="colorpickerui" id="text-high" data-variable="--col-txth"></input>
 				</div>
 			</segr>
 			<h3>Nova Nav</h3>
@@ -3036,14 +3036,14 @@
 						check_circle
 					</span>
 					<b>Confirm Color</b>
-					<input class="colorpickerui" data-variable="--colors-special-good"></input>
+					<input class="colorpickerui" data-variable="--col-good"></input>
 				</div>
 				<div setting class="colorsetting">
 					<span class="material-symbols-rounded">
 						cancel
 					</span>
 					<b>Decline Color</b>
-					<input class="colorpickerui" data-variable="--colors-special-bad"></input>
+					<input class="colorpickerui" data-variable="--col-bad"></input>
 				</div>
 
 				<div setting>
@@ -3051,7 +3051,7 @@
 						rounded_corner
 					</span>
 					<b>Corner rounding</b>
-					<select data-variable="--sizing-border-radius" id="brdrdrp">
+					<select data-variable="--siz-radius1" id="brdrdrp">
 						<option value="1rem">Too cute</option>
 						<option value=".7rem">Pretty round</option>
 						<option value=".5rem">Normally round</option>
@@ -3304,7 +3304,7 @@
 										updateColor(button, variableName);
 									} else {
 										let value = parsedColors[variableName];
-										if (variableName === '--sizing-border-radius') {
+										if (variableName === '--siz-radius1') {
 											const parsedValue = parseFloat(value);
 											value = normalizeBorderRadius(parsedValue);
 										}

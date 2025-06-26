@@ -27,7 +27,7 @@ body {
 	overflow: hidden;
 	background-size: cover;
 	background-position: center;
-	color: var(--colors-text-normal);
+	color: var(--col-txt1);
 	transition: .5s;
 	user-select: none;
 	background-repeat: no-repeat;
@@ -84,7 +84,7 @@ dialog {
 
 nav {
 	background-color: transparent;
-	color: var(--colors-text-normal);
+	color: var(--col-txt1);
 	z-index: 99;
 	display: grid;
 	user-select: none;
@@ -99,7 +99,7 @@ nav .flodiv {
 	justify-content: center;
 	align-items: stretch;
 	flex-direction: row;
-	border-radius: var(--sizing-border-radius);
+	border-radius: var(--siz-radius1);
 	background: transparent;
 	padding: 1px;
 	animation: pop .5s;
@@ -108,8 +108,8 @@ nav .flodiv {
 
 nav [navobj] {
 	padding: 3px;
-	border-radius: var(--sizing-border-radius);
-	background-color: var(--colors-BG-normal);
+	border-radius: var(--siz-radius1);
+	background-color: var(--col-bg1);
 	display: flex;
 	justify-content: center;
 	gap: 3px;
@@ -151,7 +151,7 @@ nav [navobj] div {
 }
 
 #novaic {
-	fill: var(--colors-text-normal);
+	fill: var(--col-txt1);
 }
 
 .window {
@@ -159,7 +159,7 @@ nav [navobj] div {
 	position: absolute;
 	min-height: 200px;
 	background-color: transparent;
-	border-radius: var(--sizing-border-radius);
+	border-radius: var(--siz-radius1);
 	font-size: var(--font-size-normal);
 	padding: 0px;
 	overflow: visible;
@@ -169,7 +169,7 @@ nav [navobj] div {
 	flex-direction: column;
 	gap: 0;
 	box-sizing: border-box;
-	border: 1px solid var(--colors-BG-sub);
+	border: 1px solid var(--col-bg3);
 	will-change: transform;
 	box-shadow: 0px 0px .5em 1px #00000070;
 	transition: box-shadow .5s;
@@ -199,14 +199,14 @@ nav [navobj] div {
 }
 
 .windowheader {
-	background-color: var(--colors-BG-normal);
+	background-color: var(--col-bg1);
 	padding: var(--spacing-normal);
 	cursor: grab;
 	overflow-x: auto;
 	display: flex;
 	justify-content: space-between;
 	margin-bottom: -1px;
-	border-radius: var(--sizing-border-radius) var(--sizing-border-radius) 0 0;
+	border-radius: var(--siz-radius1) var(--siz-radius1) 0 0;
 }
 
 .windowheader:active {
@@ -217,7 +217,7 @@ nav [navobj] div {
 	box-sizing: border-box;
 	flex: 1;
 	overflow: hidden;
-	border-radius: 0 0 var(--sizing-border-radius) var(--sizing-border-radius);
+	border-radius: 0 0 var(--siz-radius1) var(--siz-radius1);
 	position: relative;
 }
 
@@ -227,7 +227,7 @@ nav [navobj] div {
 	height: calc(100%);
 	display: grid;
 	transition: .5s;
-	background: var(--colors-BG-normal);
+	background: var(--col-bg1);
 	backdrop-filter: blur(1rem);
 	justify-content: center;
 	align-content: center;
@@ -255,7 +255,7 @@ nav [navobj] div {
 
 .app-shortcut {
 	background-color: transparent;
-	border-radius: var(--sizing-border-radius);
+	border-radius: var(--siz-radius1);
 	padding: 10px;
 	cursor: pointer;
 	width: 70px;
@@ -268,8 +268,8 @@ nav [navobj] div {
 }
 
 .app-shortcut.tooltip .tooltiptext {
-	background-color: var(--colors-BG-section);
-	border-radius: var(--sizing-border-radius);
+	background-color: var(--col-bg2);
+	border-radius: var(--siz-radius1);
 	bottom: 9% !important;
 	opacity: 1;
 	word-break: normal;
@@ -329,22 +329,22 @@ nav [navobj] div {
 	padding: 5px 0;
 	font-family: inherit;
 	font-size: 21px;
-	background: linear-gradient(360deg, #b9b9b9, var(--colors-text-normal));
+	background: linear-gradient(360deg, #b9b9b9, var(--col-txt1));
 	color: #585858;
 }
 
 .app-shortcut .appname {
 	margin-top: 0.5rem;
-	color: var(--colors-text-normal);
+	color: var(--col-txt1);
 	display: block;
-	border-radius: var(--sizing-border-radius);
+	border-radius: var(--siz-radius1);
 	font-size: var(--font-size-normal);
 	text-overflow: ellipsis;
 	overflow: hidden;
 	white-space: nowrap;
 	text-align: center;
 	padding: 0.1rem 0.5rem;
-	background: var(--colors-BG-normal)42;
+	background: var(--col-bg1)42;
 	max-width: 67px;
 	text-transform: capitalize;
 }
@@ -355,14 +355,14 @@ nav [navobj] div {
 
 .navWindows {
 	width: 50%;
-	border-radius: var(--sizing-border-radius);
+	border-radius: var(--siz-radius1);
 	text-align: center;
 	border: none;
 	max-height: 70%;
 	transition: .5s;
 	background: #7d7d7d73;
 	overflow: visible;
-	color: var(--colors-text-normal);
+	color: var(--col-txt1);
 	box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
 	outline: none;
 	animation: dmodthingy .3s cubic-bezier(0.36, 0.38, 0, 0.94);
@@ -372,14 +372,14 @@ nav [navobj] div {
 	padding: 5px;
 	margin-bottom: 60px;
 	padding-bottom: 1.2rem;
-	background-color: var(--colors-BG-normal);
+	background-color: var(--col-bg1);
 	border: 1px solid #ffffff0c;
 }
 
 #searchwindow {
 	padding: 0.7rem;
 	margin-bottom: 60px;
-	background-color: var(--colors-BG-normal);
+	background-color: var(--col-bg1);
 	border: 1px solid #ffffff0c;
 	padding-bottom: 9px;
 	min-height: 300px;
@@ -422,9 +422,9 @@ nav [navobj] div {
 
 .realmodal {
 	padding: 1em;
-	border-radius: var(--sizing-border-radius);
-	color: var(--colors-text-normal);
-	background: var(--colors-BG-section);
+	border-radius: var(--siz-radius1);
+	color: var(--col-txt1);
+	background: var(--col-bg2);
 	text-align: center;
 	max-height: 80%;
 	width: 80%;
@@ -450,9 +450,9 @@ nav [navobj] div {
 	&>.modal-items {
 
 		padding: 1em;
-		border-radius: var(--sizing-border-radius);
-		color: var(--colors-text-normal);
-		background: var(--colors-BG-section);
+		border-radius: var(--siz-radius1);
+		color: var(--col-txt1);
+		background: var(--col-bg2);
 		text-align: left;
 		max-height: 80%;
 		width: 80%;
@@ -502,8 +502,8 @@ nav [navobj] div {
 	padding: .5em .8em;
 	width: calc(100% - 1.7em);
 	color: inherit;
-	background: var(--colors-BG-normal);
-	border-radius: var(--sizing-border-radius);
+	background: var(--col-bg1);
+	border-radius: var(--siz-radius1);
 	border: 1px solid #78787840;
 }
 
@@ -516,9 +516,9 @@ nav [navobj] div {
 }
 
 .modal-items select {
-	background: var(--colors-BG-highlighted);
-	color: var(--colors-text-high);
-	border-radius: var(--sizing-border-radius);
+	background: var(--col-bgh);
+	color: var(--col-txth);
+	border-radius: var(--siz-radius1);
 	padding: 0.5rem;
 	outline: none;
 	display: block;
@@ -528,18 +528,18 @@ nav [navobj] div {
 
 .modal-items button {
 	padding: 8px 18px;
-	background: var(--colors-BG-sub);
+	background: var(--col-bg3);
 	color: inherit;
 	flex-grow: 1;
 	cursor: pointer;
-	border-radius: var(--sizing-border-radius);
+	border-radius: var(--siz-radius1);
 	width: 100%;
 	border: 1px solid #78787840;
 }
 
 .modal-items button:focus {
-	background: var(--colors-BG-highlighted);
-	color: var(--colors-text-high);
+	background: var(--col-bgh);
+	color: var(--col-txth);
 }
 
 .modal-items .notbn {
@@ -551,8 +551,8 @@ nav [navobj] div {
 }
 
 #startup {
-	background-color: var(--colors-BG-normal);
-	color: var(--colors-text-normal);
+	background-color: var(--col-bg1);
+	color: var(--col-txt1);
 	width: 100%;
 	height: 100%;
 	border: 0;
@@ -606,7 +606,7 @@ nav [navobj] div {
 .strtappsugs {
 	display: flex;
 	background: transparent;
-	border-radius: var(--sizing-border-radius);
+	border-radius: var(--siz-radius1);
 	width: 100%;
 	color: inherit;
 	animation: pop var(--time-action);
@@ -629,12 +629,12 @@ nav [navobj] div {
 		display: flex;
 		justify-content: space-between;
 		padding: 3px;
-		border-radius: var(--sizing-border-radius);
+		border-radius: var(--siz-radius1);
 		align-items: center;
 		cursor: pointer;
 
 		&:hover {
-			background-color: var(--colors-BG-section);
+			background-color: var(--col-bg2);
 		}
 
 		& span {
@@ -687,7 +687,7 @@ nav [navobj] div {
 	position: absolute;
 	right: 10px;
 	margin: 3px;
-	color: var(--colors-text-normal);
+	color: var(--col-txt1);
 	transition: var(--time-action);
 	opacity: 0.5;
 	cursor: pointer;
@@ -700,9 +700,9 @@ nav [navobj] div {
 
 .notifpan {
 	width: calc(100% - 20px);
-	background: var(--colors-BG-section);
-	border-radius: var(--sizing-border-radius);
-	color: var(--colors-text-normal);
+	background: var(--col-bg2);
+	border-radius: var(--siz-radius1);
+	color: var(--col-txt1);
 	padding: 10px;
 	margin-bottom: 5px;
 }
@@ -756,8 +756,8 @@ nav [navobj] div {
 .tooltip .tooltiptext {
 	visibility: hidden;
 	width: 80px;
-	background-color: var(--colors-BG-section);
-	color: var(--colors-text-normal);
+	background-color: var(--col-bg2);
+	color: var(--col-txt1);
 	word-break: normal;
 	text-align: center;
 	border-radius: 0.3rem;
@@ -769,7 +769,7 @@ nav [navobj] div {
 	margin-left: -40px;
 	font-size: var(--font-size-normal);
 	transition: opacity 0.3s ease-out;
-	box-shadow: 0 3px 1rem var(--colors-BG-normal) 9e;
+	box-shadow: 0 3px 1rem var(--col-bg1) 9e;
 }
 
 .tooltip:hover .tooltiptext {
@@ -783,10 +783,10 @@ nav [navobj] div {
 	height: fit-content;
 	padding: 1rem;
 	border: none;
-	background: var(--colors-BG-normal);
+	background: var(--col-bg1);
 	text-align: center;
-	color: var(--colors-text-normal);
-	border-radius: var(--sizing-border-radius);
+	color: var(--col-txt1);
+	border-radius: var(--siz-radius1);
 	box-shadow: 0 5px 1rem black;
 	padding-top: 2rem;
 	animation: appshow .5s;
@@ -802,7 +802,7 @@ nav [navobj] div {
 	position: absolute;
 	left: 1rem;
 	top: 1rem;
-	background-color: var(--colors-BG-sub);
+	background-color: var(--col-bg3);
 	border-radius: 50%;
 	padding: 0.3rem;
 	font-size: 0.8rem;
@@ -828,10 +828,10 @@ nav [navobj] div {
 
 #bios button {
 	padding: 10px;
-	background: var(--colors-BG-sub);
-	color: var(--colors-text-normal);
+	background: var(--col-bg3);
+	color: var(--col-txt1);
 	border: none;
-	border-radius: var(--sizing-border-radius);
+	border-radius: var(--siz-radius1);
 	width: 100%;
 	overflow-x: hidden;
 	white-space: nowrap;
@@ -851,7 +851,7 @@ nav [navobj] div {
 }
 
 #bios button:hover .material-symbols-rounded {
-	text-shadow: 0 0 0.5rem var(--colors-text-normal);
+	text-shadow: 0 0 0.5rem var(--col-txt1);
 	opacity: 1;
 }
 
@@ -865,7 +865,7 @@ nav [navobj] div {
 	box-shadow: 0px 0px 30px 7px #298429;
 	color: #aeffb2;
 	border: none;
-	border-radius: var(--sizing-border-radius);
+	border-radius: var(--siz-radius1);
 }
 
 #bios .gudbtn:hover {
@@ -880,12 +880,12 @@ nav [navobj] div {
 	overflow: hidden;
 	text-align: center;
 	transition: 0.8s;
-	background: var(--colors-BG-normal);
+	background: var(--col-bg1);
 	backdrop-filter: blur(1.5rem);
-	color: var(--colors-text-normal);
+	color: var(--col-txt1);
 	padding: 2rem 1.5rem;
 	margin: auto;
-	border-radius: var(--sizing-border-radius);
+	border-radius: var(--siz-radius1);
 	z-index: 10;
 }
 
@@ -905,7 +905,7 @@ nav [navobj] div {
 	width: calc(100% - 38px);
 	font-size: 20px;
 	bottom: 20%;
-	background: linear-gradient(to bottom, var(--colors-text-normal), transparent);
+	background: linear-gradient(to bottom, var(--col-txt1), transparent);
 	-webkit-background-clip: text;
 	background-clip: text;
 	-webkit-text-fill-color: transparent;
@@ -928,12 +928,12 @@ nav [navobj] div {
 	background: #0000008a;
 	backdrop-filter: blur(1.5rem);
 	border: none;
-	color: var(--colors-text-normal);
+	color: var(--col-txt1);
 	width: 100%;
 	height: 100%;
 	padding: 2rem 1.5rem;
 	margin: auto;
-	border-radius: var(--sizing-border-radius);
+	border-radius: var(--siz-radius1);
 	z-index: 5;
 
 	&>#wallbgpreview {
@@ -964,7 +964,7 @@ nav [navobj] div {
 
 #loginform #loginform1 {
 	padding: 0.3rem var(--font-size-normal);
-	border-radius: var(--sizing-border-radius);
+	border-radius: var(--siz-radius1);
 	border: none;
 	background: #dbdbdb;
 	color: black;
@@ -1017,7 +1017,7 @@ nav [navobj] div {
 
 .logincard button {
 	padding: 0.5rem;
-	border-radius: var(--sizing-border-radius);
+	border-radius: var(--siz-radius1);
 	border: none;
 	background: #dbdbdb;
 	justify-content: flex-start;
@@ -1030,7 +1030,7 @@ nav [navobj] div {
 
 .logincard img {
 	width: 1.5rem;
-	border-radius: var(--sizing-border-radius);
+	border-radius: var(--siz-radius1);
 	background: black;
 	border: 2px solid #748497;
 }
@@ -1055,7 +1055,7 @@ input#novamenusearchinp {
 	width: 60px;
 	font-size: inherit;
 	font-family: inherit;
-	border-radius: var(--sizing-border-radius);
+	border-radius: var(--siz-radius1);
 	border: none;
 	background: transparent;
 	color: inherit;
@@ -1072,15 +1072,15 @@ input#novamenusearchinp {
 .novamenusearchinpbtn {
 	display: flex !important;
 	flex-direction: row;
-	background: var(--colors-BG-sub);
+	background: var(--col-bg3);
 	padding: 1px 7px !important;
 	height: 27px;
-	border-radius: var(--sizing-border-radius) !important;
+	border-radius: var(--siz-radius1) !important;
 	gap: 0.3rem;
 }
 
 #searchiconthingy {
-	color: var(--colors-text-normal);
+	color: var(--col-txt1);
 	margin: 8px;
 	padding: 0;
 	padding-right: 5px;
@@ -1102,9 +1102,9 @@ input#novamenusearchinp {
 #bobthedropdown {
 	visibility: visible;
 	display: flex;
-	background: var(--colors-BG-section);
+	background: var(--col-bg2);
 	padding: 1px 3px;
-	border-radius: var(--sizing-border-radius);
+	border-radius: var(--siz-radius1);
 	height: 34px;
 	width: 100%;
 	justify-content: flex-start;
@@ -1116,7 +1116,7 @@ input#novamenusearchinp {
 
 #bobthedropdown button {
 	background: transparent;
-	color: var(--colors-text-normal);
+	color: var(--col-txt1);
 	border: none;
 	padding: 6px 7px;
 	border-radius: .3rem;
@@ -1173,9 +1173,9 @@ input#novamenusearchinp {
 #sleepwindow button {
 	padding: 7px 11px;
 	background: #242424;
-	border-radius: var(--sizing-border-radius);
+	border-radius: var(--siz-radius1);
 	border: none;
-	color: var(--colors-text-normal);
+	color: var(--col-txt1);
 	cursor: pointer;
 	transition: 0.3s;
 	animation: pop var(--time-action);
@@ -1186,7 +1186,7 @@ input#novamenusearchinp {
 }
 
 #sleepwindow .material-symbols-rounded {
-	color: var(--colors-text-normal);
+	color: var(--col-txt1);
 	opacity: 0.5;
 	position: absolute;
 	right: 2rem;
@@ -1203,7 +1203,7 @@ input#novamenusearchinp {
 }
 
 #sleepmessage {
-	color: var(--colors-text-normal);
+	color: var(--col-txt1);
 	font-size: var(--font-size-normal);
 }
 
@@ -1211,8 +1211,8 @@ input#novamenusearchinp {
 	position: absolute;
 	right: 10px;
 	width: 250px;
-	background: var(--colors-BG-normal);
-	border-radius: var(--sizing-border-radius);
+	background: var(--col-bg1);
+	border-radius: var(--siz-radius1);
 	padding: 10px;
 	bottom: 70px;
 	box-shadow: 0 1rem 2rem rgb(0 0 0 / 77%);
@@ -1310,12 +1310,12 @@ input#novamenusearchinp {
 
 .messagecont input {
 	flex-grow: 4;
-	border-radius: var(--sizing-border-radius);
+	border-radius: var(--siz-radius1);
 	border: 0;
 	margin-right: 2px;
 	padding: 5px;
 	background: #2f2f2f;
-	color: var(--colors-text-normal);
+	color: var(--col-txt1);
 }
 
 .directxicons {
@@ -1334,7 +1334,7 @@ codeblock {
 	font-family: monospace;
 	display: block;
 	background-color: #101010;
-	color: var(--colors-text-normal);
+	color: var(--col-txt1);
 }
 
 [zz21] {
@@ -1361,7 +1361,7 @@ dialog iframe {
 	background-color: #2f2f2f;
 	color: grey;
 	font-family: inherit;
-	border-radius: var(--sizing-border-radius);
+	border-radius: var(--siz-radius1);
 	border: 1px solid grey;
 	margin-top: 0.5rem;
 }
@@ -1371,7 +1371,7 @@ dialog#terminal {
 	height: 100%;
 	border: none;
 	background: black;
-	color: var(--colors-text-normal);
+	color: var(--col-txt1);
 	padding: 20px;
 }
 
@@ -1386,7 +1386,7 @@ dialog#terminal {
 #terminal button {
 	font-family: monospace;
 	background: #101010;
-	color: var(--colors-text-normal);
+	color: var(--col-txt1);
 	font-size: var(--font-size-normal);
 	padding: var(--sizing-normal);
 	margin: 1px;
@@ -1419,8 +1419,8 @@ dialog#terminal {
 	flex-direction: row-reverse;
 	align-items: stretch;
 	overflow: hidden;
-	background-color: var(--colors-BG-normal);
-	border-radius: var(--sizing-border-radius);
+	background-color: var(--col-bg1);
+	border-radius: var(--siz-radius1);
 	transition: .3s;
 
 	&:hover {
@@ -1436,17 +1436,17 @@ dialog#terminal {
 	justify-content: center;
 	border: 0;
 	background-color: transparent;
-	color: var(--colors-text-normal);
+	color: var(--col-txt1);
 	width: 24px;
 	aspect-ratio: 1 / 1;
 	opacity: .7;
 }
 
 .ibtnsside button:hover {
-	background-color: var(--colors-BG-section);
+	background-color: var(--col-bg2);
 	opacity: 1;
 	z-index: 2;
-	box-shadow: 0 0 10px var(--colors-BG-normal);
+	box-shadow: 0 0 10px var(--col-bg1);
 }
 
 .ibtnsside button span {
@@ -1461,7 +1461,7 @@ dialog#terminal {
 .loader5653 {
 	width: 90%;
 	height: 4.8px;
-	border-radius: var(--sizing-border-radius);
+	border-radius: var(--siz-radius1);
 	display: inline-block;
 	overflow: hidden;
 	position: absolute;
@@ -1474,7 +1474,7 @@ dialog#terminal {
 	width: 96px;
 	height: 4.8px;
 	background: #5c8dab;
-	border-radius: var(--sizing-border-radius);
+	border-radius: var(--siz-radius1);
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -1495,7 +1495,7 @@ dialog#terminal {
 }
 
 #startupterms {
-	color: var(--colors-text-normal);
+	color: var(--col-txt1);
 	opacity: 0.3;
 	font-size: var(--font-size-small);
 	text-align: center;
@@ -1586,10 +1586,10 @@ dialog#terminal {
 }
 
 .searchside .notification {
-	background: var(--colors-BG-normal)3b;
+	background: var(--col-bg1)3b;
 	padding: 0.5rem;
-	border-radius: var(--sizing-border-radius);
-	color: var(--colors-text-normal);
+	border-radius: var(--siz-radius1);
+	color: var(--col-txt1);
 	display: flex;
 	flex-direction: column;
 	align-items: flex-start;
@@ -1617,8 +1617,8 @@ dialog#terminal {
 }
 
 .searchinputcont {
-	border-radius: var(--sizing-border-radius);
-	background: var(--colors-BG-section);
+	border-radius: var(--siz-radius1);
+	background: var(--col-bg2);
 	color: inherit;
 	display: flex;
 	flex-direction: row;
@@ -1640,7 +1640,7 @@ dialog#terminal {
 	width: 100%;
 	background: transparent;
 	border: none;
-	border-radius: var(--sizing-border-radius);
+	border-radius: var(--siz-radius1);
 	color: inherit;
 	padding: 0.5rem 0rem;
 	display: block;
@@ -1656,7 +1656,7 @@ dialog#terminal {
 	align-items: center;
 	justify-content: flex-start;
 	transition: 0.3s;
-	border-radius: var(--sizing-border-radius);
+	border-radius: var(--siz-radius1);
 	margin-left: 0.7rem;
 	background: linear-gradient(90deg, #00000021 0%, transparent 30%);
 	height: 100%;
@@ -1674,12 +1674,12 @@ dialog#terminal {
 }
 
 #seprw-openb {
-	background-color: var(--colors-BG-sub);
+	background-color: var(--col-bg3);
 	color: inherit;
 	padding: 0.3rem 0.7rem;
 	border: none;
 	box-shadow: 0 2px 0.3rem #02020242;
-	border-radius: var(--sizing-border-radius);
+	border-radius: var(--siz-radius1);
 	cursor: pointer;
 	display: block;
 	margin: auto;
@@ -1735,7 +1735,7 @@ div#seapppreview {
 	}
 
 	nav {
-		background-color: var(--colors-BG-normal);
+		background-color: var(--col-bg1);
 		padding: 6px;
 		bottom: 0;
 	}
@@ -1820,7 +1820,7 @@ div#seapppreview {
 	position: absolute;
 	left: 50%;
 	top: 50%;
-	border-radius: var(--sizing-border-radius);
+	border-radius: var(--siz-radius1);
 
 }
 
@@ -1999,11 +1999,11 @@ div#seapppreview {
 .windowloader .loader33 {
 	width: 5px;
 	height: 3px;
-	border-radius: var(--sizing-border-radius);
+	border-radius: var(--siz-radius1);
 	display: block;
 	margin: 15px auto;
 	position: relative;
-	color: var(--colors-text-normal);
+	color: var(--col-txt1);
 	left: -100px;
 	box-sizing: border-box;
 	animation: shadowRolling 2s linear infinite;
@@ -2015,31 +2015,31 @@ div#seapppreview {
 	}
 
 	12% {
-		box-shadow: 100px 0 var(--colors-text-normal), 0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
+		box-shadow: 100px 0 var(--col-txt1), 0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
 	}
 
 	25% {
-		box-shadow: 110px 0 var(--colors-text-normal), 100px 0 var(--colors-text-normal), 0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
+		box-shadow: 110px 0 var(--col-txt1), 100px 0 var(--col-txt1), 0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
 	}
 
 	36% {
-		box-shadow: 120px 0 var(--colors-text-normal), 110px 0 var(--colors-text-normal), 100px 0 var(--colors-text-normal), 0px 0 rgba(255, 255, 255, 0);
+		box-shadow: 120px 0 var(--col-txt1), 110px 0 var(--col-txt1), 100px 0 var(--col-txt1), 0px 0 rgba(255, 255, 255, 0);
 	}
 
 	50% {
-		box-shadow: 130px 0 var(--colors-text-normal), 120px 0 var(--colors-text-normal), 110px 0 var(--colors-text-normal), 100px 0 var(--colors-text-normal);
+		box-shadow: 130px 0 var(--col-txt1), 120px 0 var(--col-txt1), 110px 0 var(--col-txt1), 100px 0 var(--col-txt1);
 	}
 
 	62% {
-		box-shadow: 200px 0 rgba(255, 255, 255, 0), 130px 0 var(--colors-text-normal), 120px 0 var(--colors-text-normal), 110px 0 var(--colors-text-normal);
+		box-shadow: 200px 0 rgba(255, 255, 255, 0), 130px 0 var(--col-txt1), 120px 0 var(--col-txt1), 110px 0 var(--col-txt1);
 	}
 
 	75% {
-		box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0), 130px 0 var(--colors-text-normal), 120px 0 var(--colors-text-normal);
+		box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0), 130px 0 var(--col-txt1), 120px 0 var(--col-txt1);
 	}
 
 	87% {
-		box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0), 130px 0 var(--colors-text-normal);
+		box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0), 130px 0 var(--col-txt1);
 	}
 
 	100% {
@@ -2072,7 +2072,7 @@ div#seapppreview {
 	width: 0;
 	max-width: 150px;
 	background-color: #141414;
-	border-radius: var(--sizing-border-radius);
+	border-radius: var(--siz-radius1);
 	margin-bottom: var(--sizing-normal);
 	background: linear-gradient(90deg, #0001 33%, #494949 50%, #0001 66%) #232323;
 	background-size: 300% 100%;
@@ -2085,7 +2085,7 @@ div#seapppreview {
 	background-color: #76c7c0;
 	border-radius: 10px 0 0 10px;
 	transition: width 0.5s;
-	border-radius: var(--sizing-border-radius);
+	border-radius: var(--siz-radius1);
 }
 
 @keyframes progressanim {
@@ -2109,10 +2109,10 @@ div#seapppreview {
 		background: #2f425b;
 		margin-right: 0.3rem;
 		border: none;
-		border-radius: var(--sizing-border-radius);
+		border-radius: var(--siz-radius1);
 		padding: 0.5rem var(--sizing-normal);
 		font-size: var(--font-size-normal);
-		color: var(--colors-text-normal);
+		color: var(--col-txt1);
 	}
 }
 
@@ -2175,7 +2175,7 @@ noscript {
 	gap: 0.3rem;
 	padding: 0.5rem;
 	align-items: center;
-	border-radius: var(--sizing-border-radius);
+	border-radius: var(--siz-radius1);
 	cursor: pointer;
 	border: 1px solid transparent;
 	padding-top: .7rem;
@@ -2218,8 +2218,8 @@ noscript {
 
 .userselect .newusbtn {
 	background: transparent;
-	color: var(--colors-text-normal);
-	border-radius: var(--sizing-border-radius);
+	color: var(--col-txt1);
+	border-radius: var(--siz-radius1);
 	padding: 0.3rem 0.6rem;
 	padding-right: 0.5rem;
 	display: flex;
@@ -2241,7 +2241,7 @@ noscript {
 }
 
 .userselect .newusbtn:hover {
-	background: var(--colors-text-normal)1a;
+	background: var(--col-txt1)1a;
 	display: flex;
 	width: fit-content;
 	flex-direction: column;
@@ -2325,7 +2325,7 @@ noscript {
 	font-size: 1.2rem;
 	border-radius: 2rem;
 	background: linear-gradient(0deg, #0e0e0e, #18181885);
-	color: var(--colors-text-normal);
+	color: var(--col-txt1);
 	backdrop-filter: blur(2rem);
 	box-shadow: 0 1rem 1rem #0000008f;
 }
@@ -2348,12 +2348,12 @@ noscript {
 
 .upgradeversionbtn {
 	border: none;
-	border-radius: var(--sizing-border-radius);
+	border-radius: var(--siz-radius1);
 	padding: 0.7rem 2rem;
 	display: block;
 	margin: 1rem auto;
 	background: #7d7aff;
-	color: var(--colors-text-normal);
+	color: var(--col-txt1);
 	letter-spacing: 1px;
 	cursor: pointer;
 	box-shadow: -5px -5px 0rem #625eff;
@@ -2375,7 +2375,7 @@ div#toastdiv {
 #toastdivtext {
 	width: fit-content;
 	padding: 0.5rem 1rem;
-	background: var(--colors-BG-section);
+	background: var(--col-bg2);
 	border-radius: 1.5rem;
 	box-shadow: 0 8px 1rem #00000085;
 	margin: auto;
@@ -2434,7 +2434,7 @@ div#toastdiv {
 #snappingIndicator div {
 	background-color: rgba(255, 255, 255, 0.353);
 	border-radius: .5em;
-	border: 2px solid var(--colors-BG-highlighted);
+	border: 2px solid var(--col-bgh);
 }
 
 .topsnappingind {
@@ -2464,7 +2464,7 @@ div#toastdiv {
 }
 
 .app-shortcut svg.mmic {
-	fill: var(--colors-text-normal);
+	fill: var(--col-txt1);
 	height: 20px;
 }
 
@@ -2479,14 +2479,14 @@ div#toastdiv {
 }
 
 #notification .wincl {
-	background: var(--colors-BG-section);
+	background: var(--col-bg2);
 	padding: 3px;
 	border-radius: 10px;
 	border: 1px solid #7a7a7a4a;
 }
 
 #notification .wincl:hover {
-	background: var(--colors-BG-sub);
+	background: var(--col-bg3);
 }
 
 #app_inst_dia_icon {
@@ -2520,7 +2520,7 @@ div#toastdiv {
 	max-height: 300px;
 	overflow: hidden auto;
 	border: 1px solid #7a7a7a4a;
-	border-radius: var(--sizing-border-radius);
+	border-radius: var(--siz-radius1);
 	padding: 0;
 	display: flex;
 	flex-direction: column;
@@ -2533,7 +2533,7 @@ div#toastdiv {
 	text-align: left;
 	display: block;
 	padding: .5em;
-	background: var(--colors-BG-sub);
+	background: var(--col-bg3);
 	filter: brightness(80%);
 
 	&:first-child {
@@ -2564,11 +2564,11 @@ div#appgrp_list {
 	top: .5em;
 	font-size: 1.3em;
 	padding: 5px;
-	border-radius: var(--sizing-border-radius);
+	border-radius: var(--siz-radius1);
 	right: .5em;
 	display: flex;
 
 	&:hover {
-		background-color: var(--colors-BG-sub);
+		background-color: var(--col-bg3);
 	}
 }

@@ -58,7 +58,7 @@
 		}
 
 		nav .active {
-			background: var(--colors-BG-section);
+			background: var(--col-bg2);
 			margin: 3px;
 			margin-bottom: 2px;
 			border: none;
@@ -71,13 +71,13 @@
 			margin: 3px;
 			margin-top: 0;
 			display: block;
-			background: var(--colors-BG-section);
+			background: var(--col-bg2);
 			border-radius: 0 5px 5px 5px;
 		}
 
 		.urlnav .inpgrp {
 			width: calc(100% - 140px);
-			background: var(--colors-BG-normal);
+			background: var(--col-bg1);
 			border-radius: 25px;
 			padding: 1px 4px;
 			margin: 3px 0;
@@ -87,7 +87,7 @@
 			background: transparent;
 			border: none;
 			font-size: 13px;
-			color: var(--colors-text-normal);
+			color: var(--col-txt1);
 			outline: none;
 			transform: translateY(-2px);
 		}
@@ -100,7 +100,7 @@
 
 		.btngrp button {
 			background: transparent;
-			color: var(--colors-text-normal);
+			color: var(--col-txt1);
 			border: none;
 		}
 
@@ -115,7 +115,7 @@
 		.inpgrp button {
 			background: transparent;
 			border: none;
-			color: var(--colors-text-normal);
+			color: var(--col-txt1);
 		}
 
 		.inpgrp [right] {
@@ -139,11 +139,11 @@
 			background: transparent;
 			border-radius: 10px;
 			cursor: pointer;
-			background: var(--colors-BG-section);
+			background: var(--col-bg2);
 		}
 
 		.newtbtn:hover {
-			background: var(--colors-BG-section);
+			background: var(--col-bg2);
 		}
 
 		.clbtn {
@@ -186,7 +186,7 @@
 			background: #363636;
 			padding: 10px;
 			max-height: calc(100vh - 135px);
-			color: var(--colors-text-normal);
+			color: var(--col-txt1);
 			margin-right: 10px;
 			margin-top: 84px;
 			box-shadow: 0 3px 5px #0000007d;
@@ -233,7 +233,7 @@
 			padding: 1px;
 			border: none;
 			background: transparent;
-			color: var(--colors-text-normal);
+			color: var(--col-txt1);
 		}
 
 		.historyitem button span {
@@ -639,7 +639,7 @@
 			// Iterate over each text node and append its text content
 			while (walker.nextNode()) {
 				var node = walker.currentNode;
-				// Skip empty or var(--colors-text-normal)space-only text nodes
+				// Skip empty or var(--col-txt1)space-only text nodes
 				if (node.textContent.trim() !== '') {
 					iframeTextContent += node.textContent.trim() + ' ';
 				}

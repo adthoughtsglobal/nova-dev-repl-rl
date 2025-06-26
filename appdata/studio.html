@@ -23,23 +23,23 @@
 			display: flex;
 			flex-direction: column;
 			transition: .3s;
-			color: var(--colors-text-normal);
+			color: var(--col-txt1);
 			background-color: black;
 		}
 
 		.ui.dropdown .menu {
-			background-color: var(--colors-BG-section) !important;
-			color: var(--colors-text-normal) !important;
+			background-color: var(--col-bg2) !important;
+			color: var(--col-txt1) !important;
 		}
 
 		.ui.dropdown .menu>.item {
-			color: var(--colors-text-normal) !important;
+			color: var(--col-txt1) !important;
 
 		}
 
 		.nav {
 			padding: 0.5rem;
-			background-color: var(--colors-BG-normal);
+			background-color: var(--col-bg1);
 			display: flex;
 			flex-direction: row;
 			justify-content: flex-start;
@@ -49,7 +49,7 @@
 		}
 
 		.navitem {
-			background-color: var(--colors-BG-section);
+			background-color: var(--col-bg2);
 			padding: 0.2rem 0.5rem;
 			border-radius: 0.3rem;
 			cursor: pointer;
@@ -57,7 +57,7 @@
 		}
 
 		.navitem:hover {
-			background-color: var(--colors-BG-sub);
+			background-color: var(--col-bg3);
 		}
 
 		.editorsection {
@@ -104,7 +104,7 @@
 		}
 
 		#runbtn {
-			background-color: var(--colors-BG-sub);
+			background-color: var(--col-bg3);
 		}
 
 		#consolelogs .log {
@@ -184,29 +184,29 @@
 
 
 		.ui.dropdown.navitem .text {
-			color: var(--colors-text-normal) !important;
+			color: var(--col-txt1) !important;
 		}
 
 		.ui.dropdown.navitem .description {
-			color: var(--colors-text-normal) !important;
+			color: var(--col-txt1) !important;
 		}
 
 		.ui.dropdown.navitem .menu {
-			background-color: var(--colors-BG-section);
-			border: 1px solid var(--colors-BG-sub);
+			background-color: var(--col-bg2);
+			border: 1px solid var(--col-bg3);
 		}
 
 		.ui.dropdown.navitem .menu .item {
-			color: var(--colors-text-normal) !important;
+			color: var(--col-txt1) !important;
 		}
 
 		.ui.dropdown.navitem .menu .item:hover {
-			background-color: var(--colors-BG-sub);
-			color: var(--colors-text-normal) !important;
+			background-color: var(--col-bg3);
+			color: var(--col-txt1) !important;
 		}
 
 		.ui.dropdown.navitem .dropdown.icon {
-			color: var(--colors-text-normal) !important;
+			color: var(--col-txt1) !important;
 		}
 	</style>
 
@@ -534,13 +534,13 @@
 							'--font-size-small': computedStyles.getPropertyValue('--font-size-small'),
 							'--font-size-normal': computedStyles.getPropertyValue('--font-size-normal'),
 							'--font-size-big': computedStyles.getPropertyValue('--font-size-big'),
-							'--colors-BG-normal': computedStyles.getPropertyValue('--colors-BG-normal'),
-							'--colors-BG-sub': computedStyles.getPropertyValue('--colors-BG-sub'),
-							'--colors-BG-section': computedStyles.getPropertyValue('--colors-BG-section'),
-							'--colors-BG-highlighted': computedStyles.getPropertyValue('--colors-BG-highlighted'),
-							'--colors-text-normal': computedStyles.getPropertyValue('--colors-text-normal'),
-							'--colors-text-high': computedStyles.getPropertyValue('--colors-text-high'),
-							'--sizing-border-radius': computedStyles.getPropertyValue('--sizing-border-radius'),
+							'--col-bg1': computedStyles.getPropertyValue('--col-bg1'),
+							'--col-bg3': computedStyles.getPropertyValue('--col-bg3'),
+							'--col-bg2': computedStyles.getPropertyValue('--col-bg2'),
+							'---col-bgh': computedStyles.getPropertyValue('---col-bgh'),
+							'--col-txt1': computedStyles.getPropertyValue('--col-txt1'),
+							'--col-txth': computedStyles.getPropertyValue('--col-txth'),
+							'--siz-radius1': computedStyles.getPropertyValue('--siz-radius1'),
 							'--sizing-normal': computedStyles.getPropertyValue('--sizing-normal'),
 							'--sizing-nano': computedStyles.getPropertyValue('--sizing-nano'),
 							'--vw': computedStyles.getPropertyValue('--vw'),

@@ -3,27 +3,25 @@
 :root {
 	--font-size-base: 1rem;
 
-	--colors-BG-normal: #101010;
-	--colors-text-normal: #FFFFFF;
+	--col-bg1: #101010;
+	--col-txt1: #FFFFFF;
+	--col-bg2: #171717;
+	--col-bg3: #262626;
+	--col-bgh: #44403C;
+	--col-txth: #FFFFFF;
 
-	--colors-BG-section: #171717;
-	--colors-text-section: #FFFFFF;
+	--col-good: #5be45b;
+	--col-bad: #d44343;
 
-	--colors-BG-sub: #262626;
-	--colors-text-sub: #FFFFFF;
+	--siz-radius1: 0.5em;
+	--siz-radius2: 0.35em;
+	--siz-radius3: 0.2em;
+	--time1: .3s;
 
-	--colors-BG-highlighted: #44403C;
-	--colors-text-high: #FFFFFF;
-
-	--colors-special-good: #85ff85;
-	--colors-special-bad: #AC4949;
-
-	--sizing-border-radius: 0.5em;
-	
 	--sizing-normal: 0.5rem;
 	--sizing-huge: 1rem;
 	--sizing-nano: .3rem;
-
+	
 	--spacing-normal: 0.3rem;
 	--spacing-gap: 6px;
 
@@ -31,7 +29,7 @@
 
 	/* Extended support */
 	--colors-accent: rgb(97, 121, 255);
-	
+
 	--font-size-small: calc(var(--font-size-base) * 0.85);
 	--font-size-normal: var(--font-size-base);
 	--font-size-subheading: calc(var(--font-size-base) * 1.25);
@@ -49,13 +47,13 @@
 }
 
 ::-webkit-scrollbar-track {
-	background: var(--colors-BG-normal);
+	background: var(--col-bg1);
 	width: 5px;
 }
 
 ::-webkit-scrollbar-thumb {
-	background: var(--colors-BG-sub);
-	border-radius: var(--sizing-border-radius);
+	background: var(--col-bg3);
+	border-radius: var(--siz-radius1);
 	border: 1px solid #7a7a7a4a;
 }
 
@@ -88,8 +86,8 @@ button {
 
 body {
 	margin: 0;
-	background-color: var(--colors-BG-normal);
-	color: var(--colors-text-normal);
+	background-color: var(--col-bg1);
+	color: var(--col-txt1);
 	user-select: none;
 	font-family: 'Poppins', sans-serif;
 }
@@ -100,16 +98,16 @@ body * {
 
 input::placeholder,
 textarea::placeholder {
-    color: var(--colors-text-normal);
+	color: var(--col-txt1);
 	opacity: .5;
 }
 
 .contextmenu {
 	position: absolute;
 	text-align: center;
-	background: var(--colors-BG-section);
-	border: 1px solid var(--colors-BG-section);
-	color: var(--colors-text-normal);
+	background: var(--col-bg2);
+	border: 1px solid var(--col-bg2);
+	color: var(--col-txt1);
 	border-radius: 0.5rem;
 	box-shadow: 0px 3px 5px 0px #0000005c;
 	overflow: visible;
@@ -138,7 +136,7 @@ textarea::placeholder {
 }
 
 .ctxmenuitem:hover {
-	background: var(--colors-BG-sub);
+	background: var(--col-bg3);
 }
 
 @keyframes pop3 {

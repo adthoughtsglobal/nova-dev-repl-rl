@@ -27,7 +27,7 @@
 			display: flex;
 			box-sizing: border-box;
 			overflow: hidden;
-			background-color: var(--colors-BG-normal);
+			background-color: var(--col-bg1);
 			height: calc(100% - 5px);
 			flex-direction: column;
 		}
@@ -53,7 +53,7 @@
 		.flappsearch {
 			flex-grow: 10 !important;
 			text-align: center !important;
-			color: var(--colors-text-normal);
+			color: var(--col-txt1);
 			align-items: center;
 			display: flex;
 			flex-direction: row;
@@ -69,14 +69,14 @@
 		.nowid {
 			width: fit-content;
 			text-align: center;
-			background-color: var(--colors-BG-section);
+			background-color: var(--col-bg2);
 			border: 1px solid #ffffff0c;
 			color: var(--colors-text-section);
 			display: flex;
 			justify-content: center;
 			align-items: center;
 			overflow: hidden;
-			border-radius: var(--sizing-border-radius);
+			border-radius: var(--siz-radius1);
 			margin: 0.1rem;
 		}
 
@@ -94,14 +94,14 @@
 			width: 0;
 			overflow-y: auto;
 			min-width: 120px;
-			background-color: var(--colors-BG-section);
+			background-color: var(--col-bg2);
 			border: 1px solid #ffffff0c;
 			color: var(--colors-text-section);
 			padding-bottom: 50px;
 			display: flex;
 			flex-direction: column;
 			transition: .3s;
-			border-radius: var(--sizing-border-radius);
+			border-radius: var(--siz-radius1);
 			overflow-x: hidden;
 			height: calc(100% - 51px);
 		}
@@ -131,10 +131,10 @@
 			margin-bottom: 0.1rem;
 			opacity: 70%;
 			flex-direction: row;
-			background-color: var(--colors-BG-section);
+			background-color: var(--col-bg2);
 			border: 1px solid #ffffff0c;
 			color: var(--colors-text-section);
-			border-radius: var(--sizing-border-radius);
+			border-radius: var(--siz-radius1);
 			padding: 3px 0px;
 		}
 
@@ -155,11 +155,11 @@
 		}
 
 		.file {
-			background-color: var(--colors-BG-section);
+			background-color: var(--col-bg2);
 			border: 1px solid #ffffff0c;
 			color: var(--colors-text-section);
 			user-select: none;
-			border-radius: var(--sizing-border-radius);
+			border-radius: var(--siz-radius1);
 			transition: .2s ease-out;
 			animation: poprs .2s ease-out;
 		}
@@ -230,7 +230,7 @@
 		}
 
 		.file:hover {
-			background: var(--colors-BG-sub);
+			background: var(--col-bg3);
 		}
 
 		.file:active {
@@ -278,7 +278,7 @@
 			margin: 0;
 			position: relative;
 			width: 100%;
-			background: var(--colors-BG-sub);
+			background: var(--col-bg3);
 			color: var(--colors-text-sub);
 			padding: 10px;
 			border-radius: 5px;
@@ -335,13 +335,13 @@
 		}
 
 		#slfile {
-			background: var(--colors-BG-sub);
+			background: var(--col-bg3);
 			color: var(--colors-text-sub);
 			cursor: pointer;
 		}
 
 		#slfile[grid] [flname] {
-			background: var(--colors-BG-highlighted);
+			background: var(--col-bgh);
 		}
 
 		[bottomnav] {
@@ -353,10 +353,10 @@
 
 		[flap-fl-bottomnav] {
 			padding: 5px 7px;
-			background-color: var(--colors-BG-section);
+			background-color: var(--col-bg2);
 			border: 1px solid #ffffff0c;
 			color: var(--colors-text-section);
-			border-radius: var(--sizing-border-radius);
+			border-radius: var(--siz-radius1);
 			transition: .3s ease-out;
 			margin: 0.2rem;
 			width: calc(100% - 25px);
@@ -364,21 +364,21 @@
 
 		.upload-box {
 			border: 2px dashed #ffffff30;
-			background: var(--colors-BG-sub);
+			background: var(--col-bg3);
 			padding: 40px;
 			text-align: center;
 			width: auto;
 			cursor: pointer;
 			position: relative;
-			border-radius: var(--sizing-border-radius);
+			border-radius: var(--siz-radius1);
 		}
 
 		.upload-box a {
 			color: white;
-			background: var(--colors-BG-highlighted);
+			background: var(--col-bgh);
 			cursor: pointer;
 			padding: .3em .5em;
-			border-radius: var(--sizing-border-radius);
+			border-radius: var(--siz-radius1);
 		}
 
 		input[type="file"] {
@@ -389,7 +389,7 @@
 			border-radius: 5px;
 			border: none;
 			padding: 7px 15px;
-			background: var(--colors-BG-highlighted);
+			background: var(--col-bgh);
 			color: white;
 			font-family: inherit;
 			cursor: pointer;
@@ -409,7 +409,7 @@
 		}
 
 		#upmod {
-			background: var(--colors-BG-section);
+			background: var(--col-bg2);
 			color: white;
 			border-radius: 10px;
 			padding: 25px;
@@ -420,7 +420,7 @@
 		#upmod [cv] {
 			display: block;
 			padding: 5px 10px;
-			background: var(--colors-BG-sub);
+			background: var(--col-bg3);
 			width: fit-content;
 			border-radius: 10px;
 			opacity: 0.5;
@@ -548,7 +548,7 @@
 		a.dropdownerthebob:hover {
 			opacity: 1;
 			color: var(--colors-text-section);
-			background-color: var(--colors-BG-sub);
+			background-color: var(--col-bg3);
 		}
 
 		[flap-fl-topnav] div {
@@ -633,7 +633,7 @@
 
 		.jstree-anchor {
 			padding: 4px 6px 4px 5px !important;
-			border-radius: var(--sizing-border-radius) !important;
+			border-radius: var(--siz-radius1) !important;
 		}
 
 		.jstree-default .jstree-icon:empty {
@@ -692,7 +692,7 @@
 			display: flex;
 			margin: 0.3rem;
 			gap: 2px;
-			border-radius: var(--sizing-border-radius);
+			border-radius: var(--siz-radius1);
 			overflow: hidden;
 			width: calc(100% - 1rem);
 		}
@@ -704,7 +704,7 @@
 			font-family: inherit;
 			color: white;
 			border-radius: 0;
-			background-color: var(--colors-BG-section);
+			background-color: var(--col-bg2);
 			border: 1px solid #ffffff0c;
 			color: var(--colors-text-section);
 			border: none;
@@ -718,7 +718,7 @@
 			font-family: inherit;
 			color: var(--colors-text-sub);
 			border-radius: 0;
-			background: var(--colors-BG-sub);
+			background: var(--col-bg3);
 			border: none;
 			width: fit-content;
 		}
@@ -728,8 +728,8 @@
 			top: 50px;
 			display: flex;
 			flex-direction: column;
-			background: var(--colors-BG-section);
-			border-radius: var(--sizing-border-radius);
+			background: var(--col-bg2);
+			border-radius: var(--siz-radius1);
 			right: 60px;
 			z-index: 99;
 			box-shadow: 0 3px 10px #0000008a;
@@ -989,10 +989,10 @@
 			padding: 1rem 0rem;
 			padding-top: 0.7rem;
 			border: none;
-			background-color: var(--colors-BG-section);
+			background-color: var(--col-bg2);
 			border: 1px solid #ffffff0c;
 			color: var(--colors-text-section);
-			border-radius: var(--sizing-border-radius);
+			border-radius: var(--siz-radius1);
 			box-shadow: 0 0 10px #00000057;
 			padding: 1rem;
 		}
@@ -1001,7 +1001,7 @@
 		.classydialog textarea {
 			display: block;
 			width: 100%;
-			background: var(--colors-BG-normal);
+			background: var(--col-bg1);
 			color: white;
 			padding: 7px 10px;
 			border-radius: 5px;
@@ -1045,15 +1045,15 @@
 			flex: 1;
 			margin: auto;
 			display: block;
-			background: var(--colors-BG-highlighted);
+			background: var(--col-bgh);
 		}
 
 		.btncont button.cancel {
-			background: var(--colors-BG-sub);
+			background: var(--col-bg3);
 		}
 
 		#makefiledivno {
-			color: var(--colors-special-bad);
+			color: var(--col-bad);
 			opacity: 1;
 			font-size: 0.8rem;
 			line-height: 1.2rem;
@@ -1068,13 +1068,13 @@
 		}
 
 		.jstree-default .jstree-clicked {
-			background: var(--colors-BG-sub);
+			background: var(--col-bg3);
 			color: var(--colors-text-sub);
 			box-shadow: none;
 		}
 
 		.jstree-default .jstree-hovered {
-			background: var(--colors-BG-sub);
+			background: var(--col-bg3);
 			color: var(--colors-text-sub);
 			box-shadow: none;
 		}

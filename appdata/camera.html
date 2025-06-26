@@ -22,7 +22,7 @@
             flex-direction: column;
             margin: 0;
             height: 100%;
-            background-color: var(--colors-BG-normal);
+            background-color: var(--col-bg1);
             user-select: none;
             overflow-y: hidden;
         }
@@ -51,7 +51,7 @@
             height: fit-content;
             height: 100%;
             padding: 0 .5em;
-            background: var(--colors-BG-section);
+            background: var(--col-bg2);
             border-left: 1px solid #7b7b7b4f;
 
             &>.actionBtnPrt {
@@ -64,7 +64,7 @@
                 gap: 2px;
                 overflow: hidden;
                 height: fit-content;
-                border-radius: var(--sizing-border-radius);
+                border-radius: var(--siz-radius1);
             }
         }
 
@@ -82,7 +82,7 @@
             transition: 0.2s ease-in-out;
             max-width: calc(100% - 10px);
             max-height: calc(100% - 10px);
-            border-radius: var(--sizing-border-radius);
+            border-radius: var(--siz-radius1);
             overflow: hidden;
             object-fit: cover;
             width: fit-content;
@@ -100,7 +100,7 @@
 
             &>.btnCont {
                 display: flex;
-                border-radius: var(--sizing-border-radius);
+                border-radius: var(--siz-radius1);
                 flex-direction: row;
                 gap: 1px;
         background-color: #7b7b7b3b;
@@ -125,15 +125,15 @@
         #mirror-btn,
         #flashlight-btn,
         #stopwatch-btn {
-            color: var(--colors-text-normal);
+            color: var(--col-txt1);
             border: none;
             cursor: pointer;
             padding: .3em;
             border-radius: 0;
-            background-color: var(--colors-BG-section);
+            background-color: var(--col-bg2);
 
             &:hover {
-                background-color: var(--colors-BG-sub);
+                background-color: var(--col-bg3);
             }
         }
 
@@ -191,8 +191,8 @@
             display: grid;
             align-items: center;
             justify-items: center;
-            background: var(--colors-BG-sub);
-            color: var(--colors-text-normal);
+            background: var(--col-bg3);
+            color: var(--col-txt1);
             border: 1px solid #ffffff0c;
             transition: box-shadow .5s;
             padding: 1em;
@@ -220,7 +220,7 @@
             justify-content: center;
             align-items: center;
             align-content: center;
-            color: var(--colors-text-normal);
+            color: var(--col-txt1);
             text-shadow: 0 0 1rem #0000007a;
             display: none;
         }

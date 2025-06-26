@@ -207,7 +207,7 @@ function applyTheme(colors, doc) {
 			.map(([_, key, value]) => [key, value.trim()])
 	);
 
-	const textColor = colors["--colors-text-normal"] ?? cssVars["--colors-text-normal"];
+	const textColor = colors["--col-txt1"] ?? cssVars["--col-txt1"];
 	const textSelectors = [
 		"--colors-text-section",
 		"--colors-text-sub"

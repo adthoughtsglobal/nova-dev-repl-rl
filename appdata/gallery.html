@@ -12,10 +12,10 @@
 	<title>Gallery</title>
 	<style>
 		body {
-			color: var(--colors-text-normal);
+			color: var(--col-txt1);
 			font-weight: 400;
 			font-style: normal;
-			background-color: var(--colors-BG-normal);
+			background-color: var(--col-bg1);
 			padding: 0 var(--sizing-huge);
 		}
 
@@ -81,7 +81,7 @@
 		#fullfmd {
 			width: 100%;
 			height: 100%;
-			background: var(--colors-BG-normal);
+			background: var(--col-bg1);
 			display: none;
 			outline: none;
 			color: white;
@@ -115,7 +115,7 @@
 
 		.nofiles {
 			padding: 10px 20px;
-			background: var(--colors-BG-sub);
+			background: var(--col-bg3);
 			border-radius: 10px;
 		}
 
@@ -141,7 +141,7 @@
 		.nofiles button {
 			margin: 20px 0;
 			padding: 8px 10px;
-			background: var(--colors-BG-highlighted);
+			background: var(--col-bgh);
 			color: #c3c3c3;
 			border: none;
 			cursor: pointer;
@@ -176,7 +176,7 @@
 			opacity: 0.8;
 			font-size: 0.7rem;
 			padding: 3px var(--spacing-gap);
-			background: var(--colors-BG-sub);
+			background: var(--col-bg3);
 			border-radius: 0.5rem;
 			font-weight: normal;
 			display: flex;
@@ -212,8 +212,8 @@
 			flex-direction: row;
 			align-items: center;
 			gap: 0.1em;
-			background: var(--colors-BG-sub);
-			border-radius: var(--sizing-border-radius);
+			background: var(--col-bg3);
+			border-radius: var(--siz-radius1);
 			transition: .2s;
 			opacity: .5;
 			animation: slideIn .3s ease-out;
@@ -235,8 +235,8 @@
 		.tooltip .tooltiptext {
 			visibility: hidden;
 			width: 90px;
-			background-color: var(--colors-BG-section);
-			color: var(--colors-text-normal);
+			background-color: var(--col-bg2);
+			color: var(--col-txt1);
 			word-break: normal;
 			text-align: center;
 			border-radius: 0.3rem;
@@ -249,11 +249,11 @@
 			font-size: var(--font-size-normal);
 			opacity: 0;
 			transition: opacity 0.3s ease-out;
-			box-shadow: 0 3px 1rem var(--colors-BG-normal) 9e;
+			box-shadow: 0 3px 1rem var(--col-bg1) 9e;
 		}
 
 		.tooltip:hover {
-			background: var(--colors-BG-sub);
+			background: var(--col-bg3);
 		}
 
 		.tooltip:hover .tooltiptext {
@@ -283,7 +283,7 @@
 			display: flex;
 			padding: .5em;
 			border-radius: 50%;
-			background-color: var(--colors-BG-section);
+			background-color: var(--col-bg2);
 		}
 
 		.relbtn {
@@ -291,7 +291,7 @@
 			top: 1em;
 			right: 1em;
 			padding: .5em;
-			background-color: var(--colors-BG-section);
+			background-color: var(--col-bg2);
 			border-radius: 50%;
 			display: flex;
 		}
