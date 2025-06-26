@@ -319,7 +319,16 @@ class RoturExtension {
         }
         if (packet.listener == "link_cfg" && !this.is_connected) {
           this.is_connected = true;
-          console.log("Connected!")
+            (async () => {
+              sysLog("RoturTW", `Trying to log in`);
+              let localroturdata = await window.getSetting("roturLink");
+              console.log(localroturdata)
+              if (localroturdata) {
+                let targetun = JSON.parse(localroturdata).username;
+                let targetpass = JSON.parse(localroturdata).password;
+                await roturExtension.login({ USERNAME: targetun, PASSWORD: targetpass });
+              }
+            })();
         }
       }
     };

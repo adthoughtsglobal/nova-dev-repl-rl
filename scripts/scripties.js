@@ -170,8 +170,6 @@ async function checkdmode() {
 	if (CurrentUsername) {
 		const themeColors = await getSetting("themeColors") || {};
 		applyTheme(themeColors, document);
-		const wallpos = await getSetting("wallpaperPos") || "center";
-		gid("bgimage").style.objectPosition = wallpos;
 	}
 }
 

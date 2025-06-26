@@ -14,7 +14,6 @@ var batteryLevel, winds = {}, memory = {}, _nowapp, fulsapp = false, appsHistory
 ], timeFormat, timetypecondition = true, genTaskBar, genDesktop, nonotif;
 
 let currentImage = 1;
-
 function setbgimagetourl(x) {
 	const img1 = document.getElementById('bgimage1');
 	const img2 = document.getElementById('bgimage2');
@@ -27,10 +26,16 @@ function setbgimagetourl(x) {
 
 	const setImageSrc = (url) => {
 		nextImg.src = url;
-		nextImg.onload = () => {
+		nextImg.onload = async () => {
 			nextImg.style.opacity = 1;
 			activeImg.style.opacity = 0;
+			activeImg.classList.remove('current-bg');
+			nextImg.classList.add('current-bg');
 			currentImage = currentImage === 1 ? 2 : 1;
+
+
+			const wallpos = await getSetting("wallpaperPos") || "center";
+			document.getElementsByClassName("current-bg")[0].style.objectPosition = wallpos;
 		};
 	};
 
@@ -55,6 +60,9 @@ function setbgimagetourl(x) {
 	} else {
 		setImageSrc(x);
 	}
+
+	(async () => {
+	})();
 }
 
 Object.defineProperty(window, 'nowapp', {
@@ -128,7 +136,7 @@ async function showloginmod() {
 			});
 			const img = document.createElement('img');
 			img.className = 'icon';
-			sharedStore.get(cacusername, "icon").then((icon) => {img.src =icon});
+			sharedStore.get(cacusername, "icon").then((icon) => { img.src = icon });
 			const nameDiv = document.createElement('div');
 			nameDiv.className = 'name';
 			nameDiv.textContent = cacusername;
@@ -336,7 +344,7 @@ async function openn() {
 			iconSpan.innerHTML = "<span class='taskbarloader'></span>";
 			getAppIcon(false, app.id).then((appIcon) => {
 				iconSpan.innerHTML = appIcon;
-insertSVG(appIcon, iconSpan);
+				insertSVG(appIcon, iconSpan);
 			});
 
 			function getapnme(x) {
@@ -958,11 +966,11 @@ function openModal(type, { title = '', message, options = null, status = null, p
 		modalItemsCont.appendChild(icon);
 
 		if (title && title.length > 0) {
-			
-		const h1 = document.createElement('h1');
-		h1.textContent = title;
-		modalItemsCont.appendChild(h1);
-		} 
+
+			const h1 = document.createElement('h1');
+			h1.textContent = title;
+			modalItemsCont.appendChild(h1);
+		}
 
 		const p = document.createElement('p');
 		if (type === 'say') {
@@ -1028,10 +1036,10 @@ function openModal(type, { title = '', message, options = null, status = null, p
 		if (registerRef) {
 			document.getElementById("window" + notificationContext[registerRef]?.windowID).querySelectorAll(".windowcontent")[0].appendChild(modal);
 			modal.show();
-		modal.appendChild(modalItemsCont);
+			modal.appendChild(modalItemsCont);
 		} else {
 			document.body.appendChild(modal);
-		modal.appendChild(modalItemsCont);
+			modal.appendChild(modalItemsCont);
 			modal.showModal();
 		}
 	});
@@ -1088,8 +1096,8 @@ async function loadtaskspanel() {
 
 		let iconSpan = document.createElement("span");
 		iconSpan.classList.add("appicnspan");
-		
-insertSVG((await getAppIcon(0, winds[wid]?.appid)) || defaultAppIcon,iconSpan);
+
+		insertSVG((await getAppIcon(0, winds[wid]?.appid)) || defaultAppIcon, iconSpan);
 
 		let tooltisp = document.createElement("span");
 		tooltisp.className = "tooltiptext";
@@ -1814,11 +1822,11 @@ async function realgenDesktop() {
 				unshrinkbsfX = await getFileById(x);
 				unshrinkbsfX = unshrinkbsfX.content;
 			}
-			await setbgimagetourl(unshrinkbsfX);
+			setbgimagetourl(unshrinkbsfX);
 		}
 		document.getElementById("bgimage").onerror = async function (event) {
 			toast("It doesn't seem to work as the wallpaper...")
-			await setbgimagetourl(novaFeaturedImage);
+			setbgimagetourl(novaFeaturedImage);
 			if (await getSetting("wall")) {
 				remSetting("wall");
 			}
@@ -2161,7 +2169,7 @@ function setTitle(windowID, title) {
 		console.error("Title must be a string.");
 		return;
 	}
-	const element = document.getElementById("window"+windowID + "titlespan");
+	const element = document.getElementById("window" + windowID + "titlespan");
 	if (element) {
 		element.innerText = title;
 	} else {
