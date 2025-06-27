@@ -1939,32 +1939,6 @@
 			}
 		}
 
-
-		const databaseName = 'trojencat';
-		// Function to open or create an IndexedDB database
-		function openDB(databaseName, version) {
-			return new Promise((resolve, reject) => {
-				const request = indexedDB.open(databaseName, version);
-
-				request.onupgradeneeded = (event) => {
-					const db = event.target.result;
-					if (!db.objectStoreNames.contains('store')) {
-						db.createObjectStore('store', { keyPath: 'key' });
-					}
-				};
-
-				request.onsuccess = (event) => {
-					const db = event.target.result;
-
-					resolve(db);
-				};
-
-				request.onerror = () => {
-					reject(request.error);
-				};
-			});
-		}
-
 		async function geticon(extension, id = false) {
 			let iconName = "insert_drive_file";
 			let color = "#BDBDBD";

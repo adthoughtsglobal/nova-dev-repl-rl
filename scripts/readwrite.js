@@ -3,6 +3,7 @@ let cryptoKeyCache = null;
 const key = 'dataStore';
 
 async function openDB(CurrentUsername = "Admin", version) {
+    console.log(`Opening DB for user: ${CurrentUsername}, version: ${version}`);
     return new Promise((resolve, reject) => {
         const request = indexedDB.open(CurrentUsername, version);
 

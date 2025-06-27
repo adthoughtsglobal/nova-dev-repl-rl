@@ -184,7 +184,6 @@ function closeElementedis(element) {
 		element = document.getElementById("edison");
 	}
 	element.classList.add("closeEffect");
-	console.log(342, element)
 	setTimeout(function () {
 		element.close()
 		element.classList.remove("closeEffect");
@@ -1167,7 +1166,7 @@ async function initializeOS() {
 				console.error("Error during initialization:", error);
 			})
 			.then(async () => {
-				sharedStore.set(CurrentUsername, "icon", "data:image/svg+xml,%3C%3Fxml%20version%3D%221.0%22%20encoding%3D%22utf-8%22%3F%3E%3C!--%20License%3A%20CC%20Attribution.%20Made%20by%20Saeedworks%3A%20https%3A%2F%2Fdribbble.com%2Fsaeedworks%20--%3E%3Csvg%20width%3D%22800px%22%20height%3D%22800px%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20id%3D%22style%3Dfill%22%3E%3Cg%20id%3D%22profile%22%3E%3Cpath%20id%3D%22vector%20(Stroke)%22%20fill-rule%3D%22evenodd%22%20clip-rule%3D%22evenodd%22%20d%3D%22M6.75%206.5C6.75%203.6005%209.1005%201.25%2012%201.25C14.8995%201.25%2017.25%203.6005%2017.25%206.5C17.25%209.3995%2014.8995%2011.75%2012%2011.75C9.1005%2011.75%206.75%209.3995%206.75%206.5Z%22%20fill%3D%22%23ffffff%22%2F%3E%3Cpath%20id%3D%22rec%20(Stroke)%22%20fill-rule%3D%22evenodd%22%20clip-rule%3D%22evenodd%22%20d%3D%22M4.25%2018.5714C4.25%2015.6325%206.63249%2013.25%209.57143%2013.25H14.4286C17.3675%2013.25%2019.75%2015.6325%2019.75%2018.5714C19.75%2020.8792%2017.8792%2022.75%2015.5714%2022.75H8.42857C6.12081%2022.75%204.25%2020.8792%204.25%2018.5714Z%22%20fill%3D%22%23ffffff%22%2F%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E")
+				sharedStore.set(CurrentUsername, "icon", "data:image/svg+xml,%3C%3Fxml%20version%3D%221.0%22%20encoding%3D%22utf-8%22%3F%3E%3Csvg%20fill%3D%22%23ffffff%22%20width%3D%22800px%22%20height%3D%22800px%22%20viewBox%3D%220%200%20256%20256%22%20id%3D%22Flat%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M228%2C128A100%2C100%2C0%2C1%2C0%2C60.71%2C201.90967a3.97048%2C3.97048%2C0%2C0%2C0%2C.842.751%2C99.79378%2C99.79378%2C0%2C0%2C0%2C132.8982-.00195%2C3.96558%2C3.96558%2C0%2C0%2C0%2C.83813-.74756A99.76267%2C99.76267%2C0%2C0%2C0%2C228%2C128ZM36%2C128a92%2C92%2C0%2C1%2C1%2C157.17139%2C64.87207%2C75.616%2C75.616%2C0%2C0%2C0-44.50782-34.04053%2C44%2C44%2C0%2C1%2C0-41.32714%2C0%2C75.61784%2C75.61784%2C0%2C0%2C0-44.50782%2C34.04A91.70755%2C91.70755%2C0%2C0%2C1%2C36%2C128Zm92%2C28a36%2C36%2C0%2C1%2C1%2C36-36A36.04061%2C36.04061%2C0%2C0%2C1%2C128%2C156ZM68.86475%2C198.417a68.01092%2C68.01092%2C0%2C0%2C1%2C118.27.00049%2C91.80393%2C91.80393%2C0%2C0%2C1-118.27-.00049Z%22%2F%3E%3C%2Fsvg%3E")
 				nonotif = false;
 				await startup();
 				let textcontentwelcome = await fetch("appdata/welcome.html");
@@ -1914,6 +1913,8 @@ async function cleanupram() {
 	lethalpasswordtimes = true;
 	dbCache = null;
 	cryptoKeyCache = null;
+	fileTypeAssociations = {};
+	handlers = {};
 }
 async function setandinitnewuser() {
 	gid("edison").showModal()
@@ -1986,6 +1987,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 		"scripts/edgecases.js",
 		"scripts/dompurify.js",
 		"scripts/scripties.js",
+		"scripts/windman.js",
 		"scripts/ntx.js"
 	];
 
@@ -2083,7 +2085,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 	gid("novanav").style.display = "none";
 	async function waitForNonNull() {
 		const startTime = Date.now();
-		const maxWaitTime = 3000;
+		const maxWaitTime = 2000;
 		while (Date.now() - startTime < maxWaitTime) {
 			const result = await updateMemoryData();
 			if (result !== null) {

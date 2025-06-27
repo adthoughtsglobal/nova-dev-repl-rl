@@ -535,7 +535,6 @@ async function getSetting(settingKey, fileName = "preferences.json", dirPath = "
 
 
 async function setSetting(settingKey, settingValue, fileName = "preferences.json", dirPath = "System/") {
-    console.log(settingKey, settingValue)
     return enqueueTask(async () => {
         try {
             await ensureFileExists(fileName, dirPath);
@@ -702,7 +701,6 @@ async function ensureAllSettingsFilesExist() {
 // memory management
 
 async function getFileNamesByFolder(folderPath) {
-    console.log(folderPath)
     folderPath = folderPath.endsWith('/') ? folderPath : folderPath + '/';
     try {
         const root = memory["root"];

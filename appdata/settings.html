@@ -95,7 +95,7 @@
 			border: 2px solid transparent;
 			display: block;
 			width: 100%;
-			border-radius: var(--siz-radius1);
+			border-radius: var(--siz-radius2);
 			outline: none;
 			text-align: left;
 			cursor: pointer;
@@ -136,7 +136,55 @@
 			}
 		}
 
-		/* Style the tab content */
+		.custom-select {
+			cursor: pointer;
+			padding: .3em .5em;
+			color: var(--col-txt1);
+			user-select: none;
+			background: var(--col-bg3);
+			border: 1px solid var(--col-bg3);
+			border-radius: var(--siz-radius1);
+			font-size: var(--font-size-normal);
+			outline: none;
+			width: 7rem;
+			z-index: inherit;
+   text-align: center;
+		}
+
+		.custom-select-dialog {
+			    border: none;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    overflow: clip;
+		}
+
+		.custom-select-dialog::backdrop {
+			background: transparent;
+		}
+
+		.custom-select-options-box {
+			background: var(--col-bg3);
+			position: absolute;
+			border-radius: var(--siz-radius1);
+			width: 7rem;
+   max-height: 15rem;
+		}
+
+		.custom-select-options-box div {
+			padding: .3em .5em;
+			cursor: pointer;
+			background-color: transparent;
+			color: var(--col-txt1);
+			font-size: var(--font-size-normal);
+   text-align: center;
+			opacity:.8;
+		}
+
+		.custom-select-options-box div:hover {
+			opacity:1;
+		}
+
 		.tabcontent {
 			padding: 0px 12px;
 			width: 0;
@@ -218,7 +266,7 @@
 
 		supportb a {
 			display: inline-block;
-			border-radius: var(--siz-radius1);
+			border-radius: var(--siz-radius2);
 			background: #ffffff;
 			width: fit-content;
 			padding: var(--sizing-normal) var(--sizing-huge);
@@ -251,6 +299,16 @@
 		supportb a i {
 			font-size: 1rem !important;
 			opacity: 0.7;
+		}
+
+		input,
+		button {
+			z-index: 1;
+			will-change: transform;
+
+			&:hover {
+				z-index: 1;
+			}
 		}
 
 		.supportbtns {
@@ -356,24 +414,59 @@
 			stroke-dashoffset: 25;
 		}
 
+		[setting],
 		[settingn],
-		[setting] {
-			display: flex;
-			flex-direction: column;
-			gap: var(--spacing-gap);
-
-			margin: 0;
-			background: var(--col-bg2);
-			color: var(--colors-text-section);
-			padding: var(--sizing-normal);
-		}
-
-		[setting] {
-			border-bottom: 1px solid var(--col-bg3);
+		.inpbox {
 			display: flex;
 			flex-direction: row;
 			align-items: center;
 			justify-content: space-between;
+			position: relative;
+			gap: var(--spacing-gap);
+
+			margin: 0;
+			color: var(--colors-text-section);
+			padding: var(--sizing-normal);
+
+			&::after {
+				content: "";
+				display: block;
+				position: absolute;
+				background-color: var(--col-bg3);
+				width: 100%;
+				height: 1px;
+				left: 0;
+				bottom: 0;
+			}
+
+			&:last-child::after {
+				display: none;
+			}
+		}
+
+		[settingn] {
+			flex-direction: column;
+			gap: .5em;
+			align-items: stretch;
+			justify-content: space-between;
+		}
+
+		/* 		
+		.inpbox {
+			background: var(--col-bg2);
+			padding: var(--sizing-normal);
+			color: var(--colors-text-section);
+			outline: none;
+			display: flex;
+			flex-direction: row;
+			flex-wrap: nowrap;
+			align-items: flex-start;
+			justify-content: space-between;
+		} */
+
+		.inpbox[type="textInput"] {
+			flex-direction: column;
+			align-items: stretch;
 		}
 
 		[setting][type="advsetnav"] {
@@ -442,7 +535,7 @@
 			background: #054305;
 			color: #4fb64f;
 			margin-left: 5px;
-			border-radius: var(--siz-radius1);
+			border-radius: var(--siz-radius2);
 			display: inline-grid;
 		}
 
@@ -563,8 +656,8 @@
 		.progbarma {
 			width: 100%;
 			background-color: var(--col-bg3);
-			height: 20px;
-			border-radius: var(--siz-radius1);
+			height: 1em;
+			border-radius: var(--siz-radius2);
 			overflow: hidden;
 			margin: 10px 0px;
 		}
@@ -582,13 +675,14 @@
 
 		button {
 			color: var(--col-txth);
-			border-radius: var(--siz-radius1);
+			border-radius: var(--siz-radius2);
 			border: none;
 			padding: 7px 15px;
 			background: var(--col-bgh);
 			border: 1px solid #ffffff0c;
 			font-size: inherit;
 			cursor: pointer;
+			z-index: 1;
 		}
 
 		button:hover {
@@ -601,33 +695,6 @@
 			cursor: pointer;
 		}
 
-		.inpbox {
-			background: var(--col-bg2);
-			padding: var(--sizing-normal);
-			color: var(--colors-text-section);
-			outline: none;
-			display: flex;
-			border-bottom: 1px solid var(--col-bg3);
-			flex-direction: row;
-			flex-wrap: nowrap;
-			align-items: flex-start;
-			justify-content: space-between;
-		}
-
-		.inpbox[type="textInput"] {
-			flex-direction: column;
-		}
-
-		select {
-			background: var(--col-bg3);
-			color: var(--colors-text-sub);
-			border: 1px solid var(--col-bg3);
-			border-radius: var(--siz-radius1);
-			font-size: var(--font-size-normal);
-			padding: 7px 3px 5px 5px !important;
-			outline: none;
-			width: 7rem;
-		}
 
 		@media only screen and (max-width: 600px) {
 			.tab .btnlike {
@@ -674,11 +741,12 @@
 
 		segr {
 			margin-bottom: var(--sizing-normal);
-			overflow: hidden;
+			overflow-y: visible;
 			border-radius: var(--siz-radius1);
 			display: block;
 			border: 1px solid var(--col-bg3);
 			box-shadow: 0 3px 5px #0000007e;
+			background: var(--col-bg2);
 		}
 
 		span.advancedsetsbackbtn.material-symbols-rounded {
@@ -722,7 +790,7 @@
 			flex: 1;
 			padding: var(--sizing-normal);
 			color: inherit;
-			border-radius: var(--siz-radius1);
+			border-radius: var(--siz-radius2);
 			background: inherit;
 		}
 
@@ -786,7 +854,7 @@
 			background-color: var(--col-bg3);
 			padding: 2px 5px;
 			gap: 0.3rem;
-			border-radius: 0.5rem;
+			border-radius: var(--siz-radius2);
 			width: 100%;
 			margin-bottom: 0.3rem;
 			border: 1px solid #ffffff0c;
@@ -822,7 +890,7 @@
 			display: flex;
 			flex-direction: column;
 			padding: .2rem 0.5rem;
-			border-radius: .5rem;
+			border-radius: var(--siz-radius2);
 			background: inherit;
 		}
 
@@ -892,58 +960,6 @@
 			border-radius: 1em;
 		}
 
-		.colorpacks {
-			display: flex;
-			flex-direction: row;
-			flex-wrap: nowrap;
-			align-items: stretch;
-			justify-content: flex-start;
-			gap: 0.3rem;
-			overflow-x: auto;
-			padding-bottom: 0.3rem;
-		}
-
-		#themeslist {
-			display: flex;
-			flex-direction: row;
-			gap: 0.3rem;
-		}
-
-		.newthemebtn {
-			background: var(--col-txth);
-			padding: 1.5rem;
-			border-radius: 0.5rem;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-		}
-
-		#themeslist div {
-			padding: 0.5rem;
-			border-radius: 0.5rem;
-			width: 100px;
-			text-overflow: ellipsis;
-			white-space: break-spaces;
-			overflow: hidden;
-		}
-
-		.newthemebtn {
-			background: var(--col-bg2);
-			color: var(--colors-text-section);
-			padding: 1.5rem;
-			border-radius: 0.5rem;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			color: var(--col-txth);
-			text-shadow: 0 0 9px var(--col-bgh);
-			border: 1px solid var(--col-bg3);
-		}
-
-		.newthemebtn i {
-			font-size: 1.5rem;
-		}
-
 		label[real] {
 			font-size: var(--font-size-small);
 			background-color: rgb(139 62 62);
@@ -964,31 +980,26 @@
 			color: var(--col-txt1);
 		}
 
-		/* Styles for the color picker itself */
 		.jscolor-palette {
 			background: #333;
 			border: 1px solid #555;
 		}
 
-		/* Styles for the color palette elements */
 		.jscolor-palette .jscolor-palette-cell {
 			border: 1px solid #444;
 		}
 
-		/* Styles for the color picker input */
 		.jscolor-picker {
 			background: #222;
 			color: #ddd;
 			border: 1px solid #444;
 		}
 
-		/* Adjust color of the text and input areas */
 		.jscolor-input {
 			background: #333;
 			color: #eee;
 		}
 
-		/* Additional adjustments for hover and focus states */
 		.jscolor-picker:hover,
 		.jscolor-picker:focus {
 			border-color: #777;
@@ -1000,7 +1011,7 @@
 
 		.numinp {
 			width: 7rem;
-			border-radius: var(--siz-radius1);
+			border-radius: var(--siz-radius2);
 			min-width: 0;
 			border: 0;
 			background-color: var(--col-bg1);
@@ -1201,11 +1212,11 @@
 			background-color: var(--col-bg2);
 			aspect-ratio: 1 / 1;
 			height: 80px;
-			border-radius: .5rem;
+			border-radius: var(--siz-radius2);
 			display: inline-flex;
 			justify-content: center;
 			align-items: center;
-    position: relative;
+			position: relative;
 		}
 
 		.usercard {
@@ -1257,7 +1268,7 @@
 		.doablestep {
 			display: flex;
 			justify-content: space-between;
-			background: var(--col-bg1);
+			background: var(--col-bg2);
 			border-radius: var(--siz-radius1);
 			padding: .3rem;
 			align-items: center;
@@ -1265,8 +1276,8 @@
 
 		.doablestep button {
 			padding: .3rem;
-			background-color: var(--col-bg2);
-			color: var(--colors-text-section);
+			background-color: var(--col-bgh);
+			color: var(--col-txth);
 			display: flex;
 			align-items: center;
 			justify-content: center;
@@ -1412,7 +1423,7 @@
 			flex: 1;
 			border: none;
 			padding: var(--sizing-nano) var(--sizing-normal);
-			border-radius: var(--siz-radius1);
+			border-radius: var(--siz-radius2);
 		}
 
 		#UISIZErangeslid {
@@ -1550,11 +1561,11 @@
 		}
 
 		img#userpfp {
-    width: 100%;
-    height: 100%;
-	object-fit: cover;
-	border-radius: var(--siz-radius1);
-}
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+			border-radius: var(--siz-radius1);
+		}
 	</style>
 </head>
 
@@ -1672,18 +1683,15 @@
 						var fps = Math.round((frameCount * 1000) / elapsedTime);
 						fpsValues.push(fps);
 
-						// Clear canvas
 						ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-						// Get the last 30 frames, or all frames if there are less than 30
 						var numFrames = 30;
 						var fpsSubset = fpsValues.slice(-numFrames);
 
 						var stepX = canvas.width / fpsSubset.length;
 						var maxY = Math.max(...fpsSubset);
-						var stepY = canvas.height / (maxY + 10); // Add 10 for padding
+						var stepY = canvas.height / (maxY + 10);
 
-						// Start drawing the FPS graph
 						ctx.beginPath();
 						var initialX = 0;
 						var initialY = canvas.height - fpsSubset[0] * stepY;
@@ -1697,15 +1705,12 @@
 							ctx.lineTo(x, y);
 						});
 
-						// Connect the line graph to the bottom of the canvas
 						ctx.lineTo(canvas.width, canvas.height);
 						ctx.lineTo(0, canvas.height);
 
-						// Fill the area below the line graph with dark blue color
 						ctx.fillStyle = '#263238';
 						ctx.fill();
 
-						// Draw the line graph
 						ctx.strokeStyle = '#7986CB';
 						ctx.lineWidth = 2;
 						ctx.stroke();
@@ -2295,8 +2300,7 @@
 
 		<div id="password" class="tabcontent">
 			<div class="usercard">
-				<div class="pfp"
-					onclick="edituserpfp()">
+				<div class="pfp" onclick="edituserpfp()">
 					<img src="#" id="userpfp" alt="User Profile Picture">
 					<span class="material-symbols-rounded">
 						edit
@@ -2368,7 +2372,7 @@
 					}
 
 					async function edituserpfp() {
-						let fileid = await ntxSession.send("olp.useHandler", "file_manager",  { "opener": 'any', "dir": "Downloads/" })
+						let fileid = await ntxSession.send("olp.useHandler", "file_manager", { "opener": 'any', "dir": "Downloads/" })
 						ntxSession.send("fileGet.byId", fileid)
 							.then(async (url) => {
 								let content = url?.content;
@@ -3501,6 +3505,11 @@
 			<script defer>
 				async function savewallpap() {
 					var newurl = document.getElementById("wallpaperurl");
+					var oldurl = await ntxSession.send("settings.get", "wall");
+					if (newurl.value == '' || newurl.value == oldurl) {
+						let fileID = await ntxSession.send("olp.useHandler", "file_manager", { "opener": 'any', "dir": "Downloads/" })
+						newurl.value = (fileID) ? fileID : '';
+					}
 					await ntxSession.send("settings.set", "wall", newurl.value);
 					setTimeout(() => { window.parent.genDesktop() }, 1000)
 
@@ -3723,6 +3732,73 @@
 						loadAppSettings(myWindow.params.data.id);
 					}
 				}
+				function replaceSelects() {
+					let openDialog = null;
+
+					document.querySelectorAll('select').forEach(select => {
+						const wrapper = document.createElement('div');
+						wrapper.className = 'custom-select-wrapper';
+
+						const selected = document.createElement('div');
+						selected.className = 'custom-select';
+						selected.textContent = select.options[select.selectedIndex]?.textContent || '';
+
+						const dialog = document.createElement('dialog');
+						dialog.className = 'custom-select-dialog';
+
+						const optionsBox = document.createElement('div');
+						optionsBox.className = 'custom-select-options-box';
+
+						Array.from(select.options).forEach(option => {
+							const optionDiv = document.createElement('div');
+							optionDiv.textContent = option.textContent;
+							optionDiv.dataset.value = option.value;
+							optionDiv.onclick = () => {
+								selected.textContent = option.textContent;
+								select.value = option.value;
+								select.dispatchEvent(new Event('change'));
+								dialog.close();
+								openDialog = null;
+							};
+							optionsBox.appendChild(optionDiv);
+						});
+
+						dialog.appendChild(optionsBox);
+
+						selected.onclick = () => {
+							if (dialog.open) {
+								dialog.close();
+								openDialog = null;
+								return;
+							}
+							if (openDialog) {
+								openDialog.close();
+							}
+							dialog.showModal();
+							const rect = selected.getBoundingClientRect();
+							optionsBox.style.top = `${rect.bottom - 20}px`;
+							optionsBox.style.left = `${rect.left - 20}px`;
+							openDialog = dialog;
+						};
+
+						document.addEventListener('click', e => {
+							if (!wrapper.contains(e.target) && openDialog === dialog) {
+								dialog.close();
+								openDialog = null;
+							}
+						});
+
+						wrapper.appendChild(selected);
+						wrapper.appendChild(dialog);
+						select.style.display = 'none';
+						select.parentNode.insertBefore(wrapper, select);
+						wrapper.appendChild(select);
+						dialog.close();
+					});
+				}
+
+
+				replaceSelects();
 			} catch (e) { }
 
 		}
