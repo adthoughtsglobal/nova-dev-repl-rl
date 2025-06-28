@@ -1595,62 +1595,12 @@
 			<button class="tablinks btnlike" windowopener="Networking" onclick="openCity(event, 'network');"><i
 					class="material-symbols-rounded">language</i>
 				Network</button>
-			<button class="tablinks btnlike" windowopener="Data Manager"
-				onclick="openCity(event, 'lclstgsc'); lclstgsc();"><i class="material-symbols-rounded">manage_search</i>
-				Data Manager</button>
 			<button class="tablinks btnlike" windowopener="Defaults" onclick="openCity(event, 'defaultappsforfiles');
 				rldfltyptable();"><i class="material-symbols-rounded">open_in_browser</i> Defaults</button>
 			<button class="tablinks btnlike" windowopener="About" onclick="openCity(event, 'about')"><i
 					class="material-symbols-rounded">info</i>
 				About</button>
 
-		</div>
-
-		<div id="lclstgsc" class="tabcontent">
-			<h1>Data Manager</h1>
-			<div class="datamangernav">
-				<span>LocalStorage</span>
-				<a onclick="lclstgsc()"><i class="material-symbols-rounded">restart_alt</i></a>
-			</div>
-			<div id="datalist">
-
-			</div>
-			<script>
-				async function lclstgsc() {
-					document.getElementById("datalist").innerHTML = "";
-					let items = {};
-					for (let i = 0; i < localStorage.length; i++) {
-						let key = localStorage.key(i);
-						if (key == "magicString") {
-							continue;
-						}
-						items[key] = localStorage.getItem(key);
-						const elem = document.createElement("div");
-						elem.classList = "lclstr";
-						const elemname = document.createElement("span");
-						elemname.classList = "name";
-						elemname.innerText = key;
-						elem.appendChild(elemname);
-						const elemval = document.createElement("span");
-						elemval.classList = "value";
-						elemval.innerText = items[key];
-						elemval.addEventListener('click', async function () {
-							let x = await ntxSession.send("sysUI.ask", "Set value for '" + key + "':", items[key]);
-							localStorage.setItem(key, x)
-						});
-						elem.appendChild(elemval);
-						const delbtn = document.createElement("span");
-						delbtn.classList = "material-symbols-rounded";
-						delbtn.innerHTML = "delete_forever";
-						delbtn.addEventListener('click', async function () {
-							localStorage.removeItem(key);
-							lclstgsc();
-						});
-						elem.appendChild(delbtn);
-						document.getElementById("datalist").appendChild(elem)
-					}
-				}
-			</script>
 		</div>
 
 		<div id="perform" class="tabcontent advancedsettab">
@@ -2284,7 +2234,6 @@
 						return table;
 					}
 
-					// Generate tables and insert them
 					const methodTable = await createTable(methods, 'Methods', 'Handlers');
 					const fileTable = await createTable(associations, 'File Types', 'Apps');
 
@@ -3590,9 +3539,6 @@
 			},
 			"User": {
 				"User": ["user", "account"]
-			},
-			"Data manager": {
-				"Data manager": ["Data", "saved", "edit"]
 			},
 			"Defaults": {
 				"Defaults": ["default", "apps", "opener", "open with"]

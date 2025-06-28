@@ -192,6 +192,7 @@ function closeElementedis(element) {
 
 async function startup() {
 	gid("edison").showModal();
+	gid('loginmod').close();
 	if (badlaunch) { return }
 	lethalpasswordtimes = false;
 	setsrtpprgbr(50);
