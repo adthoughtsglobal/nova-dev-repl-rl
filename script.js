@@ -1528,7 +1528,8 @@ const minToastDuration = 3000;
 const maxToastDuration = 5000;
 let toastQueue = [];
 
-function toast(text, duration = 5000) {
+function toast(text, appId, duration = 5000) {
+	console.log("Toast: ", text, duration);
 	let displayDuration = Math.min(duration, maxToastDuration);
 
 	if (toastInProgress) {
@@ -1536,14 +1537,16 @@ function toast(text, duration = 5000) {
 	} else {
 		totalDuration = displayDuration;
 		toastInProgress = true;
-		displayToast(text, displayDuration);
+		displayToast(text, appId, displayDuration);
 	}
 }
 
-function displayToast(text, duration) {
+function displayToast(text, appId, duration) {
 	var titleb = document.getElementById('toastdivtext');
 	if (titleb) {
 		titleb.innerText = text;
+		console.log(appId);
+		(async () => { insertSVG(await getAppIcon(0, appId), document.getElementById('toasticon')); })();
 
 		const windValues = Object.values(winds).map(wind => Number(wind.zIndex) || 0);
 		const maxWindValue = Math.max(...windValues);

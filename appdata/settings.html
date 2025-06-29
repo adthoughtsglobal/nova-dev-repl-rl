@@ -148,15 +148,15 @@
 			outline: none;
 			width: 7rem;
 			z-index: inherit;
-   text-align: center;
+			text-align: center;
 		}
 
 		.custom-select-dialog {
-			    border: none;
-    width: 100%;
-    height: 100%;
-    background: transparent;
-    overflow: clip;
+			border: none;
+			width: 100%;
+			height: 100%;
+			background: transparent;
+			overflow: clip;
 		}
 
 		.custom-select-dialog::backdrop {
@@ -168,7 +168,9 @@
 			position: absolute;
 			border-radius: var(--siz-radius1);
 			width: 7rem;
-   max-height: 15rem;
+			max-height: 8rem;
+			box-shadow: 0 5px 10px #0000007e;
+			overflow-y: auto;
 		}
 
 		.custom-select-options-box div {
@@ -177,12 +179,12 @@
 			background-color: transparent;
 			color: var(--col-txt1);
 			font-size: var(--font-size-normal);
-   text-align: center;
-			opacity:.8;
+			text-align: center;
+			opacity: .5;
 		}
 
 		.custom-select-options-box div:hover {
-			opacity:1;
+			opacity: 1;
 		}
 
 		.tabcontent {
@@ -451,19 +453,6 @@
 			justify-content: space-between;
 		}
 
-		/* 		
-		.inpbox {
-			background: var(--col-bg2);
-			padding: var(--sizing-normal);
-			color: var(--colors-text-section);
-			outline: none;
-			display: flex;
-			flex-direction: row;
-			flex-wrap: nowrap;
-			align-items: flex-start;
-			justify-content: space-between;
-		} */
-
 		.inpbox[type="textInput"] {
 			flex-direction: column;
 			align-items: stretch;
@@ -474,10 +463,6 @@
 			flex-direction: row;
 			align-items: center;
 			gap: 0.5rem;
-		}
-
-		[setting]:hover {
-			filter: brightness(120%);
 		}
 
 		[setting][type="advsetnav"] .advseticon {
@@ -780,7 +765,6 @@
 			padding: var(--spacing-normal);
 			gap: var(--spacing-gap);
 			align-items: stretch;
-			background-color: var(--col-bg2);
 		}
 
 		.btngrpelem {
@@ -792,6 +776,7 @@
 			color: inherit;
 			border-radius: var(--siz-radius2);
 			background: inherit;
+			cursor: pointer;
 		}
 
 		.btngrpelem:hover {
@@ -811,8 +796,9 @@
 			border: 0;
 		}
 
-		.btngrpelem button i {
-			font-size: 1rem;
+		.btngrpelem button span {
+			font-size: 1.5em;
+			opacity: .5;
 		}
 
 		.divider {
@@ -1300,13 +1286,12 @@
 		}
 
 		#supportexpandbtn {
-			background-color: var(--col-bgh);
 			color: var(--col-txth);
 		}
 
 		.task {
 			padding: var(--sizing-normal);
-			background: var(--col-bg2);
+			background-color: var(--col-bgh);
 			color: var(--colors-text-section);
 			border-radius: var(--siz-radius1);
 			margin: 5px 0;
@@ -1477,6 +1462,18 @@
 			justify-content: space-between;
 			align-items: center;
 
+			& .app_detail {
+				width: 0;
+				flex: 1;
+				overflow: hidden;
+
+				&>div {
+					overflow: hidden;
+					text-overflow: ellipsis;
+					white-space: nowrap;
+				}
+			}
+
 			& .app_options {
 				padding: 5px;
 				display: flex;
@@ -1526,6 +1523,7 @@
 
 			& .app_icon {
 				flex: 0;
+				display: flex
 			}
 
 			& .appdets {
@@ -1565,6 +1563,15 @@
 			height: 100%;
 			object-fit: cover;
 			border-radius: var(--siz-radius1);
+		}
+
+		.betatag {
+			background-color: var(--col-bad);
+			color: var(--col-txt1);
+			padding: 2px 7px;
+			border-radius: var(--siz-radius2);
+    display: inline;
+			font-size: var(--font-size-small);
 		}
 	</style>
 </head>
@@ -2109,7 +2116,8 @@
 						document.getElementById("timefrmt").addEventListener("change", function () {
 							let newValue = document.getElementById("timefrmt").value;
 							ntxSession.send("settings.set", "timefrmt", newValue);
-							ntxSession.send("sysUI.say", "Reload NovaOS for the changes to take effect.");
+							ntxSession.send("sysUI.toast", "Reload NovaOS for the changes to take effect.");
+							console.log("timfired")
 						});
 
 						let selinp2 = document.getElementById("defSearchEngine");
@@ -2128,7 +2136,7 @@
 					<div class="settingName"><b>Reset Settings</b>
 						<p>Reset to default settings.</p>
 					</div>
-					<button style="margin-top: 5px;float: right;" onclick="restsettings();" danger>Reset</button>
+					<button style="float: right;" onclick="restsettings();" danger>Reset</button>
 					<script>
 						async function restsettings() {
 							try {
@@ -2308,42 +2316,34 @@
 				</div>
 
 			</segr>
-			<segr>
-				<script>
-					async function updefapps(elem) {
-						try {
-							elem.innerHTML = "Installing...";
-							await window.parent.installdefaultapps();
-							elem.innerHTML = "Update again";
-						} catch (error) {
-							console.error("Error updating default apps:", error);
-						}
+			<script>
+				async function updefapps(elem) {
+					try {
+						elem.innerHTML = "Installing...";
+						await window.parent.installdefaultapps();
+						elem.innerHTML = "Update again";
+					} catch (error) {
+						console.error("Error updating default apps:", error);
 					}
+				}
 
-					async function edituserpfp() {
-						let fileid = await ntxSession.send("olp.useHandler", "file_manager", { "opener": 'any', "dir": "Downloads/" })
-						ntxSession.send("fileGet.byId", fileid)
-							.then(async (url) => {
-								let content = url?.content;
-								if (content) {
-									await window.parent.sharedStore.set(window.parent.CurrentUsername, "icon", content);
-									document.getElementById("userpfp").src = content;
-								} else {
-									ntxSession.send("sysUI.toast", "Unsupported file type");
-								}
-							})
-							.catch((error) => {
-								console.error("Error setting profile picture:", error);
-							});
-					}
-				</script>
-				<div setting>
-					<div class="settingName"><b>Update Default Apps</b>
-						<p>Update or reinstall deleted or corrupted versions of default apps.</p>
-					</div>
-					<button style="margin-top: 5px;float: right;" onclick="updefapps(this)">Update</button>
-				</div>
-			</segr>
+				async function edituserpfp() {
+					let fileid = await ntxSession.send("olp.useHandler", "file_manager", { "opener": 'any', "dir": "Downloads/" })
+					ntxSession.send("fileGet.byId", fileid)
+						.then(async (url) => {
+							let content = url?.content;
+							if (content) {
+								await window.parent.sharedStore.set(window.parent.CurrentUsername, "icon", content);
+								document.getElementById("userpfp").src = content;
+							} else {
+								ntxSession.send("sysUI.toast", "Unsupported file type");
+							}
+						})
+						.catch((error) => {
+							console.error("Error setting profile picture:", error);
+						});
+				}
+			</script>
 			<h1>Password</h1>
 			<segr>
 				<div setting id="changpassthingy" class="spread">
@@ -2383,6 +2383,34 @@
 				})();
 			</script>
 
+			<h3>Related settings</h3>
+
+			<segr>
+				<div setting type="advsetnav" windowopener="User" onclick="openCity(event, 'storage')">
+					<i class="material-symbols-rounded advseticon">storage</i>
+					<div class="advsetnavbtnprt">
+						<div>
+							<b>Storage</b>
+							<p>Stats, actions and more...</p>
+						</div>
+						<button class="advancedsetsredbtn"><span class="material-symbols-rounded">
+								chevron_right
+							</span></button>
+					</div>
+				</div>
+				<div setting type="advsetnav" windowopener="User" onclick="openCity(event, 'network')">
+					<i class="material-symbols-rounded advseticon">language</i>
+					<div class="advsetnavbtnprt">
+						<div>
+							<b>Network</b>
+							<p>Manage network connections...</p>
+						</div>
+						<button class="advancedsetsredbtn"><span class="material-symbols-rounded">
+								chevron_right
+							</span></button>
+					</div>
+				</div>
+			</segr>
 		</div>
 
 		<div id="battery" class="tabcontent advancedsettab">
@@ -2645,6 +2673,15 @@
 					</div>
 				</div>
 			</div>
+			<h1>Default apps</h1>
+			<segr>
+				<div setting>
+					<div class="settingName"><b>Update Default Apps</b>
+						<p>Update or reinstall deleted or corrupted versions of default apps.</p>
+					</div>
+					<button style="margin-top: 5px;float: right;" onclick="updefapps(this)">Update</button>
+				</div>
+			</segr>
 			<script>
 				function handleAppClick(event, key) {
 					openCity(event, 'appsets');
@@ -2661,6 +2698,9 @@
 
 						let perms = registry[key].perms || [];
 						let riskLevel = perms.length + " permissions";
+						if (perms.includes("unsandboxed")) {
+							riskLevel = "Full access";
+						}
 						let singularApp = document.createElement("div");
 						singularApp.className = "singular_app";
 
@@ -2697,16 +2737,35 @@
 					document.querySelector("#big_app_card .appname").textContent = name;
 					document.querySelector("#app_setting_nav").textContent = name;
 
+					document.querySelectorAll('.appInfoMngBtns')[0].querySelector('button').onclick = function () {
+						window.parent.remfile(appID);
+					};
+
+					document.querySelectorAll('.appInfoMngBtns')[1].querySelector('button').onclick = function () {
+						window.parent.extractAndRegisterCapabilities(appID);
+					};
+
+					document.querySelectorAll('.appInfoMngBtns')[2].querySelector('button').onclick = async function () {
+						await ntxSession.send("olp.useHandler", "text_editor", appID);
+					};
+
+					document.getElementById("openappwindowbtn").onclick = async function () {
+						let appWindow = await window.parent.openfile(appID);
+					};
+
 					let permsContainer = document.querySelector("#app_perms_toggles");
 					permsContainer.innerHTML = '';
 
 					let namespaces = await window.parent.returnallnamespaces();
 
 					namespaces.sort((a, b) => {
+						if (a === 'unsandboxed') return -1;
+						if (b === 'unsandboxed') return 1;
 						if (appData.perms && appData.perms.includes(a) && !appData.perms.includes(b)) return -1;
 						if (appData.perms && !appData.perms.includes(a) && appData.perms.includes(b)) return 1;
 						return 0;
 					});
+
 
 					for (let i = 0; i < namespaces.length; i++) {
 						let ns = namespaces[i];
@@ -2771,13 +2830,45 @@
 						<div class="appdets">
 							<div class="appname">App</div>
 						</div>
-						<span class="app_options material-symbols-rounded">
+						<span id="openappwindowbtn" class="app_options material-symbols-rounded">
 							open_in_new
 						</span>
 					</div>
 				</div>
 			</segr>
-			<h3>Permissions</h3>
+			<segr>
+				<div class="buttongrp">
+					<div class="btngrpelem appInfoMngBtns">
+						<button>
+							<span class="material-symbols-rounded">
+								delete_forever
+							</span>
+						</button>
+						<b>Remove app</b>
+					</div>
+					<div class="divider"></div>
+					<div class="btngrpelem appInfoMngBtns">
+						<button>
+							<span class="material-symbols-rounded">
+								download
+							</span>
+						</button>
+						<b>Reinstall</b>
+					</div>
+					<div class="divider"></div>
+					<div class="btngrpelem appInfoMngBtns">
+						<button>
+
+							<span class="material-symbols-rounded">
+								frame_inspect
+							</span>
+						</button>
+						<b>View source</b>
+					</div>
+				</div>
+
+			</segr>
+			<h1>Permissions</h1>
 			<segr id="app_perms_toggles">
 				<div setting>
 					<div class="settingName">
@@ -2964,7 +3055,8 @@
 					<input class="colorpickerui" id="text-high" data-variable="--col-txth"></input>
 				</div>
 			</segr>
-			<h3>Nova Nav</h3>
+			<h3>Nova Nav <div class="betatag">beta</div>
+			</h3>
 			<segr>
 				<div setting>
 					<div class="settingName">
@@ -3306,7 +3398,8 @@
 				</div>
 			</segr>
 
-			<h1>Icon pack</h1>
+			<h1>Icon pack <div class="betatag">beta</div>
+			</h1>
 			<segr>
 				<div class="inpbox" type="textInput">
 					<span>Apply an icon pack: </span>
@@ -3687,7 +3780,7 @@
 
 						const selected = document.createElement('div');
 						selected.className = 'custom-select';
-						selected.textContent = select.options[select.selectedIndex]?.textContent || '';
+						selected.textContent = select.options[select.selectedIndex]?.textContent || 'Set';
 
 						const dialog = document.createElement('dialog');
 						dialog.className = 'custom-select-dialog';
@@ -3711,6 +3804,18 @@
 
 						dialog.appendChild(optionsBox);
 
+						const reposition = () => {
+							if (!dialog.open) return;
+							const rect = selected.getBoundingClientRect();
+							if (rect.bottom < 0 || rect.top > window.innerHeight || rect.left < 0 || rect.right > window.innerWidth) {
+								dialog.close();
+								openDialog = null;
+								return;
+							}
+							optionsBox.style.top = `${rect.bottom - 15}px`;
+							optionsBox.style.left = `${rect.left - 20}px`;
+						};
+
 						selected.onclick = () => {
 							if (dialog.open) {
 								dialog.close();
@@ -3721,11 +3826,20 @@
 								openDialog.close();
 							}
 							dialog.showModal();
-							const rect = selected.getBoundingClientRect();
-							optionsBox.style.top = `${rect.bottom - 20}px`;
-							optionsBox.style.left = `${rect.left - 20}px`;
+							reposition();
+							window.scrollBy({
+								top: selected.getBoundingClientRect().top - 16,
+								behavior: 'smooth'
+							});
 							openDialog = dialog;
 						};
+
+						dialog.addEventListener('click', e => {
+							if (e.target === dialog) {
+								dialog.close();
+								openDialog = null;
+							}
+						});
 
 						document.addEventListener('click', e => {
 							if (!wrapper.contains(e.target) && openDialog === dialog) {
@@ -3733,6 +3847,8 @@
 								openDialog = null;
 							}
 						});
+
+						wrapper.addEventListener('scroll', reposition, true);
 
 						wrapper.appendChild(selected);
 						wrapper.appendChild(dialog);
@@ -3742,7 +3858,6 @@
 						dialog.close();
 					});
 				}
-
 
 				replaceSelects();
 			} catch (e) { }
