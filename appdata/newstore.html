@@ -122,7 +122,7 @@
 			}
 
 			.tab {
-				width: 42px;
+				width: 55px;
 				flex-grow: 0;
 				overflow: hidden;
 				min-width: 0;
@@ -277,20 +277,16 @@
 			margin-left: 5px;
 		}
 
-		
+
 		.app {
-			padding: 4px 9px;
 			animation: fa 0.5s;
-			border-radius: 11px;
-			box-shadow: 0 14px 0px -10px inset limegreen;
-			padding-top: 12px;
+			border-radius: var(--siz-radius1);
 			background: var(--col-bg2);
 			color: var(--col-txt1);
 			border: 1px solid #ffffff1c;
 			display: flex;
-			margin: 10px;
 			flex: 1;
-			min-width: 118px;
+			min-width: 200px;
 			transition: .2s;
 			user-select: none;
 			cursor: pointer;
@@ -298,6 +294,54 @@
 			padding-bottom: 16px;
 			flex-direction: column;
 			flex-wrap: wrap;
+			overflow: hidden;
+
+			& p {
+				opacity: 0.7;
+				padding: .5em;
+			}
+
+			&>.appfes {
+				display: flex;
+				flex-direction: row;
+				align-items: center;
+				gap: .5em;
+				height: 67px;
+				background: var(--col-bg3);
+				padding: .5em;
+
+				.appdet {
+					display: flex;
+					font-size: var(--font-size-small);
+					border: none;
+					flex: 1;
+					overflow: hidden;
+					width: 0;
+					text-overflow: ellipsis;
+					flex-direction: column;
+					white-space: nowrap;
+
+					&>* {
+						overflow: hidden;
+						text-overflow: ellipsis;
+						white-space: nowrap;
+					}
+				}
+
+				&>.appicon {
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					font-size: 1.5em;
+					width: 50px;
+					height: 50px;
+					padding: .5em;
+					border-radius: var(--siz-radius2);
+					border: 1px solid #8a8a8a75;
+					text-shadow: 0 0 10px #00000082;
+					opacity: 1;
+				}
+			}
 		}
 
 		.app:hover {
@@ -307,33 +351,18 @@
 		}
 
 		.app h3 {
-			margin: 10px 0px;
-			margin-bottom: 1px;
+			margin: 0;
+			margin-bottom: 3px;
 			font-weight: normal;
-			font-size: var(--font-size-subheading);
+			font-size: 1.3em;
 		}
 
-		.app .appfes {
-			display: inline-block;
-		}
-
-		.app .appfes div {
-			display: inline-block;
-			font-size: var(--font-size-small);
-			border: none;
-			opacity: 0.5;
-			max-width: 81px;
-			overflow: hidden;
-			text-overflow: ellipsis;
-		}
-
-		
-		.section {
+		.applist {
 			padding: 0;
 			align-items: stretch;
-			justify-content: flex-start;
 			display: grid;
-			grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+			gap: .7em;
+			grid-template-columns: repeat(auto-fit, minmax(180px, 2fr));
 		}
 
 		#defapppack {
@@ -346,7 +375,13 @@
 			grid-template-columns: repeat(auto-fit, minmax(134px, 1fr));
 		}
 
-		
+		& .catosmall {
+			font-size: 1em;
+			opacity: .5;
+			margin: .5em 0;
+			display: flex;
+		}
+
 		#offlinesug {
 			position: absolute;
 			top: 0;
@@ -369,6 +404,237 @@
 			width: 300px;
 			font-size: small;
 		}
+
+		.themecolorssing {
+			width: 0;
+			flex: 1;
+			height: 20px;
+		}
+
+		.themesing {
+			background-color: var(--col-bg2);
+			padding: 0.5rem;
+			border-radius: 0.5rem;
+			text-overflow: ellipsis;
+			white-space: break-spaces;
+			overflow: hidden;
+			display: flex;
+			flex-direction: column;
+			transition: .2s ease-out;
+			gap: 0.5rem;
+		}
+
+		.themeinfodiv {
+			display: flex;
+			align-items: flex-start;
+			justify-content: space-between;
+			gap: 0.3rem;
+			flex-direction: column;
+			width: 0;
+			flex: 1;
+			overflow-x: hidden;
+		}
+
+		.themedetdiv {
+			display: flex;
+			align-items: flex-start;
+			justify-content: space-between;
+			flex-direction: row;
+			gap: 0.5rem;
+		}
+
+		.themedetdiv button {
+			display: flex;
+			border: 0;
+
+			background-color: var(--col-good);
+			color: var(--col-txth);
+			padding: 0.3rem;
+			border-radius: 0.5rem;
+		}
+
+		.themecolors {
+			display: flex;
+			flex-direction: row;
+			flex-wrap: nowrap;
+			background-size: cover !important;
+			background-position: center !important;
+			border-radius: 0.5rem;
+		}
+
+		.openablewin {
+			display: none;
+		}
+
+		path,
+		svg {
+			border-radius: 0.5rem;
+			height: fit-content;
+		}
+
+		.themename {
+			flex: 1;
+			text-overflow: ellipsis;
+		}
+
+		.themeauth {
+			opacity: 0.5;
+			font-size: .8em;
+		}
+
+		.sewid>button {
+			background: transparent;
+			color: inherit;
+			border: none;
+			border-bottom: 3px solid transparent;
+			transition: .3s;
+			padding: 0;
+
+			&.active-filter {
+				border-bottom: 3px solid var(--col-bgh);
+			}
+		}
+
+		div#themenavsel {
+			margin: .5em 0;
+			display: flex;
+			gap: 1em;
+		}
+
+
+
+		#installer {
+			&>nav {
+				background: none;
+				padding: 0;
+			}
+
+			&>.appname {
+				display: inline-block;
+				width: calc(100% - 110px);
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				width: 0;
+				flex: 1;
+				margin-bottom: 0.3rem;
+			}
+
+			&>button {
+				float: right;
+				padding: 5px 15px;
+				border: none;
+				background: #43A047;
+				color: var(--col-txt1);
+				outline: 0;
+				border-radius: 4px;
+				width: fit-content;
+				cursor: pointer;
+				font-family: inherit;
+			}
+
+			&>button:hover {
+				background-color: var(--col-bg3);
+			}
+
+			& #installerappname {
+				font-size: 1.5em;
+				margin: 0;
+			}
+
+			& .dostuffwithit {
+				display: flex;
+				flex-direction: row;
+				align-items: stretch;
+				gap: 1px;
+				border-radius: var(--siz-radius1);
+				overflow: hidden;
+				height: fit-content;
+
+				&>button {
+					color: white;
+					border: none;
+					padding: .5em 1em;
+					background-color: #43A047 !important;
+
+					&:hover {
+						background-color: #3c933c;
+					}
+				}
+			}
+
+			.containdiv {
+				max-width: 500px;
+				margin: auto;
+
+				&>#installerappdesc h4 {
+					font-weight: normal;
+					opacity: .5;
+					margin: 1em 0;
+					margin-bottom: .3em;
+					font-size: small;
+				}
+			}
+
+
+			.installerappbasedata {
+				display: flex;
+				flex-direction: row;
+				justify-content: space-between;
+				margin: 1em 0;
+				align-items: center;
+			}
+
+			span.advancedsetsbackbtn.material-symbols-rounded {
+				display: inline-flex;
+				font-size: 20px;
+				background: var(--col-bg2);
+				color: var(--colors-text-section);
+				padding: 0.3rem;
+				border-radius: 50%;
+				align-items: center;
+				justify-content: center;
+				cursor: pointer;
+			}
+
+
+			#apptheme {
+				display: grid;
+				width: 100%;
+				justify-content: center;
+				align-items: center;
+				justify-items: center;
+				padding: 1rem 0;
+				font-size: var(--font-size-subheading);
+				background: var(--col-bg2);
+				border-radius: 5px;
+				text-shadow: 0 0 10px BLACK;
+			}
+
+			#installer #installerappby {
+				display: block;
+				opacity: 0.7;
+				margin-bottom: 10px;
+				font-weight: normal;
+			}
+
+			#installer p button {
+				float: none;
+				background: var(--col-bgh);
+			}
+
+			.srca {
+				margin-top: 1em;
+				padding-top: .5em;
+				border-top: 1px solid #8080805e;
+				display: flex;
+				flex-direction: row;
+				justify-content: flex-start;
+				opacity: .5;
+				font-size: small;
+				gap: 1em;
+			}
+		}	
 	</style>
 </head>
 
@@ -377,27 +643,64 @@
 		<div class="tab">
 			<div id="navSearch">
 				<div class="searchInputSec btnlike">
-					<input id="searchInput" placeholder="Search settings..." spellcheck="none" autocomplete="off">
+					<input id="searchInput" placeholder="Search apps..." spellcheck="none" autocomplete="off">
 					<i class="material-symbols-rounded">search</i>
 				</div>
 				<div id="searchResults" class="btnlike"></div>
 			</div>
 			<button class="tablinks btnlike" onclick="openCity(event, 'system')" id="defaultOpen"><i
 					class="material-symbols-rounded">apps</i> Apps</button>
-			<button class="tablinks btnlike" onclick="openCity(event, 'system2')"><i
-					class="material-symbols-rounded">brush</i> Themes</button>
-
+			<button class="tablinks btnlike" onclick="openCity(event, 'games')"><i
+					class="material-symbols-rounded">sports_esports</i> Games</button>
+			<button class="tablinks btnlike" onclick="openCity(event, 'system2'); 
+						loadThemes();"><i class="material-symbols-rounded">brush</i> Themes</button>
+			<button class="tablinks btnlike" onclick="openCity(event, 'system')"><i
+					class="material-symbols-rounded">sync_saved_locally</i> My Apps</button>
 		</div>
 
 		<div id="system" class="tabcontent">
 			<div id="sugapps"></div>
 		</div>
 
+		<div id="games" class="tabcontent">
+			<div id="game-section" class="applist"></div>
+		</div>
+
 		<div id="system2" class="tabcontent">
-			<h1>Page 2</h1>
-			<div id="themeslist"></div>
+
+			<div id="themenavsel" class="sewid">
+				<button data-filter="all" class="active-filter">All</button>
+				<button data-filter="Dark">Dark</button>
+				<button data-filter="Light">Light</button>
+				<button data-filter="Nova">Nova</button>
+				<button data-filter="Accelerator">Accelerator</button>
+			</div>
+			<div id="themeslist" class="applist"></div>
+		</div>
+		<div id="installer" class="tabcontent">
+			<h1><span class="material-symbols-rounded advancedsetsbackbtn" onclick="openCity(event, 'system');">
+					arrow_back
+				</span> Back</h1>
+			<div class="containdiv">
+				<div id="apptheme">
+					Theme
+				</div>
+				<div class="installerappbasedata">
+					<h1 class="appname" id="installerappname">Loading...</h1>
+					<div class="dostuffwithit">
+						<button id="openbtn">Open</button>
+						<button id="installButton">Install</button>
+						<button id="tryButton">Try</button>
+						<button id="updateButton">Update</button>
+					</div>
+				</div>
+				<b id="installerappby">...</b>
+				<b>Overview</b>
+				<p id="installerappdesc">...</p>
+			</div>
 		</div>
 	</container>
+
 	<script>
 		function openCity(evt, cityName) {
 			currentpage = cityName;
@@ -423,6 +726,21 @@
 		}
 
 		document.getElementById("defaultOpen").click();
+
+
+		const activeFilters = new Set();
+		document.querySelectorAll('#themenavsel button').forEach(button => {
+			button.addEventListener('click', () => {
+				const filter = button.getAttribute('data-filter');
+				activeFilters.clear();
+				document.querySelectorAll('#themenavsel button').forEach(btn => btn.classList.remove('active-filter'));
+				if (filter != 'all') {
+					activeFilters.add(filter);
+				}
+				button.classList.add('active-filter');
+				loadThemes();
+			});
+		});
 
 		var networkretries = 0;
 		function loadThemes() {
@@ -651,7 +969,7 @@
 
 
 		async function fetchAppData() {
-			return await fetch('https://adthoughtsglobal.github.io/Nova-Store/db/database.json')
+			return await fetch('https://adthoughtsglobal.github.io/Nova-Store/db/v2.json')
 				.then(response => {
 					if (!response.ok) throw new Error('Network response was not ok');
 					return response.json();
@@ -660,21 +978,18 @@
 
 		function renderSections() {
 			document.getElementById("sugapps").innerHTML = `
-        <small>For NovaOS</small>
-        <div id="nova-section" class="section"></div>
-        <small>Apps</small>
         <div id="apps-section" class="section"></div>`;
 		}
 
 		async function populateApps(data) {
 			const vdevs = data.vdevs;
 			const featured = data.featured;
+			const categorySections = {};
 
-			data.data.sort((a, b) => Object.keys(a)[0].localeCompare(Object.keys(b)[0]));
+			data.apps.sort((a, b) => Object.keys(a)[0].localeCompare(Object.keys(b)[0]));
 
-			data.data.forEach(appDetails => {
+			data.apps.forEach(appDetails => {
 				const appName = appDetails.name;
-
 				const appDiv = createAppDiv(appName, appDetails, vdevs, featured);
 
 				if (featured.appName == appName) {
@@ -684,37 +999,76 @@
 					document.getElementById("featuredImg").src = featured.img;
 					document.getElementById("featured").setAttribute("onclick", `openappinstr('${appName}', ${JSON.stringify(appDetails)})`);
 					document.getElementById("featured").style.backgroundImage = `radial-gradient(circle at 0% 0%, ${appDetails.th}, var(--col-bg2))`;
-				} else if (appDetails.by === "adthoughtsglobal") {
-					document.getElementById("nova-section").appendChild(appDiv);
 				} else {
-					document.getElementById("apps-section").appendChild(appDiv);
+					const cat = appDetails.cat || "Others";
+					if (!categorySections[cat]) {
+						const section = document.createElement("div");
+						const title = document.createElement("small");
+						const list = document.createElement("div");
+
+						title.className = "catosmall";
+						title.innerText = cat;
+
+						list.className = "applist";
+
+						section.appendChild(title);
+						section.appendChild(list);
+						document.getElementById("apps-section").appendChild(section);
+
+						categorySections[cat] = list;
+					}
+					categorySections[cat].appendChild(appDiv);
 				}
 			});
+
+
+			data.games.forEach(gameDetails => {
+				const gameName = gameDetails.name;
+				const gameDiv = createAppDiv(gameName, gameDetails, vdevs, featured);
+				document.getElementById("game-section").appendChild(gameDiv);
+			});
 		}
+
 
 		function createAppDiv(appName, appDetails, vdevs, featured) {
 			const appDiv = document.createElement('div');
 			appDiv.className = 'app';
 			appDiv.setAttribute("onclick", `openappinstr('${appName}', ${JSON.stringify(appDetails)})`);
 
-			appDiv.style.boxShadow = `0 14px 0px -10px inset ${appDetails.th}`;
 			const appfesDiv = document.createElement('div');
 			appfesDiv.className = 'appfes';
 			appfesDiv.id = "appfes-" + appName;
 
+			const appdetDiv = document.createElement('div');
+			appdetDiv.className = 'appdet';
+			const appGenIcon = document.createElement('div');
+			appGenIcon.className = 'appicon';
+			const bgColor = appDetails.th || "#7aff7a";
+			appGenIcon.style.backgroundColor = bgColor;
+			appGenIcon.classList.add("material-symbols-rounded");
+			appGenIcon.innerText = appDetails.symbol || 'rocket_launch';
+
+			const hexToLuminance = hex => {
+				const rgb = hex.replace('#', '').match(/.{2}/g).map(x => parseInt(x, 16) / 255);
+				const lum = rgb.map(c => c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4));
+				return 0.2126 * lum[0] + 0.7152 * lum[1] + 0.0722 * lum[2];
+			};
+
+			const luminance = hexToLuminance(bgColor);
+			appGenIcon.style.color = luminance > 0.5 ? 'black' : 'white';
+
+			appfesDiv.appendChild(appGenIcon);
+
+
 			const h3 = document.createElement('h3');
 			h3.textContent = appName;
-			appfesDiv.appendChild(h3);
+			appdetDiv.appendChild(h3);
 
 			const appInfoDiv = document.createElement('div');
-			appInfoDiv.textContent = appDetails.by;
-			appfesDiv.appendChild(appInfoDiv);
+			appInfoDiv.innerHTML = `<div class="verifmark material-symbols-rounded">${(vdevs.includes(appInfoDiv.textContent) ? "verified " : "")}</div>` + appDetails.by;
+			appdetDiv.appendChild(appInfoDiv);
 
-			const cat = document.createElement('div');
-			cat.setAttribute("class", "material-symbols-rounded catonappdiv");
-			cat.textContent = vdevs.includes(appInfoDiv.textContent) ? "verified " : "";
-			cat.textContent += appDetails.cat === "game" ? "sports_esports" : "widgets";
-			appfesDiv.appendChild(cat);
+			appfesDiv.appendChild(appdetDiv);
 
 			appDiv.appendChild(appfesDiv);
 
@@ -735,89 +1089,93 @@
 			document.body.removeChild(dummyElement);
 			return rotatedColor;
 		}
-
 		function openappinstr(appName, appDetails) {
 			const installButton = document.getElementById("installButton");
+			const openButton = document.getElementById("openbtn");
+			const tryButton = document.getElementById("tryButton");
+			const updateButton = document.getElementById("updateButton");
 
 			installButton.className = 'insbtn';
-			let appald = window.parent.getFileNamesByFolder("Apps")
-				.then(appald => {
-					try {
-						const h3 = document.getElementById("installerappname");
-						h3.textContent = appName;
-						document.getElementById("installerappby").textContent = "" + appDetails.by;
-						const p = document.getElementById("installerappdesc");
-						const appDescItem = appDetails?.desc || '';
-						const appcatitem = appDetails?.cat || '';
-						const applditem = appDetails?.ldesc || '';
-						const appthitem = appDetails?.th || '';
-						const appqtitem = appDetails?.qt || '';
 
-						document.getElementById("apptheme").innerHTML = ((appqtitem) ? appqtitem : appcatitem);
-						document.getElementById("apptheme").style.background = ((appthitem) ? appthitem : "#141414");
+			window.parent.getFileNamesByFolder("Apps").then(appald => {
+				try {
+					document.getElementById("installerappname").textContent = appName;
+					document.getElementById("installerappby").textContent = "" + appDetails.by;
 
-						p.innerHTML = appDescItem + '<br> <br><b>Description</b> <br>';
-						if (applditem !== undefined) {
-							p.innerHTML += applditem;
-						} else {
-							p.innerHTML += `Overview not available yet.`;
-						}
+					const descContainer = document.getElementById("installerappdesc");
+					descContainer.innerHTML = "";
 
-						let sourceurl = appDetails.src
-						if (sourceurl.startsWith("/Nova-Store")) {
-							sourceurl = "Nova Store"
-						}
+					const descHeader = document.createElement("h4");
+					descHeader.textContent = "Summary";
+					const descContent = document.createElement("div");
+					descContent.textContent = appDetails?.desc || '';
 
-						p.innerHTML += `<br><a class="srca">Hosted on: ` + sourceurl + `
-					<br>Version: ` + appDetails.ver + `</a>`;
+					const longDescHeader = document.createElement("h4");
+					longDescHeader.textContent = "Description";
+					const longDescContent = document.createElement("div");
+					longDescContent.textContent = appDetails?.ldesc || "Overview not available yet.";
 
-						p.innerHTML += `<br><button>#` + appcatitem + `</button>`
+					const versionInfo = document.createElement("div");
+					versionInfo.innerHTML = `<span>Hosted on: ${appDetails.src.startsWith("/Nova-Store") ? "Nova Store" : appDetails.src}</span><span>Version: ${appDetails.ver}</span><span>${appDetails.cat || 'Other'}</span>`;
+					versionInfo.className = "srca";
 
-						document.getElementById('openbtn').style.display = "block"
+					descContainer.appendChild(descHeader);
+					descContainer.appendChild(descContent);
+					descContainer.appendChild(longDescHeader);
+					descContainer.appendChild(longDescContent);
+					descContainer.appendChild(versionInfo);
 
-						function getapnme(x) {
-							return x.split('.')[0];
-						}
+					const appthitem = appDetails?.th || '';
+					const appqtitem = appDetails?.qt || '';
+					const appcatitem = appDetails?.cat || '';
 
-						if (appald.some(app => getapnme(app.name) === appName)) {
-							const appflor = appald.find(app => getapnme(app.name) === appName);
-							document.getElementById('openbtn').innerText = "Open";
-							document.getElementById('openbtn').onclick = async function () {
-								window.parent.openfile(appflor.id)
-							};
-							installButton.textContent = 'Update';
-							installButton.style.backgroundColor = "#2f2f2f";
+					document.getElementById("apptheme").innerHTML = (appqtitem || appcatitem);
+					document.getElementById("apptheme").style.background = (appthitem || "#141414");
 
-							installButton.onclick = function () {
-								installapp(appDetails, appName, this, "full");
-							};
-						} else {
-							installButton.textContent = 'Install';
-							installButton.style.backgroundColor = "var(--col-good)";
-							installButton.onclick = function () {
-								installapp(appDetails, appName, this, "full");
-							};
+					function getBaseName(name) {
+						return name.split('.')[0];
+					}
 
-							const openButton = document.getElementById('openbtn');
-							openButton.innerText = "Try";
-							openButton.onclick = async function () {
-								const item = appDetails.src; // Find the correct item
-								let prefixurl = "";
-								if (!item.startsWith("http")) {
-									prefixurl = "https://adthoughtsglobal.github.io/";
-								}
-								const response = await fetch(prefixurl + item);
-								const content = await response.text();
-								window.parent.openwindow(appName, content); // Use appName instead of app.name
-							};
-						}
-						document.getElementById("installer").showModal()
-					} catch (error) {
-						console.error(error);
-					};
-				});
+					const existingApp = appald.find(app => getBaseName(app.name) === appName);
+
+					openButton.style.display = "none";
+					tryButton.style.display = "none";
+					updateButton.style.display = "none";
+					installButton.style.display = "none";
+
+					if (existingApp) {
+						openButton.style.display = "inline-block";
+						openButton.innerText = "Open";
+						openButton.onclick = () => window.parent.openfile(existingApp.id);
+
+						updateButton.style.display = "inline-block";
+						updateButton.innerText = "Update";
+						updateButton.onclick = () => installapp(appDetails, appName, updateButton, "full");
+					} else {
+						tryButton.style.display = "inline-block";
+						tryButton.innerText = "Try";
+						tryButton.onclick = async () => {
+							let prefix = "";
+							if (!appDetails.src.startsWith("http")) {
+								prefix = "https://adthoughtsglobal.github.io/";
+							}
+							const response = await fetch(prefix + appDetails.src);
+							const content = await response.text();
+							window.parent.openwindow(appName, content);
+						};
+
+						installButton.style.display = "inline-block";
+						installButton.innerText = "Install";
+						installButton.style.backgroundColor = "var(--col-good)";
+						installButton.onclick = () => installapp(appDetails, appName, installButton, "full");
+					}
+
+					openCity(event, 'installer');
+				} catch (error) {
+					console.error(error);
+				}
+			});
 		}
-
 
 		async function greenflag() {
 			const data = myWindow?.params?.data?.opener;
