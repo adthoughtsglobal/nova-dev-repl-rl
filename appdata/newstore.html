@@ -555,6 +555,7 @@
 					color: white;
 					border: none;
 					padding: .5em 1em;
+            min-width: 5.5em;
 					background-color: #43A047 !important;
 
 					&:hover {
@@ -635,6 +636,37 @@
 				gap: 1em;
 			}
 		}	
+
+		@keyframes pop {
+			0% {
+				opacity: 0;
+			}
+			100% {
+				opacity: 1;
+			}
+		}
+
+		.loader22 {
+			width: 15px;
+			height: 15px;
+			border-radius: 50%;
+			display: inline-block;
+			border-top: 3px solid var(--col-txt1);
+			border-right: 3px solid transparent;
+			box-sizing: border-box;
+			animation: slideIn .3s ease-out, rotation 1s linear infinite;
+		}
+
+		@keyframes rotation {
+			0% {
+				transform: rotate(0deg);
+			}
+
+			100% {
+				transform: rotate(360deg);
+			}
+		}
+
 	</style>
 </head>
 
@@ -690,7 +722,6 @@
 					<div class="dostuffwithit">
 						<button id="openbtn">Open</button>
 						<button id="installButton">Install</button>
-						<button id="tryButton">Try</button>
 						<button id="updateButton">Update</button>
 					</div>
 				</div>
@@ -921,11 +952,12 @@
 				if (method == 'icononly') {
 					obj.innerHTML = `<div class="material-symbols-rounded installbtnicn">pending</div>`
 				} else {
-					obj.innerHTML = `Checking...`
+					obj.innerHTML = `<div class='loader22'></div>`
 				}
 				const response = await fetch(prefixurl + x.src);
 				const content = await response.text();
 				await window.parent.createFile("Apps", appName, "app", content);
+				openappinstr(appName, x);
 				setTimeout(() => {
 					if (method == 'icononly') {
 						obj.innerHTML = `<div class="material-symbols-rounded installbtnicn">check</div>`;
@@ -1092,7 +1124,6 @@
 		function openappinstr(appName, appDetails) {
 			const installButton = document.getElementById("installButton");
 			const openButton = document.getElementById("openbtn");
-			const tryButton = document.getElementById("tryButton");
 			const updateButton = document.getElementById("updateButton");
 
 			installButton.className = 'insbtn';
@@ -1139,7 +1170,6 @@
 					const existingApp = appald.find(app => getBaseName(app.name) === appName);
 
 					openButton.style.display = "none";
-					tryButton.style.display = "none";
 					updateButton.style.display = "none";
 					installButton.style.display = "none";
 
@@ -1149,21 +1179,8 @@
 						openButton.onclick = () => window.parent.openfile(existingApp.id);
 
 						updateButton.style.display = "inline-block";
-						updateButton.innerText = "Update";
 						updateButton.onclick = () => installapp(appDetails, appName, updateButton, "full");
 					} else {
-						tryButton.style.display = "inline-block";
-						tryButton.innerText = "Try";
-						tryButton.onclick = async () => {
-							let prefix = "";
-							if (!appDetails.src.startsWith("http")) {
-								prefix = "https://adthoughtsglobal.github.io/";
-							}
-							const response = await fetch(prefix + appDetails.src);
-							const content = await response.text();
-							window.parent.openwindow(appName, content);
-						};
-
 						installButton.style.display = "inline-block";
 						installButton.innerText = "Install";
 						installButton.style.backgroundColor = "var(--col-good)";
