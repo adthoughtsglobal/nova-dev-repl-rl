@@ -185,7 +185,7 @@
 			align-items: center;
 			justify-content: center;
 
-			&:hover >.choosebtn {
+			&:hover>.choosebtn {
 				opacity: .3;
 			}
 
@@ -196,6 +196,7 @@
 				border: 1px solid #ffffff1f;
 				border-radius: 50%;
 				position: absolute;
+
 				&:hover {
 					opacity: 1;
 				}
@@ -525,6 +526,12 @@
 				animation: pop .3s;
 			}
 		}
+
+		#lyrics {
+			position: absolute;
+			z-index: 99;
+			text-shadow: 0 0 10px var(--col-bg1);
+		}
 	</style>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.0/color-thief.umd.js"></script>
 
@@ -532,6 +539,7 @@
 
 <body>
 
+	<input type="file" id="lrc_input" accept=".lrc" style="display: none;" />
 	<div class="mainUI">
 		<div class="screen">
 			<div id="queue" class="single_scrn">
@@ -576,6 +584,7 @@
 						more_horiz
 					</span>
 				</div>
+				<div id="lyrics">Lyrics show up here</div>
 			</div>
 		</div>
 		<div id="player">
@@ -631,6 +640,8 @@
 
 	<canvas id="blobCanvas" width="512" height="512" style="display:none;"></canvas>
 	<script>
+
+
 		let now_playing = document.querySelector(".now-playing");
 		let primaryalert = document.querySelector("#primaryalert");
 
@@ -800,14 +811,26 @@
 
 					const detailsWid = document.createElement('div');
 					detailsWid.className = 'detailswid';
-
 					const trackNameElement = document.createElement('b');
 					trackNameElement.className = 'TrackName';
-					trackNameElement.textContent = trackName;
+
+					let artistText = track.artist;
+					let trackName2 = trackName;
+					if ((!artistText || artistText.toLowerCase() === 'unknown' || artistText.toLowerCase() === 'unknown artist') && trackName.includes('-')) {
+						const parts = trackName.split('-');
+						const possibleArtist = parts[0].trim();
+						if (possibleArtist.split(/\s+/).length < 3) {
+							artistText = possibleArtist;
+							trackName2 = parts.slice(1).join('-').trim();
+						}
+					}
+
+					trackNameElement.textContent = trackName2 || trackName;
 
 					const artistName = document.createElement('span');
 					artistName.className = 'ArtistName';
-					artistName.textContent = track.artist;
+					artistName.textContent = artistText;
+
 
 					detailsWid.appendChild(trackNameElement);
 					detailsWid.appendChild(artistName);
@@ -865,8 +888,18 @@
 				jsmediatags.read(blob, {
 					onSuccess: function (tag) {
 						const metadata = tag.tags;
+						if ((!metadata.artist || metadata.artist.toLowerCase() === 'unknown') && trackName.includes('-')) {
+							const parts = trackName.split('-');
+							const possibleArtist = parts[0].trim();
+							if (possibleArtist.split(/\s+/).length < 3) {
+								metadata.artist = possibleArtist;
+								trackName = parts.slice(1).join('-').trim();
+							}
+						}
+
 						track_name.textContent = trackName;
 						track_artist.textContent = metadata.artist || 'Unknown Artist';
+
 						now_playing.textContent = "Playing " + (Object.keys(track_list).indexOf(trackName) + 1) + " of " + Object.keys(track_list).length;
 
 						if (metadata.picture && metadata.picture.data) {
@@ -1258,6 +1291,7 @@
 		window.addEventListener('resize', resizeupdate);
 
 		let e = 1;
+		let firstTime = 1;
 		function toggleQueue() {
 			if (e == 1) {
 				document.getElementById("viztogglebtn").style.transform = "rotate(270deg)";
@@ -1269,6 +1303,7 @@
 					document.getElementById("visualizer").style.flex = "0";
 				}, 10);
 				e = 0;
+				firstTime = 0;
 			} else {
 				document.getElementById("viztogglebtn").style.transform = "rotate(90deg)";
 				const queue = document.getElementById("queue");
@@ -1279,12 +1314,83 @@
 				}, 250);
 				setTimeout(() => {
 					queue.style.display = "none";
+
+					loadVisualizerFromURL("https://novaos-web.github.io/plr/visualizers/fluid.js");
 				}, 500);
 				e = 1;
+				firstTime = 0;
 			}
 			resizeupdate();
 		}
 		toggleQueue();
+		const lyricsDiv = document.getElementById('lyrics');
+		const loadLyricsButton = lyricsDiv;
+			const lrcInput = document.getElementById('lrc_input');
+
+		loadLyricsButton.onclick = () => {
+
+			loadlyrica();
+			lrcInput.click()
+		};
+		function loadlyrica() {
+			let lyrics = [];
+			let currLine = -1;
+
+			lrcInput.onchange = () => {
+				const file = lrcInput.files[0];
+				if (!file) return;
+
+				const reader = new FileReader();
+				reader.onload = (e) => {
+					const text = e.target.result;
+					lyrics = parseLRC(text);
+					currLine = -1;
+					lyricsDiv.innerHTML = 'a';
+				};
+				reader.readAsText(file);
+			};
+
+			curr_track.ontimeupdate = () => {
+				if (!lyrics.length) return;
+
+				const currentTime = curr_track.currentTime;
+				for (let i = lyrics.length - 1; i >= 0; i--) {
+					if (currentTime >= lyrics[i].time) {
+						if (i !== currLine) {
+							currLine = i;
+							lyricsDiv.textContent = lyrics[i].text;
+						}
+						break;
+					}
+				}
+			};
+
+			curr_track.onloadeddata = () => {
+				lyrics = [];
+				currLine = -1;
+				lyricsDiv.innerHTML = 'lrc';
+			};
+
+			function parseLRC(text) {
+				const lines = text.split('\n');
+				const result = [];
+
+				for (const line of lines) {
+					const match = line.match(/\[(\d+):(\d+(?:\.\d+)?)\](.*)/);
+					if (match) {
+						const minutes = parseInt(match[1]);
+						const seconds = parseFloat(match[2]);
+						const time = minutes * 60 + seconds;
+						const text = match[3].trim();
+						result.push({ time, text });
+					}
+				}
+
+				result.sort((a, b) => a.time - b.time);
+				return result;
+			}
+		};
+	</script>
 	</script>
 </body>
 

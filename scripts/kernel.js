@@ -117,26 +117,30 @@ async function buildIframeApiBridge(appid, title, winuid, perms) {
         }
         return false;
     }
-
-    function sendLargeMessage(target, data, transactionId, chunkSize = 65536) {
-        try {
-            const json = JSON.stringify(data);
-            const totalChunks = Math.ceil(json.length / chunkSize);
-            for (let i = 0; i < totalChunks; i++) {
-                const chunk = json.slice(i * chunkSize, (i + 1) * chunkSize);
-                target.postMessage({
-                    transactionId, chunk, chunkIndex: i, totalChunks, isJson: true, success: true
-                }, '*');
-            }
-        } catch (error) {
-            console.warn("Failed to send large message:", error);
+function sendLargeMessage(target, data, transactionId, chunkSize = 65536) {
+    try {
+        const json = JSON.stringify(data);
+        if (json.length <= chunkSize) {
+            target.postMessage({ transactionId, result: data, isJson: true, success: true }, '*');
+            return;
         }
+        const totalChunks = Math.ceil(json.length / chunkSize);
+        for (let i = 0; i < totalChunks; i++) {
+            const chunk = json.slice(i * chunkSize, (i + 1) * chunkSize);
+            target.postMessage({
+                transactionId, chunk, chunkIndex: i, totalChunks, isJson: true, success: true
+            }, '*');
+        }
+    } catch (error) {
     }
+}
+
 
     async function handleNtxSessionMessage(event) {
         console.log(event.data)
         const { action, params, transactionId } = event.data;
         const contextID = genUID();
+        console.log(5345, appid)
         notificationContext[contextID] = {
             appID: appid,
             windowID: winuid

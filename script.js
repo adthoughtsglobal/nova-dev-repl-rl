@@ -1524,12 +1524,11 @@ async function notify(...args) {
 
 let toastInProgress = false;
 let totalDuration = 0;
-const minToastDuration = 3000;
 const maxToastDuration = 5000;
 let toastQueue = [];
 
-function toast(text, appId, duration = 5000) {
-	console.log("Toast: ", text, duration);
+function toast(text,regref, duration = 5000, ) {
+	console.log("Toast: ", duration);
 	let displayDuration = Math.min(duration, maxToastDuration);
 
 	if (toastInProgress) {
@@ -1537,16 +1536,16 @@ function toast(text, appId, duration = 5000) {
 	} else {
 		totalDuration = displayDuration;
 		toastInProgress = true;
-		displayToast(text, appId, displayDuration);
+		displayToast(text, displayDuration, regref);
 	}
 }
 
-function displayToast(text, appId, duration) {
+function displayToast(text, duration, regref) {
+	console.log("Toast4534: ", regref);
 	var titleb = document.getElementById('toastdivtext');
 	if (titleb) {
 		titleb.innerText = text;
-		console.log(appId);
-		(async () => { insertSVG(await getAppIcon(0, appId), document.getElementById('toasticon')); })();
+		(async () => { insertSVG(await getAppIcon(0, notificationContext[regref]?.appID), document.getElementById('toasticon')); })();
 
 		const windValues = Object.values(winds).map(wind => Number(wind.zIndex) || 0);
 		const maxWindValue = Math.max(...windValues);
