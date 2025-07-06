@@ -155,7 +155,7 @@ async function setuprotur() {
 }
 
 async function logoutofrtr() {
-	remSetting("roturLink");
+	remSettingKey("roturLink");
 	await roturExtension.logout();
 	roturExtension.disconnect();
 }
@@ -269,7 +269,7 @@ function convertTontxSession(jsCode) {
 
 		getSetting: "settings.get",
 		setSetting: "settings.set",
-		remSetting: "settings.remove",
+		remSettingKey: "settings.remove",
 		resetAllSettings: "settings.resetAll",
 		ensureAllSettingsFilesExist: "settings.ensurePreferencesFile",
 

@@ -1927,15 +1927,10 @@
 			let selectedFolder = await window.parent.showDropdownModal("Select a folder", "Move to", filteredFolders);
 
 			if (selectedFolder !== null) {
+				await moveFileToFolder(flid, selectedFolder);
 
-				if (fileData) {
-					await moveFileToFolder(flid, selectedFolder);
-
-					await liststuff();
-					listFiles(selectedFolder)
-				} else {
-					console.error("File not found!");
-				}
+				await liststuff();
+				listFiles(selectedFolder)
 			}
 		}
 
@@ -2046,8 +2041,8 @@
 			}
 		}
 		function removeEndSlash(str) {
-  return str.endsWith('/') ? str.slice(0, -1) : str;
-}
+			return str.endsWith('/') ? str.slice(0, -1) : str;
+		}
 
 
 		var currentreqID;

@@ -450,7 +450,7 @@ async function ensureFileExists(fileName = "preferences.json", dirPath = "System
         let currentPath = memory.root;
 
         for (let part of pathParts) {
-            part += "/"
+            part += "/";
             if (!currentPath[part]) {
                 currentPath[part] = {};
             }
@@ -462,11 +462,13 @@ async function ensureFileExists(fileName = "preferences.json", dirPath = "System
             const defaultData = defaultFileData[fullPath] || {};
             const fileDataUri = `data:application/json;base64,${btoa(JSON.stringify(defaultData))}`;
             await createFile(dirPath, fileName, "json", fileDataUri);
+            await updateMemoryData();
         }
     } catch (err) {
         console.error(`Error ensuring file ${fileName} exists in ${dirPath}:`, err);
     }
 }
+
 const pendingFetches = new Map();
 const settingCache = new Map();
 
@@ -532,17 +534,17 @@ async function getSetting(settingKey, fileName = "preferences.json", dirPath = "
     pendingFetches.set(cacheKey, fetchPromise);
     return fetchPromise;
 }
-
-
 async function setSetting(settingKey, settingValue, fileName = "preferences.json", dirPath = "System/") {
     return enqueueTask(async () => {
         try {
             await ensureFileExists(fileName, dirPath);
+            await updateMemoryData();
+
             const pathParts = dirPath.split('/').filter(Boolean);
             let currentPath = memory.root;
 
             for (let part of pathParts) {
-                part += "/"
+                part = part.endsWith("/") ? part : part + "/";
                 if (!currentPath[part]) {
                     console.error(`Folder ${part} not found in memory.`);
                     return;
@@ -551,13 +553,16 @@ async function setSetting(settingKey, settingValue, fileName = "preferences.json
             }
 
             const fileContent = currentPath[fileName];
+            if (!fileContent || !fileContent.id) {
+                console.error(`File ${fileName} not found in memory at ${dirPath}`);
+                return;
+            }
+
             let fileSettings = {};
 
-            if (fileContent) {
-                const existingBase64Data = await ctntMgr.get(fileContent.id);
-                if (existingBase64Data) {
-                    fileSettings = JSON.parse(decodeBase64Content(existingBase64Data));
-                }
+            const existingBase64Data = await ctntMgr.get(fileContent.id);
+            if (existingBase64Data) {
+                fileSettings = JSON.parse(decodeBase64Content(existingBase64Data));
             }
 
             fileSettings[settingKey] = settingValue;
@@ -577,7 +582,7 @@ async function setSetting(settingKey, settingValue, fileName = "preferences.json
     });
 }
 
-async function remSetting(settingKey, fileName = "preferences.json", dirPath = "System/") {
+async function remSettingKey(settingKey, fileName = "preferences.json", dirPath = "System/") {
     return enqueueTask(async () => {
         try {
             await ensureFileExists(fileName, dirPath);
@@ -696,6 +701,30 @@ async function ensureAllSettingsFilesExist() {
             console.error("Error ensuring all settings files exist:", error);
         }
     });
+}
+
+var appStorage = {
+    get: async (key, context) => {
+        context = notificationContext[context]; 
+        if (!key) return null;
+        await getSetting(key, context.appID+".json","System/appData/")
+    },
+    reset: async (key, context) => {
+        context = notificationContext[context]; 
+        if (!key) return null;
+        await resetSettings(key, context.appID+".json","System/appData/")
+    },
+    remove: async (key, context) => {
+        context = notificationContext[context]; 
+        if (!key) return null;
+        await remfile((await getFileByPath("System/appData/"+ context.appID+".json").id))
+    },
+    set: async (key, value, context) => {
+        context = notificationContext[context]; 
+        console.log(3597, context, key)
+        if (!key) return null;
+        await setSetting(key, value, context.appID+".json","System/appData/")
+    }
 }
 
 // memory management
@@ -887,7 +916,7 @@ async function remfile(ID) {
         } ``
         let filedat = await getFileNameByID(ID);
         if (mtpetxt(filedat) == "app") {
-            await remSetting(ID, "AppRegistry.json")
+            await remSettingKey(ID, "AppRegistry.json")
         }
         let fileRemoved = removeFileFromFolder(memory.root);
         if (!fileRemoved) {

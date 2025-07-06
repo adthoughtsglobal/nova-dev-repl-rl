@@ -956,7 +956,9 @@
 				}
 				const response = await fetch(prefixurl + x.src);
 				const content = await response.text();
-				await window.parent.createFile("Apps", appName, "app", content);
+				let resultappid = await window.parent.createFile("Apps", appName, "app", content);
+				console.log(46, resultappid, appName, x.ver);
+				await ntxSession.send("appStorage.set", resultappid, x.ver)
 				openappinstr(appName, x);
 				setTimeout(() => {
 					if (method == 'icononly') {

@@ -1830,7 +1830,7 @@ async function realgenDesktop() {
 			toast("It doesn't seem to work as the wallpaper...")
 			setbgimagetourl(novaFeaturedImage);
 			if (await getSetting("wall")) {
-				remSetting("wall");
+				remSettingKey("wall");
 			}
 		};
 	} catch (error) {

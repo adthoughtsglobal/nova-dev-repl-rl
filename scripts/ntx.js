@@ -33,10 +33,16 @@ class NTXSession {
         this.settings = {
             get: wrapAsync(getSetting),
             set: wrapAsync(setSetting),
-            remove: wrapAsync(remSetting),
+            remove: wrapAsync(remSettingKey),
             resetAll: wrapAsync(resetAllSettings),
             ensurePreferencesFile: wrapAsync(ensureAllSettingsFilesExist)
         };
+        this.appStorage = {
+            get: wrapAsync(appStorage.get),
+            set: wrapAsync(appStorage.set),
+            reset: wrapAsync(appStorage.reset),
+            remove: wrapAsync(appStorage.remove)
+        }
         this.accounts = {
             removeUser: wrapAsync(removeUser),
             removeInvalidMagicStrings: wrapAsync(removeInvalidMagicStrings),
@@ -107,6 +113,7 @@ const namespaceDetails = {
     settings: { risk: 80, description: "read and <span class='dangertext'>modify system settings and permissions</span>" },
     accounts: { risk: 50, description: "manage user accounts" },
     apps: { risk: 25, description: "know handlers and permissions" },
+    appStorage: { risk: 25, description: "manage and store data" },
     sysUI: { risk: 30, description: "show dialogs and trigger UI functions" },
     utility: { risk: 20, description: "use various utilities" },
     system: { risk: 80, description: "gain unrestricted access to <span class='dangertext'>high risk system functions</span>" },
@@ -121,7 +128,7 @@ function describeNamespaces(namespaceKey) {
 }
 
 function supportsXData(wrapper, name) {
-    const arr = ["sysUI.notify", "sysUI.say", "sysUI.toast", "sysUI.ask", "sysUI.confirm", "sysUI.dropdown"];
+    const arr = ["sysUI.notify", "sysUI.say", "sysUI.toast", "sysUI.ask", "sysUI.confirm", "sysUI.dropdown", "appStorage.get", "appStorage.set", "appStorage.reset", "appStorage.remove"];
     return arr.includes(wrapper + "." + name);
 }
 
