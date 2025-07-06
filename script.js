@@ -547,6 +547,9 @@ function getAppAspectRatio(unshrunkContent) {
 	return content.includes("aspect-ratio") ? getMetaTagContent(content, 'aspect-ratio', false) : null;
 }
 async function getAppIcon(content, id, lazy = 0) {
+	if (content, id == undefined) {
+		return defaultAppIcon;
+	}
 	const withTimeout = (promise) =>
 		Promise.race([promise, new Promise((_, reject) => setTimeout(() => reject(), 3000))]);
 
@@ -577,7 +580,7 @@ async function getAppIcon(content, id, lazy = 0) {
 		if (!content) {
 			if (id == undefined)
 				return `<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="var(--col-txt1)"><path d="M160-160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h207q16 0 30.5 6t25.5 17l57 57h360q17 0 28.5 11.5T880-680q0 17-11.5 28.5T840-640H447l-80-80H160v480l79-263q8-26 29.5-41.5T316-560h516q41 0 64.5 32.5T909-457l-72 240q-8 26-29.5 41.5T760-160H160Zm84-80h516l72-240H316l-72 240Zm-84-262v-218 218Zm84 262 72-240-72 240Z"/></svg>`;
-			const file = await withTimeout(getFileById(id));
+			const file = await withTimeout(await getFileById(id));
 			if (!file || !file.content) throw new Error("File content unavailable " + id);
 			content = file.content;
 		}
@@ -879,18 +882,9 @@ async function registerApp(appId, capabilities) {
 	for (let rawCapability of capabilities) {
 		let capability = rawCapability.trim();
 		if (capability.startsWith('.')) {
-			if (!fileTypeAssociations[capability]) {
-				fileTypeAssociations[capability] = [];
-			}
-			if (!fileTypeAssociations[capability].includes(appId)) {
-				fileTypeAssociations[capability].push(appId);
-			}
+			fileTypeAssociations[capability] = [appId];
 		} else {
-			console.log("handler", capability);
-			if (!handlers[capability]) {
-				handlers[capability] = appId;
-			}
-
+			handlers[capability] = appId;
 		}
 	}
 	await setSetting('fileTypeAssociations', fileTypeAssociations);
@@ -898,20 +892,14 @@ async function registerApp(appId, capabilities) {
 	notify(await getFileNameByID(appId) + " installed", "Registered " + capabilities.toString(), "NovaOS System");
 	return capabilities.toString();
 }
-
 async function cleanupInvalidAssociations() {
 	const validAppIds = await getAllValidAppIds();
 	let associationsChanged = false;
 
 	for (let fileType in fileTypeAssociations) {
-		const originalAssociations = fileTypeAssociations[fileType];
-		fileTypeAssociations[fileType] = originalAssociations.filter(appId => validAppIds.includes(appId));
-
-		if (fileTypeAssociations[fileType].length === 0) {
+		const appId = [fileType][0];
+		if (!validAppIds.includes(appId)) {
 			delete fileTypeAssociations[fileType];
-		}
-
-		if (originalAssociations.length !== fileTypeAssociations[fileType].length) {
 			associationsChanged = true;
 		}
 	}
@@ -920,6 +908,7 @@ async function cleanupInvalidAssociations() {
 		await setSetting('fileTypeAssociations', fileTypeAssociations);
 	}
 }
+
 async function getAllValidAppIds() {
 	const appsFolder = await getFileNamesByFolder('Apps/');
 	return Object.keys(appsFolder || {}).map(appFileName => appsFolder[appFileName].id);

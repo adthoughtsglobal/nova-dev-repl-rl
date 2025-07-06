@@ -211,6 +211,10 @@ function applyTheme(colors, doc) {
 		"--colors-text-sub"
 	];
 
+	const baseRadius = parseFloat(colors["--siz-radius1"] ?? cssVars["--siz-radius1"]) || 0.5;
+	colors["--siz-radius2"] = (baseRadius / 2).toFixed(3) + "em";
+	colors["--siz-radius3"] = (baseRadius / 3).toFixed(3) + "em";
+
 	let cssText = '';
 	for (const variableName in cssVars) {
 		let colorValue = colors[variableName] ?? cssVars[variableName];
@@ -221,6 +225,9 @@ function applyTheme(colors, doc) {
 		appliedThemeVars.add(variableName);
 	}
 
+	cssText += `--siz-radius2: ${colors["--siz-radius2"]};\n`;
+	cssText += `--siz-radius3: ${colors["--siz-radius3"]};\n`;
+
 	themeStyleTag.textContent = `:root { ${cssText} }`;
 
 	if (doc && doc !== document) {
@@ -229,7 +236,8 @@ function applyTheme(colors, doc) {
 	}
 
 	broadcastStyleToIframes(themeStyleTag.textContent);
-};
+}
+
 
 const broadcastStyleToIframes = (css) => {
 	document.querySelectorAll('iframe').forEach((iframe) => {

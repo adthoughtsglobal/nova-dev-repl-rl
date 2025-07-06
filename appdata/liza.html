@@ -215,7 +215,7 @@
         function openfromfiles() {
             document.getElementById("mains").value = "Waiting for you to open a file...";
             currentreqID = window.parent.genUID();
-            let appIdToOpen = window.parent.fileTypeAssociations['file'][0] || null;
+            let appIdToOpen = window.parent.fileTypeAssociations['file_manager'] || null;
             window.parent.openlaunchprotocol(appIdToOpen, { "opener": 'any', "dir": "Downloads/" }, currentreqID, myWindow.windowID);
         }
 

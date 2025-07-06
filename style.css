@@ -2399,6 +2399,12 @@ div#toasticon {
 ;
     align-items: center;
     justify-content: center;
+
+	&>svg {
+    width: 80%;
+    height: auto;
+    aspect-ratio: 1 / 1;
+}
 }
 
 #toastdivtext:active {

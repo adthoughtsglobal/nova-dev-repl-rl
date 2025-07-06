@@ -1254,7 +1254,7 @@
 		.doablestep {
 			display: flex;
 			justify-content: space-between;
-			background: var(--col-bg2);
+			background: var(--col-bgh);
 			border-radius: var(--siz-radius1);
 			padding: .3rem;
 			align-items: center;
@@ -1262,13 +1262,13 @@
 
 		.doablestep button {
 			padding: .3rem;
-			background-color: var(--col-bgh);
 			color: var(--col-txth);
 			display: flex;
 			align-items: center;
 			justify-content: center;
 			width: fit-content;
 			min-width: 0;
+			border: 0;
 		}
 
 		.doablestep b {
@@ -1570,7 +1570,7 @@
 			color: var(--col-txt1);
 			padding: 2px 7px;
 			border-radius: var(--siz-radius2);
-    display: inline;
+			display: inline;
 			font-size: var(--font-size-small);
 		}
 	</style>
@@ -1937,7 +1937,7 @@
 		</div>
 
 		<div id="defaults" class="tabcontent">
-			<h1>Preferences</h1>
+			<h3>Multitasking</h3>
 			<segr>
 				<div setting>
 					<div class="settingName"><b>Window Snapping</b>
@@ -1946,6 +1946,24 @@
 					</div>
 					<input class="turnon_checkbox" type="checkbox" id="cbx-66">
 				</div>
+				<div setting>
+					<div class="settingName"><b>Keep visible</b>
+						<p>Push windows back in when they are overflowing the screen.
+					</p>
+					</div>
+					<input class="turnon_checkbox" type="checkbox" id="cbx-kpvisible">
+				</div>
+				<div setting>
+					<div class="settingName"><b>Window outline</b>
+						<p>Highlight the active window with an outline.
+					</p>
+					</div>
+					<input class="turnon_checkbox" type="checkbox" id="cbx-kpvisible">
+				</div>
+			</segr>
+
+			<h3>Behaviours</h3>
+			<segr>
 				<div setting>
 					<div class="settingName"><b>Use NovaOS offline</b>
 						<p>If enabled, Nova will try to cache the os and save it offline.
@@ -1962,6 +1980,8 @@
 
 					<input class="turnon_checkbox" type="checkbox" id="cbx-69">
 				</div>
+			</segr>
+			<segr>
 				<div class="inpbox">
 					<span>Save Camera images as </span>
 					<select id="scapimas">
@@ -2131,6 +2151,7 @@
 					}
 				</script>
 			</segr>
+			<h3>Reset</h3>
 			<segr>
 				<div setting>
 					<div class="settingName"><b>Reset Settings</b>
@@ -2587,7 +2608,7 @@
 					</g>
 				</svg>
 
-				<p>NovaOS uses <span style="font-weight: bold;">FFlate</span>, a fast (de)compression library. Our bug hunters, community, and critical users provided valuable feedback and raised issues that helped make NovaOS better than ever before.</p>
+				<p>Our bug hunters and the community provided valuable feedback and raised issues, helping NovaOS to progress. Thank you being a part!</p>
 			</small>
 		</div>
 		<div id="activity" class="tabcontent advancedsettab">
@@ -3445,6 +3466,7 @@
 
 						colorsToSave[variableName] = colorValue;
 					});
+					console.log(colorsToSave)
 
 					applyTheme({ colors: colorsToSave });
 					await ntxSession.send("settings.set", "themeColors", colorsToSave);
@@ -3504,6 +3526,7 @@
 						} else {
 							button.value = (getCSSVariableValue(variableName));
 							button.addEventListener('input', () => debouncedSaveColor(button, variableName));
+							button.addEventListener('change', () => debouncedSaveColor(button, variableName));
 						}
 					});
 
@@ -3848,6 +3871,14 @@
 							}
 						});
 
+						select.addEventListener('change', () => {
+							selected.textContent = select.options[select.selectedIndex]?.textContent || 'Set';
+						});
+
+						new MutationObserver(() => {
+							selected.textContent = select.options[select.selectedIndex]?.textContent || 'Set';
+						}).observe(select, { attributes: true, attributeFilter: ['value'] });
+
 						wrapper.addEventListener('scroll', reposition, true);
 
 						wrapper.appendChild(selected);
@@ -3858,7 +3889,6 @@
 						dialog.close();
 					});
 				}
-
 				replaceSelects();
 			} catch (e) { }
 
