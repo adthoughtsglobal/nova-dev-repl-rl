@@ -495,12 +495,11 @@
 			}
 		}
 
-		div#themenavsel {
+		.sewid {
 			margin: .5em 0;
 			display: flex;
 			gap: 1em;
 		}
-
 
 
 		#installer {
@@ -555,7 +554,7 @@
 					color: white;
 					border: none;
 					padding: .5em 1em;
-            min-width: 5.5em;
+					min-width: 5.5em;
 					background-color: #43A047 !important;
 
 					&:hover {
@@ -635,12 +634,13 @@
 				font-size: small;
 				gap: 1em;
 			}
-		}	
+		}
 
 		@keyframes pop {
 			0% {
 				opacity: 0;
 			}
+
 			100% {
 				opacity: 1;
 			}
@@ -667,6 +667,119 @@
 			}
 		}
 
+		#knowBar {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			background: var(--col-bg2);
+			padding: var(--sizing-huge);
+			border-radius: var(--siz-radius1);
+			border: 1px solid #ffffff0c;
+
+			&>.knowBarCont {
+				flex: 1;
+
+				&>.gotobutton {
+					width: fit-content;
+					min-width: 7rem;
+					padding: 5px;
+					background: var(--col-bgh);
+					color: var(--col-txth);
+					border-radius: var(--siz-radius2);
+					cursor: pointer;
+					text-align: center;
+				}
+
+				&>#knowmuchupdates {
+					margin: 0;
+					margin-bottom: .3em;
+					font-size: 1.5em;
+				}
+
+				&>p {
+					margin: 0;
+					opacity: .7;
+					margin-bottom: .7em;
+				}
+			}
+
+		}
+
+		@keyframes apppop {
+			0% {
+				opacity: 0;
+				transform: translateY(5px);
+			}
+
+			100% {
+				opacity: 1;
+			}
+		}
+
+		.singular_app {
+			animation: apppop .2s ease-out;
+			display: flex;
+			flex-direction: row;
+			background-color: var(--col-bg2);
+			padding: .5em;
+			gap: .5em;
+			border-radius: var(--siz-radius1);
+			border: 1px solid #ffffff0c;
+			justify-content: space-between;
+			align-items: center;
+
+			& .app_detail {
+				width: 0;
+				flex: 1;
+				overflow: hidden;
+
+				&>div {
+					overflow: hidden;
+					text-overflow: ellipsis;
+					white-space: nowrap;
+				}
+			}
+
+			& .app_options {
+				padding: 5px;
+				display: flex;
+				border-radius: 50%;
+				background: #285b28;
+				color: #ffffff;
+
+				& span {
+					font-size: 1em;
+					opacity: 1;
+				}
+
+				&:hover {
+					background-color: var(--col-bg3);
+				}
+			}
+
+			& .app_risk {
+				opacity: .5;
+				font-size: small;
+			}
+
+			& .app_icon>svg {
+				width: 25px;
+				height: 25px;
+				border-radius: .5em;
+			}
+
+			& .app_left {
+				display: flex;
+				flex-direction: row;
+				gap: .5em;
+				align-items: center;
+				flex: 1;
+
+				& .app_icon {
+					display: flex;
+				}
+			}
+		}
 	</style>
 </head>
 
@@ -686,7 +799,7 @@
 					class="material-symbols-rounded">sports_esports</i> Games</button>
 			<button class="tablinks btnlike" onclick="openCity(event, 'system2'); 
 						loadThemes();"><i class="material-symbols-rounded">brush</i> Themes</button>
-			<button class="tablinks btnlike" onclick="openCity(event, 'system')"><i
+			<button class="tablinks btnlike" onclick="openCity(event, 'myApps');loadMyApps()"><i
 					class="material-symbols-rounded">sync_saved_locally</i> My Apps</button>
 		</div>
 
@@ -729,6 +842,23 @@
 				<b>Overview</b>
 				<p id="installerappdesc">...</p>
 			</div>
+		</div>
+		<div id="myApps" class="tabcontent">
+			<div id="knowBar">
+				<div class="knowBarCont">
+					<h1 id="knowmuchupdates">12 Apps have updates</h1>
+					<p>Update apps for new features and fixed bugs.</p>
+					<div class="gotobutton">
+						Update All
+					</div>
+				</div>
+				<div id="knowbaricns"></div>
+			</div>
+			<div id="myappssel" class="sewid">
+				<button data-filter="all" class="active-filter">Installed</button>
+				<button data-filter="Dark">Default apps</button>
+			</div>
+			<div id="installedappslist" class="applist"></div>
 		</div>
 	</container>
 
@@ -956,9 +1086,8 @@
 				}
 				const response = await fetch(prefixurl + x.src);
 				const content = await response.text();
-				let resultappid = await window.parent.createFile("Apps", appName, "app", content);
-				console.log(46, resultappid, appName, x.ver);
-				await ntxSession.send("appStorage.set", resultappid, x.ver)
+				let tempid = await window.parent.createFile("Apps", appName, "app", content);
+				await ntxSession.send("appStorage.set", getAppTag(x), { id: tempid, ver: x.ver })
 				openappinstr(appName, x);
 				setTimeout(() => {
 					if (method == 'icononly') {
@@ -971,6 +1100,7 @@
 					}
 				}, 1000)
 			} catch (err) {
+				console.error("Error installing app:", err);
 				setTimeout(() => {
 					if (method == 'icononly') {
 						obj.innerHTML = `<div class="material-symbols-rounded installbtnicn">sentiment_dissatisfied</div>`;
@@ -1206,6 +1336,46 @@
 			}
 
 			renderapps()
+		}
+		async function loadMyApps() {
+			let knowBar = document.getElementById("knowBar");
+			let knowMuch = document.getElementById("knowmuchupdates");
+			let appslist = document.getElementById("installedappslist");
+			appslist.innerHTML = "";
+
+			const localApps = await ntxSession.send("appStorage.get", 'full');
+			for (const tag in localApps) {
+				const local = localApps[tag].ver;
+				const appDetails = await fetchAppData().then(data => data.apps.find(app => getAppTag(app) === tag));
+				const online = appDetails?.ver;
+				let singularApp = document.createElement("div");
+				singularApp.className = "singular_app";
+
+				const sameVersion = local === online;
+				const optionsIcon = sameVersion ? "check" : "download";
+				const optionsBg = sameVersion ? "transparent" : "";
+
+				singularApp.innerHTML = `
+    <div class="app_left" onclick="">
+        <div class="app_icon">${await window.parent.getAppIcon(0, localApps[tag].id)}</div>
+        <div class="app_detail">
+            <div class="app_name">${await window.parent.getFileNameByID(localApps[tag].id)}</div>
+            <div class="app_risk">Version: ${online}</div>
+        </div>
+    </div>
+    <div class="app_options" style="background:${optionsBg}">
+        <span class="material-symbols-rounded">${optionsIcon}</span>
+    </div>
+`;
+
+				appslist.appendChild(singularApp);
+			}
+		}
+
+		function getAppTag(appDetails) {
+			const appName = appDetails.name;
+			const appVersion = appDetails.by;
+			return `${appName}@${appVersion}`;
 		}
 	</script>
 </body>

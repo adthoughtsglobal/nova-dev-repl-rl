@@ -706,8 +706,9 @@ async function ensureAllSettingsFilesExist() {
 var appStorage = {
     get: async (key, context) => {
         context = notificationContext[context]; 
-        if (!key) return null;
-        await getSetting(key, context.appID+".json","System/appData/")
+        if (!key) key = 'full';
+        console.log(key, context)
+        return await getSetting(key, context.appID+".json","System/appData/")
     },
     reset: async (key, context) => {
         context = notificationContext[context]; 

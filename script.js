@@ -897,8 +897,9 @@ async function cleanupInvalidAssociations() {
 	let associationsChanged = false;
 
 	for (let fileType in fileTypeAssociations) {
-		const appId = [fileType][0];
+		const appId = fileTypeAssociations[fileType][0];
 		if (!validAppIds.includes(appId)) {
+			console.log(`Removing invalid file type association: ${fileType} for app ID ${appId}`);
 			delete fileTypeAssociations[fileType];
 			associationsChanged = true;
 		}
