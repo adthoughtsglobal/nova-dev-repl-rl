@@ -2724,9 +2724,11 @@
 						}
 						let singularApp = document.createElement("div");
 						singularApp.className = "singular_app";
-
+						singularApp.onclick = function (event) {
+							handleAppClick(event, key);
+						};
 						singularApp.innerHTML = `
-    <div class="app_left" onclick="handleAppClick(event, '${key}')">
+    <div class="app_left">
         <div class="app_icon">${await window.parent.getAppIcon(0, key)}</div>
         <div class="app_detail">
             <div class="app_name">${await window.parent.getFileNameByID(key)}</div>
@@ -2735,7 +2737,7 @@
     </div>
     <div class="app_options">
         <span class="material-symbols-rounded">
-            more_vert
+            chevron_forward
         </span>
     </div>
 `;

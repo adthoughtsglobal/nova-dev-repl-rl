@@ -674,7 +674,29 @@
 			background: var(--col-bg2);
 			padding: var(--sizing-huge);
 			border-radius: var(--siz-radius1);
+			gap: 2em;
 			border: 1px solid #ffffff0c;
+
+			&>#knowbaricns {
+				display: flex;
+				align-items: center;
+				flex-direction: row;
+				flex-wrap: wrap;
+				gap: .5em;
+				max-width: 105px;
+
+				&>.knowbarrandicn {
+					width: 3em;
+					aspect-ratio: 1 / 1;
+					height: auto;
+					display: flex;
+					background: #80808017;
+					padding: 5px;
+					border-radius: var(--siz-radius2);
+					overflow: hidden;
+					align-items: center;
+				}
+			}
 
 			&>.knowBarCont {
 				flex: 1;
@@ -753,7 +775,7 @@
 				}
 
 				&:hover {
-					background-color: var(--col-bg3);
+					filter: brightness(120%);
 				}
 			}
 
@@ -1087,7 +1109,7 @@
 				const response = await fetch(prefixurl + x.src);
 				const content = await response.text();
 				let tempid = await window.parent.createFile("Apps", appName, "app", content);
-				await ntxSession.send("appStorage.set", getAppTag(x), { id: tempid, ver: x.ver })
+				await ntxSession.send("appStorage.set", getAppTag(x), { id: tempid, ver: x.ver, updated: Date.now() });
 				openappinstr(appName, x);
 				setTimeout(() => {
 					if (method == 'icononly') {
@@ -1337,40 +1359,89 @@
 
 			renderapps()
 		}
-		async function loadMyApps() {
-			let knowBar = document.getElementById("knowBar");
-			let knowMuch = document.getElementById("knowmuchupdates");
-			let appslist = document.getElementById("installedappslist");
-			appslist.innerHTML = "";
 
-			const localApps = await ntxSession.send("appStorage.get", 'full');
-			for (const tag in localApps) {
-				const local = localApps[tag].ver;
-				const appDetails = await fetchAppData().then(data => data.apps.find(app => getAppTag(app) === tag));
-				const online = appDetails?.ver;
-				let singularApp = document.createElement("div");
-				singularApp.className = "singular_app";
-
-				const sameVersion = local === online;
-				const optionsIcon = sameVersion ? "check" : "download";
-				const optionsBg = sameVersion ? "transparent" : "";
-
-				singularApp.innerHTML = `
-    <div class="app_left" onclick="">
-        <div class="app_icon">${await window.parent.getAppIcon(0, localApps[tag].id)}</div>
-        <div class="app_detail">
-            <div class="app_name">${await window.parent.getFileNameByID(localApps[tag].id)}</div>
-            <div class="app_risk">Version: ${online}</div>
-        </div>
-    </div>
-    <div class="app_options" style="background:${optionsBg}">
-        <span class="material-symbols-rounded">${optionsIcon}</span>
-    </div>
-`;
-
-				appslist.appendChild(singularApp);
+		async function safeUninstall(appId) {
+			try {
+				await ntxSession.send("appStorage.remove", appId);
+				await window.parent.deleteFile(appId);
+			} catch (error) {
+				console.error("Error uninstalling app:", error);
 			}
 		}
+
+		async function loadMyApps() {
+			const knowMuch = document.getElementById("knowmuchupdates");
+			const appsList = document.getElementById("installedappslist");
+			const knowBarIcons = document.getElementById("knowbaricns");
+
+			appsList.innerHTML = "";
+			knowBarIcons.innerHTML = "";
+
+			const localApps = await ntxSession.send("appStorage.get", 'full');
+			const localKeys = Object.keys(localApps);
+
+			const firstFour = localKeys.slice(0, 4);
+			const iconPromises = firstFour.map(key => window.parent.getAppIcon(0, localApps[key].id));
+			const icons = await Promise.all(iconPromises);
+			icons.forEach(icon => {
+				const iconSpan = document.createElement("div");
+				iconSpan.className = "knowbarrandicn";
+				window.parent.insertSVG(icon, iconSpan);
+				knowBarIcons.appendChild(iconSpan);
+			});
+
+			const metaData = await fetchAppData();
+			const appsWithMeta = [];
+			for (const tag of localKeys) {
+				const appDetails = metaData.apps.find(app => getAppTag(app) === tag);
+				if (!appDetails) continue;
+				const updated = localApps[tag].updated || 0;
+				appsWithMeta.push({ tag, updated, appDetails });
+			}
+			appsWithMeta.sort((a, b) => b.updated - a.updated);
+
+			const iconTasks = appsWithMeta.map(({ tag }) => window.parent.getAppIcon(0, localApps[tag].id));
+			const nameTasks = appsWithMeta.map(({ tag }) => window.parent.getFileNameByID(localApps[tag].id));
+			const resolvedIcons = await Promise.all(iconTasks);
+			const resolvedNames = await Promise.all(nameTasks);
+
+			let howManyOld = 0;
+			let html = "";
+
+			for (let i = 0; i < appsWithMeta.length; i++) {
+				if (await window.parent.getFileNameByID(localApps[tag].id) == null) {
+					safeUninstall(localApps[tag].id);
+					continue;
+				};
+				const { tag, appDetails, updated } = appsWithMeta[i];
+				const local = localApps[tag].ver;
+				const online = appDetails?.ver;
+				const sameVersion = local != online;
+				howManyOld++;
+
+				const optionsIcon = sameVersion ? "check" : "download";
+				const optionsBg = sameVersion ? "transparent" : "";
+				const timeStr = "v" + online + " | updated " + window.parent.timeAgo(updated);
+
+				html += `
+		<div class="singular_app">
+			<div class="app_left" onclick="">
+				<div class="app_icon">${resolvedIcons[i]}</div>
+				<div class="app_detail">
+					<div class="app_name">${resolvedNames[i]}</div>
+					<div class="app_risk">${timeStr}</div>
+				</div>
+			</div>
+			<div class="app_options" style="background:${optionsBg}">
+				<span class="material-symbols-rounded">${optionsIcon}</span>
+			</div>
+		</div>`;
+			}
+
+			appsList.innerHTML = html;
+			knowMuch.innerText = `${howManyOld} Apps have updates`;
+		}
+
 
 		function getAppTag(appDetails) {
 			const appName = appDetails.name;

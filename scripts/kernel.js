@@ -117,23 +117,23 @@ async function buildIframeApiBridge(appid, title, winuid, perms) {
         }
         return false;
     }
-function sendLargeMessage(target, data, transactionId, chunkSize = 65536) {
-    try {
-        const json = JSON.stringify(data);
-        if (json.length <= chunkSize) {
-            target.postMessage({ transactionId, result: data, isJson: true, success: true }, '*');
-            return;
+    function sendLargeMessage(target, data, transactionId, chunkSize = 65536) {
+        try {
+            const json = JSON.stringify(data);
+            if (json.length <= chunkSize) {
+                target.postMessage({ transactionId, result: data, isJson: true, success: true }, '*');
+                return;
+            }
+            const totalChunks = Math.ceil(json.length / chunkSize);
+            for (let i = 0; i < totalChunks; i++) {
+                const chunk = json.slice(i * chunkSize, (i + 1) * chunkSize);
+                target.postMessage({
+                    transactionId, chunk, chunkIndex: i, totalChunks, isJson: true, success: true
+                }, '*');
+            }
+        } catch (error) {
         }
-        const totalChunks = Math.ceil(json.length / chunkSize);
-        for (let i = 0; i < totalChunks; i++) {
-            const chunk = json.slice(i * chunkSize, (i + 1) * chunkSize);
-            target.postMessage({
-                transactionId, chunk, chunkIndex: i, totalChunks, isJson: true, success: true
-            }, '*');
-        }
-    } catch (error) {
     }
-}
 
 
     async function handleNtxSessionMessage(event) {
@@ -346,7 +346,7 @@ class NTXSession {
 
 var ntxSession = new NTXSession();
 </script>
-`; 
+`;
 
     const fullBlobHTML = `<!DOCTYPE html><html><head><meta charset="utf-8">${styleBlock}</head><body>${contentString}${ctxScript ? `<script>${ctxScript}</script>` : ''}${ntxScript}<script defer>window.parent.postMessage({type:"iframeReady",windowID:"${winuid}"}, "*");</script></body></html>`;
 
@@ -490,4 +490,16 @@ function flwin(winElement) {
     setTimeout(() => {
         winElement.classList.remove("transp2");
     }, 1000);
+}
+
+async function safeRemoveApp(id) {
+    try {
+        await remSettingKey(id, "AppRegistry.json");
+        let settingid = handlers["content_store"];
+        await remSettingKey(id, settingid);
+        return true;
+    } catch (error) {
+        console.error("Error removing app:", error);
+        return false;
+    }
 }

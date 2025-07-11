@@ -710,12 +710,12 @@ var appStorage = {
         console.log(key, context)
         return await getSetting(key, context.appID+".json","System/appData/")
     },
-    reset: async (key, context) => {
-        context = notificationContext[context]; 
-        if (!key) return null;
-        await resetSettings(key, context.appID+".json","System/appData/")
-    },
     remove: async (key, context) => {
+        context = notificationContext[context];
+        if (!key) return null;
+        await remSettingKey(key, context.appID+".json","System/appData/")
+    },
+    removeStorage: async (key, context) => {
         context = notificationContext[context]; 
         if (!key) return null;
         await remfile((await getFileByPath("System/appData/"+ context.appID+".json").id))
@@ -917,7 +917,7 @@ async function remfile(ID) {
         } ``
         let filedat = await getFileNameByID(ID);
         if (mtpetxt(filedat) == "app") {
-            await remSettingKey(ID, "AppRegistry.json")
+            await safeRemoveApp(ID)
         }
         let fileRemoved = removeFileFromFolder(memory.root);
         if (!fileRemoved) {
