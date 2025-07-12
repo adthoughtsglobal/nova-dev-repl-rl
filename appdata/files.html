@@ -1912,8 +1912,8 @@
 				Object.keys(memory).forEach(key => {
 					const fullPath = parentPath + key;
 					if (fullPath.endsWith('/')) {
-						const indent = '-'.repeat(level * 2);
-						folders.push(indent + fullPath);
+						const indent = '-'.repeat(level * 2); folders.push({ label: fullPath, value: fullPath });
+
 						folders = folders.concat(getFolderNames(memory[key], fullPath, level + 1));
 					}
 				});
@@ -1922,16 +1922,18 @@
 
 
 			let folders = getFolderNames(window.parent.memory.root);
-			let filteredFolders = folders.filter(folder => folder.trim() !== currentPath);
+			folders = folders.filter(folder => folder.value.trim() !== currentPath);
 
-			let selectedFolder = await window.parent.showDropdownModal("Select a folder", "Move to", filteredFolders);
+			let selected = await window.parent.showDropdownModal("Select a folder", "Move to", folders.map(f => f.label));
+
+			let selectedFolder = selected !== null ? folders.find(f => f.label === selected)?.value : null;
 
 			if (selectedFolder !== null) {
 				await moveFileToFolder(flid, selectedFolder);
-
 				await liststuff();
-				listFiles(selectedFolder)
+				listFiles(selectedFolder);
 			}
+
 		}
 
 		async function geticon(extension, id = false) {
