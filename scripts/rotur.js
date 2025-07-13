@@ -1264,7 +1264,7 @@ class RoturExtension {
     return this.user["sys.currency"] ?? 0;
   }
 
-  tranferCurrency(args) {
+  transferCurrency(args) {
     if (!this.is_connected) return "Not Connected";
     if (!this.authenticated) return "Not Logged In";
 
