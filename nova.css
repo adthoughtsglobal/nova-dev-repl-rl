@@ -16,7 +16,8 @@
 	--siz-radius1: 0.5em;
 	--siz-radius2: 0.35em;
 	--siz-radius3: 0.2em;
-	--time1: .3s;
+	--time1: .3s cubic-bezier(0.36, 0.38, 0, 0.94);
+	--box-crisp: 1px solid #ffffff0c;
 
 	--sizing-normal: 0.5rem;
 	--sizing-huge: 1rem;
@@ -24,8 +25,6 @@
 	
 	--spacing-normal: 0.3rem;
 	--spacing-gap: 6px;
-
-	--time-action: .3s;
 
 	/* Extended support */
 	--colors-accent: rgb(97, 121, 255);
@@ -38,7 +37,7 @@
 
 @media (max-width: 768px) {
 	:root {
-		--time-action: .5s;
+		----time1: .5s;
 	}
 }
 

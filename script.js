@@ -256,6 +256,7 @@ async function startup() {
 			startUpdateTime();
 			await loadFileTypeAssociations();
 			await ensureAllSettingsFilesExist();
+			await loadSessionSettings();
 			const end = performance.now();
 
 			rllog(
@@ -661,6 +662,7 @@ function putwinontop(x) {
 	} else {
 		document.getElementById(x).style.zIndex = 0;
 	}
+	if (typeof updateFocusedWindowBorder === "function") updateFocusedWindowBorder();
 }
 function isWinOnTop(x) {
 	const ourKey = x.replace(/^window/, '');
@@ -1923,6 +1925,8 @@ async function novarefresh() {
 	checkdmode();
 	loadtaskspanel()
 	loadrecentapps();
+	sessionSettingsLoaded = false;
+	loadSessionSettings();
 }
 function launchbios() {
 	document.getElementById('novasetupusernamedisplay').innerText = CurrentUsername;

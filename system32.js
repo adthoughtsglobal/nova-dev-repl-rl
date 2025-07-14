@@ -472,16 +472,31 @@ async function ensureFileExists(fileName = "preferences.json", dirPath = "System
 const pendingFetches = new Map();
 const settingCache = new Map();
 
+var sessionSettings = {};
+var sessionSettingKeys = ["wsnapping", "smartsearch", "keepvisible", "windowoutline"];
+let sessionSettingsLoaded = false;
+
+async function loadSessionSettings(fileName = "preferences.json", dirPath = "System/") {
+    if (sessionSettingsLoaded) return;
+    const allSettings = await getSetting("full", fileName, dirPath);
+    if (!allSettings) return;
+    for (const key of sessionSettingKeys) {
+        if (key && key in allSettings) sessionSettings[key] = allSettings[key];
+    }
+    sessionSettingsLoaded = true;
+}
+
 async function getSetting(settingKey, fileName = "preferences.json", dirPath = "System/") {
-    const cacheKey = `${dirPath}/${fileName}:${settingKey}`;
-    const cached = settingCache.get(cacheKey);
-    if (cached && (Date.now() - cached.timestamp) < 2500) {
-        return cached.value;
+    if (sessionSettingKeys.includes(settingKey)) {
+        await loadSessionSettings(fileName, dirPath);
+        return sessionSettings[settingKey] ?? null;
     }
 
-    if (pendingFetches.has(cacheKey)) {
-        return pendingFetches.get(cacheKey);
-    }
+    const cacheKey = `${dirPath}/${fileName}:${settingKey}`;
+    const cached = settingCache.get(cacheKey);
+    if (cached && (Date.now() - cached.timestamp) < 2500) return cached.value;
+
+    if (pendingFetches.has(cacheKey)) return pendingFetches.get(cacheKey);
 
     const fetchPromise = enqueueTask(async () => {
         try {
@@ -491,40 +506,26 @@ async function getSetting(settingKey, fileName = "preferences.json", dirPath = "
 
             for (let part of pathParts) {
                 part += "/";
-                if (!currentPath[part]) {
-                    console.error(`Folder ${part} not found in memory.`);
-                    return null;
-                }
+                if (!currentPath[part]) return null;
                 currentPath = currentPath[part];
             }
 
             const fileContent = currentPath[fileName];
-            if (!fileContent) {
-                console.error(`File ${fileName} is missing in memory.`);
-                return null;
-            }
+            if (!fileContent) return null;
 
             const base64Data = await ctntMgr.get(fileContent.id);
-            if (!base64Data) {
-                console.error(`Failed to fetch content for ${fileName}`);
-                return null;
-            }
+            if (!base64Data) return null;
 
             const fileSettings = JSON.parse(decodeBase64Content(base64Data));
-            if (!fileSettings || typeof fileSettings !== 'object') {
-                console.error(`Invalid content in ${fileName}`);
-                return null;
-            }
+            if (!fileSettings || typeof fileSettings !== 'object') return null;
 
             if (settingKey === 'full') return fileSettings;
-
             if (!(settingKey in fileSettings)) return null;
 
             const settingValue = fileSettings[settingKey];
             settingCache.set(cacheKey, { value: settingValue, timestamp: Date.now() });
             return settingValue;
         } catch (error) {
-            console.error(`Error in getSetting for ${fileName}:`, error);
             return null;
         } finally {
             pendingFetches.delete(cacheKey);
@@ -534,6 +535,7 @@ async function getSetting(settingKey, fileName = "preferences.json", dirPath = "
     pendingFetches.set(cacheKey, fetchPromise);
     return fetchPromise;
 }
+
 async function setSetting(settingKey, settingValue, fileName = "preferences.json", dirPath = "System/") {
     return enqueueTask(async () => {
         try {

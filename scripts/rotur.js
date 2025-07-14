@@ -440,8 +440,16 @@ class RoturExtension {
         })
       );
 
-
-      notify(`Logged in as ${args.USERNAME}`, "You can use Rotur supported apps now.", "RoturTW", 1)
+      fetch("https://social.rotur.dev/claim_daily?auth=" + this.userToken).then((response) => {
+        if (response.ok) {
+      notify(`Logged in as ${args.USERNAME}`, "You got the daily credit!", "RoturTW", 1)
+          
+        } else {
+          
+      notify(`Logged in as ${args.USERNAME}`, "Welcome back!", "RoturTW", 1)
+          throw new Error('Failed to claim daily reward');
+        }
+      })
       return `Logged in as ${args.USERNAME}`;
 
     } catch (error) {

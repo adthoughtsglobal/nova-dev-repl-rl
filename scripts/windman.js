@@ -148,7 +148,6 @@ async function applyWindowAppearance(windowDiv, header, theme, aspectratio) {
 
     if (theme != null) {
         header.style.backgroundColor = theme;
-        windowDiv.style.border = `1px solid ${theme}`;
         header.style.color = isDark(theme) ? "white" : "black";
     }
 }
@@ -312,6 +311,8 @@ function maximizeWindow(id) {
 }
 
 function nudgeWindowIntoView(el) {
+    console.log("Nudging window into view", sessionSettings.keepvisible);
+    if (!sessionSettings.keepvisible) return;
     const rect = el.getBoundingClientRect();
     const padding = 10;
     let left = el.offsetLeft;
@@ -360,58 +361,59 @@ async function checksnapping(x, event, winuid) {
         wsnappingSetting: await getSetting("wsnapping"),
     };
 
-    if (!logData.wsnappingSetting) return;
+    if (logData.wsnappingSetting) {
+        const VWInPixels = (3 * logData.viewportWidth) / 100;
+        const VHInPixels = (3 * logData.viewportHeight) / 100;
+        const aspectRatioValue = 9 / 6;
+        const maxWidthPx = (logData.viewportWidth * 100) / 100;
+        const maxHeightPx = (logData.viewportHeight * 100) / 100;
+        let heightPx = (maxHeightPx / 100) * 70;
+        let widthPx = heightPx * aspectRatioValue;
 
-    const VWInPixels = (3 * logData.viewportWidth) / 100;
-    const VHInPixels = (3 * logData.viewportHeight) / 100;
-    const aspectRatioValue = 9 / 6;
-    const maxWidthPx = (logData.viewportWidth * 100) / 100;
-    const maxHeightPx = (logData.viewportHeight * 100) / 100;
-    let heightPx = (maxHeightPx / 100) * 70;
-    let widthPx = heightPx * aspectRatioValue;
+        if (widthPx > maxWidthPx) {
+            widthPx = maxWidthPx;
+            heightPx = widthPx / aspectRatioValue;
+        }
 
-    if (widthPx > maxWidthPx) {
-        widthPx = maxWidthPx;
-        heightPx = widthPx / aspectRatioValue;
-    }
+        const widthVW = (widthPx / logData.viewportWidth) * 100;
+        const heightVH = (heightPx / logData.viewportHeight) * 100;
 
-    const widthVW = (widthPx / logData.viewportWidth) * 100;
-    const heightVH = (heightPx / logData.viewportHeight) * 100;
+        logData.VWInPixels = VWInPixels;
+        logData.VHInPixels = VHInPixels;
+        logData.widthPx = widthPx;
+        logData.heightPx = heightPx;
+        logData.widthVW = widthVW;
+        logData.heightVH = heightVH;
 
-    logData.VWInPixels = VWInPixels;
-    logData.VHInPixels = VHInPixels;
-    logData.widthPx = widthPx;
-    logData.heightPx = heightPx;
-    logData.widthVW = widthVW;
-    logData.heightVH = heightVH;
+        if (winds[winuid]["visualState"] == "fullscreen" || winds[winuid]["visualState"] == "snapped") {
+            resetWindow(winuid);
+            return;
+        }
 
-    if (winds[winuid]["visualState"] == "fullscreen" || winds[winuid]["visualState"] == "snapped") {
-        resetWindow(winuid);
-        return;
-    }
-
-    if (logData.cursorY < VHInPixels || (logData.viewportHeight - logData.cursorY) < VHInPixels) {
-        maximizeWindow(winuid);
-    } else if (logData.cursorX < VWInPixels) {
-        x.classList.add("snapping");
-        x.style = `left: 0; top: 0; width: calc(50% - 0px); height: calc(100% - ${navheight}px);`;
-        x.getElementsByClassName("flbtn")[0].innerHTML = "open_in_full";
-        winds[winuid]["visualState"] = "snapped";
-        setTimeout(() => {
-            x.classList.remove("snapping");
-        }, 1000);
-    } else if ((logData.viewportWidth - logData.cursorX) < VWInPixels) {
-        x.classList.add("snapping");
-        x.style = `right: 0; top: 0; width: calc(50% - 0px); height: calc(100% - ${navheight}px);`;
-        x.getElementsByClassName("flbtn")[0].innerHTML = "open_in_full";
-        winds[winuid]["visualState"] = "snapped";
-        setTimeout(() => {
-            x.classList.remove("snapping");
-        }, 1000);
+        if (logData.cursorY < VHInPixels || (logData.viewportHeight - logData.cursorY) < VHInPixels) {
+            maximizeWindow(winuid);
+        } else if (logData.cursorX < VWInPixels) {
+            x.classList.add("snapping");
+            x.style = `left: 0; top: 0; width: calc(50% - 0px); height: calc(100% - ${navheight}px);`;
+            x.getElementsByClassName("flbtn")[0].innerHTML = "open_in_full";
+            winds[winuid]["visualState"] = "snapped";
+            setTimeout(() => {
+                x.classList.remove("snapping");
+            }, 1000);
+        } else if ((logData.viewportWidth - logData.cursorX) < VWInPixels) {
+            x.classList.add("snapping");
+            x.style = `right: 0; top: 0; width: calc(50% - 0px); height: calc(100% - ${navheight}px);`;
+            x.getElementsByClassName("flbtn")[0].innerHTML = "open_in_full";
+            winds[winuid]["visualState"] = "snapped";
+            setTimeout(() => {
+                x.classList.remove("snapping");
+            }, 1000);
+        }
     } else {
         nudgeWindowIntoView(x);
 
     }
+
 }
 function dragElement(elmnt) {
     var iframeOverlay = null;
@@ -455,30 +457,8 @@ function dragElement(elmnt) {
         e = e || window.event;
         e.preventDefault();
 
-        const viewportWidth = window.innerWidth;
-        const viewportHeight = window.innerHeight;
-        const elementWidth = elmnt.offsetWidth;
-        const elementHeight = elmnt.offsetHeight;
-
         let targetLeft = e.clientX - grabOffsetX;
         let targetTop = e.clientY - grabOffsetY;
-
-        const repelZone = 100;
-        const repelForce = 15;
-
-        if (targetLeft < repelZone) {
-            targetLeft += repelForce * ((repelZone - targetLeft) / repelZone);
-        } else if (targetLeft + elementWidth > viewportWidth - repelZone) {
-            const overlap = (targetLeft + elementWidth) - (viewportWidth - repelZone);
-            targetLeft -= repelForce * (overlap / repelZone);
-        }
-
-        if (targetTop < repelZone) {
-            targetTop += repelForce * ((repelZone - targetTop) / repelZone);
-        } else if (targetTop + elementHeight > viewportHeight - repelZone) {
-            const overlap = (targetTop + elementHeight) - (viewportHeight - repelZone);
-            targetTop -= repelForce * (overlap / repelZone);
-        }
 
         elmnt.style.position = 'absolute';
         elmnt.style.left = `${targetLeft}px`;

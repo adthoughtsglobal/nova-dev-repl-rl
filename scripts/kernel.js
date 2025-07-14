@@ -181,6 +181,7 @@ async function buildIframeApiBridge(appid, title, winuid, perms) {
             }, 500)
         } else if (event.data.type === "iframeClick") {
             const targetWindow = document.querySelector(`[data-winuid="${winuid}"]`);
+            nowapp = winuid;
             putwinontop("window" + winuid);
             winds[winuid].zIndex = targetWindow.style.zIndex;
         } else if (event.data.transactionId && event.data.action) {
@@ -398,8 +399,10 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
 
     await applyWindowAppearance(windowDiv, windowHeader, theme, aspectratio);
 
-    windowDiv.onclick = () => { nowapp = title; };
-
+    windowDiv.onclick = () => { 
+        nowapp = winuid; 
+        updateFocusedWindowBorder();
+    };
 
     await loadIframe(windowContent, windowLoader, loaderSpinner, cont, appid, winuid, title, params);
 
@@ -501,5 +504,18 @@ async function safeRemoveApp(id) {
     } catch (error) {
         console.error("Error removing app:", error);
         return false;
+    }
+}
+
+function updateFocusedWindowBorder() {
+    if (!sessionSettings.windowoutline) return;
+    Object.keys(winds).forEach(winuid => {
+        const winEl = document.getElementById("window" + winuid);
+        if (winEl) winEl.style.boxShadow = "";
+    });
+    const focusedWinuid = Object.keys(winds).find(winuid => winuid === nowapp);
+    if (focusedWinuid) {
+        const winEl = document.getElementById("window" + focusedWinuid);
+        if (winEl) winEl.style.boxShadow = "0 0 0 2px var(--col-bgh)";
     }
 }

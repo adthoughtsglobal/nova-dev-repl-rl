@@ -44,7 +44,7 @@
 			background-color: var(--col-bg2);
 			padding: .5em;
 			border-radius: var(--siz-radius1);
-			border: 1px solid #ffffff0c;
+			border: var(--box-crisp);
 		}
 
 		p {
@@ -142,7 +142,7 @@
 			color: var(--col-txt1);
 			user-select: none;
 			background: var(--col-bg3);
-			border: 1px solid var(--col-bg3);
+			border: var(--box-crisp);
 			border-radius: var(--siz-radius1);
 			font-size: var(--font-size-normal);
 			outline: none;
@@ -197,7 +197,6 @@
 			border-left: none;
 			border-radius: var(--siz-radius1);
 			height: calc(100% - 5px);
-			animation: tab .2s;
 			overflow-y: auto;
 			margin-left: 5px;
 		}
@@ -225,7 +224,7 @@
 			padding-top: var(--sizing-normal);
 			vertical-align: top;
 			padding-right: var(--sizing-huge);
-			border-bottom: 1px solid #262626;
+			border-bottom: var(--box-crisp);
 		}
 
 		td b,
@@ -250,7 +249,8 @@
 
 		supportb {
 			border-radius: var(--sizing-normal);
-			background: radial-gradient(circle at 0% 0%, var(--col-bg2), var(--col-bg3));
+			background: var(--col-bg2);
+			border: var(--box-crisp);
 			display: block;
 			padding: var(--sizing-huge);
 			margin-bottom: 0.5rem;
@@ -285,7 +285,7 @@
 		}
 
 		supportb a[okay] {
-			background: transparent;
+			background: var(--col-bg3);
 			color: inherit;
 		}
 
@@ -347,8 +347,14 @@
 		}
 
 		.checkbox-wrapper-51 input[type="checkbox"] {
-			visibility: hidden;
-			display: none;
+			opacity: 0;
+			position: absolute;
+			width: 150%;
+			height: 150%;
+			cursor: pointer;
+			z-index: 2;
+			top: -40%;
+			left: -50%;
 		}
 
 		.checkbox-wrapper-51 .toggle {
@@ -416,8 +422,7 @@
 			stroke-dashoffset: 25;
 		}
 
-		[setting],
-		[settingn],
+		.single_setting,
 		.inpbox {
 			display: flex;
 			flex-direction: row;
@@ -446,7 +451,7 @@
 			}
 		}
 
-		[settingn] {
+		.single_setting.vertical {
 			flex-direction: column;
 			gap: .5em;
 			align-items: stretch;
@@ -458,42 +463,42 @@
 			align-items: stretch;
 		}
 
-		[setting][type="advsetnav"] {
+		.single_setting[type="advsetnav"] {
 			display: flex;
 			flex-direction: row;
 			align-items: center;
 			gap: 0.5rem;
+
+			.advseticon {
+				padding: 0.5rem;
+				background: var(--col-bg1);
+				border-radius: var(--siz-radius1);
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				font-size: 1rem;
+			}
+
+			.advsetnavbtnprt {
+				flex: 1;
+				display: flex;
+				flex-direction: row;
+				align-items: center;
+				justify-content: space-between;
+
+				div {
+					flex: 1;
+				}
+			}
 		}
 
-		[setting][type="advsetnav"] .advseticon {
-			padding: 0.5rem;
-			background: var(--col-bg1);
-			border-radius: var(--siz-radius1);
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			font-size: 1rem;
-		}
-
-		[setting][type="advsetnav"] .advsetnavbtnprt {
-			flex: 1;
-			display: flex;
-			flex-direction: row;
-			align-items: center;
-			justify-content: space-between;
-		}
-
-		[setting][type="advsetnav"] .advsetnavbtnprt div {
-			flex: 1;
-		}
-
-		[setting] b {
+		.single_setting b {
 			font-weight: 500;
 		}
 
 		@keyframes drop {
 			0% {
-				transform: translateY(10px);
+				transform: translateX(-5px);
 				opacity: 0;
 			}
 
@@ -502,12 +507,11 @@
 			}
 		}
 
-		[setting] .checkbox-wrapper-51 {
-			float: right;
+		.single_setting .checkbox-wrapper-51 {
 			transform: scale(0.7);
 		}
 
-		[setting] p {
+		.single_setting p {
 			width: 80%;
 			opacity: 0.5;
 			margin: 0;
@@ -543,7 +547,7 @@
 			padding: 9px;
 			margin-bottom: 0;
 			border-radius: 0;
-			border-bottom: 1px solid #4d4d4d;
+			border-bottom: var(--box-crisp);
 		}
 
 		#appdi {
@@ -664,7 +668,7 @@
 			border: none;
 			padding: 7px 15px;
 			background: var(--col-bgh);
-			border: 1px solid #ffffff0c;
+			border: var(--box-crisp);
 			font-size: inherit;
 			cursor: pointer;
 			z-index: 1;
@@ -729,7 +733,7 @@
 			overflow-y: visible;
 			border-radius: var(--siz-radius1);
 			display: block;
-			border: 1px solid var(--col-bg3);
+			border: var(--box-crisp);
 			box-shadow: 0 3px 5px #0000007e;
 			background: var(--col-bg2);
 		}
@@ -747,12 +751,12 @@
 		}
 
 		.advancedsetsredbtn {
-			float: right;
 			margin: 0;
 			padding: 0;
 			background-color: transparent;
-			color: var(--colors-text-section);
+			color: var(--col-txt1);
 			display: flex;
+			opacity: .5;
 			justify-content: center;
 			border: 0;
 			align-items: center;
@@ -843,7 +847,7 @@
 			border-radius: var(--siz-radius2);
 			width: 100%;
 			margin-bottom: 0.3rem;
-			border: 1px solid #ffffff0c;
+			border: var(--box-crisp);
 		}
 
 		.searchInputSec input {
@@ -1102,7 +1106,7 @@
 			background-color: var(--col-bg2);
 			color: var(--colors-text-section);
 			display: inline-block;
-			border: 1px solid var(--col-bg3);
+			border: var(--box-crisp);
 			margin-left: 10px;
 			transform: translate(5px, -10px);
 		}
@@ -1236,14 +1240,14 @@
 			opacity: 1;
 		}
 
-		[setting].spread {
+		.single_setting.spread {
 			display: flex;
 			flex-direction: row;
 			align-items: center;
 			justify-content: space-between;
 		}
 
-		[setting].formlike {
+		.single_setting.formlike {
 			display: flex;
 			flex-direction: column;
 			justify-content: space-between;
@@ -1254,21 +1258,28 @@
 		.doablestep {
 			display: flex;
 			justify-content: space-between;
-			background: var(--col-bgh);
-			border-radius: var(--siz-radius1);
+			background: var(--col-bg3);
+			border-radius: var(--siz-radius2);
 			padding: .3rem;
+			cursor: pointer;
 			align-items: center;
+			transition: .3s;
+
+			&:hover {
+				padding-left: 1em;
+			}
 		}
 
 		.doablestep button {
 			padding: .3rem;
-			color: var(--col-txth);
+			color: var(--col-txt1);
 			display: flex;
 			align-items: center;
 			justify-content: center;
 			width: fit-content;
 			min-width: 0;
 			border: 0;
+			background: none;
 		}
 
 		.doablestep b {
@@ -1283,10 +1294,6 @@
 			gap: .3rem;
 			margin-top: 0.5rem;
 			animation: tab .3s;
-		}
-
-		#supportexpandbtn {
-			color: var(--col-txth);
 		}
 
 		.task {
@@ -1458,7 +1465,7 @@
 			background-color: var(--col-bg2);
 			padding: .5em;
 			border-radius: var(--siz-radius1);
-			border: 1px solid #ffffff0c;
+			border: var(--box-crisp);
 			justify-content: space-between;
 			align-items: center;
 
@@ -1552,10 +1559,6 @@
 					background-color: var(--col-bg3);
 				}
 			}
-		}
-
-		.turnon_checkbox {
-			display: none;
 		}
 
 		img#userpfp {
@@ -1756,7 +1759,8 @@
 			<h1>System</h1>
 
 			<segr>
-				<div setting type="advsetnav" windowopener="Storage" onclick="openCity(event, 'storage');">
+				<div class="single_setting" type="advsetnav" windowopener="Storage"
+					onclick="openCity(event, 'storage');">
 					<i class="material-symbols-rounded advseticon">storage</i>
 					<div class="advsetnavbtnprt">
 						<div>
@@ -1768,7 +1772,8 @@
 							</span></button>
 					</div>
 				</div>
-				<div setting type="advsetnav" windowopener="Battery" onclick="openCity(event, 'battery');">
+				<div class="single_setting" type="advsetnav" windowopener="Battery"
+					onclick="openCity(event, 'battery');">
 					<i class="material-symbols-rounded advseticon">battery_full</i>
 					<div class="advsetnavbtnprt">
 						<div>
@@ -1780,7 +1785,8 @@
 							</span></button>
 					</div>
 				</div>
-				<div setting type="advsetnav" windowopener="Devices" onclick="openCity(event, 'devices');">
+				<div class="single_setting" type="advsetnav" windowopener="Devices"
+					onclick="openCity(event, 'devices');">
 					<i class="material-symbols-rounded advseticon">devices</i>
 					<div class="advsetnavbtnprt">
 						<div>
@@ -1796,7 +1802,8 @@
 			<h1>Processes</h1>
 
 			<segr>
-				<div setting type="advsetnav" windowopener="Activity" onclick="openCity(event, 'activity'); taskmg()">
+				<div class="single_setting" type="advsetnav" windowopener="Activity"
+					onclick="openCity(event, 'activity'); taskmg()">
 					<i class="material-symbols-rounded advseticon">poll</i>
 					<div class="advsetnavbtnprt">
 						<div>
@@ -1808,7 +1815,7 @@
 							</span></button>
 					</div>
 				</div>
-				<div setting type="advsetnav" windowopener="Performance"
+				<div class="single_setting" type="advsetnav" windowopener="Performance"
 					onclick="openCity(event, 'perform'); updateFPS()">
 					<i class="material-symbols-rounded advseticon">speed</i>
 					<div class="advsetnavbtnprt">
@@ -1828,7 +1835,7 @@
 					arrow_back
 				</span> Storage</h1>
 			<segr>
-				<div settingn>
+				<div class="single_setting vertical">
 					<b>Available space</b>
 					<div class="progbarma" id="myProgress2">
 						<div id="myBar2" class="progbar"></div>
@@ -1842,7 +1849,7 @@
 			</segr>
 
 			<segr>
-				<div settingn>
+				<div class="single_setting vertical">
 					<b>Storage composition</b>
 					<div class="compositionbar" id="myProgress3">
 					</div>
@@ -1921,7 +1928,7 @@
 			<h3>Related settings</h3>
 
 			<segr>
-				<div setting type="advsetnav" windowopener="User" onclick="openCity(event, 'password')">
+				<div class="single_setting" type="advsetnav" windowopener="User" onclick="openCity(event, 'password')">
 					<i class="material-symbols-rounded advseticon">person</i>
 					<div class="advsetnavbtnprt">
 						<div>
@@ -1939,39 +1946,42 @@
 		<div id="defaults" class="tabcontent">
 			<h3>Multitasking</h3>
 			<segr>
-				<div setting>
+				<div class="single_setting">
 					<div class="settingName"><b>Window Snapping</b>
 						<p>Drag a window to the sides of your screen to snap it in place.
 					</p>
 					</div>
-					<input class="turnon_checkbox" type="checkbox" id="cbx-66">
+					<input class="turnon_checkbox" type="checkbox" settingkey="wsnapping">
 				</div>
-				<div setting>
-					<div class="settingName"><b>Keep visible</b>
+				<div class="single_setting">
+					<div class="settingName">
+						<b>Keep visible</b>
 						<p>Push windows back in when they are overflowing the screen.
 					</p>
 					</div>
-					<input class="turnon_checkbox" type="checkbox" id="cbx-kpvisible">
+					<input class="turnon_checkbox" type="checkbox" settingkey="keepvisible">
 				</div>
-				<div setting>
-					<div class="settingName"><b>Window outline</b>
+				<div class="single_setting">
+					<div class="settingName">
+						<b>Window outline</b>
 						<p>Highlight the active window with an outline.
 					</p>
 					</div>
-					<input class="turnon_checkbox" type="checkbox" id="cbx-kpvisible">
+					<input class="turnon_checkbox" type="checkbox" settingkey="windowoutline">
 				</div>
 			</segr>
 
 			<h3>Behaviours</h3>
 			<segr>
-				<div setting>
-					<div class="settingName"><b>Use NovaOS offline</b>
+				<div class="single_setting">
+					<div class="settingName">
+						<b>Use NovaOS offline</b>
 						<p>If enabled, Nova will try to cache the os and save it offline.
 					</p>
 					</div>
 					<input class="turnon_checkbox" type="checkbox" id="cbx-70">
 				</div>
-				<div setting>
+				<div class="single_setting">
 					<div class="settingName">
 						<b>SmartSearch</b>
 						<p>Search through your files based on similarity algorithms.
@@ -2052,21 +2062,6 @@
 						try {
 							if (await ntxSession.send("settings.get", "novaOffline")) {
 								document.getElementById("cbx-70").checked = true;
-							}
-						} catch (error) {
-							console.error(error)
-						}
-
-
-						// window snapping
-						document.getElementById("cbx-66").addEventListener("change", function () {
-							let newValue2 = document.getElementById("cbx-66").checked;
-							ntxSession.send("settings.set", "wsnapping", newValue2)
-						});
-
-						try {
-							if (await ntxSession.send("settings.get", "wsnapping")) {
-								document.getElementById("cbx-66").checked = true;
 							}
 						} catch (error) {
 							console.error(error)
@@ -2153,8 +2148,9 @@
 			</segr>
 			<h3>Reset</h3>
 			<segr>
-				<div setting>
-					<div class="settingName"><b>Reset Settings</b>
+				<div class="single_setting">
+					<div class="settingName">
+						<b>Reset Settings</b>
 						<p>Reset to default settings.</p>
 					</div>
 					<button style="float: right;" onclick="restsettings();" danger>Reset</button>
@@ -2367,7 +2363,7 @@
 			</script>
 			<h1>Password</h1>
 			<segr>
-				<div setting id="changpassthingy" class="spread">
+				<div class="single_setting" id="changpassthingy" class="spread">
 					<b id="passstat"></b>
 					<button onclick="chstpass()">Continue</button>
 				</div>
@@ -2407,7 +2403,7 @@
 			<h3>Related settings</h3>
 
 			<segr>
-				<div setting type="advsetnav" windowopener="User" onclick="openCity(event, 'storage')">
+				<div class="single_setting" type="advsetnav" windowopener="User" onclick="openCity(event, 'storage')">
 					<i class="material-symbols-rounded advseticon">storage</i>
 					<div class="advsetnavbtnprt">
 						<div>
@@ -2419,7 +2415,7 @@
 							</span></button>
 					</div>
 				</div>
-				<div setting type="advsetnav" windowopener="User" onclick="openCity(event, 'network')">
+				<div class="single_setting" type="advsetnav" windowopener="User" onclick="openCity(event, 'network')">
 					<i class="material-symbols-rounded advseticon">language</i>
 					<div class="advsetnavbtnprt">
 						<div>
@@ -2546,19 +2542,21 @@
 					}
 				</script>
 			</supportb>
+			<h3>Get help</h3>
 			<segr>
-				<div setting>
-					<div class="settingName"><b>NovaOS Discord</b>
+				<div class="single_setting">
+					<div class="settingName">
+						<b>NovaOS Discord</b>
 						<p>Join us for support, exclusive news and much more.</p>
 					</div>
-					<button style="margin-top: 5px;float: right;"
-						onclick="window.open('https://discord.gg/atkqbwEQU8')">Join</button>
+					<button onclick="window.open('https://discord.gg/atkqbwEQU8')">Join</button>
 				</div>
-				<div setting>
-					<div class="settingName"><b>Feedback</b>
+				<div class="single_setting">
+					<div class="settingName">
+						<b>Feedback</b>
 						<p>Tell us about it, we are here for help!</p>
 					</div>
-					<button style="margin-top: 5px;float: right;"
+					<button
 						onclick="window.open('https://docs.google.com/forms/d/e/1FAIpQLSdqhloOUkpZVUG-V1Vu2HFJufaSLmdwsGvPHKDSwoJwrwps6w/viewform?usp=dialog')">Continue</button>
 				</div>
 			</segr>
@@ -2696,8 +2694,9 @@
 			</div>
 			<h1>Default apps</h1>
 			<segr>
-				<div setting>
-					<div class="settingName"><b>Update Default Apps</b>
+				<div class="single_setting">
+					<div class="settingName">
+						<b>Update Default Apps</b>
 						<p>Update or reinstall deleted or corrupted versions of default apps.</p>
 					</div>
 					<button style="margin-top: 5px;float: right;" onclick="updefapps(this)">Update</button>
@@ -2793,7 +2792,7 @@
 					for (let i = 0; i < namespaces.length; i++) {
 						let ns = namespaces[i];
 						let div = document.createElement("div");
-						div.setAttribute("setting", "");
+						div.className = "single_setting";
 
 						let nameDiv = document.createElement("div");
 						nameDiv.className = "settingName";
@@ -2847,7 +2846,7 @@
 				<div id="app_setting_nav">App</div>
 			</h1>
 			<segr>
-				<div setting>
+				<div class="single_setting">
 					<div id="big_app_card">
 						<div class="app_icon"></div>
 						<div class="appdets">
@@ -2893,7 +2892,7 @@
 			</segr>
 			<h1>Permissions</h1>
 			<segr id="app_perms_toggles">
-				<div setting>
+				<div class="single_setting">
 					<div class="settingName">
 						<p>key description</p>
 					</div>
@@ -2906,7 +2905,7 @@
 		<div id="network" class="tabcontent">
 			<h1>Connect to a network</h1>
 			<segr>
-				<div setting windowopener="Rotur" onclick="openCity(event, 'rotursets'); loaduprtour()">
+				<div class="single_setting" windowopener="Rotur" onclick="openCity(event, 'rotursets'); loaduprtour()">
 					<div class="settingName"><b>RoturTW</b>
 						<p>Configure RoturTW networking</p>
 					</div>
@@ -2956,7 +2955,7 @@
 			<div id="rotursettings">
 				<h1>Account</h1>
 				<segr id="rtrinitspace">
-					<div setting class="spread">
+					<div class="single_setting" class="spread">
 						<b>Initialize rotur</b>
 						<button onclick="initrotur()">Start</button>
 					</div>
@@ -2966,14 +2965,14 @@
 				</segr>
 
 				<segr id="rtrsignedinsec" style="display:none;">
-					<div setting class="spread">
+					<div class="single_setting" class="spread">
 						<b id="rtruserstatsi">Signed in</b>
 						<button onclick="signoutrtrsets()">Sign Out</button>
 					</div>
 				</segr>
 				<div id="rtrsignupform" style="display:none;">
 					<segr>
-						<div setting class="formlike">
+						<div class="single_setting vertical" class="formlike">
 							<input id="roturaccsignname" placeholder="Enter username..." class="inputtype1" type="text">
 							<input id="roturaccsignpass" placeholder="Enter your password..." class="inputtype1"
 								type="password">
@@ -2981,7 +2980,7 @@
 						</div>
 					</segr>
 					<segr>
-						<div setting class="spread">
+						<div class="single_setting" class="spread">
 							<b id="rtruserstatsi">Don't have an account?</b>
 							<button onclick="signoutrtrsets()">Register</button>
 						</div>
@@ -3050,30 +3049,30 @@
 				</span> Advanced theme settings</h1>
 			<h3>User Interface Colors</h3>
 			<segr>
-				<div setting class="colorsetting">
+				<div class="single_setting" class="colorsetting">
 					<b>Primary Background</b>
 					<input class="colorpickerui" id="normal-bg" data-variable="--col-bg1"></input>
 				</div>
-				<div setting class="colorsetting">
+				<div class="single_setting" class="colorsetting">
 					<b>Secondary Background</b>
 					<input class="colorpickerui" id="section-bg" data-variable="--col-bg2"></input>
 				</div>
-				<div setting class="colorsetting">
+				<div class="single_setting" class="colorsetting">
 					<b>Tertiary Background</b>
 					<input class="colorpickerui" id="sub-bg" data-variable="--col-bg3"></input>
 				</div>
-				<div setting class="colorsetting">
+				<div class="single_setting" class="colorsetting">
 					<b>Highlighted Background</b>
 					<input class="colorpickerui" id="high-bg" data-variable="--col-bgh"></input>
 				</div>
 
 			</segr>
 			<segr>
-				<div setting class="colorsetting">
+				<div class="single_setting" class="colorsetting">
 					<b>Primary text</b>
 					<input class="colorpickerui" id="text-normal" data-variable="--col-txt1"></input>
 				</div>
-				<div setting class="colorsetting">
+				<div class="single_setting" class="colorsetting">
 					<b>Highlighted text</b>
 					<input class="colorpickerui" id="text-high" data-variable="--col-txth"></input>
 				</div>
@@ -3081,14 +3080,14 @@
 			<h3>Nova Nav <div class="betatag">beta</div>
 			</h3>
 			<segr>
-				<div setting>
+				<div class="single_setting">
 					<div class="settingName">
 						Transparent Background
 						</p>
 					</div>
 					<input class="turnon_checkbox" type="checkbox" id="cbx-71">
 				</div>
-				<div setting class="colorsetting">
+				<div class="single_setting" class="colorsetting">
 					<b>Align items</b>
 					<select id="navAlignment">
 						<option value="center" selected>Center</option>
@@ -3099,14 +3098,14 @@
 			</segr>
 			<h3>Visuals</h3>
 			<segr>
-				<div setting class="colorsetting">
+				<div class="single_setting" class="colorsetting">
 					<span class="material-symbols-rounded">
 						check_circle
 					</span>
 					<b>Confirm Color</b>
 					<input class="colorpickerui" data-variable="--col-good"></input>
 				</div>
-				<div setting class="colorsetting">
+				<div class="single_setting" class="colorsetting">
 					<span class="material-symbols-rounded">
 						cancel
 					</span>
@@ -3114,7 +3113,7 @@
 					<input class="colorpickerui" data-variable="--col-bad"></input>
 				</div>
 
-				<div setting>
+				<div class="single_setting">
 					<span class="material-symbols-rounded">
 						rounded_corner
 					</span>
@@ -3127,21 +3126,21 @@
 						<option value="0rem">Sharp</option>
 					</select>
 				</div>
-				<div setting>
+				<div class="single_setting">
 					<span class="material-symbols-rounded">
 						space_dashboard
 					</span>
 					<b>Normal Spacing</b>
 					<input class="numinp" data-variable="--spacing-normal"></input>
 				</div>
-				<div setting>
+				<div class="single_setting">
 					<span class="material-symbols-rounded">
 						align_space_around
 					</span>
 					<b>Gap spacing</b>
 					<input class="numinp" data-variable="--spacing-gap"></input>
 				</div>
-				<div setting>
+				<div class="single_setting">
 					<span class="material-symbols-rounded">
 						aspect_ratio
 					</span>
@@ -3277,36 +3276,19 @@
 
 			</segr>
 			<segr style="margin-top: .5rem">
-				<div setting onclick="ntxSession.send('olp.useHandler','content_store', {'opener':'themes'})">
+				<div class="single_setting"
+					onclick="ntxSession.send('olp.useHandler','content_store', {'opener':'themes'})">
 
-					<div class="settingName"><span>Browse themes</span>
+					<div class="settingName">
+						<span>Browse themes</span>
 						<p>Browse official theme packs</p>
 					</div>
-					<svg class="themestoreopner" style="float: right;" version='1.1' xmlns='http://www.w3.org/2000/svg'
-						xmlns:xlink='http://www.w3.org/1999/xlink' width='53.37052' height='56.68831'
-						viewBox='0,0,53.37052,56.68831'>
-						<g transform='translate(-213.17634,-139.63412)'>
-							<g stroke-miterlimit='10'>
-								<path
-									d='M241.65962,193.67156c-6.87052,-2.04166 -8.64322,-2.56843 -12.6527,-3.75991c-1.84444,-0.5481 -3.22474,-2.87978 -2.70696,-4.6222c1.16355,-3.91554 5.8018,-19.52399 7.88261,-26.52627c0.62507,-2.10345 2.29388,-3.05157 4.32482,-2.44806c6.93594,2.0611 8.93153,2.65411 12.87469,3.82587c1.74832,0.51953 3.09972,2.46721 2.43655,4.69887c-2.11127,7.10476 -6.66524,22.42961 -7.81665,26.30429c-0.51778,1.74241 -2.31527,3.12977 -4.34235,2.5274z'
-									fill='#ffdd70' stroke='none' stroke-width='NaN' />
-								<path
-									d='M250.20411,192.35095c-6.78528,-2.3092 -8.53598,-2.905 -12.49571,-4.2526c-1.82155,-0.61992 -3.10948,-3.00388 -2.52384,-4.72468c1.31602,-3.86695 6.56207,-19.28176 8.91556,-26.19716c0.70698,-2.07736 2.41165,-2.95938 4.41738,-2.27678c6.84989,2.3312 8.82072,3.00191 12.71495,4.32722c1.72663,0.58761 3.0007,2.58673 2.25063,4.7907c-2.38794,7.01661 -7.53866,22.15133 -8.84096,25.97794c-0.58563,1.7208 -2.43608,3.03668 -4.43802,2.35537z'
-									fill='#68ffee' stroke='none' stroke-width='NaN' />
-								<path
-									d='M239.82626,178.57165c-4.78436,1.76483 -6.0188,2.22018 -8.81085,3.25009c-1.2844,0.47377 -3.15859,-0.05508 -3.69904,-1.05991c-1.21449,-2.25805 -6.05585,-11.25924 -8.22778,-15.29737c-0.65243,-1.21304 -0.17647,-2.30561 1.2378,-2.82729c4.82992,-1.78163 6.21956,-2.29424 8.96543,-3.30711c1.21747,-0.44909 2.89315,-0.0854 3.58536,1.20157c2.20371,4.09722 6.9571,12.93488 8.15892,15.16935c0.54045,1.00483 0.20175,2.34997 -1.20982,2.87067z'
-									fill='#ff816f' stroke='none' stroke-width='NaN' />
-								<path
-									d='M213.17634,189.28601c0,-14.65005 0,-6.12361 0,-14.67304c0,-3.93291 3.7648,-7.99489 7.48016,-7.99489c8.34913,0 23.64486,0 38.57587,0c4.48523,0 7.31449,2.71767 7.31449,7.04825c0,14.78957 0,6.73835 0,15.14636c0,3.72796 -3.02922,7.50974 -7.78782,7.50974c-15.14952,0 -29.84053,0 -38.10254,0c-3.71536,0 -7.48016,-2.71404 -7.48016,-7.03641z'
-									fill='#6179ff' stroke='none' stroke-width='NaN' />
-								<path
-									d='M223.09877,165.70023c0,-13.0152 7.62891,-23.56611 17.03965,-23.56611c9.41073,0 17.03965,10.55091 17.03965,23.56611c0,13.0152 -34.07929,13.0152 -34.07929,0z'
-									fill='none' stroke='#6179ff' stroke-width='5' />
-							</g>
-						</g>
-					</svg>
+					<button class="advancedsetsredbtn"><span class="material-symbols-rounded">
+							chevron_right
+						</span></button>
 				</div>
-				<div setting windowopener="Advanced theme" onclick="openCity(event, 'advancedthemesets');">
+				<div class="single_setting" windowopener="Advanced theme"
+					onclick="openCity(event, 'advancedthemesets');">
 					<div class="settingName"><b>Advanced theme settings</b>
 						<p>Configure UI Colors, visuals...</p>
 					</div>
@@ -3402,13 +3384,12 @@
 			<h1>Wallpaper</h1>
 			<segr>
 				<div class="inpbox" type="textInput">
-					<span>Change your wallpaper:</span>
 					<div class="inputwithbtn">
 						<input placeholder="Paste a URL or file ID here..." id="wallpaperurl" class="inputtype1">
 						<button onclick="savewallpap()">Change</button>
 					</div>
 				</div>
-				<div setting class="colorsetting">
+				<div class="single_setting" class="colorsetting">
 					<b>Wallpaper position</b>
 					<select id="wallpaperPos">
 						<option value="center">Center</option>
@@ -3751,8 +3732,12 @@
 		}
 		function convertTurnonCheckboxes() {
 			const checkboxes = document.querySelectorAll('.turnon_checkbox');
-			checkboxes.forEach(original => {
-				const id = original.id;
+			checkboxes.forEach(el => {
+				if (el.dataset.converted === '1') return;
+				el.dataset.converted = '1';
+
+				const id = 'chk_' + Math.random().toString(36).slice(2, 10);
+				el.id = id;
 
 				const wrapper = document.createElement('div');
 				wrapper.className = 'checkbox-wrapper-51';
@@ -3773,19 +3758,41 @@
 
 				svg.appendChild(path);
 				span.appendChild(svg);
+				el.setAttribute('role', 'submit');
+
+				const parent = el.parentNode;
+				parent.insertBefore(wrapper, el);
+
 				label.appendChild(span);
-
-				original.setAttribute('role', 'submit');
-
-				const parent = original.parentNode;
-				parent.insertBefore(wrapper, original);
-				wrapper.appendChild(original);
+				wrapper.appendChild(el);
 				wrapper.appendChild(label);
+
+				if (el.hasAttribute('settingkey')) {
+					const key = el.getAttribute('settingkey');
+
+					el.addEventListener('change', () => {
+						ntxSession.send("settings.set", key, el.checked === true);
+					});
+
+
+					(async () => {
+						try {
+							const val = await ntxSession.send("settings.get", key);
+							console.log(35, key, val)
+							if (el.type === 'checkbox')
+								el.checked = val === true || val === 'true';
+							else el.value = val;
+						} catch (e) {
+							console.error(e);
+						}
+					})();
+				}
 			});
 		}
 
+
+
 		async function greenflag() {
-			convertTurnonCheckboxes();
 			ntxSession = new NTXSession();
 
 			var defile
@@ -3796,6 +3803,7 @@
 						loadAppSettings(myWindow.params.data.id);
 					}
 				}
+				convertTurnonCheckboxes();
 				function replaceSelects() {
 					let openDialog = null;
 
