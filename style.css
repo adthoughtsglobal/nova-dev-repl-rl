@@ -2596,3 +2596,40 @@ div#appgrp_list {
 		background-color: var(--col-bg3);
 	}
 }
+
+@keyframes backgroundzoom {
+	0% {
+		background-position: right;
+	}
+	100% {
+		background-position: left;
+	}
+}
+
+dialog#lazarus {
+    width: fit-content;
+    height: fit-content;
+    border: 0;
+    background: transparent;
+    color: white;
+    font-size: 5em;
+    font-weight: bold;
+		outline: none;
+	&:focus {
+		outline: none;
+	}
+	&::backdrop {
+		background-color: black;
+	}
+
+	h1#lazarus-title {
+    background: url(libs/lazarus.png);
+    -webkit-background-clip: text;
+    background-size: 50%;
+    -webkit-text-fill-color: transparent;
+    background-position: center;
+	animation: backgroundzoom 5s infinite linear;
+
+
+}
+}
