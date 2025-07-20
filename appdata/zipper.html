@@ -1,125 +1,98 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width">
-	<meta name="nova-include" content="nova.css material-symbols-rounded">
-	<meta name="nova-icon"
-		content="<svg width='214' height='214' viewBox='0 0 214 214' fill='none' xmlns='http://www.w3.org/2000/svg'> <g clip-path='url(#clip0_6_2)'> <path d='M0 214V0H214V214H0Z' fill='white'/> <ellipse cx='124.5' cy='107' rx='35.5' ry='35' fill='#FFC853'/> <path d='M58.4553 81L142.75 133.171L108.631 214H-0.25V133.171L58.4553 81Z' fill='#9DACFF'/> <path d='M183.879 47L214 88.75V214H21L80.1272 138.85L109.691 156.835L183.879 47Z' fill='#6179FF'/> </g> <defs> <clipPath id='clip0_6_2'> <rect width='214' height='214' fill='white'/> </clipPath> </defs> </svg>">
-		<meta name="capabilities" content=".zip">
-    <meta name="permissions" content="fileGet, unsandboxed">
-	<title>Zipper</title>
-	<style>
-		body {
-			color: var(--col-txt1);
-			font-weight: 400;
-			font-style: normal;
-			background-color: var(--col-bg1);
-			padding: 0 var(--sizing-huge);
-		}
-	</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OSL Code Editor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+        }
+        #editor-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+            background-color: #252526;
+        }
+        textarea {
+            flex: 1;
+            padding: 10px;
+            font-size: 14px;
+            font-family: monospace;
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            border: 1px solid #333;
+            border-radius: 4px;
+            resize: none;
+        }
+        .button-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        button {
+            padding: 10px;
+            font-size: 16px;
+            background-color: #e05c2b;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #d14f24;
+        }
+        #output-container {
+            flex: 1;
+            display: none;
+            padding: 10px;
+            background-color: #1e1e1e;
+        }
+        .oslframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+    </style>
 </head>
-
 <body>
-    <div id="zip">
-    <h1>Choose a directory:</h1>
-    <button onclick="choosedir('zip')">Choose</button> <input id="zip_dir">
-    <h1>Choose a destination:</h1>
-    <button onclick="choosedest('zip')">Choose</button> <input id="zip_dest">
-    <button onclick="zipFiles()">Zip</button>
+
+<div id="editor-container">
+    <textarea id="code-input" placeholder="Enter your OSL code here..."></textarea>
+    <div class="button-container">
+        <button onclick="runAsOSL()">Run as a preview window</button>
+        <button onclick="showInPage()">Run here</button>
+        <button onclick="saveToFile()">Save</button>
+    </div>
 </div>
-<div id="unzip">
-    <h1>Choose a zip file:</h1>
-    <button onclick="choosefile()">Choose</button> <input id="zip_file">
-    <h1>Choose a destination:</h1>
-    <button onclick="choosedest('unzip')">Choose</button> <input id="unzip_dest">
-    <button onclick="unzipFile()">Unzip</button>
-</div>
+<div id="output-container"></div>
 
 <script>
-let zipDirPath = '';
-let zipDestPath = '';
-let unzipFileID = '';
-let unzipDestPath = '';
-
-async function choosedir(mode) {
-    const path = await ntxSession.send("olp.useHandler", "file_manager", { "opener": 'directory', "dir": "Downloads/" });
-    if (mode === 'zip') {
-        zipDirPath = path;
-        document.getElementById('zip_dir').value = path;
+    function showInPage() {
+        const content = document.getElementById('code-input').value;
+        const encodedContent = encodeURIComponent(content).replace(/'/g, "%27").replace(/"/g, "%22");
+        const outputContainer = document.getElementById('output-container');
+        const iframeContent = `<iframe class="oslframe" src="https://origin.mistium.com/?embed=${encodedContent}"></iframe>`;
+        outputContainer.innerHTML = iframeContent;
+        outputContainer.style.display = 'block';
     }
-}
 
-async function choosedest(mode) {
-    const path = await ntxSession.send("olp.useHandler", "file_manager", { "opener": 'directory', "dir": "Downloads/" });
-    if (mode === 'zip') {
-        zipDestPath = path;
-        document.getElementById('zip_dest').value = path;
-    } else {
-        unzipDestPath = path;
-        document.getElementById('unzip_dest').value = path;
-    }
-}
-
-async function choosefile() {
-    const fileID = await ntxSession.send("olp.useHandler", "file_manager", { "opener": 'any', "dir": "Downloads/" });
-    unzipFileID = fileID;
-    document.getElementById('zip_file').value = fileID;
-}
-
-async function zipFiles() {
-    const files = await ntxSession.send("fileGet.listDirectory", zipDirPath);
-    const zipped = {};
-    for (const file of files) {
-        if (!file.isDirectory) {
-            const f = await ntxSession.send("fileGet.byId", file.id);
-            const binary = Uint8Array.from(atob(f.content.split(',')[1]), c => c.charCodeAt(0));
-            zipped[file.name] = binary;
+    function saveToFile() {
+        const filename = prompt("Enter a filename (without extension):");
+        if (filename) {
+            const content = document.getElementById('code-input').value;
+            window.parent.createFile("Documents", filename, "osl", content);
         }
     }
-    const zippedData = window.parent.fflate.zipSync(zipped);
-    const zippedUri = 'data:application/zip;base64,' + btoa(String.fromCharCode(...zippedData));
-    await ntxSession.send("fileSet.createFile", zipDestPath, 'archive.zip', false, zippedUri);
-    alert('Zip complete');
-}
-
-async function unzipFile() {
-    const file = await ntxSession.send("fileGet.byId", unzipFileID);
-    const binary = Uint8Array.from(atob(file.content.split(',')[1]), c => c.charCodeAt(0));
-    const unzipped = window.parent.fflate.unzipSync(binary);
-
-    const entries = Object.entries(unzipped);
-
-    let i = 0;
-
-    async function processNext() {
-        if (i >= entries.length) {
-            alert('Unzip complete');
-            return;
-        }
-
-        const [path, content] = entries[i++];
-        if (content == null) {
-            return setTimeout(processNext, 500);
-        }
-
-        const parts = path.split('/');
-        const fileName = parts.pop();
-        const subDir = parts.join('/');
-        const fullPath = subDir ? `${unzipDestPath}/${subDir}` : unzipDestPath;
-
-        const dataUri = 'data:application/octet-stream;base64,' + btoa(String.fromCharCode(...content));
-        await ntxSession.send("fileSet.createFile", fullPath, fileName, false, dataUri);
-
-        setTimeout(processNext, 500);
-    }
-
-    processNext();
-}
-
 </script>
 
 </body>
-
 </html>

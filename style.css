@@ -448,7 +448,7 @@ nav [navobj] div {
 	left: 0;
 
 	&>.modal-items {
-
+		outline: 0;
 		padding: 1em;
 		border-radius: var(--siz-radius1);
 		color: var(--col-txt1);

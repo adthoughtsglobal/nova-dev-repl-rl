@@ -227,9 +227,29 @@ async function prepareIframeContent(cont, appid, winuid) {
         styleBlock += `<style>${updatedCss}</style>`;
     }
 
-    if (getMetaTagContent(contentString, 'nova-include')?.includes('material-symbols-rounded')) {
-        styleBlock += `<style>@font-face{font-family:'Material Symbols Rounded';font-style:normal;src:url(https://adthoughtsglobal.github.io/resources/MaterialSymbolsRounded.woff2) format('woff2');}.material-symbols-rounded{font-family:'Material Symbols Rounded';font-weight:normal;font-style:normal;font-size:24px;line-height:1;display:inline-block;white-space:nowrap;direction:ltr;-webkit-font-smoothing:antialiased;}</style>`;
+    async function cacheFont(url, cacheKey, maxAttempts = 2, delayMs = 2000) {
+    const cache = await caches.open('font-cache');
+    let response = await cache.match(url);
+    if (!response) {
+        for (let i = 0; i < maxAttempts; i++) {
+            try {
+                response = await fetch(url, { cache: 'reload' });
+                if (response.ok) {
+                    await cache.put(url, response.clone());
+                    break;
+                }
+            } catch (_) {}
+            await new Promise(r => setTimeout(r, delayMs));
+        }
     }
+}
+
+if (getMetaTagContent(contentString, 'nova-include')?.includes('material-symbols-rounded')) {
+    const fontUrl = 'https://adthoughtsglobal.github.io/resources/MaterialSymbolsRounded.woff2';
+    cacheFont(fontUrl, 'material-symbols-rounded');
+    styleBlock += `<style>@font-face{font-family:'Material Symbols Rounded';font-style:normal;src:url(${fontUrl}) format('woff2');}.material-symbols-rounded{font-family:'Material Symbols Rounded';font-weight:normal;font-style:normal;font-size:24px;line-height:1;display:inline-block;white-space:nowrap;direction:ltr;-webkit-font-smoothing:antialiased;}</style>`;
+}
+
 
     const ctxScript = getMetaTagContent(contentString, 'nova-include')?.includes('contextMenu') ? await fetch('scripts/ctxmenu.js').then(res => res.text()) : '';
 

@@ -103,6 +103,7 @@
 			text-overflow: ellipsis;
 			opacity: 0.7;
 			font-family: inherit;
+			position: relative;
 		}
 
 		.tab button:hover {
@@ -488,6 +489,7 @@
 			border: none;
 			border-bottom: 3px solid transparent;
 			transition: .3s;
+			text-transform: capitalize;
 			padding: 0;
 
 			&.active-filter {
@@ -499,6 +501,10 @@
 			margin: .5em 0;
 			display: flex;
 			gap: 1em;
+			overflow-x: auto;
+			overflow-y: hidden;
+			white-space: nowrap;
+			padding-bottom: 5px;
 		}
 
 
@@ -802,6 +808,29 @@
 				}
 			}
 		}
+
+		b#installerappby {
+			opacity: .5;
+			font-weight: normal;
+		}
+
+		.tobeupdatedcounter {
+			position: absolute;
+			right: .5em;
+			background: #c93636;
+			color: #ffffff;
+			font-size: 13px;
+			width: 40px;
+			height: 20px;
+			top: .5em;
+			display: flex;
+			padding: 4px;
+			text-align: center;
+			border-radius: 15px;
+			justify-content: flex-start;
+			align-items: center;
+			flex-direction: row;
+		}
 	</style>
 </head>
 
@@ -817,20 +846,17 @@
 			</div>
 			<button class="tablinks btnlike" onclick="openCity(event, 'system')" id="defaultOpen"><i
 					class="material-symbols-rounded">apps</i> Apps</button>
-			<button class="tablinks btnlike" onclick="openCity(event, 'games')"><i
-					class="material-symbols-rounded">sports_esports</i> Games</button>
 			<button class="tablinks btnlike" onclick="openCity(event, 'system2'); 
 						loadThemes();"><i class="material-symbols-rounded">brush</i> Themes</button>
 			<button class="tablinks btnlike" onclick="openCity(event, 'myApps');loadMyApps()"><i
-					class="material-symbols-rounded">sync_saved_locally</i> My Apps</button>
+					class="material-symbols-rounded">sync_saved_locally</i> My Apps <span class="tobeupdatedcounter"><i
+						class="material-symbols-rounded">arrow_upward</i><a id="tobeupdatedalert"></a></span></button>
 		</div>
 
 		<div id="system" class="tabcontent">
+			<div id="categorynav" class="sewid">
+			</div>
 			<div id="sugapps"></div>
-		</div>
-
-		<div id="games" class="tabcontent">
-			<div id="game-section" class="applist"></div>
 		</div>
 
 		<div id="system2" class="tabcontent">
@@ -853,15 +879,17 @@
 					Theme
 				</div>
 				<div class="installerappbasedata">
-					<h1 class="appname" id="installerappname">Loading...</h1>
+					<div class="namebatch">
+						<h1 class="appname" id="installerappname">Loading...</h1>
+						<b id="installerappby">...</b>
+
+					</div>
 					<div class="dostuffwithit">
 						<button id="openbtn">Open</button>
 						<button id="installButton">Install</button>
 						<button id="updateButton">Update</button>
 					</div>
 				</div>
-				<b id="installerappby">...</b>
-				<b>Overview</b>
 				<p id="installerappdesc">...</p>
 			</div>
 		</div>
@@ -1097,48 +1125,46 @@
 
 		async function installapp(x, appName, obj, method = "icononly") {
 			let prefixurl = "";
-			if (!x.src.startsWith("http")) {
-				prefixurl = "https://adthoughtsglobal.github.io/"
-			}
+			if (!x.src.startsWith("http")) prefixurl = "https://adthoughtsglobal.github.io/";
 			try {
-				if (method == 'icononly') {
-					obj.innerHTML = `<div class="material-symbols-rounded installbtnicn">pending</div>`
+				if (method == "icononly") {
+					obj.innerText = "pending";
 				} else {
-					obj.innerHTML = `<div class='loader22'></div>`
+					obj.innerHTML = `<div class='loader22'></div>`;
 				}
 				const response = await fetch(prefixurl + x.src);
 				const content = await response.text();
-				let tempid = await window.parent.createFile("Apps", appName, "app", content);
+				const tempid = await window.parent.createFile("Apps", appName, "app", content);
 				await ntxSession.send("appStorage.set", getAppTag(x), { id: tempid, ver: x.ver, updated: Date.now() });
 				openappinstr(appName, x);
 				setTimeout(() => {
-					if (method == 'icononly') {
-						obj.innerHTML = `<div class="material-symbols-rounded installbtnicn">check</div>`;
+					if (method == "icononly") {
+						obj.innerText = "check";
 						setTimeout(() => {
-							obj.innerHTML = `<div class="material-symbols-rounded installbtnicn">download</div>`
-						}, 1000)
+							obj.innerText = "download";
+						}, 1000);
 					} else {
-						obj.innerHTML = `Update`
+						obj.innerText = "Update";
 					}
-				}, 1000)
+				}, 1000);
 			} catch (err) {
 				console.error("Error installing app:", err);
 				setTimeout(() => {
-					if (method == 'icononly') {
-						obj.innerHTML = `<div class="material-symbols-rounded installbtnicn">sentiment_dissatisfied</div>`;
+					if (method == "icononly") {
+						obj.innerText = "sentiment_dissatisfied";
 						setTimeout(() => {
-							obj.innerHTML = `<div class="material-symbols-rounded installbtnicn">download</div>`
-						}, 1000)
+							obj.innerText = "download";
+						}, 1000);
 					} else {
-						obj.innerHTML = "Failed";
+						obj.innerText = "Failed";
 						setTimeout(() => {
-							obj.innerHTML = "Update";
-						}, 1000)
+							obj.innerText = "Update";
+						}, 1000);
 					}
-				}, 1000)
+				}, 1000);
 			}
-
 		}
+
 
 		function renderapps() {
 			fetchAppData().then(appData => {
@@ -1171,49 +1197,72 @@
 			const vdevs = data.vdevs;
 			const featured = data.featured;
 			const categorySections = {};
+			const sugapps = document.getElementById("sugapps");
+			const nav = document.getElementById("categorynav");
+			nav.innerHTML = '';
 
-			data.apps.sort((a, b) => Object.keys(a)[0].localeCompare(Object.keys(b)[0]));
+			function ensureCategory(cat) {
+				if (!categorySections[cat]) {
+					const section = document.createElement("div");
+					section.className = "catosection";
+					section.dataset.cat = cat;
+					section.style.display = cat === "Tools" ? "block" : "none";
 
-			data.apps.forEach(appDetails => {
-				const appName = appDetails.name;
-				const appDiv = createAppDiv(appName, appDetails, vdevs, featured);
+					const list = document.createElement("div");
+					list.className = "applist";
 
-				if (featured.appName == appName) {
-					document.getElementById("featuredappname").innerText = appName;
-					document.getElementById("featuredappby").innerText = appDetails.by;
-					document.getElementById("featuredappdesc").innerText = appDetails.ldesc;
+					section.appendChild(list);
+					sugapps.appendChild(section);
+					categorySections[cat] = list;
+
+					const btn = document.createElement("button");
+					btn.dataset.filter = cat;
+					btn.innerText = cat;
+					nav.appendChild(btn);
+				}
+			}
+
+			const allApps = data.apps;
+			allApps.sort((a, b) => Object.keys(a)[0].localeCompare(Object.keys(b)[0]));
+
+			allApps.forEach(details => {
+				const name = details.name;
+				const cat = details.cat || "Others";
+				const appDiv = createAppDiv(name, details, vdevs, featured);
+
+				if (featured.appName === name) {
+					document.getElementById("featuredappname").innerText = name;
+					document.getElementById("featuredappby").innerText = details.by;
+					document.getElementById("featuredappdesc").innerText = details.ldesc;
 					document.getElementById("featuredImg").src = featured.img;
-					document.getElementById("featured").setAttribute("onclick", `openappinstr('${appName}', ${JSON.stringify(appDetails)})`);
-					document.getElementById("featured").style.backgroundImage = `radial-gradient(circle at 0% 0%, ${appDetails.th}, var(--col-bg2))`;
+					document.getElementById("featured").setAttribute("onclick", `openappinstr('${name}', ${JSON.stringify(details)})`);
+					document.getElementById("featured").style.backgroundImage = `radial-gradient(circle at 0% 0%, ${details.th}, var(--col-bg2))`;
 				} else {
-					const cat = appDetails.cat || "Others";
-					if (!categorySections[cat]) {
-						const section = document.createElement("div");
-						const title = document.createElement("small");
-						const list = document.createElement("div");
-
-						title.className = "catosmall";
-						title.innerText = cat;
-
-						list.className = "applist";
-
-						section.appendChild(title);
-						section.appendChild(list);
-						document.getElementById("apps-section").appendChild(section);
-
-						categorySections[cat] = list;
-					}
+					ensureCategory(cat);
 					categorySections[cat].appendChild(appDiv);
 				}
 			});
 
+			document.querySelectorAll('#categorynav button').forEach(btn => {
+				if (btn.dataset.filter == "tools")
+					btn.classList.add('active-filter');
+				btn.addEventListener('click', () => {
+					document.querySelectorAll('#categorynav button').forEach(b => b.classList.remove('active-filter'));
+					btn.classList.add('active-filter');
+					const filter = btn.dataset.filter;
+					document.querySelectorAll('.catosection').forEach(section => {
+						section.style.display = (section.dataset.cat === filter) ? 'block' : 'none';
+					});
+				});
 
-			data.games.forEach(gameDetails => {
-				const gameName = gameDetails.name;
-				const gameDiv = createAppDiv(gameName, gameDetails, vdevs, featured);
-				document.getElementById("game-section").appendChild(gameDiv);
+			});
+
+			document.querySelectorAll('.catosection').forEach(section => {
+				if (section.dataset.cat == 'tools')
+					section.style.display = 'block';
 			});
 		}
+
 
 
 		function createAppDiv(appName, appDetails, vdevs, featured) {
@@ -1285,7 +1334,7 @@
 			window.parent.getFileNamesByFolder("Apps").then(appald => {
 				try {
 					document.getElementById("installerappname").textContent = appName;
-					document.getElementById("installerappby").textContent = "" + appDetails.by;
+					document.getElementById("installerappby").textContent = appDetails.by;
 
 					const descContainer = document.getElementById("installerappdesc");
 					descContainer.innerHTML = "";
@@ -1357,7 +1406,8 @@
 				return;
 			}
 
-			renderapps()
+			renderapps();
+			prepareAppData();
 		}
 
 		async function safeUninstall(appId) {
@@ -1369,6 +1419,30 @@
 			}
 		}
 
+		let cachedMetaData, cachedLocalApps;
+
+		async function prepareAppData() {
+			const localApps = await ntxSession.send("appStorage.get", 'full');
+			const metaData = await fetchAppData();
+			cachedLocalApps = localApps;
+			cachedMetaData = metaData;
+
+			const localKeys = Object.keys(localApps);
+			let count = 0;
+
+			for (const tag of localKeys) {
+				const appDetails = metaData.apps.find(app => getAppTag(app) === tag);
+				if (!appDetails) continue;
+				const localVer = localApps[tag].ver;
+				const onlineVer = appDetails?.ver;
+				if (localVer == onlineVer) count++;
+			}
+
+			if (count)
+				document.getElementById("tobeupdatedalert").innerText = count;
+			else
+				document.getElementsByClassName("tobeupdatedcounter")[0].remove();
+		}
 		async function loadMyApps() {
 			const knowMuch = document.getElementById("knowmuchupdates");
 			const appsList = document.getElementById("installedappslist");
@@ -1376,10 +1450,12 @@
 
 			appsList.innerHTML = "";
 			knowBarIcons.innerHTML = "";
+			document.getElementsByClassName("tobeupdatedcounter")[0]?.remove();
 
-			const localApps = await ntxSession.send("appStorage.get", 'full');
+			const localApps = cachedLocalApps;
+			const metaData = cachedMetaData;
+
 			const localKeys = Object.keys(localApps);
-
 			const firstFour = localKeys.slice(0, 4);
 			const iconPromises = firstFour.map(key => window.parent.getAppIcon(0, localApps[key].id));
 			const icons = await Promise.all(iconPromises);
@@ -1390,7 +1466,6 @@
 				knowBarIcons.appendChild(iconSpan);
 			});
 
-			const metaData = await fetchAppData();
 			const appsWithMeta = [];
 			for (const tag of localKeys) {
 				const appDetails = metaData.apps.find(app => getAppTag(app) === tag);
@@ -1409,38 +1484,59 @@
 			let html = "";
 
 			for (let i = 0; i < appsWithMeta.length; i++) {
+				const { tag, appDetails, updated } = appsWithMeta[i];
 				if (await window.parent.getFileNameByID(localApps[tag].id) == null) {
 					safeUninstall(localApps[tag].id);
 					continue;
-				};
-				const { tag, appDetails, updated } = appsWithMeta[i];
+				}
 				const local = localApps[tag].ver;
 				const online = appDetails?.ver;
-				const sameVersion = local != online;
+				const needsUpdate = local == online;
 				howManyOld++;
 
-				const optionsIcon = sameVersion ? "check" : "download";
-				const optionsBg = sameVersion ? "transparent" : "";
+				const optionsIcon = needsUpdate ? "download" : "check";
+				const optionsBg = needsUpdate ? "" : "transparent";
+
 				const timeStr = "v" + online + " | updated " + window.parent.timeAgo(updated);
 
 				html += `
-		<div class="singular_app">
-			<div class="app_left" onclick="">
-				<div class="app_icon">${resolvedIcons[i]}</div>
-				<div class="app_detail">
-					<div class="app_name">${resolvedNames[i]}</div>
-					<div class="app_risk">${timeStr}</div>
-				</div>
-			</div>
-			<div class="app_options" style="background:${optionsBg}">
-				<span class="material-symbols-rounded">${optionsIcon}</span>
-			</div>
-		</div>`;
+<div class="singular_app">
+	<div class="app_left" onclick="">
+		<div class="app_icon">${resolvedIcons[i]}</div>
+		<div class="app_detail">
+			<div class="app_name">${resolvedNames[i]}</div>
+			<div class="app_risk">${timeStr}</div>
+		</div>
+	</div>
+	<div class="app_options" style="background:${optionsBg}" data-tag="${tag}" onclick="handleUpdateClick(event)">
+		<span class="material-symbols-rounded installbtnicn">${optionsIcon}</span>
+	</div>
+</div>`;
+
 			}
 
 			appsList.innerHTML = html;
 			knowMuch.innerText = `${howManyOld} Apps have updates`;
 		}
+
+		async function handleUpdateClick(e) {
+			const btn = e.currentTarget;
+			const iconSpan = btn.querySelector(".installbtnicn");
+			if (!iconSpan) return;
+
+			const tag = btn.getAttribute("data-tag");
+			const localApp = cachedLocalApps[tag];
+			if (!localApp) return;
+
+			const appDetails = cachedMetaData.apps.find(app => getAppTag(app) === tag);
+			if (!appDetails) return;
+
+			const appName = await window.parent.getFileNameByID(localApp.id);
+			if (!appName) return;
+
+			installapp(appDetails, appName, iconSpan, "icononly");
+		}
+
 
 
 		function getAppTag(appDetails) {
