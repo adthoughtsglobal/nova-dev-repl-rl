@@ -200,6 +200,87 @@ async function buildIframeApiBridge(appid, title, winuid, perms) {
 }
 
 
+async function prepareIframeContentHeadless(cont, appid, winuid) {
+    const contentString = isBase64(cont) ? decodeBase64Content(cont) : (cont || "<center><h1>Unavailable</h1>App Data cannot be read.</center>");
+    const ntxScript = `<script defer>
+document.addEventListener('mousedown', () => {
+    window.parent.postMessage({ type: 'iframeClick', iframeId: '${winuid}' }, '*');
+});
+var myWindow = {};
+window.addEventListener("message", async e => {
+    if (e.data.type === "myWindow") {
+        myWindow = {
+            ...e.data.data,
+            close: () => ntxSession.send("sysUI.clwin", myWindow.windowID),
+            setTitle: (e) => ntxSession.send("sysUI.setTitle", myWindow.windowID, e)
+        };
+        try {
+            await onStartup();
+            setTimeout(() => myWindow.close(), 1000);
+
+        } catch (t) {}
+        window.parent.postMessage({ data: "gfdone", iframeId: myWindow.windowID }, "*");
+    }
+});
+class NTXSession {
+    constructor() {
+        this.transactionIdCounter = 0;
+        this.pendingRequests = {};
+        this.listeners = {};
+        const chunks = {};
+        window.addEventListener("message", t => {
+            const { transactionId: s, chunk: n, chunkIndex: i, totalChunks: o, isJson: a, success: d, error: r, type: c, payload: l } = t.data;
+            if (s && typeof d === "boolean") {
+                if (a && n !== undefined) {
+                    if (!chunks[s]) chunks[s] = { chunks: [], received: 0, total: o };
+                    chunks[s].chunks[i] = n;
+                    chunks[s].received++;
+                    if (chunks[s].received === o) {
+                        const fullData = chunks[s].chunks.join("");
+                        delete chunks[s];
+                        const result = JSON.parse(fullData);
+                        if (this.pendingRequests[s]) {
+                            this.pendingRequests[s].resolve(result);
+                            delete this.pendingRequests[s];
+                        }
+                    }
+                } else {
+                    if (this.pendingRequests[s]) {
+                        d ? this.pendingRequests[s].resolve(t.data.result) : this.pendingRequests[s].reject(r);
+                        delete this.pendingRequests[s];
+                    }
+                }
+            } else if (c && l !== undefined && this.listeners[c]) {
+                this.listeners[c].forEach(e => e(l));
+            }
+        });
+    }
+    generateTransactionId() {
+        return \`txn_\${Date.now()}_\${this.transactionIdCounter++}\`;
+    }
+    send(action, ...params) {
+        return new Promise((resolve, reject) => {
+            const txnId = this.generateTransactionId();
+            this.pendingRequests[txnId] = { resolve, reject };
+            window.parent.postMessage({ transactionId: txnId, action: action, params: params, iframeId: '${winuid}' }, "*");
+        });
+    }
+    eventBus = {
+        send: (type, detail) => {
+            window.parent.postMessage({ type: type, detail: detail, isEventBus: true, iframeId: '${winuid}' }, "*");
+        },
+        listen: (type, callback) => {
+            if (!this.listeners[type]) this.listeners[type] = [];
+            this.listeners[type].push(callback);
+        }
+    };
+}
+var ntxSession = new NTXSession();
+</script>`;
+    const html = `<!DOCTYPE html><html><head><meta charset="utf-8"></head><body>${contentString}${ntxScript}<script defer>window.parent.postMessage({type:"iframeReady",windowID:"${winuid}"}, "*");</script></body></html>`;
+    return new Blob([html], { type: 'text/html' });
+}
+
 async function prepareIframeContent(cont, appid, winuid) {
     let contentString = isBase64(cont) ? decodeBase64Content(cont) : (cont || "<center><h1>Unavailable</h1>App Data cannot be read.</center>");
 
@@ -228,27 +309,27 @@ async function prepareIframeContent(cont, appid, winuid) {
     }
 
     async function cacheFont(url, cacheKey, maxAttempts = 2, delayMs = 2000) {
-    const cache = await caches.open('font-cache');
-    let response = await cache.match(url);
-    if (!response) {
-        for (let i = 0; i < maxAttempts; i++) {
-            try {
-                response = await fetch(url, { cache: 'reload' });
-                if (response.ok) {
-                    await cache.put(url, response.clone());
-                    break;
-                }
-            } catch (_) {}
-            await new Promise(r => setTimeout(r, delayMs));
+        const cache = await caches.open('font-cache');
+        let response = await cache.match(url);
+        if (!response) {
+            for (let i = 0; i < maxAttempts; i++) {
+                try {
+                    response = await fetch(url, { cache: 'reload' });
+                    if (response.ok) {
+                        await cache.put(url, response.clone());
+                        break;
+                    }
+                } catch (_) { }
+                await new Promise(r => setTimeout(r, delayMs));
+            }
         }
     }
-}
 
-if (getMetaTagContent(contentString, 'nova-include')?.includes('material-symbols-rounded')) {
-    const fontUrl = 'https://adthoughtsglobal.github.io/resources/MaterialSymbolsRounded.woff2';
-    cacheFont(fontUrl, 'material-symbols-rounded');
-    styleBlock += `<style>@font-face{font-family:'Material Symbols Rounded';font-style:normal;src:url(${fontUrl}) format('woff2');}.material-symbols-rounded{font-family:'Material Symbols Rounded';font-weight:normal;font-style:normal;font-size:24px;line-height:1;display:inline-block;white-space:nowrap;direction:ltr;-webkit-font-smoothing:antialiased;}</style>`;
-}
+    if (getMetaTagContent(contentString, 'nova-include')?.includes('material-symbols-rounded')) {
+        const fontUrl = 'https://adthoughtsglobal.github.io/resources/MaterialSymbolsRounded.woff2';
+        cacheFont(fontUrl, 'material-symbols-rounded');
+        styleBlock += `<style>@font-face{font-family:'Material Symbols Rounded';font-style:normal;src:url(${fontUrl}) format('woff2');}.material-symbols-rounded{font-family:'Material Symbols Rounded';font-weight:normal;font-style:normal;font-size:24px;line-height:1;display:inline-block;white-space:nowrap;direction:ltr;-webkit-font-smoothing:antialiased;}</style>`;
+    }
 
 
     const ctxScript = getMetaTagContent(contentString, 'nova-include')?.includes('contextMenu') ? await fetch('scripts/ctxmenu.js').then(res => res.text()) : '';
@@ -419,8 +500,8 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
 
     await applyWindowAppearance(windowDiv, windowHeader, theme, aspectratio);
 
-    windowDiv.onclick = () => { 
-        nowapp = winuid; 
+    windowDiv.onclick = () => {
+        nowapp = winuid;
         updateFocusedWindowBorder();
     };
 
@@ -430,15 +511,9 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
     attachDragHandler(windowDiv, windowHeader, winuid);
     attachResizeHandlers(windowDiv);
 }
-
-async function openapp(x, od, customtodo) {
-    // od is the app id, x is the app name
-    if (gid('appdmod').open) {
-        gid('appdmod').close()
-    }
-    if (gid('searchwindow').open) {
-        gid('searchwindow').close()
-    }
+async function openapp(x, od, customtodo, headless = false) {
+    if (gid('appdmod').open) gid('appdmod').close();
+    if (gid('searchwindow').open) gid('searchwindow').close();
 
     const fetchDataAndSave = async (x) => {
         try {
@@ -459,17 +534,62 @@ async function openapp(x, od, customtodo) {
                 y = await getFileById(od);
                 y = y.content;
             }
-            if (Gtodo == null && customtodo) {
-                Gtodo = customtodo;
+
+            if (headless) {
+                const winuid = initializeWindowState(x, od, customtodo);
+                const div = document.createElement("div");
+                div.style.display = "none";
+                const header = document.createElement("div");
+                const content = document.createElement("div");
+                const loader = document.createElement("div");
+                const spinner = document.createElement("div");
+                div.append(header, content, loader);
+                loader.appendChild(spinner);
+                document.body.appendChild(div);
+
+                let registry = await getSetting(od, "AppRegistry.json") || { perms: [] };
+                const contentBlob = await prepareIframeContentHeadless(y, od, winuid);
+                const blobURL = URL.createObjectURL(contentBlob);
+
+                const iframe = document.createElement("iframe");
+                iframe.src = blobURL;
+                iframe.onload = async () => {
+                    const myWindowData = { appID: od, windowID: winuid, eventBusURL, setTitle: "later", ...(customtodo && { params: customtodo }) };
+                    iframe.contentWindow.postMessage({ type: "myWindow", data: myWindowData }, "*");
+                    await buildIframeApiBridge(od, x, winuid, registry.perms);
+                    iframe.contentWindow.postMessage({ type: "startup" }, "*");
+                };
+
+                content.appendChild(iframe);
+                iframeReferences[winuid] = iframe.contentWindow;
+                if (!winds[winuid]) winds[winuid] = {};
+                winds[winuid].src = blobURL;
+                winds[winuid].visualState = "hidden";
+                loadtaskspanel();
+
+                setTimeout(() => {
+                    if (winds[winuid] && winds[winuid].visualState === "hidden") {
+                        try {
+                            iframe.remove();
+                            div.remove();
+                            delete iframeReferences[winuid];
+                            delete winds[winuid];
+                            loadtaskspanel();
+                        } catch (_) { }
+                    }
+                }, 60000);
+                return;
             }
 
-            openwindow(x, y, await getAppIcon(0, od) || defaultAppIcon, getAppTheme(y), getAppAspectRatio(y), od, Gtodo);
+            if (Gtodo == null && customtodo) Gtodo = customtodo;
 
+            openwindow(x, y, await getAppIcon(0, od) || defaultAppIcon, getAppTheme(y), getAppAspectRatio(y), od, Gtodo);
             Gtodo = null;
         } catch (error) {
             console.error("Error fetching data:", error);
         }
     };
+
     fetchDataAndSave(x);
 }
 

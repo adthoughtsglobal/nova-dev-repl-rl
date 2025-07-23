@@ -112,7 +112,7 @@ function createHeaderControls(winuid, windowDiv) {
 
     const closeButton = createButton("Close", "close", "wincl", "winclosebtn");
     closeButton.onclick = () => {
-        clwin("window" + winuid);
+        clwin(winuid);
         loadtaskspanel();
     };
 
@@ -266,6 +266,7 @@ function attachResizeHandlers(windowDiv) {
 
 function finalizeWindow(windowDiv, winuid) {
     document.body.appendChild(windowDiv);
+    console.log(windowDiv)
 
     const zIndexes = Object.values(winds).map(w => Number(w.zIndex) || 0);
     const maxZ = Math.max(0, ...zIndexes);

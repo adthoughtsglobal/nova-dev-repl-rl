@@ -1410,6 +1410,21 @@
 			prepareAppData();
 		}
 
+		async function checkUpdatesHeadless() {
+			const localApps = await ntxSession.send("appStorage.get", 'full');
+			const metaData = await fetchAppData();
+
+			let count = 0;
+			for (const tag of Object.keys(localApps)) {
+				const appDetails = metaData.apps.find(app => getAppTag(app) === tag);
+				if (!appDetails) continue;
+				if (localApps[tag].ver == appDetails.ver) count++;
+			}
+
+			ntxSession.send("sysUI.notify", (count === 1 ? "An app needs update" : `${count} apps need updates`), "Click to update now");
+		}
+
+
 		async function safeUninstall(appId) {
 			try {
 				await ntxSession.send("appStorage.remove", appId);
@@ -1543,6 +1558,11 @@
 			const appName = appDetails.name;
 			const appVersion = appDetails.by;
 			return `${appName}@${appVersion}`;
+		}
+
+
+		function onStartup() {
+			checkUpdatesHeadless();
 		}
 	</script>
 </body>

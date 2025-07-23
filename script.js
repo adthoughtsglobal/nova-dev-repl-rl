@@ -512,22 +512,20 @@ function makedefic(str) {
 function clwin(x) {
 	snappingconthide();
 	const el = isElement(x) ? x : document.getElementById(x.startsWith("window") ? x : "window" + x);
-
-	console.log(43, x)
-	if (!el) return;
-
-	const windKey = el.getAttribute("data-winuid");
+	const windKey = isElement(x) ? el.getAttribute("data-winuid") : x;
 	if (windKey) {
 		console.log(windKey)
 		URL.revokeObjectURL(winds[windKey].src)
 		delete winds[windKey];
 	}
+	loadtaskspanel()
+	if (!el) return;
+
 
 	el.classList.add("transp3");
 	setTimeout(() => {
 		el.classList.remove("transp3");
 		el.remove();
-		loadtaskspanel()
 	}, 700);
 }
 
@@ -1049,59 +1047,86 @@ function say(message, status = null, registerRef = false) {
 function ask(question, preset = '', registerRef = false) {
 	return openModal('ask', { message: question, preset }, registerRef);
 }
+const removalQueue = new Map();
+
 async function loadtaskspanel() {
 	let appbarelement = gid("nowrunninapps");
-	let currentKeys = Array.from(appbarelement.querySelectorAll(".app-shortcut")).map(el => el.dataset.key);
+	let currentShortcuts = Array.from(appbarelement.querySelectorAll(".app-shortcut"));
+	let currentKeys = currentShortcuts.map(el => el.dataset.key);
+
 	let validKeys = Object.entries(winds)
-		.filter(([winID, data]) => gid("window" + winID) !== null);
+		.filter(([winID, data]) => data.visualState !== "hidden" || gid("window" + winID) === null)
+		.map(([winID, data]) => data.title + winID);
 
-	let newKeys = validKeys.map(([winID, data]) => data.title + winID);
+	let now = performance.now();
 
+	for (let element of currentShortcuts) {
+		let key = element.dataset.key;
+		if (validKeys.includes(key)) continue;
+		if (removalQueue.has(key)) continue;
 
-	let keysToAdd = newKeys.filter(key => !currentKeys.includes(key));
-	let keysToRemove = currentKeys.filter(key => !newKeys.includes(key));
+		let addedAt = parseFloat(element.dataset.addedAt) || 0;
+		let timeElapsed = now - addedAt;
 
-	keysToRemove.forEach(key => {
-		let element = appbarelement.querySelector(`[data-key='${key}']`);
-		element.classList.add("closeEffect");
-		setTimeout(function () {
-			try {
-				if (element) appbarelement.removeChild(element);
-			} catch (e) { }
-		}, 500);
-	});
+		if (timeElapsed < 1000) {
+			let delay = 1000 - timeElapsed;
+			removalQueue.set(key, setTimeout(() => tryRemoveElement(element, key), delay));
+		} else {
+			tryRemoveElement(element, key);
+		}
+	}
 
-	keysToAdd.forEach(async key => {
+	let keysToAdd = validKeys.filter(key => !currentKeys.includes(key));
+
+	for (let key of keysToAdd) {
 		let app = key.slice(0, -12);
 		let wid = key.slice(-12);
 
-		let appShortcutDiv = document.createElement("biv");
+		let appShortcutDiv = document.createElement("div");
 		appShortcutDiv.className = "app-shortcut ctxAvail tooltip adock sizableuielement";
-		appShortcutDiv.setAttribute("unid", key.id || '');
+		appShortcutDiv.setAttribute("unid", app);
 		appShortcutDiv.dataset.key = key;
-		appShortcutDiv.setAttribute("winid", 'window' + wid || '');
+		appShortcutDiv.setAttribute("winid", wid);
+		appShortcutDiv.dataset.addedAt = performance.now();
 
-		appShortcutDiv.addEventListener("click", function () {
+		appShortcutDiv.addEventListener("click", () => {
 			putwinontop('window' + wid);
 			minim(wid);
 		});
 
 		let iconSpan = document.createElement("span");
 		iconSpan.classList.add("appicnspan");
-
 		insertSVG((await getAppIcon(0, winds[wid]?.appid)) || defaultAppIcon, iconSpan);
 
-		let tooltisp = document.createElement("span");
-		tooltisp.className = "tooltiptext";
-		tooltisp.innerText = basename(app);
+		let tooltip = document.createElement("span");
+		tooltip.className = "tooltiptext";
+		tooltip.innerText = basename(app);
 
 		appShortcutDiv.appendChild(iconSpan);
-		appShortcutDiv.appendChild(tooltisp);
+		appShortcutDiv.appendChild(tooltip);
 		appbarelement.appendChild(appShortcutDiv);
-	});
+	}
 
-	appbarelement.style.display = validKeys.length > 0 ? "flex" : "none";
+	appbarelement.classList.add("closeDockObj");
+	setTimeout(() => {
+		appbarelement.style.display = validKeys.length > 0 ? "flex" : "none";
+		appbarelement.classList.remove("closeDockObj");
+	}, 500);
 }
+
+function tryRemoveElement(element, key) {
+	if (!element.isConnected) {
+		removalQueue.delete(key);
+		return;
+	}
+
+	element.classList.add("closeEffect");
+	setTimeout(() => {
+		if (element.parentNode) element.parentNode.removeChild(element);
+		removalQueue.delete(key);
+	}, 500);
+}
+
 var dev;
 function shrinkbsf(str) {
 	return str;
@@ -1519,7 +1544,7 @@ let totalDuration = 0;
 const maxToastDuration = 5000;
 let toastQueue = [];
 
-function toast(text,regref, duration = 5000, ) {
+function toast(text, regref, duration = 5000,) {
 	console.log("Toast: ", duration);
 	let displayDuration = Math.min(duration, maxToastDuration);
 
@@ -1870,7 +1895,7 @@ function mtpetxt(str) {
 function closeallwindows() {
 	Object.keys(winds).forEach(key => {
 		const taskId = key.slice(-12);
-		clwin("window" + taskId);
+		clwin(taskId);
 	});
 	gid("closeallwinsbtn").checked = true;
 }
