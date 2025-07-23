@@ -1511,7 +1511,6 @@ async function notify(...args) {
 	let [title = "Notification", description = "There is a notification", isid] = args;
 	let appID = notificationContext[isid]?.appID;
 	appname = (!(appID == undefined)) ? basename(await getFileNameByID(appID)) : appname;
-	console.log("Notification: ", isid, appID, appname);
 
 	if (document.getElementById("notification").style.display == "block") {
 		document.getElementById("notification").style.display = "none";
@@ -1528,6 +1527,9 @@ async function notify(...args) {
 		const maxWindValue = Math.max(...windValues);
 		document.getElementById("notification").style.zIndex = maxWindValue + 1;
 		document.getElementById("notification").style.display = "block";
+		document.getElementById("notification").onclick = () => {
+			openfile(appID);
+		}
 		setTimeout(function () {
 			document.getElementById("notification").style.display = "none";
 		}, 5000);

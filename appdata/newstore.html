@@ -673,15 +673,19 @@
 			}
 		}
 
-		#knowBar {
-			display: flex;
-			flex-direction: row;
-			align-items: center;
+		.panel {
+
 			background: var(--col-bg2);
 			padding: var(--sizing-huge);
 			border-radius: var(--siz-radius1);
-			gap: 2em;
 			border: 1px solid #ffffff0c;
+		}
+
+		#knowBar {
+			display: flex;
+			flex-direction: row;
+			gap: 2em;
+			align-items: center;
 
 			&>#knowbaricns {
 				display: flex;
@@ -831,6 +835,61 @@
 			align-items: center;
 			flex-direction: row;
 		}
+
+		.transparentbtn {
+			margin: 0;
+			padding: var(--sizing-normal);
+			background: var(--col-bg3);
+			border-radius: var(--siz-radius2);
+			color: inherit;
+			border: 0;
+			outline: navajowhite;
+			text-align: inherit;
+			display: flex;
+			flex-direction: row;
+			flex-wrap: nowrap;
+			width: fit-content;
+			align-items: center;
+			justify-content: flex-start;
+			border: var(--box-crisp);
+			gap: .5em;
+
+			&>.desc {
+				width: fit-content;
+			}
+
+			&>.material-symbols-rounded {
+				font-size: 20px;
+
+			}
+		}
+
+		.singular_ad {
+			display: flex;
+			flex-direction: row;
+			align-items: flex-start;
+			flex-wrap: nowrap;
+			gap: .5em;
+
+			&>* {
+				width: 0;
+			}
+
+
+			&>.ad_left {
+				flex: 3;
+
+				&>h1 {
+					font-size: 1.5em;
+					margin: 0;
+					margin-bottom: .3em;
+				}
+			}
+
+			&>img {
+				flex: 2;
+			}
+		}
 	</style>
 </head>
 
@@ -854,6 +913,18 @@
 		</div>
 
 		<div id="system" class="tabcontent">
+			<div id="featuredSection">
+				<div class="singular_ad panel">
+					<div class="ad_left">
+						<h1>Read PDF files</h1>
+						<button class="transparentbtn">
+							<span class="desc">View PDF Viewer</span>
+							<span class="material-symbols-rounded">arrow_forward</span>
+						</button>
+					</div>
+					<img src="https://i.ibb.co/HL6SQxRr/image.png">
+				</div>
+			</div>
 			<div id="categorynav" class="sewid">
 			</div>
 			<div id="sugapps"></div>
@@ -894,7 +965,7 @@
 			</div>
 		</div>
 		<div id="myApps" class="tabcontent">
-			<div id="knowBar">
+			<div id="knowBar" class="panel">
 				<div class="knowBarCont">
 					<h1 id="knowmuchupdates">12 Apps have updates</h1>
 					<p>Update apps for new features and fixed bugs.</p>
@@ -1132,13 +1203,16 @@
 				} else {
 					obj.innerHTML = `<div class='loader22'></div>`;
 				}
-				const response = await fetch(prefixurl + x.src);
-				const content = await response.text();
-				const tempid = await window.parent.createFile("Apps", appName, "app", content);
-				await ntxSession.send("appStorage.set", getAppTag(x), { id: tempid, ver: x.ver, updated: Date.now() });
-				openappinstr(appName, x);
+				try {
+					const response = await fetch(prefixurl + x.src);
+					const content = await response.text();
+					const tempid = await window.parent.createFile("Apps", appName, "app", content);
+					ntxSession.send("appStorage.set", getAppTag(x), { id: tempid, ver: x.ver, updated: Date.now() });
+				} catch { }
+
 				setTimeout(() => {
 					if (method == "icononly") {
+						console.log("check")
 						obj.innerText = "check";
 						setTimeout(() => {
 							obj.innerText = "download";
@@ -1148,6 +1222,7 @@
 					}
 				}, 1000);
 			} catch (err) {
+				console.log("err")
 				console.error("Error installing app:", err);
 				setTimeout(() => {
 					if (method == "icononly") {
@@ -1410,19 +1485,6 @@
 			prepareAppData();
 		}
 
-		async function checkUpdatesHeadless() {
-			const localApps = await ntxSession.send("appStorage.get", 'full');
-			const metaData = await fetchAppData();
-
-			let count = 0;
-			for (const tag of Object.keys(localApps)) {
-				const appDetails = metaData.apps.find(app => getAppTag(app) === tag);
-				if (!appDetails) continue;
-				if (localApps[tag].ver == appDetails.ver) count++;
-			}
-
-			ntxSession.send("sysUI.notify", (count === 1 ? "An app needs update" : `${count} apps need updates`), "Click to update now");
-		}
 
 
 		async function safeUninstall(appId) {
@@ -1450,7 +1512,7 @@
 				if (!appDetails) continue;
 				const localVer = localApps[tag].ver;
 				const onlineVer = appDetails?.ver;
-				if (localVer == onlineVer) count++;
+				if (localVer != onlineVer) count++;
 			}
 
 			if (count)
@@ -1460,6 +1522,7 @@
 		}
 		async function loadMyApps() {
 			const knowMuch = document.getElementById("knowmuchupdates");
+			const knowBar = document.getElementById("knowBar");
 			const appsList = document.getElementById("installedappslist");
 			const knowBarIcons = document.getElementById("knowbaricns");
 
@@ -1506,8 +1569,9 @@
 				}
 				const local = localApps[tag].ver;
 				const online = appDetails?.ver;
-				const needsUpdate = local == online;
-				howManyOld++;
+				const needsUpdate = local != online;
+				if (needsUpdate)
+					howManyOld++;
 
 				const optionsIcon = needsUpdate ? "download" : "check";
 				const optionsBg = needsUpdate ? "" : "transparent";
@@ -1531,7 +1595,11 @@
 			}
 
 			appsList.innerHTML = html;
-			knowMuch.innerText = `${howManyOld} Apps have updates`;
+			if (howManyOld > 0) {
+				knowMuch.innerText = `${howManyOld === 1 ? "An app " : `${howManyOld} apps `} has updates`;
+			} else {
+				knowBar.style.display = 'none';
+			}
 		}
 
 		async function handleUpdateClick(e) {
@@ -1549,7 +1617,8 @@
 			const appName = await window.parent.getFileNameByID(localApp.id);
 			if (!appName) return;
 
-			installapp(appDetails, appName, iconSpan, "icononly");
+			await installapp(appDetails, appName, iconSpan, "icononly");
+			loadMyApps();
 		}
 
 
@@ -1563,6 +1632,20 @@
 
 		function onStartup() {
 			checkUpdatesHeadless();
+		}
+
+		async function checkUpdatesHeadless() {
+			const localApps = await ntxSession.send("appStorage.get", 'full');
+			const metaData = await fetchAppData();
+
+			let count = 0;
+			for (const tag of Object.keys(localApps)) {
+				const appDetails = metaData.apps.find(app => getAppTag(app) === tag);
+				if (!appDetails) continue;
+				if (localApps[tag].ver != appDetails.ver) count++;
+			}
+
+			ntxSession.send("sysUI.notify", (count === 1 ? "An app needs update" : `${count} apps need updates`), "Click to update now");
 		}
 	</script>
 </body>
