@@ -674,7 +674,6 @@
 		}
 
 		.panel {
-
 			background: var(--col-bg2);
 			padding: var(--sizing-huge);
 			border-radius: var(--siz-radius1);
@@ -867,9 +866,16 @@
 		.singular_ad {
 			display: flex;
 			flex-direction: row;
-			align-items: flex-start;
+			align-items: stretch;
 			flex-wrap: nowrap;
 			gap: .5em;
+			transition: .5s;
+			height: 180px;
+			pointer-events: none;
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
 
 			&>* {
 				width: 0;
@@ -878,6 +884,7 @@
 
 			&>.ad_left {
 				flex: 3;
+				padding-bottom: 1em;
 
 				&>h1 {
 					font-size: 1.5em;
@@ -888,7 +895,49 @@
 
 			&>img {
 				flex: 2;
+				object-fit: cover;
+				border-radius: var(--siz-radius2);
+				object-position: top left;
 			}
+		}
+
+		.featured-container {
+			position: relative;
+			margin-bottom: 1em;
+		}
+
+		.dots-nav {
+			display: flex;
+			justify-content: center;
+			gap: 8px;
+			position: absolute;
+			bottom: var(--sizing-huge);
+			left: var(--sizing-huge);
+		}
+
+		.dot {
+			width: 8px;
+			height: 8px;
+			background: var(--col-bgh);
+			opacity: .5;
+			border-radius: 50%;
+			cursor: pointer;
+			transition: all 0.3s;
+		}
+
+		.dot.active {
+			width: 20px;
+			background: var(--col-bgh);
+			border-radius: 999px;
+			opacity: 1;
+		}
+
+		.panel:first-child {
+			position: relative;
+		}
+
+		.panel[style*="opacity: 1"] {
+			pointer-events: auto;
 		}
 	</style>
 </head>
@@ -914,16 +963,7 @@
 
 		<div id="system" class="tabcontent">
 			<div id="featuredSection">
-				<div class="singular_ad panel">
-					<div class="ad_left">
-						<h1>Read PDF files</h1>
-						<button class="transparentbtn">
-							<span class="desc">View PDF Viewer</span>
-							<span class="material-symbols-rounded">arrow_forward</span>
-						</button>
-					</div>
-					<img src="https://i.ibb.co/HL6SQxRr/image.png">
-				</div>
+
 			</div>
 			<div id="categorynav" class="sewid">
 			</div>
@@ -969,7 +1009,7 @@
 				<div class="knowBarCont">
 					<h1 id="knowmuchupdates">12 Apps have updates</h1>
 					<p>Update apps for new features and fixed bugs.</p>
-					<div class="gotobutton">
+					<div class="gotobutton" id="myappsupdateallbtn">
 						Update All
 					</div>
 				</div>
@@ -1198,10 +1238,9 @@
 			let prefixurl = "";
 			if (!x.src.startsWith("http")) prefixurl = "https://adthoughtsglobal.github.io/";
 			try {
-				if (method == "icononly") {
-					obj.innerText = "pending";
-				} else {
-					obj.innerHTML = `<div class='loader22'></div>`;
+				if (obj) {
+					if (method == "icononly") obj.innerText = "pending";
+					else obj.innerHTML = `<div class='loader22'></div>`;
 				}
 				try {
 					const response = await fetch(prefixurl + x.src);
@@ -1209,10 +1248,10 @@
 					const tempid = await window.parent.createFile("Apps", appName, "app", content);
 					ntxSession.send("appStorage.set", getAppTag(x), { id: tempid, ver: x.ver, updated: Date.now() });
 				} catch { }
-
 				setTimeout(() => {
+					if (!obj) return;
 					if (method == "icononly") {
-						console.log("check")
+						console.log("check");
 						obj.innerText = "check";
 						setTimeout(() => {
 							obj.innerText = "download";
@@ -1222,9 +1261,10 @@
 					}
 				}, 1000);
 			} catch (err) {
-				console.log("err")
+				console.log("err");
 				console.error("Error installing app:", err);
 				setTimeout(() => {
+					if (!obj) return;
 					if (method == "icononly") {
 						obj.innerText = "sentiment_dissatisfied";
 						setTimeout(() => {
@@ -1239,6 +1279,7 @@
 				}, 1000);
 			}
 		}
+
 
 
 		function renderapps() {
@@ -1267,6 +1308,93 @@
 			document.getElementById("sugapps").innerHTML = `
         <div id="apps-section" class="section"></div>`;
 		}
+		function createFeaturedSection(data) {
+			const container = document.getElementById('featuredSection');
+			container.classList.add('featured-container');
+
+			const dotsNav = document.createElement('div');
+			dotsNav.className = 'dots-nav';
+
+			let currentIndex = 0;
+			let intervalId;
+
+			data.featured.forEach((item, index) => {
+				const panel = document.createElement('div');
+				panel.className = 'singular_ad panel';
+				if (index == 0) panel.style.opacity = '1'
+				else panel.style.opacity = '0';
+
+				const adLeft = document.createElement('div');
+				adLeft.className = 'ad_left';
+
+				const title = document.createElement('h1');
+				title.textContent = item.text;
+
+				const button = document.createElement('button');
+				button.className = 'transparentbtn';
+				button.onclick = () => {
+					openappinstr(item.appName, data.apps.find(app => app.name === item.appName))
+				}
+
+				const descSpan = document.createElement('span');
+				descSpan.className = 'desc';
+				descSpan.textContent = `View ${item.appName}`;
+
+				const iconSpan = document.createElement('span');
+				iconSpan.className = 'material-symbols-rounded';
+				iconSpan.textContent = 'arrow_forward';
+
+				button.appendChild(descSpan);
+				button.appendChild(iconSpan);
+				adLeft.appendChild(title);
+				adLeft.appendChild(button);
+
+				const img = document.createElement('img');
+				img.src = item.img;
+				const color = data.apps.find(app => app.name === item.appName)?.th;
+				img.style.border = `1px solid ${color}`
+
+
+				panel.appendChild(adLeft);
+				panel.appendChild(img);
+				container.appendChild(panel);
+
+				const dot = document.createElement('div');
+				dot.className = 'dot';
+				if (index === 0) dot.classList.add('active');
+				dot.addEventListener('click', () => {
+					clearInterval(intervalId);
+					showPanel(index);
+					startSlideshow();
+				});
+				dotsNav.appendChild(dot);
+			});
+
+			container.appendChild(dotsNav);
+
+			function showPanel(index) {
+				const panels = container.querySelectorAll('.panel');
+				const dots = dotsNav.querySelectorAll('.dot');
+
+				panels.forEach((panel, i) => {
+					panel.style.opacity = i === index ? '1' : '0';
+				});
+				dots.forEach((dot, i) => {
+					dot.classList.toggle('active', i === index);
+				});
+				currentIndex = index;
+			}
+
+			function startSlideshow() {
+				intervalId = setInterval(() => {
+					const nextIndex = (currentIndex + 1) % data.featured.length;
+					showPanel(nextIndex);
+				}, 5000);
+			}
+
+			startSlideshow();
+		}
+
 
 		async function populateApps(data) {
 			const vdevs = data.vdevs;
@@ -1297,6 +1425,7 @@
 				}
 			}
 
+			createFeaturedSection(data);
 			const allApps = data.apps;
 			allApps.sort((a, b) => Object.keys(a)[0].localeCompare(Object.keys(b)[0]));
 
@@ -1495,15 +1624,13 @@
 				console.error("Error uninstalling app:", error);
 			}
 		}
-
 		let cachedMetaData, cachedLocalApps;
 
 		async function prepareAppData() {
-			const localApps = await ntxSession.send("appStorage.get", 'full');
 			const metaData = await fetchAppData();
-			cachedLocalApps = localApps;
 			cachedMetaData = metaData;
 
+			const localApps = await ntxSession.send("appStorage.get", 'full');
 			const localKeys = Object.keys(localApps);
 			let count = 0;
 
@@ -1520,18 +1647,20 @@
 			else
 				document.getElementsByClassName("tobeupdatedcounter")[0].remove();
 		}
+
 		async function loadMyApps() {
 			const knowMuch = document.getElementById("knowmuchupdates");
 			const knowBar = document.getElementById("knowBar");
 			const appsList = document.getElementById("installedappslist");
 			const knowBarIcons = document.getElementById("knowbaricns");
+			let metaData = cachedMetaData;
 
 			appsList.innerHTML = "";
 			knowBarIcons.innerHTML = "";
 			document.getElementsByClassName("tobeupdatedcounter")[0]?.remove();
 
-			const localApps = cachedLocalApps;
-			const metaData = cachedMetaData;
+			const localApps = await ntxSession.send("appStorage.get", 'full');
+			cachedLocalApps = localApps;
 
 			const localKeys = Object.keys(localApps);
 			const firstFour = localKeys.slice(0, 4);
@@ -1543,7 +1672,6 @@
 				window.parent.insertSVG(icon, iconSpan);
 				knowBarIcons.appendChild(iconSpan);
 			});
-
 			const appsWithMeta = [];
 			for (const tag of localKeys) {
 				const appDetails = metaData.apps.find(app => getAppTag(app) === tag);
@@ -1558,7 +1686,7 @@
 			const resolvedIcons = await Promise.all(iconTasks);
 			const resolvedNames = await Promise.all(nameTasks);
 
-			let howManyOld = 0;
+			let howManyOld = 0, oneApp = null;
 			let html = "";
 
 			for (let i = 0; i < appsWithMeta.length; i++) {
@@ -1570,8 +1698,10 @@
 				const local = localApps[tag].ver;
 				const online = appDetails?.ver;
 				const needsUpdate = local != online;
-				if (needsUpdate)
+				if (needsUpdate) {
 					howManyOld++;
+					oneApp = resolvedNames[i];
+				}
 
 				const optionsIcon = needsUpdate ? "download" : "check";
 				const optionsBg = needsUpdate ? "" : "transparent";
@@ -1583,7 +1713,7 @@
 	<div class="app_left" onclick="">
 		<div class="app_icon">${resolvedIcons[i]}</div>
 		<div class="app_detail">
-			<div class="app_name">${resolvedNames[i]}</div>
+			<div class="app_name">${window.parent.basename(resolvedNames[i])}</div>
 			<div class="app_risk">${timeStr}</div>
 		</div>
 	</div>
@@ -1596,10 +1726,38 @@
 
 			appsList.innerHTML = html;
 			if (howManyOld > 0) {
-				knowMuch.innerText = `${howManyOld === 1 ? "An app " : `${howManyOld} apps `} has updates`;
+				knowBar.style.display = 'flex';
+				knowMuch.innerText = `${howManyOld === 1 ? window.parent.basename(oneApp) : `${howManyOld} apps `} has updates`;
 			} else {
 				knowBar.style.display = 'none';
 			}
+
+			document.getElementById("myappsupdateallbtn").onclick = async function () {
+				const btn = this;
+				const localApps = cachedLocalApps;
+				const metaData = cachedMetaData;
+				const localKeys = Object.keys(localApps);
+
+				const updatable = localKeys.filter(tag => {
+					const app = metaData.apps.find(app => getAppTag(app) === tag);
+					return app && localApps[tag].ver != app.ver;
+				});
+
+				let done = 0;
+				for (const tag of updatable) {
+					const appDetails = metaData.apps.find(app => getAppTag(app) === tag);
+					const appName = await window.parent.getFileNameByID(localApps[tag].id);
+					if (appDetails && appName) {
+						await installapp(appDetails, appName, null, "icononly");
+						done++;
+						btn.innerText = `Updating ${done}/${updatable.length}`;
+					}
+				}
+
+				btn.innerText = "Update All";
+				await loadMyApps();
+			};
+
 		}
 
 		async function handleUpdateClick(e) {
