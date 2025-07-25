@@ -1122,11 +1122,14 @@ async function loadtaskspanel() {
 		appbarelement.appendChild(appShortcutDiv);
 	}
 
-	appbarelement.classList.add("closeDockObj");
-	setTimeout(() => {
-		appbarelement.style.display = validKeys.length > 0 ? "flex" : "none";
-		appbarelement.classList.remove("closeDockObj");
-	}, 500);
+	let visibleShortcuts = appbarelement.querySelectorAll(".app-shortcut");
+	if (visibleShortcuts.length === 1) {
+		appbarelement.classList.add("closeDockObj");
+		setTimeout(() => {
+			appbarelement.style.display = validKeys.length > 0 ? "flex" : "none";
+			appbarelement.classList.remove("closeDockObj");
+		}, 500);
+	}
 }
 
 function tryRemoveElement(element, key) {
