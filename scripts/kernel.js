@@ -565,7 +565,11 @@ async function openapp(x, od, customtodo, headless = false) {
                 if (!winds[winuid]) winds[winuid] = {};
                 winds[winuid].src = blobURL;
                 winds[winuid].visualState = "hidden";
-                loadtaskspanel();
+                const loadStart = performance.now();
+                setTimeout(() => {
+                    const loadDuration = performance.now() - loadStart;
+                    if (loadDuration > 500) loadtaskspanel();
+                }, 0);
 
                 setTimeout(() => {
                     if (winds[winuid] && winds[winuid].visualState === "hidden") {

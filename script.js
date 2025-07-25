@@ -276,6 +276,12 @@ async function startup() {
 					});
 				}
 				runScriptsSequentially(onstartup, 1000)
+
+				// onstartup apps
+				let allOnstarts = await getSetting('RunOnStartup');
+				allOnstarts.forEach(item => {
+					openapp(0, item, {}, 1);
+				})
 			} catch (e) { }
 		} catch (err) { console.error("startup error:", err); }
 	})

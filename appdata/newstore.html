@@ -948,10 +948,11 @@
 		<div class="tab">
 			<div id="navSearch">
 				<div class="searchInputSec btnlike">
-					<input id="searchInput" placeholder="Search apps..." spellcheck="none" autocomplete="off">
-					<i class="material-symbols-rounded">search</i>
+					<input id="searchInput" placeholder="Search apps..." spellcheck="none" autocomplete="off"
+						onkeydown="handleEnterKey(event)" oninput="updateButtonText()">
+					<i class="material-symbols-rounded" id="actionButton">search</i>
 				</div>
-				<div id="searchResults" class="btnlike"></div>
+				<div id="searchresults"></div>
 			</div>
 			<button class="tablinks btnlike" onclick="openCity(event, 'system')" id="defaultOpen"><i
 					class="material-symbols-rounded">apps</i> Apps</button>
@@ -1916,6 +1917,92 @@
 
 			if (count > 0)
 				ntxSession.send("sysUI.notify", (count === 1 ? "An app needs update" : `${count} apps need updates`), "Click to update now");
+		}
+
+		function updateButtonText() {
+			const input = document.getElementById("searchInput").value.trim();
+			const button = document.getElementById("actionButton");
+			const currentHtml = button.innerHTML;
+
+			let newHtml;
+
+			if (isValidUrl(input)) {
+				newHtml = ' <div class="material-symbols-rounded installbtnicn">download</div>';
+			} else if (input.length > 0) {
+				newHtml = ' <div class="material-symbols-rounded installbtnicn">search</div>';
+			} else {
+				newHtml = ' <div class="material-symbols-rounded installbtnicn">download</div>';
+			}
+
+			if (currentHtml !== newHtml) {
+				button.innerHTML = newHtml;
+			}
+		}
+
+		// This function checks if a string is a valid URL
+		function isValidUrl(string) {
+			try {
+				new URL(string);
+				return true;
+			} catch {
+				return false;
+			}
+		}
+
+		function handleEnterKey(event) {
+			if (event.key === "Enter") {
+				const input = document.getElementById("searchInput").value.trim();
+				if (input.length > 0) {
+					handleSearchOrInstall(document.getElementById("actionButton"));
+				}
+			}
+		}
+
+		async function handleSearchOrInstall(button) {
+			const input = document.getElementById("searchInput").value.trim();
+			if (isValidUrl(input)) {
+				await installapp({ "src": input }, getAppNameFromUrl(input), button);
+			} else {
+				searchApps(input);
+			}
+		}
+
+		function searchApps(query) {
+			const resultsDiv = document.getElementById("searchresults");
+			resultsDiv.style.display = 'block';
+			resultsDiv.innerHTML = "<div class='loader'></div>";
+			fetch("https://adthoughtsglobal.github.io/Nova-Store/db/v2.json")
+				.then(response => response.json())
+				.then(data => {
+					const results = data.apps.filter(app => {
+						const appName = app.name;
+						return appName.toLowerCase().includes(query.toLowerCase());
+					});
+					displaySearchResults(results);
+				})
+				.catch(error => {
+					console.error("Error fetching app data:", error);
+					resultsDiv.innerHTML = "Error loading search results.";
+				});
+		}
+
+		function displaySearchResults(results) {
+			console.log(results)
+			const resultsDiv = document.getElementById("searchresults");
+			resultsDiv.innerHTML = "";
+			if (results.length === 0) {
+				resultsDiv.innerHTML = "<p class='searchnores'>No results found.</p>";
+				return;
+			}
+			results.forEach(result => {
+				if (!result.subcategory) return;
+				const item = document.createElement("div");
+				item.className = "searchResult";
+				item.innerHTML = `<span>${result.name} ></span>`;
+				item.setAttribute("onclick", `openappinstr('${appName}', ${JSON.stringify(result)})`);
+				resultsDiv.appendChild(item);
+			});
+
 		}
 	</script>
 </body>

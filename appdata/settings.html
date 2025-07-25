@@ -1874,6 +1874,8 @@
 						const colors = {};
 
 						for (const type in typeCounts) {
+							if (!type)
+								continue;
 							const percent = (typeCounts[type] / total) * 100;
 							if (percent >= 1) {
 								if (!colors[type]) {
@@ -1892,6 +1894,8 @@
 						legend.id = "compositionlegend";
 
 						for (const type in colors) {
+							if (!type)
+								continue;
 							const item = document.createElement('div');
 							item.classList.add("compositionitem");
 
