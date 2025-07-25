@@ -5,7 +5,7 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Store App</title>
-	<meta name="capabilities" content="content_store">
+	<meta name="capabilities" content="content_store, onStartup">
 	<meta name="nova-include" content="nova.css material-symbols-rounded">
 	<meta name="permissions" content="fileSet, settings, fileGet, unsandboxed">
 	<meta name="nova-icon"
@@ -685,6 +685,7 @@
 			flex-direction: row;
 			gap: 2em;
 			align-items: center;
+			margin-bottom: 1em;
 
 			&>#knowbaricns {
 				display: flex;
@@ -997,6 +998,7 @@
 					</div>
 					<div class="dostuffwithit">
 						<button id="openbtn">Open</button>
+						<button id="removeButton">Uninstall</button>
 						<button id="installButton">Install</button>
 						<button id="updateButton">Update</button>
 					</div>
@@ -1005,22 +1007,29 @@
 			</div>
 		</div>
 		<div id="myApps" class="tabcontent">
-			<div id="knowBar" class="panel">
-				<div class="knowBarCont">
-					<h1 id="knowmuchupdates">12 Apps have updates</h1>
-					<p>Update apps for new features and fixed bugs.</p>
-					<div class="gotobutton" id="myappsupdateallbtn">
-						Update All
-					</div>
-				</div>
-				<div id="knowbaricns"></div>
-			</div>
+
 			<div id="myappssel" class="sewid">
-				<button data-filter="all" class="active-filter">Installed</button>
-				<button data-filter="Dark">Default apps</button>
+				<button data-filter="installedappslist" class="active-filter">Installed</button>
+				<button data-filter="defaultappslist" onclick="addDefaultApps(window.parent.defAppsList)">Default
+					apps</button>
 			</div>
-			<div id="installedappslist" class="applist"></div>
-		</div>
+			<div id="installedappslistwrap" class="applistwrap">
+				<div id="knowBar" class="panel">
+					<div class="knowBarCont">
+						<h1 id="knowmuchupdates">12 Apps have updates</h1>
+						<p>Update apps for new features and fixed bugs.</p>
+						<div class="gotobutton" id="myappsupdateallbtn">
+							Update All
+						</div>
+					</div>
+					<div id="knowbaricns"></div>
+				</div>
+				<div id="installedappslist" class="applist myappslist"></div>
+			</div>
+
+			<div id="defaultappslistwrap" class="applistwrap">
+				<div id="defaultappslist" class="applist myappslist"></div>
+			</div>
 	</container>
 
 	<script>
@@ -1064,6 +1073,17 @@
 			});
 		});
 
+		document.querySelectorAll('#myappssel button').forEach(btn => {
+			btn.addEventListener('click', () => {
+				document.querySelectorAll('#myappssel button').forEach(b => b.classList.remove('active-filter'));
+				btn.classList.add('active-filter');
+				document.querySelectorAll('.applistwrap').forEach(wrap => wrap.style.display = 'none');
+				document.getElementById(btn.dataset.filter + 'wrap').style.display = 'block';
+			});
+		});
+		document.getElementById('installedappslistwrap').style.display = 'block';
+
+
 		var networkretries = 0;
 		function loadThemes() {
 			const container = document.getElementById("themeslist");
@@ -1076,7 +1096,7 @@
 					Object.entries(data).forEach(([themeName, themeData]) => {
 						const themeContainer = document.createElement('div');
 						themeContainer.classList.add("themesing");
-						themeContainer.style.border = `1px solid ${themeData.colors["--col-bg3"]}`;
+						themeContainer.style.outline = `1px solid ${themeData.colors["--col-bg3"]}`;
 
 						themeContainer.style.background = `linear-gradient(to bottom right, 
 								${themeData.colors["--col-bg1"]} 0%, 
@@ -1239,7 +1259,7 @@
 			if (!x.src.startsWith("http")) prefixurl = "https://adthoughtsglobal.github.io/";
 			try {
 				if (obj) {
-					if (method == "icononly") obj.innerText = "pending";
+					if (method == "icononly") obj.innerText = "hourglass_top";
 					else obj.innerHTML = `<div class='loader22'></div>`;
 				}
 				try {
@@ -1528,14 +1548,15 @@
 			document.body.removeChild(dummyElement);
 			return rotatedColor;
 		}
-		function openappinstr(appName, appDetails) {
+		async function openappinstr(appName, appDetails) {
 			const installButton = document.getElementById("installButton");
 			const openButton = document.getElementById("openbtn");
 			const updateButton = document.getElementById("updateButton");
+			const removeButton = document.getElementById("removeButton");
 
 			installButton.className = 'insbtn';
 
-			window.parent.getFileNamesByFolder("Apps").then(appald => {
+			window.parent.getFileNamesByFolder("Apps").then(async (appald) => {
 				try {
 					document.getElementById("installerappname").textContent = appName;
 					document.getElementById("installerappby").textContent = appDetails.by;
@@ -1579,14 +1600,20 @@
 					openButton.style.display = "none";
 					updateButton.style.display = "none";
 					installButton.style.display = "none";
+					removeButton.style.display = "none";
 
 					if (existingApp) {
 						openButton.style.display = "inline-block";
 						openButton.innerText = "Open";
 						openButton.onclick = () => window.parent.openfile(existingApp.id);
 
-						updateButton.style.display = "inline-block";
-						updateButton.onclick = () => installapp(appDetails, appName, updateButton, "full");
+						if (await hasUpdate(getAppTag(appDetails))) {
+							updateButton.style.display = "inline-block";
+							updateButton.onclick = () => installapp(appDetails, appName, updateButton, "full");
+						} else {
+							removeButton.style.display = "inline-block";
+							removeButton.onclick = () => safeUninstall(existingApp.id);
+						}
 					} else {
 						installButton.style.display = "inline-block";
 						installButton.innerText = "Install";
@@ -1615,22 +1642,36 @@
 		}
 
 
-
 		async function safeUninstall(appId) {
 			try {
 				await ntxSession.send("appStorage.remove", appId);
-				await window.parent.deleteFile(appId);
+				await window.parent.remfile(appId);
 			} catch (error) {
 				console.error("Error uninstalling app:", error);
 			}
 		}
 		let cachedMetaData, cachedLocalApps;
 
+		async function hasUpdate(tag) {
+			if (!cachedLocalApps)
+				await loadLocalApps();
+			const appDetails = cachedMetaData.apps.find(app => getAppTag(app) === tag);
+			if (!appDetails) return false;
+			const localApp = cachedLocalApps[tag];
+			if (!localApp) return false;
+			return localApp.ver != appDetails.ver;
+		}
+		async function loadLocalApps() {
+			const localApps = await ntxSession.send("appStorage.get", 'full');
+			cachedLocalApps = localApps;
+			return localApps;
+		}
+
 		async function prepareAppData() {
 			const metaData = await fetchAppData();
 			cachedMetaData = metaData;
 
-			const localApps = await ntxSession.send("appStorage.get", 'full');
+			const localApps = await loadLocalApps();
 			const localKeys = Object.keys(localApps);
 			let count = 0;
 
@@ -1659,9 +1700,7 @@
 			knowBarIcons.innerHTML = "";
 			document.getElementsByClassName("tobeupdatedcounter")[0]?.remove();
 
-			const localApps = await ntxSession.send("appStorage.get", 'full');
-			cachedLocalApps = localApps;
-
+			const localApps = await loadLocalApps();
 			const localKeys = Object.keys(localApps);
 			const firstFour = localKeys.slice(0, 4);
 			const iconPromises = firstFour.map(key => window.parent.getAppIcon(0, localApps[key].id));
@@ -1778,8 +1817,80 @@
 			await installapp(appDetails, appName, iconSpan, "icononly");
 			loadMyApps();
 		}
+		async function addDefaultApps(defaultApps) {
+			const iconTasks = [];
+			const nameTasks = [];
+			const ids = [];
+			document.getElementById("defaultappslist").innerHTML = '';
 
+			for (const tag of defaultApps) {
+				const fileObj = await window.parent.getFileByPath("Apps/" + window.parent.toTitleCase(tag) + ".app");
+				const id = fileObj.id;
+				ids.push(id);
+				iconTasks.push(window.parent.getAppIcon(0, id));
+				nameTasks.push(window.parent.getFileNameByID(id));
+			}
 
+			const resolvedIcons = await Promise.all(iconTasks);
+			const resolvedNames = await Promise.all(nameTasks);
+
+			for (let i = 0; i < defaultApps.length; i++) {
+				const tag = defaultApps[i];
+				const appName = window.parent.basename(resolvedNames[i]);
+				const appIcon = resolvedIcons[i];
+				const optionsIcon = "download";
+				const optionsBg = "";
+				const updated = Date.now();
+				const timeStr = "v" + updated + " | updated " + window.parent.timeAgo(updated);
+
+				const appDiv = document.createElement("div");
+				appDiv.className = "singular_app";
+				appDiv.innerHTML = `
+			<div class="app_left">
+				<div class="app_icon">${appIcon}</div>
+				<div class="app_detail">
+					<div class="app_name">${appName}</div>
+				</div>
+			</div>
+			<div class="app_options" style="background:${optionsBg}" data-tag="${tag}" onclick="upddefap('${tag}', this)">
+				<span class="material-symbols-rounded installbtnicn">${optionsIcon}</span>
+			</div>
+		`;
+				document.getElementById("defaultappslist").appendChild(appDiv);
+			}
+		}
+
+		async function upddefap(tag, el) {
+			const parent = el.closest(".singular_app");
+			const iconEl = el.querySelector(".installbtnicn");
+			iconEl.textContent = "hourglass_top";
+
+			let response;
+			const filePath = "appdata/" + tag + ".html";
+			try {
+				response = await window.parent.fetch(filePath);
+				if (!response.ok) {
+					iconEl.textContent = "error";
+					if (response.status === 404) throw new Error("File not found for " + tag);
+					else if (response.status === 403) throw new Error("Forbidden access for " + tag);
+					else throw new Error("Failed to fetch file for " + tag + ". Status: " + response.status);
+				}
+			} catch (error) {
+				if (error instanceof TypeError || error.name === 'FetchError') {
+					iconEl.textContent = "wifi_off";
+					console.error("Network error:", error.message);
+					return;
+				} else {
+					throw error;
+				}
+			}
+
+			const fileContent = await response.text();
+			await window.parent.createFile("Apps", window.parent.toTitleCase(tag), "app", fileContent);
+			iconEl.textContent = "check";
+			el.style.backgroundColor = "var(--col-bg2)"
+			console.log(tag + " updated successfully.");
+		}
 
 		function getAppTag(appDetails) {
 			const appName = appDetails.name;
@@ -1803,7 +1914,8 @@
 				if (localApps[tag].ver != appDetails.ver) count++;
 			}
 
-			ntxSession.send("sysUI.notify", (count === 1 ? "An app needs update" : `${count} apps need updates`), "Click to update now");
+			if (count > 0)
+				ntxSession.send("sysUI.notify", (count === 1 ? "An app needs update" : `${count} apps need updates`), "Click to update now");
 		}
 	</script>
 </body>

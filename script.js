@@ -809,9 +809,8 @@ async function extractAndRegisterCapabilities(appId, content) {
 			gid("app_inst_mod_app_name").innerText = await getFileNameByID(appId);
 			let listelement = gid("app_inst_mod_li");
 			listelement.innerHTML = '';
-
 			if (capabilities.length > 0) {
-				let handlerList = capabilities.filter(c => !c.startsWith('.')).join(', ');
+				let handlerList = capabilities.filter(c => !c.startsWith('.') && c !== 'onStartup').join(', ');
 				if (handlerList) {
 					let span = document.createElement("li");
 					span.innerHTML = `Function as ${handlerList}`;
@@ -824,7 +823,14 @@ async function extractAndRegisterCapabilities(appId, content) {
 					span.innerHTML = `Open ${fileTypes} by default`;
 					listelement.appendChild(span);
 				}
+
+				if (capabilities.includes('onStartup')) {
+					let span = document.createElement("li");
+					span.innerHTML = "Run during startup";
+					listelement.appendChild(span);
+				}
 			}
+
 
 			permissions.sort((a, b) => getNamespaceRisk(b) - getNamespaceRisk(a));
 
@@ -881,6 +887,7 @@ async function extractAndRegisterCapabilities(appId, content) {
 async function registerApp(appId, capabilities) {
 	for (let rawCapability of capabilities) {
 		let capability = rawCapability.trim();
+		if (capability === 'onStartup') continue;
 		if (capability.startsWith('.')) {
 			fileTypeAssociations[capability] = [appId];
 		} else {
@@ -889,9 +896,17 @@ async function registerApp(appId, capabilities) {
 	}
 	await setSetting('fileTypeAssociations', fileTypeAssociations);
 	await setSetting('handlers', handlers);
+
+	if (capabilities.includes('onStartup')) {
+		let startupApps = await getSetting('RunOnStartup') || [];
+		if (!startupApps.includes(appId)) startupApps.push(appId);
+		await setSetting('RunOnStartup', startupApps);
+	}
+
 	notify(await getFileNameByID(appId) + " installed", "Registered " + capabilities.toString(), "NovaOS System");
 	return capabilities.toString();
 }
+
 async function cleanupInvalidAssociations() {
 	const validAppIds = await getAllValidAppIds();
 	let associationsChanged = false;
