@@ -351,6 +351,11 @@ function nudgeWindowIntoView(el) {
 async function checksnapping(x, event, winuid) {
     if (event.target.closest('.ibtnsside')) return;
     updateNavSize();
+    const [wsnappingSetting, keepVisibleSetting] = await Promise.all([
+    getSetting("wsnapping"),
+    getSetting("keepvisible")
+]);
+sessionSettings.keepvisible = keepVisibleSetting;
     const logData = {
         x: x,
         eventType: event.type,
@@ -358,8 +363,9 @@ async function checksnapping(x, event, winuid) {
         cursorY: event.clientY,
         viewportWidth: window.innerWidth,
         viewportHeight: window.innerHeight,
-        wsnappingSetting: await getSetting("wsnapping"),
+        wsnappingSetting:wsnappingSetting
     };
+
 
     const VWInPixels = (3 * logData.viewportWidth) / 100;
     const VHInPixels = (3 * logData.viewportHeight) / 100;

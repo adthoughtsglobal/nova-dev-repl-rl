@@ -154,7 +154,11 @@ async function buildIframeApiBridge(appid, title, winuid, perms) {
                 const args = [...params];
                 if (supportsXData(namespace, method)) args.push(contextID);
 
-                const result = await fn(...args);
+                const result = await fn(...args).catch(e => {
+	console.error("Function error", e);
+	throw e;
+});
+
                 sendLargeMessage(event.source, result, transactionId);
             } else {
                 throw new Error(`Invalid NTX action: ${action}`);
@@ -202,7 +206,7 @@ async function buildIframeApiBridge(appid, title, winuid, perms) {
 
 async function prepareIframeContentHeadless(cont, appid, winuid) {
     const contentString = isBase64(cont) ? decodeBase64Content(cont) : (cont || "<center><h1>Unavailable</h1>App Data cannot be read.</center>");
-    const ntxScript = `<script defer>
+    const ntxScript = `<script>
 document.addEventListener('mousedown', () => {
     window.parent.postMessage({ type: 'iframeClick', iframeId: '${winuid}' }, '*');
 });
@@ -246,6 +250,7 @@ class NTXSession {
                     }
                 } else {
                     if (this.pendingRequests[s]) {
+                        console.log(45, t.data.result, s)
                         d ? this.pendingRequests[s].resolve(t.data.result) : this.pendingRequests[s].reject(r);
                         delete this.pendingRequests[s];
                     }
@@ -401,6 +406,7 @@ class NTXSession {
                     }
                 } else {
                     if (this.pendingRequests[s]) {
+                        console.log(45,t.data.result, s)
                         d ? this.pendingRequests[s].resolve(t.data.result) : this.pendingRequests[s].reject(r);
                         delete this.pendingRequests[s];
                     }
@@ -412,10 +418,11 @@ class NTXSession {
     }
 
     generateTransactionId() {
-        return \`txn_${Date.now()}_${this.transactionIdCounter++}\`;
+        return \`txn_\${Date.now()}_\${this.transactionIdCounter++}\`;
     }
 
     send(action, ...params) {
+                        console.log(45, action)
         return new Promise((resolve, reject) => {
             const txnId = this.generateTransactionId();
             this.pendingRequests[txnId] = { resolve, reject };

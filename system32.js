@@ -487,8 +487,11 @@ async function loadSessionSettings(fileName = "preferences.json", dirPath = "Sys
 }
 
 async function getSetting(settingKey, fileName = "preferences.json", dirPath = "System/") {
+    
+            console.log(settingKey, "WE HAVE NO IDEA")
     if (sessionSettingKeys.includes(settingKey)) {
         await loadSessionSettings(fileName, dirPath);
+            console.log(settingKey, 76,sessionSettings[settingKey] ?? null)
         return sessionSettings[settingKey] ?? null;
     }
 
@@ -520,14 +523,18 @@ async function getSetting(settingKey, fileName = "preferences.json", dirPath = "
             if (!fileSettings || typeof fileSettings !== 'object') return null;
 
             if (settingKey === 'full') return fileSettings;
+            console.log(56,settingKey, (settingKey in fileSettings))
             if (!(settingKey in fileSettings)) return null;
 
             const settingValue = fileSettings[settingKey];
             settingCache.set(cacheKey, { value: settingValue, timestamp: Date.now() });
+            console.log(settingKey, settingValue)
             return settingValue;
         } catch (error) {
-            return null;
-        } finally {
+    console.error("getSetting error:", error);
+    return null;
+}
+ finally {
             pendingFetches.delete(cacheKey);
         }
     });
@@ -578,7 +585,6 @@ async function setSetting(settingKey, settingValue, fileName = "preferences.json
                 file: fileName,
                 key: settingKey
             });
-            console.log(settingKey, settingValue)
         } catch (error) {
             console.error(`Error in setSetting for ${fileName}:`, error);
         }
