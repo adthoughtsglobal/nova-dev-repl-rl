@@ -578,6 +578,7 @@ async function setSetting(settingKey, settingValue, fileName = "preferences.json
                 file: fileName,
                 key: settingKey
             });
+            console.log(settingKey, settingValue)
         } catch (error) {
             console.error(`Error in setSetting for ${fileName}:`, error);
         }

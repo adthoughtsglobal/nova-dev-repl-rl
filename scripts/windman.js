@@ -348,7 +348,6 @@ function nudgeWindowIntoView(el) {
         }, 500);
     }
 }
-
 async function checksnapping(x, event, winuid) {
     if (event.target.closest('.ibtnsside')) return;
     updateNavSize();
@@ -362,32 +361,33 @@ async function checksnapping(x, event, winuid) {
         wsnappingSetting: await getSetting("wsnapping"),
     };
 
+    const VWInPixels = (3 * logData.viewportWidth) / 100;
+    const VHInPixels = (3 * logData.viewportHeight) / 100;
+    const aspectRatioValue = 9 / 6;
+    const maxWidthPx = logData.viewportWidth;
+    const maxHeightPx = logData.viewportHeight;
+    let heightPx = (maxHeightPx / 100) * 70;
+    let widthPx = heightPx * aspectRatioValue;
+
+    if (widthPx > maxWidthPx) {
+        widthPx = maxWidthPx;
+        heightPx = widthPx / aspectRatioValue;
+    }
+
+    const widthVW = (widthPx / logData.viewportWidth) * 100;
+    const heightVH = (heightPx / logData.viewportHeight) * 100;
+
+    logData.VWInPixels = VWInPixels;
+    logData.VHInPixels = VHInPixels;
+    logData.widthPx = widthPx;
+    logData.heightPx = heightPx;
+    logData.widthVW = widthVW;
+    logData.heightVH = heightVH;
+
     if (logData.wsnappingSetting) {
-        const VWInPixels = (3 * logData.viewportWidth) / 100;
-        const VHInPixels = (3 * logData.viewportHeight) / 100;
-        const aspectRatioValue = 9 / 6;
-        const maxWidthPx = (logData.viewportWidth * 100) / 100;
-        const maxHeightPx = (logData.viewportHeight * 100) / 100;
-        let heightPx = (maxHeightPx / 100) * 70;
-        let widthPx = heightPx * aspectRatioValue;
-
-        if (widthPx > maxWidthPx) {
-            widthPx = maxWidthPx;
-            heightPx = widthPx / aspectRatioValue;
-        }
-
-        const widthVW = (widthPx / logData.viewportWidth) * 100;
-        const heightVH = (heightPx / logData.viewportHeight) * 100;
-
-        logData.VWInPixels = VWInPixels;
-        logData.VHInPixels = VHInPixels;
-        logData.widthPx = widthPx;
-        logData.heightPx = heightPx;
-        logData.widthVW = widthVW;
-        logData.heightVH = heightVH;
-
         if (winds[winuid]["visualState"] == "fullscreen" || winds[winuid]["visualState"] == "snapped") {
             resetWindow(winuid);
+            if (sessionSettings.keepvisible) nudgeWindowIntoView(x);
             return;
         }
 
@@ -410,12 +410,11 @@ async function checksnapping(x, event, winuid) {
                 x.classList.remove("snapping");
             }, 1000);
         }
-    } else {
-        nudgeWindowIntoView(x);
-
     }
 
+    if (sessionSettings.keepvisible) nudgeWindowIntoView(x);
 }
+
 function dragElement(elmnt) {
     var iframeOverlay = null;
     let grabOffsetX = 0;

@@ -866,7 +866,7 @@
 			opacity: 0.7;
 		}
 
-		
+
 		div#searchResults {
 			display: none;
 			flex-direction: column;
@@ -883,8 +883,8 @@
 			padding: .2rem 0.5rem;
 			border-radius: var(--siz-radius2);
 			background: inherit;
-    background-color: var(--col-bg3);
-    justify-content: space-between;
+			background-color: var(--col-bg3);
+			justify-content: space-between;
 		}
 
 		.searchResult:hover {
@@ -3736,14 +3736,13 @@
 			} else {
 				console.warn(`No windowopener found for category: ${category}`);
 			}
-		}
-		function convertTurnonCheckboxes() {
+		} function convertTurnonCheckboxes() {
 			const checkboxes = document.querySelectorAll('.turnon_checkbox');
 			checkboxes.forEach(el => {
 				if (el.dataset.converted === '1') return;
 				el.dataset.converted = '1';
 
-				const id = 'chk_' + Math.random().toString(36).slice(2, 10);
+				const id = el.id || 'chk_' + Math.random().toString(36).slice(2, 10);
 				el.id = id;
 
 				const wrapper = document.createElement('div');
@@ -3775,34 +3774,30 @@
 				wrapper.appendChild(label);
 
 				if (el.hasAttribute('settingkey')) {
-					const key = el.getAttribute('settingkey');
-
-					el.addEventListener('change', () => {
-						ntxSession.send("settings.set", key, el.checked === true);
-					});
-
-
-					(async () => {
-						try {
-							const val = await ntxSession.send("settings.get", key);
-							console.log(35, key, val)
-							if (el.type === 'checkbox')
-								el.checked = val === true || val === 'true';
-							else el.value = val;
-						} catch (e) {
-							console.error(e);
-						}
-					})();
+					(key => {
+						(async () => {
+							try {
+								const val = (await ntxSession.send("settings.get", key)) || false;
+								el.checked = val === true || val === 'true' || val != null;
+							} catch (e) {
+								console.error(e);
+							}
+						})();
+						el.addEventListener('change', () => {
+							ntxSession.send("settings.set", key, el.checked === true);
+						});
+					})(el.getAttribute('settingkey'));
 				}
 			});
 		}
 
+		document.addEventListener('DOMContentLoaded', convertTurnonCheckboxes);
 
 
 		async function greenflag() {
 			ntxSession = new NTXSession();
 
-			var defile
+			var defile;
 			try {
 				if (myWindow.params) {
 					console.log(myWindow.params.data.id)
@@ -3810,7 +3805,6 @@
 						loadAppSettings(myWindow.params.data.id);
 					}
 				}
-				convertTurnonCheckboxes();
 				function replaceSelects() {
 					let openDialog = null;
 
