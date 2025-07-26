@@ -311,16 +311,14 @@ function maximizeWindow(id) {
     }, 1000);
 }
 
+let suppressNudge = false;
 function nudgeWindowIntoView(el) {
-    console.log("Nudging window into view", sessionSettings.keepvisible);
-    if (!sessionSettings.keepvisible) return;
+    if (suppressNudge || !sessionSettings.keepvisible) return;
     const rect = el.getBoundingClientRect();
     const padding = 10;
     let left = el.offsetLeft;
     let top = el.offsetTop;
-
     let nudged = false;
-
     if (rect.right > window.innerWidth - padding) {
         left -= (rect.right - window.innerWidth + padding);
         nudged = true;
@@ -337,17 +335,16 @@ function nudgeWindowIntoView(el) {
         top += (padding - rect.top);
         nudged = true;
     }
-
     if (nudged) {
         el.classList.add("snapping");
         el.style.left = `${left}px`;
         el.style.top = `${top}px`;
-
         setTimeout(() => {
             el.classList.remove("snapping");
         }, 500);
     }
 }
+
 async function checksnapping(x, event, winuid) {
     if (event.target.closest('.ibtnsside')) return;
     updateNavSize();
@@ -400,21 +397,25 @@ sessionSettings.keepvisible = keepVisibleSetting;
         if (logData.cursorY < VHInPixels || (logData.viewportHeight - logData.cursorY) < VHInPixels) {
             maximizeWindow(winuid);
         } else if (logData.cursorX < VWInPixels) {
-            x.classList.add("snapping");
+            suppressNudge = true;
+x.classList.add("snapping");
             x.style = `left: 0; top: 0; width: calc(50% - 0px); height: calc(100% - ${navheight}px);`;
             x.getElementsByClassName("flbtn")[0].innerHTML = "open_in_full";
             winds[winuid]["visualState"] = "snapped";
             setTimeout(() => {
-                x.classList.remove("snapping");
-            }, 1000);
+    x.classList.remove("snapping");
+    suppressNudge = false;
+}, 1000);
         } else if ((logData.viewportWidth - logData.cursorX) < VWInPixels) {
-            x.classList.add("snapping");
+            suppressNudge = true;
+x.classList.add("snapping");
             x.style = `right: 0; top: 0; width: calc(50% - 0px); height: calc(100% - ${navheight}px);`;
             x.getElementsByClassName("flbtn")[0].innerHTML = "open_in_full";
             winds[winuid]["visualState"] = "snapped";
             setTimeout(() => {
-                x.classList.remove("snapping");
-            }, 1000);
+    x.classList.remove("snapping");
+    suppressNudge = false;
+}, 1000);
         }
     }
 
