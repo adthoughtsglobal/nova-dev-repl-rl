@@ -203,36 +203,6 @@
 			opacity: 0.7;
 		}
 
-		div#searchResults {
-			display: none;
-			flex-direction: column;
-			gap: 0.3rem;
-			border-bottom: 1px solid #80808045;
-			border-radius: 0;
-			padding-bottom: .3em;
-			margin-bottom: .3em;
-		}
-
-		.searchResult {
-			display: flex;
-			flex-direction: column;
-			padding: .2rem 0.5rem;
-			border-radius: var(--siz-radius2);
-			background: inherit;
-		}
-
-		.searchResult:hover {
-			filter: brightness(120%);
-		}
-
-		.searchResult small {
-			all: revert;
-			font-size: small;
-			opacity: .8;
-			font-family: 'IBM Plex Sans';
-			font-weight: 200;
-		}
-
 
 		label[real] {
 			font-size: var(--font-size-small);
@@ -939,6 +909,39 @@
 
 		.panel[style*="opacity: 1"] {
 			pointer-events: auto;
+		}
+
+		
+		div#searchresults {
+			display: none;
+			flex-direction: column;
+			gap: 0.3rem;
+			border-bottom: 1px solid #80808045;
+			border-radius: 0;
+			padding-bottom: .3em;
+			margin-bottom: .3em;
+		}
+
+		.searchResult {
+			display: flex;
+			flex-direction: row;
+			padding: .2rem 0.5rem;
+			border-radius: var(--siz-radius2);
+			background: inherit;
+    background-color: var(--col-bg3);
+    justify-content: space-between;
+		}
+
+		.searchResult:hover {
+			filter: brightness(120%);
+		}
+
+		.searchResult small {
+			all: revert;
+			font-size: small;
+			opacity: .8;
+			font-family: 'IBM Plex Sans';
+			font-weight: 200;
 		}
 	</style>
 </head>
@@ -1939,7 +1942,6 @@
 			}
 		}
 
-		// This function checks if a string is a valid URL
 		function isValidUrl(string) {
 			try {
 				new URL(string);
@@ -1969,7 +1971,7 @@
 
 		function searchApps(query) {
 			const resultsDiv = document.getElementById("searchresults");
-			resultsDiv.style.display = 'block';
+			resultsDiv.style.display = 'flex';
 			resultsDiv.innerHTML = "<div class='loader'></div>";
 			fetch("https://adthoughtsglobal.github.io/Nova-Store/db/v2.json")
 				.then(response => response.json())
@@ -1995,11 +1997,11 @@
 				return;
 			}
 			results.forEach(result => {
-				if (!result.subcategory) return;
 				const item = document.createElement("div");
 				item.className = "searchResult";
-				item.innerHTML = `<span>${result.name} ></span>`;
-				item.setAttribute("onclick", `openappinstr('${appName}', ${JSON.stringify(result)})`);
+				item.innerHTML = `<span>${result.name}</span><i class="material-symbols-rounded">chevron_forward</i>`;
+				item.setAttribute("onclick", `openappinstr('${result.name}', ${JSON.stringify(result)})`);
+
 				resultsDiv.appendChild(item);
 			});
 
