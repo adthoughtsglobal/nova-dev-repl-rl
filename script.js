@@ -6,7 +6,7 @@ var batteryLevel, winds = {}, memory = {}, _nowapp, fulsapp = false, appsHistory
 	"text",
 	"musicplr",
 	"camera",
-	"clock",
+	"time",
 	"media",
 	"gallery",
 	"browser",

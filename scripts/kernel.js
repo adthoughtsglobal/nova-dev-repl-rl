@@ -154,10 +154,7 @@ async function buildIframeApiBridge(appid, title, winuid, perms) {
                 const args = [...params];
                 if (supportsXData(namespace, method)) args.push(contextID);
 
-                const result = await fn(...args).catch(e => {
-	console.error("Function error", e);
-	throw e;
-});
+                const result = await fn(...args)
 
                 sendLargeMessage(event.source, result, transactionId);
             } else {
