@@ -297,7 +297,8 @@ function resetWindow(id) {
 function maximizeWindow(id) {
     updateNavSize();
     const x = document.getElementById("window" + id);
-    x.classList.add("snapping");
+   suppressNudge = true;
+x.classList.add("snapping");
     x.style.width = "calc(100% - 0px)";
     x.style.height = "calc(100% - " + navheight + "px)";
     x.style.top = "0";
@@ -307,8 +308,9 @@ function maximizeWindow(id) {
     winds[id]["visualState"] = "fullscreen";
 
     setTimeout(() => {
-        x.classList.remove("snapping");
-    }, 1000);
+    x.classList.remove("snapping");
+    suppressNudge = false;
+}, 1000);
 }
 
 let suppressNudge = false;
