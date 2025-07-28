@@ -1828,11 +1828,14 @@
 			document.getElementById("defaultappslist").innerHTML = '';
 
 			for (const tag of defaultApps) {
+				try {
+
 				const fileObj = await window.parent.getFileByPath("Apps/" + window.parent.toTitleCase(tag) + ".app");
 				const id = fileObj.id;
 				ids.push(id);
 				iconTasks.push(window.parent.getAppIcon(0, id));
 				nameTasks.push(window.parent.getFileNameByID(id));
+				}catch {}
 			}
 
 			const resolvedIcons = await Promise.all(iconTasks);

@@ -1613,7 +1613,7 @@
 				timeSmall.textContent = '>';
 				timeSmall.title = 'Open folder';
 			} else {
-				timeSmall.textContent = '';
+				timeSmall.textContent = window.parent.timeAgo(file?.metadata.datetime );
 				timeSmall.title = 'File';
 			}
 
