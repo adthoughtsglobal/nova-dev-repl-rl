@@ -87,7 +87,7 @@ button {
 
 body {
 	margin: 0;
-	background-color: var(--col-bg1);
+	background-color: transparent;
 	color: var(--col-txt1);
 	user-select: none;
 	font-family: 'Poppins', sans-serif;
