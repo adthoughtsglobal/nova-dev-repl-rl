@@ -273,9 +273,7 @@ function finalizeWindow(windowDiv, winuid) {
     windowDiv.style.zIndex = maxZ + 1;
 
     putwinontop('window' + winuid);
-    loadtaskspanel();
 }
-
 
 function resetWindow(id) {
     const x = document.getElementById("window" + id);

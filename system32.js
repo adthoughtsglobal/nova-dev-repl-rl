@@ -487,7 +487,7 @@ async function loadSessionSettings(fileName = "preferences.json", dirPath = "Sys
 }
 
 async function getSetting(settingKey, fileName = "preferences.json", dirPath = "System/") {
-    
+
     if (sessionSettingKeys.includes(settingKey)) {
         await loadSessionSettings(fileName, dirPath);
         return sessionSettings[settingKey] ?? null;
@@ -527,10 +527,10 @@ async function getSetting(settingKey, fileName = "preferences.json", dirPath = "
             settingCache.set(cacheKey, { value: settingValue, timestamp: Date.now() });
             return settingValue;
         } catch (error) {
-    console.error("getSetting error:", error);
-    return null;
-}
- finally {
+            console.error("getSetting error:", error);
+            return null;
+        }
+        finally {
             pendingFetches.delete(cacheKey);
         }
     });
@@ -710,26 +710,26 @@ async function ensureAllSettingsFilesExist() {
 
 var appStorage = {
     get: async (key, context) => {
-        context = notificationContext[context]; 
+        context = notificationContext[context];
         if (!key) key = 'full';
         console.log(key, context)
-        return await getSetting(key, context.appID+".json","System/appData/")
+        return await getSetting(key, context.appID + ".json", "System/appData/")
     },
     remove: async (key, context) => {
         context = notificationContext[context];
         if (!key) return null;
-        await remSettingKey(key, context.appID+".json","System/appData/")
+        await remSettingKey(key, context.appID + ".json", "System/appData/")
     },
     removeStorage: async (key, context) => {
-        context = notificationContext[context]; 
+        context = notificationContext[context];
         if (!key) return null;
-        await remfile((await getFileByPath("System/appData/"+ context.appID+".json").id))
+        await remfile((await getFileByPath("System/appData/" + context.appID + ".json").id))
     },
     set: async (key, value, context) => {
-        context = notificationContext[context]; 
+        context = notificationContext[context];
         console.log(3597, context, key)
         if (!key) return null;
-        await setSetting(key, value, context.appID+".json","System/appData/")
+        await setSetting(key, value, context.appID + ".json", "System/appData/")
     }
 }
 

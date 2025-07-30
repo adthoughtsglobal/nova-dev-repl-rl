@@ -911,7 +911,7 @@
 			pointer-events: auto;
 		}
 
-		
+
 		div#searchresults {
 			display: none;
 			flex-direction: column;
@@ -928,8 +928,8 @@
 			padding: .2rem 0.5rem;
 			border-radius: var(--siz-radius2);
 			background: inherit;
-    background-color: var(--col-bg3);
-    justify-content: space-between;
+			background-color: var(--col-bg3);
+			justify-content: space-between;
 		}
 
 		.searchResult:hover {
@@ -1270,7 +1270,8 @@
 					const response = await fetch(prefixurl + x.src);
 					const content = await response.text();
 					const tempid = await window.parent.createFile("Apps", appName, "app", content);
-					ntxSession.send("appStorage.set", getAppTag(x), { id: tempid, ver: x.ver, updated: Date.now() });
+					ntxSession.send("appStorage.set", "versionsData", { [getAppTag(x)]: { id: tempid, ver: x.ver, updated: Date.now() } });
+
 				} catch { }
 				setTimeout(() => {
 					if (!obj) return;
@@ -1648,7 +1649,7 @@
 
 		async function safeUninstall(appId) {
 			try {
-				await ntxSession.send("appStorage.remove", appId);
+				await ntxSession.send("appStorage.remove", ["versionsData", appId]);
 				await window.parent.remfile(appId);
 			} catch (error) {
 				console.error("Error uninstalling app:", error);
@@ -1666,7 +1667,7 @@
 			return localApp.ver != appDetails.ver;
 		}
 		async function loadLocalApps() {
-			const localApps = await ntxSession.send("appStorage.get", 'full');
+			const localApps = await ntxSession.send("appStorage.get", ["versionsData"]);
 			cachedLocalApps = localApps;
 			return localApps;
 		}
@@ -1830,12 +1831,12 @@
 			for (const tag of defaultApps) {
 				try {
 
-				const fileObj = await window.parent.getFileByPath("Apps/" + window.parent.toTitleCase(tag) + ".app");
-				const id = fileObj.id;
-				ids.push(id);
-				iconTasks.push(window.parent.getAppIcon(0, id));
-				nameTasks.push(window.parent.getFileNameByID(id));
-				}catch {}
+					const fileObj = await window.parent.getFileByPath("Apps/" + window.parent.toTitleCase(tag) + ".app");
+					const id = fileObj.id;
+					ids.push(id);
+					iconTasks.push(window.parent.getAppIcon(0, id));
+					nameTasks.push(window.parent.getFileNameByID(id));
+				} catch { }
 			}
 
 			const resolvedIcons = await Promise.all(iconTasks);
@@ -1905,13 +1906,21 @@
 			return `${appName}@${appVersion}`;
 		}
 
+		async function onStartup() {
+			const lastCheckData = await ntxSession.send("appStorage.get", ["lastCheck"]);
+			const lastCheck = lastCheckData || 0;
 
-		function onStartup() {
-			checkUpdatesHeadless();
+			if (Date.now() - lastCheck > 300000) {
+				checkUpdatesHeadless();
+				await ntxSession.send("appStorage.set", "lastCheck", Date.now());
+			} else {
+				console.log(404)
+			}
 		}
 
+
 		async function checkUpdatesHeadless() {
-			const localApps = await ntxSession.send("appStorage.get", 'full');
+			const localApps = await ntxSession.send("appStorage.get", ["versionsData"]);
 			const metaData = await fetchAppData();
 
 			let count = 0;

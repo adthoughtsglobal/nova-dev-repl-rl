@@ -464,7 +464,11 @@ async function loadIframe(windowContent, windowLoader, loaderSpinner, cont, appi
     loaderSpinner.insertAdjacentHTML('beforebegin', iconHtml);
 
     let registry = await getSetting(appid, "AppRegistry.json") || { perms: [] };
-    const contentBlob = await prepareIframeContent(cont, appid, winuid);
+    let contentBlob;
+    if (title == "headless_373452343985$#%")
+        contentBlob = await prepareIframeContentHeadless(cont, appid, winuid);
+    else
+        contentBlob = await prepareIframeContent(cont, appid, winuid);
     const blobURL = URL.createObjectURL(contentBlob);
 
     const iframe = document.createElement("iframe");
@@ -512,9 +516,25 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
     await loadIframe(windowContent, windowLoader, loaderSpinner, cont, appid, winuid, title, params);
 
     finalizeWindow(windowDiv, winuid);
+
+    if (title != "headless_373452343985$#%") {
+        loadtaskspanel();
+    } else {
+        setTimeout(() => {
+            if (document.body.contains(windowDiv)) {
+                loadtaskspanel();
+            }
+        }, 3000);
+
+        setTimeout(() => {
+            if (document.body.contains(windowDiv)) clwin(winuid);
+        }, 30000);
+    }
+
     attachDragHandler(windowDiv, windowHeader, winuid);
     attachResizeHandlers(windowDiv);
 }
+
 async function openapp(x, od, customtodo, headless = false) {
     if (gid('appdmod').open) gid('appdmod').close();
     if (gid('searchwindow').open) gid('searchwindow').close();
@@ -536,58 +556,18 @@ async function openapp(x, od, customtodo, headless = false) {
             }
             async function normieprocess() {
                 y = await getFileById(od);
+                if (!x) { x = y.fileName }
                 y = y.content;
             }
 
             if (headless) {
-                const winuid = initializeWindowState(x, od, customtodo);
-                const div = document.createElement("div");
-                div.style.display = "none";
-                const header = document.createElement("div");
-                const content = document.createElement("div");
-                const loader = document.createElement("div");
-                const spinner = document.createElement("div");
-                div.append(header, content, loader);
-                loader.appendChild(spinner);
-                document.body.appendChild(div);
-
-                let registry = await getSetting(od, "AppRegistry.json") || { perms: [] };
-                const contentBlob = await prepareIframeContentHeadless(y, od, winuid);
-                const blobURL = URL.createObjectURL(contentBlob);
-
-                const iframe = document.createElement("iframe");
-                iframe.src = blobURL;
-                iframe.onload = async () => {
-                    const myWindowData = { appID: od, windowID: winuid, eventBusURL, setTitle: "later", ...(customtodo && { params: customtodo }) };
-                    iframe.contentWindow.postMessage({ type: "myWindow", data: myWindowData }, "*");
-                    await buildIframeApiBridge(od, x, winuid, registry.perms);
-                    iframe.contentWindow.postMessage({ type: "startup" }, "*");
-                };
-
-                content.appendChild(iframe);
-                iframeReferences[winuid] = iframe.contentWindow;
-                if (!winds[winuid]) winds[winuid] = {};
-                winds[winuid].src = blobURL;
-                winds[winuid].visualState = "hidden";
-                const loadStart = performance.now();
-                setTimeout(() => {
-                    const loadDuration = performance.now() - loadStart;
-                    if (loadDuration > 500) loadtaskspanel();
-                }, 0);
-
-                setTimeout(() => {
-                    if (winds[winuid] && winds[winuid].visualState === "hidden") {
-                        try {
-                            iframe.remove();
-                            div.remove();
-                            delete iframeReferences[winuid];
-                            delete winds[winuid];
-                            loadtaskspanel();
-                        } catch (_) { }
-                    }
-                }, 60000);
+                if (Gtodo == null && customtodo) Gtodo = customtodo;
+                await openwindow("headless_373452343985$#%", y, await getAppIcon(0, od) || defaultAppIcon, getAppTheme(y), getAppAspectRatio(y), od, customtodo);
+                gid("window" + Object.keys(winds).pop()).style.display = "none";
+                Gtodo = null;
                 return;
             }
+
 
             if (Gtodo == null && customtodo) Gtodo = customtodo;
 
