@@ -154,3 +154,391 @@ textarea::placeholder {
 .material-symbols-rounded {
 	font-weight: normal !important;
 }
+
+.modal {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    min-height: 100vh;
+    padding: 0;
+    box-sizing: border-box;
+    align-items: stretch;
+}
+
+.modal-content {
+    background: var(--col-bg1);
+    border-radius: 0;
+    box-shadow: none;
+    border: var(--box-crisp);
+    padding: 0;
+    width: 100%;
+    text-align: left;
+    position: relative;
+    transition: box-shadow 0.2s ease;
+    display: flex;
+    overflow: hidden;
+	max-width: none;
+	max-height: none;
+}
+
+.modal-content:hover {
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.7);
+}
+
+.account-sidebar {
+    width: 280px;
+    background: var(--col-bg1);
+    border-right: var(--box-crisp);
+    padding: 32px 0;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.sidebar-header {
+    padding: 0 24px 24px 24px;
+    border-bottom: var(--box-crisp);
+    margin-bottom: 16px;
+}
+
+.sidebar-header h2 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--col-txt1);
+    margin: 0 0 4px 0;
+}
+
+.sidebar-header p {
+    font-size: 14px;
+    color: var(--col-txt1);
+opacity:.5;
+    margin: 0;
+}
+
+.account-list {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.account-item {
+    display: flex;
+    align-items: center;
+    padding: 16px 24px;
+    margin: 0 16px 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    background: #2a2a2a;
+    border: 1px solid #333;
+    position: relative;
+    width: calc(100% – 32px);
+    text-align: left;
+}
+
+.account-item:hover {
+    background: #323232;
+    border-color: #B399D4;
+    box-shadow: 0 2px 8px rgba(179, 153, 212, 0.1);
+}
+
+.account-item.active {
+    background: #2e2a3d;
+    border-color: #B399D4;
+    box-shadow: 0 2px 8px rgba(179, 153, 212, 0.15);
+}
+
+.account-item img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 16px;
+    border: 2px solid #444;
+}
+
+.account-item-info h3 {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--col-txt1);
+    margin: 0 0 4px 0;
+}
+
+.account-item-info p {
+    font-size: 13px;
+    color: var(--col-txt1);
+opacity:.5;
+    margin: 0;
+}
+
+.add-account-btn {
+    margin: 16px 24px 0 24px;
+    padding: 12px 20px;
+    background: transparent;
+    border: var(--box-crisp);
+    border-radius: 6px;
+    color: #B399D4;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.add-account-btn:hover {
+    background: #2f2f2f;
+    border-color: #d1b3ff;
+    color: #d1b3ff;
+}
+
+.main-content {
+    flex: 1;
+    padding: 48px 40px;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+}
+
+.main-content.show {
+    display: flex;
+}
+
+.welcome-area {
+    flex: 1;
+    padding: 48px 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    background: linear-gradient(135deg, rgba(179, 153, 212, 0.06) 0%, rgba(179, 153, 212, 0.1) 100%);
+}
+
+.welcome-area.hidden {
+    display: none;
+}
+
+.welcome-logo {
+    margin-bottom: 32px;
+    position: relative;
+}
+
+.welcome-logo img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    opacity: 0.9;
+    transition: all 0.3s ease;
+    filter: drop-shadow(0 8px 16px rgba(179, 153, 212, 0.15));
+}
+
+.welcome-logo::before {
+    content: '';
+    position: absolute;
+    top: -20px;
+    left: -20px;
+    right: -20px;
+    bottom: -20px;
+    background: radial-gradient(circle, rgba(179, 153, 212, 0.1) 0%, transparent 70%);
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.welcome-logo:hover::before {
+    opacity: 1;
+}
+
+.welcome-logo:hover img {
+    transform: scale(1.05);
+    opacity: 1;
+}
+
+.welcome-content h1 {
+    font-size: 28px;
+    font-weight: 400;
+    color: #ffffff;
+    margin: 0 0 0px 0;
+    letter-spacing: -0.5px;
+}
+
+.welcome-content p {
+    font-size: 16px;
+    color: transparent;
+    margin: 0 0 40px 0;
+    line-height: 1.4;
+    max-width: 300px;
+    white-space: nowrap;
+	&:after {
+    content: "⚠️ RoturTW is a third party service. If enabled, RoturTW will have access to your NovaOS sessions.";
+    display: flex
+;
+    padding: .5em;
+    background: var(--col-bg3);
+    border-radius: .5em;
+    justify-content: center;
+    margin-top: .5em;
+    white-space: wrap;
+	color: white;
+}
+}
+
+.welcome-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    max-width: 280px;
+}
+
+.btn-welcome {
+    padding: 14px 24px;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-welcome-primary {
+    background: #B399D4;
+    border: none;
+    color: white;
+}
+
+.btn-welcome-primary:hover {
+    background: #9e7fca;
+    box-shadow: 0 2px 8px rgba(179, 153, 212, 0.3);
+}
+
+.btn-welcome-secondary {
+    background: transparent;
+    border: 1px solid #444;
+    color: #B399D4;
+}
+
+.btn-welcome-secondary:hover {
+    background: #2f2f2f;
+}
+
+.logo-container img {
+    width: 75px;
+    height: 75px;
+    border-radius: 50%;
+}
+
+.main-content h1 {
+    font-size: 24px;
+    font-weight: 400;
+    color: #ffffff;
+}
+
+.main-content .subtitle {
+    font-size: 16px;
+    color: #cfd1d4;
+    margin-bottom: 24px;
+    font-weight: 400;
+}
+
+.form-group {
+    margin-bottom: 16px;
+    text-align: left;
+}
+
+.main-content input {
+    background: #2c2c2c;
+    border: 1px solid #444;
+    color: var(--col-txt1);
+}
+
+.main-content input:focus {
+    border-color: #B399D4;
+    box-shadow: 0 0 0 2px rgba(179, 153, 212, 0.2);
+}
+
+.main-content input::placeholder {
+    color: #888;
+}
+
+.btn-primary {
+    background: #B399D4;
+}
+
+.btn-primary:hover {
+    background: #9e7fca;
+    box-shadow: 0 2px 8px rgba(179, 153, 212, 0.3);
+}
+
+.btn-primary:disabled {
+    background: #3a3a3a;
+    color: #777;
+}
+
+.btn-secondary {
+    background: transparent;
+    border: 1px solid #444;
+    color: #B399D4;
+}
+
+.btn-secondary:hover {
+    background: #2c2c2c;
+}
+
+.security-notice {
+    background: #2c2c2c;
+    border: 1px solid #444;
+    color: #cfd1d4;
+}
+
+.security-notice .warning-icon {
+    color: #ff6b6b;
+}
+
+.profile-section {
+    background: #2a2a2a;
+    border: 1px solid #444;
+}
+
+.profile-info h3 {
+    color: var(--col-txt1);
+}
+
+.profile-info p {
+    color: var(--col-txt1);
+opacity:.5;
+}
+
+#loading-overlay {
+    background: rgba(0, 0, 0, 0.7);
+}
+
+.spinner {
+    border: 3px solid #2e2e2e;
+    border-top: 3px solid #B399D4;
+}
+
+@media (max-width: 768px) {
+    .modal-content {
+        background: var(--col-bg1);
+    }
+}
+
+@media (max-width: 480px) {
+    .modal {
+        padding: 20px 16px;
+    }
+}
+
+.modal-content * {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-primary:focus,
+.btn-secondary:focus {
+    outline: 2px solid #B399D4;
+    outline-offset: 2px;
+}

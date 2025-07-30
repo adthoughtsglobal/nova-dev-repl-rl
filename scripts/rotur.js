@@ -194,7 +194,7 @@ class RoturExtension {
         let packet = JSON.parse(event.data);
         if (packet.cmd == "client_ip") {
           this.client.ip = packet.val;
-        } else if (packet.cmd == "statuscode" && typeof(packet.val) === "object") {
+        } else if (packet.cmd == "statuscode" && typeof (packet.val) === "object") {
           this.client = Object.assign(this.client, packet.val);
           this.client.username = packet.val.username;
         } else if (packet.cmd == "ulist") {
@@ -294,7 +294,8 @@ class RoturExtension {
               roturTWEventCall("roturEXT_whenMessageReceived");
               delete packet.val;
             }
-          }        } else {
+          }
+        } else {
           if (packet.source_command === "sync_set") {
             this.syncedVariables[packet.origin] ||= {};
             this.syncedVariables[packet.origin][packet.payload.key] = packet.payload.value;
@@ -331,16 +332,7 @@ class RoturExtension {
         if (packet.listener == "link_cfg" && !this.is_connected) {
           this.is_connected = true;
           roturTWEventCall("roturEXT_whenConnected");
-          (async () => {
-              sysLog("RoturTW", `Trying to log in`);
-              let localroturdata = await window.getSetting("roturLink");
-              console.log(localroturdata)
-              if (localroturdata) {
-                let targetun = JSON.parse(localroturdata).username;
-                let targetpass = JSON.parse(localroturdata).password;
-                await roturExtension.login({ USERNAME: targetun, PASSWORD: targetpass });
-              }
-            })();
+
         }
       }
     };
@@ -404,32 +396,43 @@ class RoturExtension {
     e.id = "rotur-auth";
     e.src = `https://rotur.dev/auth?styles=${encodeURIComponent(STYLE_URL)}`;
     Object.assign(e.style, {
-      width: "100%",
-      height: "100%",
+      width: "70%",
+      height: "80%",
       border: "none",
-      pointerEvents: "auto"
+      pointerEvents: "auto",
+      position: "absolute",
+      top: "10%",
+      right: "14.5%",
+      border: "var(--box-crisp)",
+      borderRadius: "1em",
+      zIndex: 999
     });
-    
+
     const t = document.body.appendChild(e);
-    
+
     const _roturAuthHandler = (a) => {
       console.log("Rotur Auth Message Received", a);
       if ("https://rotur.dev" === a.origin && "rotur-auth-token" === a.data?.type) {
-        
-        document.removeChild(t);
+
+        document.body.removeChild(t);
         window.removeEventListener("message", _roturAuthHandler);
-        
+
         // Now authenticate with the token
         this.loginToken({ TOKEN: a.data.token });
+        
+				setSetting( "roturLink", JSON.stringify({
+							"type": "token",
+							"token": a.data.token
+						}));
       }
     };
-    
+
     window.addEventListener("message", _roturAuthHandler);
     return "Auth window opened";
   }
 
-  login() {}
-  loginMd5() {}
+  login() { }
+  loginMd5() { }
 
   loginToken(args) {
     return this._loginWithToken(args.TOKEN);
@@ -440,57 +443,57 @@ class RoturExtension {
     if (this.authenticated) return "Already Logged In";
 
     try {
-        const response = await fetch(`https://social.rotur.dev/get_user?auth=${encodeURIComponent(token)}`);
+      const response = await fetch(`https://social.rotur.dev/get_user?auth=${encodeURIComponent(token)}`);
 
-        if (!response.ok) throw new Error(`Authentication failed: ${response.status}`);
+      if (!response.ok) throw new Error(`Authentication failed: ${response.status}`);
 
-        const packet = await response.json();
+      const packet = await response.json();
 
-        this.userToken = packet.key || token;
-        this.user = { ...packet };
+      this.userToken = packet.key || token;
+      this.user = { ...packet };
 
-        delete this.user.key;
-        delete this.user.password;
+      delete this.user.key;
+      delete this.user.password;
 
-        this.friends = {};
+      this.friends = {};
 
-        // Handle if the user has no friends :P
-        if (!this.user["sys.friends"]) this.user["sys.friends"] = [];
-        if (!this.user["sys.requests"]) this.user["sys.requests"] = [];
+      // Handle if the user has no friends :P
+      if (!this.user["sys.friends"]) this.user["sys.friends"] = [];
+      if (!this.user["sys.requests"]) this.user["sys.requests"] = [];
 
-        this.friends.list = this.user["sys.friends"];
-        this.friends.requests = this.user["sys.requests"];
+      this.friends.list = this.user["sys.friends"];
+      this.friends.requests = this.user["sys.requests"];
 
-        delete this.user["sys.friends"];
-        delete this.user["sys.requests"];
+      delete this.user["sys.friends"];
+      delete this.user["sys.requests"];
 
-        this.username = this.designation + "-" + this.user.username + "Â§" + randomString(10);
+      this.username = this.designation + "-" + this.user.username + "Â§" + randomString(10);
 
-        this.ws.send(
-            JSON.stringify({
-                cmd: "setid",
-                val: this.username,
-                listener: "set_username_cfg",
-            })
-        );
+      this.ws.send(
+        JSON.stringify({
+          cmd: "setid",
+          val: this.username,
+          listener: "set_username_cfg",
+        })
+      );
 
-        this.my_client.username = this.username;
-        this.authenticated = true;
+      this.my_client.username = this.username;
+      this.authenticated = true;
 
-        roturTWEventCall("roturEXT_whenAuthenticated");
 
-        this.ws.send(
-            JSON.stringify({
-                cmd: "auth",
-                val: this.userToken
-            })
-        );
+      this.ws.send(
+        JSON.stringify({
+          cmd: "auth",
+          val: this.userToken
+        })
+      );
+      roturTWEventCall("roturEXT_whenAuthenticated");
 
-        return `Logged in as ${this.user.username}`;
+      return `Logged in as ${this.user.username}`;
 
     } catch (error) {
-        this.authenticated = false;
-        throw new Error(`Failed to login: ${error.message}`);
+      this.authenticated = false;
+      throw new Error(`Failed to login: ${error.message}`);
     }
   }
 
@@ -1605,8 +1608,8 @@ class RoturExtension {
 
           // Check if this is a call confirmation response
           if (packet?.val?.source_command === "call" &&
-              packet?.val?.payload === "confirm" &&
-              packet?.origin?.username === this.accounts) {
+            packet?.val?.payload === "confirm" &&
+            packet?.origin?.username === this.accounts) {
 
             // Clear the timeout and remove the event listener
             clearTimeout(timeout);
@@ -1672,17 +1675,31 @@ onstartup.push(async () => {
 });
 
 function roturTWEventCall(data) {
-  console.log(data)
   if (data == "roturEXT_whenAuthenticated") {
-      fetch("https://social.rotur.dev/claim_daily?auth=" + this.userToken).then((response) => {
-        if (response.ok) {
-      notify(`Logged in as ${args.USERNAME}`, "You got the daily credit!", "RoturTW", 1)
-          
-        } else {
-          
-      notify(`Logged in as ${args.USERNAME}`, "Welcome back!", "RoturTW", 1)
-          throw new Error('Failed to claim daily reward');
+    fetch("https://social.rotur.dev/claim_daily?auth=" + this.userToken).then((response) => {
+      if (response.ok) {
+        notify(`Logged in as ${args.USERNAME}`, "You got the daily credit!", "RoturTW", 1)
+
+      } else {
+
+        notify(`Logged in as ${args.USERNAME}`, "Welcome back!", "RoturTW", 1)
+        throw new Error('Failed to claim daily reward');
+      }
+    })
+  } else if (data == "roturEXT_whenConnected") {
+    (async () => {
+      sysLog("RoturTW", `Trying to log in`);
+      let localroturdata = await window.getSetting("roturLink");
+      if (localroturdata) {
+        let targettype = JSON.parse(localroturdata).type;
+        if (targettype == "pswd") {
+          let targetun = JSON.parse(localroturdata).username;
+          let targetpass = JSON.parse(localroturdata).password;
+          await roturExtension.login({ USERNAME: targetun, PASSWORD: targetpass });
+        } else if (targettype == "token") {
+          await roturExtension.loginToken({ TOKEN: JSON.parse(localroturdata).token })
         }
-      })
+      }
+    })();
   }
 }

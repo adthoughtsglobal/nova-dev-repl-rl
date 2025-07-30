@@ -655,7 +655,10 @@ async function fetchData(url) {
 var content;
 function putwinontop(x) {
 	Object.keys(winds).forEach(wid => {
+		if (gid(`window${wid}`).style.zIndex)
 		winds[wid].zIndex = Number(gid(`window${wid}`).style.zIndex || 0);
+	else 
+		return;
 	});
 
 	if (Object.keys(winds).length > 1) {
