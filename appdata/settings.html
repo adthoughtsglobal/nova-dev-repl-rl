@@ -2979,8 +2979,8 @@
 				</segr>
 				<script>
 					function loginOnceRotur() {
-
-						window.parent.roturExtension.login_prompt({ STYLE_URL: "http://127.0.0.1:3000//libs/roturstyle.css" })
+						window.parent.setuprotur();
+						window.parent.roturExtension.login_prompt({ STYLE_URL: "http://127.0.0.1:3000//libs/roturstyle.css" });
 					}
 					async function signoutrtrsets() {
 						await window.parent.logoutofrtr();
@@ -2992,23 +2992,17 @@
 						if (roturExtension && roturExtension.loggedIn()) {
 							document.getElementById("rtrinitspace").style.display = "none";
 							document.getElementById("rtrsignedinsec").style.display = "block";
-							document.getElementById("rtrsignupform").style.display = "none";
 							document.getElementById("rtruserstatsi").innerText = "Signed in as " + roturExtension.user.username;
 						} else {
 							document.getElementById("rtrinitspace").style.display = "block";
 							document.getElementById("rtrsignedinsec").style.display = "none";
-							document.getElementById("rtrsignupform").style.display = "none";
-							document.getElementById("rtrsigninbtn").style.opacity = "0.5";
 						}
 					}
 
 					async function initrotur() {
 						let rtrstats = await window.parent.setuprotur();
 
-						document.getElementById("rtrsignupform").style.display = "block";
 						document.getElementById("rtrinitspace").style.display = "none";
-						document.getElementById("rtrsigninbtn").style.opacity = "1";
-						document.getElementById("rtrsigninbtn").innerText = "Login";
 					}
 				</script>
 

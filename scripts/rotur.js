@@ -1676,13 +1676,13 @@ onstartup.push(async () => {
 
 function roturTWEventCall(data) {
   if (data == "roturEXT_whenAuthenticated") {
-    fetch("https://social.rotur.dev/claim_daily?auth=" + this.userToken).then((response) => {
+    fetch("https://social.rotur.dev/claim_daily?auth=" + roturExtension.userToken).then((response) => {
       if (response.ok) {
-        notify(`Logged in as ${args.USERNAME}`, "You got the daily credit!", "RoturTW", 1)
+        notify(`Logged in as ${roturExtension.username}`, "You got the daily credit!", "RoturTW", 1)
 
       } else {
 
-        notify(`Logged in as ${args.USERNAME}`, "Welcome back!", "RoturTW", 1)
+        notify(`Logged in as ${roturExtension.user.username}`, "Welcome back!", "RoturTW", 1)
         throw new Error('Failed to claim daily reward');
       }
     })
