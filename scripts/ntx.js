@@ -113,7 +113,7 @@ const namespaceDetails = {
     settings: { risk: 80, description: "read and <span class='dangertext'>modify system settings and permissions</span>" },
     accounts: { risk: 50, description: "manage user accounts" },
     apps: { risk: 25, description: "know handlers and permissions" },
-    appStorage: { risk: 25, description: "manage and store data" },
+    appStorage: { risk: 15, description: "locally store data associated with the app" },
     sysUI: { risk: 30, description: "show dialogs and trigger UI functions" },
     utility: { risk: 20, description: "use various utilities" },
     system: { risk: 80, description: "gain unrestricted access to <span class='dangertext'>high risk system functions</span>" },

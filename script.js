@@ -553,6 +553,9 @@ function getAppAspectRatio(unshrunkContent) {
 }
 async function getAppIcon(content, id, lazy = 0) {
 	if (content, id == undefined) {
+		if (content == 'folder')
+			return `<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="var(--col-txt1)"><path d="M160-160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h207q16 0 30.5 6t25.5 17l57 57h360q17 0 28.5 11.5T880-680q0 17-11.5 28.5T840-640H447l-80-80H160v480l79-263q8-26 29.5-41.5T316-560h516q41 0 64.5 32.5T909-457l-72 240q-8 26-29.5 41.5T760-160H160Zm84-80h516l72-240H316l-72 240Zm-84-262v-218 218Zm84 262 72-240-72 240Z"/></svg>`;
+
 		return defaultAppIcon;
 	}
 	const withTimeout = (promise) =>
@@ -583,13 +586,10 @@ async function getAppIcon(content, id, lazy = 0) {
 		if (cachedIcon) return cachedIcon;
 
 		if (!content) {
-			if (id == undefined)
-				return `<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="var(--col-txt1)"><path d="M160-160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h207q16 0 30.5 6t25.5 17l57 57h360q17 0 28.5 11.5T880-680q0 17-11.5 28.5T840-640H447l-80-80H160v480l79-263q8-26 29.5-41.5T316-560h516q41 0 64.5 32.5T909-457l-72 240q-8 26-29.5 41.5T760-160H160Zm84-80h516l72-240H316l-72 240Zm-84-262v-218 218Zm84 262 72-240-72 240Z"/></svg>`;
 			const file = await withTimeout(await getFileById(id));
 			if (!file || !file.content) throw new Error("File content unavailable " + id);
 			content = file.content;
 		}
-
 		const iconContent = await withTimeout(getMetaTagContent(content, 'nova-icon', true));
 		if (iconContent && containsSmallSVGElement(iconContent)) {
 			appicns[id] = iconContent;
@@ -1330,7 +1330,7 @@ async function prepareArrayToSearch() {
 	function scanFolder(folderPath, folderContents) {
 		for (let name in folderContents) {
 			let item = folderContents[name];
-			let fullPath = `${folderPath}${name}/`;
+			let fullPath = `${folderPath}${name}`;
 			if (item.id) {
 				let displayName = mtpetxt(name) == "app" ? basename(name) : name;
 				arrayToSearch.push({ name: displayName, id: item.id, type: "file", path: folderPath });
@@ -1341,11 +1341,13 @@ async function prepareArrayToSearch() {
 			}
 		}
 	}
-		scanFolder("", memory["root"]);
+	scanFolder("", memory["root"]);
 	fileslist = arrayToSearch;
 }
 
-async function strtappse(event) {
+strtappse = debounce(rlstrtappse, 100);
+
+async function rlstrtappse(event) {
 	if (fileslist.length === 0) await prepareArrayToSearch();
 	const searchValue = gid("strtsear").value.toLowerCase().trim();
 	if (searchValue === "") return;
@@ -1390,17 +1392,17 @@ async function strtappse(event) {
 	let elements = 0;
 	for (const path in groupedResults) {
 		const items = groupedResults[path];
-		if (path.length >0) {
+		if (path.length > 0) {
 
-		const pathElement = document.createElement("div");
-		pathElement.innerHTML = `<strong>${path}</strong>`;
-		gid("strtappsugs").appendChild(pathElement);
+			const pathElement = document.createElement("div");
+			pathElement.innerHTML = `<strong>${path}</strong>`;
+			gid("strtappsugs").appendChild(pathElement);
 		}
 		for (const item of items) {
 			if (!mostRelevantItem) mostRelevantItem = item;
 			const newElement = document.createElement("div");
 			if (item.type == "folder")
-				icon = await getAppIcon(0, item.id);
+				icon = await getAppIcon('folder');
 			else
 				icon = await getAppIcon(0, item.id);
 			newElement.innerHTML = `<div onclick="openfile('${item.id}')">${icon} ${item.name}</div><span class="material-symbols-rounded">arrow_outward</span>`;
@@ -1779,12 +1781,12 @@ async function realgenTaskBar() {
 				appShortcutDiv.appendChild(tooltisp);
 				appbarelement.appendChild(appShortcutDiv);
 
-				await getAppIcon(0, app.id, 0)
-					.then(icon => iconSpan.innerHTML = icon)
-					.catch(error => console.error(error));
 
 				if (!app.id) {
 					let folderName = app.name;
+					await getAppIcon('folder')
+						.then(icon => iconSpan.innerHTML = icon)
+						.catch(error => console.error(error));
 					appShortcutDiv.addEventListener("click", async () => {
 
 						let filesInFolder = await getFileNamesByFolder(`Dock/${folderName}`);
@@ -1793,6 +1795,9 @@ async function realgenTaskBar() {
 						appGroupModal(folderName, appIds);
 					});
 				} else {
+					await getAppIcon(0, app.id, 0)
+						.then(icon => iconSpan.innerHTML = icon)
+						.catch(error => console.error(error));
 					appShortcutDiv.addEventListener("click", () => openfile(app.id));
 				}
 

@@ -429,7 +429,7 @@ nav [navobj] {
 	width: 80%;
 	max-width: 280px;
 	box-shadow: 0 0 10px #00000075;
-	border: 1px solid #78787840;
+	border: var(--box-crisp);;
 	animation: pop var(----time1);
 	outline: 0;
 }
@@ -457,7 +457,7 @@ nav [navobj] {
 		width: 80%;
 		max-width: 280px;
 		box-shadow: 0 0 10em #000000ba;
-		border: 1px solid #78787840;
+		border: var(--box-crisp);;
 		animation: pop var(----time1);
 	}
 
@@ -503,7 +503,7 @@ nav [navobj] {
 	color: inherit;
 	background: var(--col-bg1);
 	border-radius: var(--siz-radius1);
-	border: 1px solid #78787840;
+	border: var(--box-crisp);;
 }
 
 .modal-items p {
@@ -522,7 +522,7 @@ nav [navobj] {
 	outline: none;
 	display: block;
 	width: 100%;
-	border: 1px solid #78787840;
+	border: var(--box-crisp);;
 }
 
 .modal-items button {
@@ -533,7 +533,7 @@ nav [navobj] {
 	cursor: pointer;
 	border-radius: var(--siz-radius1);
 	width: 100%;
-	border: 1px solid #78787840;
+	border: var(--box-crisp);;
 }
 
 .modal-items button:focus {
@@ -1077,11 +1077,11 @@ input#novamenusearchinp {
 .novamenusearchinpbtn {
 	display: flex !important;
 	flex-direction: row;
-	background: var(--col-bg3);
-	padding: 1px 7px !important;
-	height: 27px;
-	border-radius: var(--siz-radius1) !important;
+	background: var(--col-bg2);
+	border-radius: var(--siz-radius2);
 	gap: 0.3rem;
+	padding: 1px 5px;
+	border: var(--box-crisp);
 }
 
 #searchiconthingy {
@@ -1106,17 +1106,25 @@ input#novamenusearchinp {
 
 #bobthedropdown {
 	visibility: visible;
-	display: flex;
-	background: var(--col-bg2);
-	padding: 1px 3px;
-	border-radius: var(--siz-radius1);
-	height: 34px;
+    display: flex
+;
+    flex-direction: row;
 	width: 100%;
+	gap: .5em;
+
+	&>.toolspart {
+	display: flex;
+	flex: 1;
+	padding: 1px 3px;
 	justify-content: flex-start;
 	align-items: center;
 	flex-direction: row;
 	flex-wrap: nowrap;
 	gap: 5px;
+	background-color: var(--col-bg2);
+	border-radius: var(--siz-radius2);
+	border: var(--box-crisp);
+	}
 }
 
 #bobthedropdown button {
@@ -1224,7 +1232,7 @@ input#novamenusearchinp {
 	display: none;
 	animation: notifpull var(----time1);
 	cursor: pointer;
-	border: 1px solid #7a7a7a4a;
+	border: var(--box-crisp);
 }
 
 @keyframes notifpull {
@@ -1623,7 +1631,7 @@ dialog#terminal {
 }
 
 .searchinputcont {
-	border-radius: var(--siz-radius1);
+	border-radius: var(--siz-radius2);
 	background: var(--col-bg2);
 	color: inherit;
 	display: flex;
@@ -1662,7 +1670,7 @@ dialog#terminal {
 	align-items: center;
 	justify-content: flex-start;
 	transition: 0.3s;
-	border-radius: var(--siz-radius1);
+	border-radius: var(--siz-radius2);
 	margin-left: 0.7rem;
 	background: linear-gradient(90deg, #00000021 0%, transparent 30%);
 	height: 100%;
@@ -1685,7 +1693,7 @@ dialog#terminal {
 	padding: 0.3rem 0.7rem;
 	border: none;
 	box-shadow: 0 2px 0.3rem #02020242;
-	border-radius: var(--siz-radius1);
+	border-radius: var(--siz-radius2);
 	cursor: pointer;
 	display: block;
 	margin: auto;
@@ -2109,19 +2117,6 @@ div#seapppreview {
 	justify-content: center;
 }
 
-.bsod {
-
-	button {
-		background: #2f425b;
-		margin-right: 0.3rem;
-		border: none;
-		border-radius: var(--siz-radius1);
-		padding: 0.5rem var(--sizing-normal);
-		font-size: var(--font-size-normal);
-		color: var(--col-txt1);
-	}
-}
-
 .loginscontain {
 	display: flex;
 	flex-direction: column;
@@ -2512,7 +2507,7 @@ div#toasticon {
 	background: var(--col-bg2);
 	padding: 3px;
 	border-radius: 10px;
-	border: 1px solid #7a7a7a4a;
+	border: var(--box-crisp);
 }
 
 #notification .wincl:hover {
@@ -2549,7 +2544,7 @@ div#toasticon {
 	margin-top: 1em;
 	max-height: 300px;
 	overflow: hidden auto;
-	border: 1px solid #7a7a7a4a;
+	border: var(--box-crisp);
 	border-radius: var(--siz-radius1);
 	padding: 0;
 	display: flex;

@@ -108,7 +108,7 @@ async function buildIframeApiBridge(appid, title, winuid, perms) {
 
         const confirmed = await justConfirm(
             `Allow ${namespace} permission?`,
-            `${toTitleCase(basename(title))} asks permission to ${describeNamespaces(namespace)}. Allow it?`
+            `${toTitleCase(await getFileNameByID(appid))} asks permission to ${describeNamespaces(namespace)}. Allow it?`
         );
         if (confirmed) {
             perms.push(namespace);
