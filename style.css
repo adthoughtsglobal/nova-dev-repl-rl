@@ -373,6 +373,11 @@ nav [navobj] {
 	padding-bottom: 1.2rem;
 	background-color: var(--col-bg1);
 	border: 1px solid #ffffff0c;
+
+	& h1 {
+    font-weight: normal;
+    opacity: .7;
+}
 }
 
 #searchwindow {
