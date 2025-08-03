@@ -2110,8 +2110,10 @@
 
 				if (data.opener === 'showFile') {
 					initializeFilesApp(data.id ?? false, "showFile");
+				document.getElementById("choosefile").style.display = "none";
 				} else if (data.opener === 'showDir') {
 					initializeFilesApp(data.path ?? false, "showDir");
+				document.getElementById("choosefile").style.display = "none";
 				} else {
 					initializeFilesApp(data.dir ?? false);
 				}

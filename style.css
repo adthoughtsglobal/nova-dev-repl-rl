@@ -390,6 +390,8 @@ nav [navobj] {
 .appdmodestuff {
 	display: flex;
 	flex-direction: column;
+    height: 100%;
+    justify-content: space-between;
 }
 
 .strtsearcont {
@@ -674,9 +676,7 @@ nav [navobj] {
 	overflow-y: auto;
 	text-align: left;
 	display: grid;
-	flex: 1;
 	width: calc(100% - 1rem);
-	margin: auto;
 	grid-template-columns: repeat(auto-fill, minmax(80px, 85px));
 	justify-items: center;
 	justify-content: space-around;
@@ -1526,6 +1526,8 @@ dialog#terminal {
 	display: flex;
 	flex-direction: row;
 	flex-wrap: nowrap;
+	aspect-ratio: 9/6;
+	width: 100%;
 }
 
 .searchside {
