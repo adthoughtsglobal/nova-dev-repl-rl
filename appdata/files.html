@@ -678,15 +678,16 @@
 		}
 
 		.thisfolderisempty {
-    margin: 2em auto;
-    opacity: .5;
-	font-size: small;
-	width: 8em;
-	&>svg {
-		width: 3em;
-		height: 3em;
-	} 
-}
+			margin: 2em auto;
+			opacity: .5;
+			font-size: small;
+			width: 8em;
+
+			&>svg {
+				width: 3em;
+				height: 3em;
+			}
+		}
 
 		#choosefile {
 			display: flex;
@@ -1264,6 +1265,8 @@
 				if (method == "showFile") {
 					currentPath = (await ntxSession.send("fileGet.byId", defaultopenfold)).path;
 					fileToSelect = defaultopenfold;
+				} else if (method == "showDir") {
+					currentPath = defaultopenfold;
 				} else if (defaultopenfold) {
 					currentPath = defaultopenfold;
 				}
@@ -1613,7 +1616,7 @@
 				timeSmall.textContent = '>';
 				timeSmall.title = 'Open folder';
 			} else {
-				timeSmall.textContent = window.parent.timeAgo(file?.metadata.datetime );
+				timeSmall.textContent = window.parent.timeAgo(file?.metadata.datetime);
 				timeSmall.title = 'File';
 			}
 
@@ -2084,11 +2087,15 @@
 			const data = myWindow?.params?.data;
 			document.getElementById("dirviewbtn").innerText = window.parent.CurrentUsername;
 			if (data?.opener) {
+				console.log(909090, data)
 				sessionreturnreqid = myWindow.params.trid;
 				sessiontype = data.opener === 'showFile' ? 'showFile' : 'opener';
 				switch (data.opener) {
 					case "showFile":
 						sessiontype = "showFile"
+						break;
+					case "showDir":
+						sessiontype = "showDir"
 						break;
 					case "opener":
 						sessiontype = "opener"
@@ -2103,6 +2110,8 @@
 
 				if (data.opener === 'showFile') {
 					initializeFilesApp(data.id ?? false, "showFile");
+				} else if (data.opener === 'showDir') {
+					initializeFilesApp(data.path ?? false, "showDir");
 				} else {
 					initializeFilesApp(data.dir ?? false);
 				}

@@ -381,7 +381,6 @@ nav [navobj] {
 	background-color: var(--col-bg1);
 	border: 1px solid #ffffff0c;
 	padding-bottom: 9px;
-	min-height: 300px;
 }
 
 #appdmod::backdrop {
@@ -615,7 +614,7 @@ nav [navobj] {
 	padding-right: 5px;
 	gap: 3px;
 	flex-direction: column;
-	min-height: fit-content;
+	height: auto;
 
 	& svg {
 		width: 17px;
@@ -631,6 +630,9 @@ nav [navobj] {
 		border-radius: var(--siz-radius1);
 		align-items: center;
 		cursor: pointer;
+		
+   flex-grow: 0; /* Prevent expansion */
+   flex-shrink: 0; /* Prevent shrinking */
 
 		&:hover {
 			background-color: var(--col-bg2);
@@ -1520,7 +1522,6 @@ dialog#terminal {
 }
 
 .searchwincont {
-	height: calc(300px);
 	box-sizing: border-box;
 	display: flex;
 	flex-direction: row;

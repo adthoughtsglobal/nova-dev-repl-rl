@@ -1336,7 +1336,7 @@ async function prepareArrayToSearch() {
 				arrayToSearch.push({ name: displayName, id: item.id, type: "file", path: folderPath });
 			} else {
 				let folderId = folderContents[name]._id || fullPath;
-				arrayToSearch.push({ name, id: folderId, type: "folder", path: folderPath });
+				arrayToSearch.push({ name, id: folderId, type: "folder", path: fullPath });
 				scanFolder(fullPath, item);
 			}
 		}
@@ -1368,6 +1368,7 @@ async function rlstrtappse(event) {
 			itemsWithSimilarity.push({ item, similarity });
 		}
 	});
+
 	if (event.key === "Enter") {
 		event.preventDefault();
 		if (searchValue === "i love nova") {
@@ -1377,10 +1378,15 @@ async function rlstrtappse(event) {
 			return;
 		}
 		if (appToOpen) {
-			openfile(appToOpen.id);
+			if (appToOpen.type === 'folder') {
+				useHandler('file_manager', { 'opener': 'showDir', 'path': appToOpen.path });
+			} else {
+				openfile(appToOpen.id);
+			}
 		}
 		return;
 	}
+
 	itemsWithSimilarity.sort((a, b) => b.similarity - a.similarity);
 	const groupedResults = itemsWithSimilarity.reduce((acc, { item }) => {
 		const path = item.path || '';
@@ -1388,28 +1394,37 @@ async function rlstrtappse(event) {
 		acc[path].push(item);
 		return acc;
 	}, {});
+
 	gid("strtappsugs").innerHTML = "";
 	let elements = 0;
 	for (const path in groupedResults) {
 		const items = groupedResults[path];
 		if (path.length > 0) {
-
 			const pathElement = document.createElement("div");
 			pathElement.innerHTML = `<strong>${path}</strong>`;
 			gid("strtappsugs").appendChild(pathElement);
 		}
+
 		for (const item of items) {
 			if (!mostRelevantItem) mostRelevantItem = item;
 			const newElement = document.createElement("div");
-			if (item.type == "folder")
+
+			let icon;
+			if (item.type == "folder") {
 				icon = await getAppIcon('folder');
-			else
+				newElement.innerHTML = `<div>${icon} ${item.path}</div><span class="material-symbols-rounded">arrow_outward</span>`;
+				newElement.onclick = () => useHandler('file_manager', { 'opener': 'showDir', 'path': item.path });
+			} else {
 				icon = await getAppIcon(0, item.id);
-			newElement.innerHTML = `<div onclick="openfile('${item.id}')">${icon} ${item.name}</div><span class="material-symbols-rounded">arrow_outward</span>`;
+				newElement.innerHTML = `<div>${icon} ${item.name}</div><span class="material-symbols-rounded">arrow_outward</span>`;
+				newElement.onclick = () => openfile(item.id);
+			}
+
 			gid("strtappsugs").appendChild(newElement);
 			elements++;
 		}
 	}
+
 	gid("strtappsugs").style.display = "flex";
 	if (mostRelevantItem) {
 		gid("partrecentapps").style.display = "none";
@@ -1418,15 +1433,21 @@ async function rlstrtappse(event) {
 		gid('seprw-icon').innerHTML = await getAppIcon(0, mostRelevantItem.id);
 		gid('seprw-appname').innerText = mostRelevantItem.name;
 		gid('seprw-openb').onclick = function () {
-			openfile(mostRelevantItem.id);
+			if (mostRelevantItem.type === 'folder') {
+				useHandler('file_manager', { 'opener': 'showDir', 'path': mostRelevantItem.path });
+			} else {
+				openfile(mostRelevantItem.id);
+			}
 		};
 	} else {
 		gid("partrecentapps").style.display = "block";
 		gid("seapppreview").style.display = "none";
 	}
+
 	if (elements == 0) {
 		gid("strtappsugs").innerHTML = `<p style="margin:1rem; opacity: 0.5;">No results</p>`;
 	}
+
 }
 
 function calculateSimilarity(string1, string2) {
