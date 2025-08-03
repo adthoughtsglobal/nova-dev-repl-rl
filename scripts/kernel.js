@@ -627,7 +627,7 @@ async function safeRemoveApp(id) {
     try {
         await remSettingKey(id, "AppRegistry.json");
         let settingid = handlers["content_store"];
-        await remSettingKey(id, settingid);
+        await remSettingKey(id, settingid + ".json");
         return true;
     } catch (error) {
         console.error("Error removing app:", error);

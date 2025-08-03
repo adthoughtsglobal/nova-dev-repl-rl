@@ -656,9 +656,9 @@ var content;
 function putwinontop(x) {
 	Object.keys(winds).forEach(wid => {
 		if (gid(`window${wid}`).style.zIndex)
-		winds[wid].zIndex = Number(gid(`window${wid}`).style.zIndex || 0);
-	else 
-		return;
+			winds[wid].zIndex = Number(gid(`window${wid}`).style.zIndex || 0);
+		else
+			return;
 	});
 
 	if (Object.keys(winds).length > 1) {
@@ -931,6 +931,15 @@ async function cleanupInvalidAssociations() {
 
 	if (associationsChanged) {
 		await setSetting('fileTypeAssociations', fileTypeAssociations);
+	}
+
+	let registry = await getSetting('full', "AppRegistry.json");
+
+	for (let key in registry) {
+		if (!await window.parent.getFileNameByID(key)) {
+			window.parent.remSettingKey(key, "AppRegistry.json")
+			continue;
+		}
 	}
 }
 
@@ -1316,33 +1325,28 @@ async function installdefaultapps() {
 		}
 	});
 }
-
 async function prepareArrayToSearch() {
 	let arrayToSearch = [];
 	function scanFolder(folderPath, folderContents) {
 		for (let name in folderContents) {
-			let fullPath = `${folderPath}${name}`;
 			let item = folderContents[name];
+			let fullPath = `${folderPath}${name}/`;
 			if (item.id) {
-				if (mtpetxt(name) == "app") {
-					name = basename(name)
-				}
-				arrayToSearch.push({ name, id: item.id, type: "file", path: folderPath });
+				let displayName = mtpetxt(name) == "app" ? basename(name) : name;
+				arrayToSearch.push({ name: displayName, id: item.id, type: "file", path: folderPath });
 			} else {
-				arrayToSearch.push({ name: name, type: "folder", path: folderPath });
+				let folderId = folderContents[name]._id || fullPath;
+				arrayToSearch.push({ name, id: folderId, type: "folder", path: folderPath });
 				scanFolder(fullPath, item);
 			}
 		}
 	}
-	for (const folder in memory["root"]) {
-		scanFolder(folder, memory["root"][folder]);
-	}
+		scanFolder("", memory["root"]);
 	fileslist = arrayToSearch;
 }
+
 async function strtappse(event) {
-	if (fileslist.length === 0) {
-		await prepareArrayToSearch();
-	}
+	if (fileslist.length === 0) await prepareArrayToSearch();
 	const searchValue = gid("strtsear").value.toLowerCase().trim();
 	if (searchValue === "") return;
 	const abracadra = await getSetting("smartsearch");
@@ -1352,18 +1356,14 @@ async function strtappse(event) {
 	const itemsWithSimilarity = [];
 	fileslist.forEach(item => {
 		const itemName = item.name.toLowerCase();
-		if (item.type !== "folder") {
-			let similarity = abracadra ? calculateSimilarity(itemName, searchValue) : 0;
-			if (!abracadra && itemName.startsWith(searchValue)) {
-				similarity = 1;
-			}
-			if (similarity > maxSimilarity) {
-				maxSimilarity = similarity;
-				appToOpen = item;
-			}
-			if (similarity >= 0.2) {
-				itemsWithSimilarity.push({ item, similarity });
-			}
+		let similarity = abracadra ? calculateSimilarity(itemName, searchValue) : 0;
+		if (!abracadra && itemName.startsWith(searchValue)) similarity = 1;
+		if (similarity > maxSimilarity) {
+			maxSimilarity = similarity;
+			appToOpen = item;
+		}
+		if (similarity >= 0.2) {
+			itemsWithSimilarity.push({ item, similarity });
 		}
 	});
 	if (event.key === "Enter") {
@@ -1372,17 +1372,6 @@ async function strtappse(event) {
 			closeElementedis(gid("searchwindow"));
 			let x = await ask("What can i call you?");
 			say("i love you too, " + x);
-			let y = await justConfirm("wanna tell me why? ", "I'd love to hear it...");
-			if (y) {
-				let z = await ask("All ears! (shared with Nova Developers)");
-				try {
-					gtag('event', 'exception', {
-						'name': x,
-						'description': z,
-						'fatal': false
-					});
-				} catch { }
-			}
 			return;
 		}
 		if (appToOpen) {
@@ -1397,22 +1386,28 @@ async function strtappse(event) {
 		acc[path].push(item);
 		return acc;
 	}, {});
-
 	gid("strtappsugs").innerHTML = "";
 	let elements = 0;
-	Object.keys(groupedResults).forEach(path => {
+	for (const path in groupedResults) {
 		const items = groupedResults[path];
+		if (path.length >0) {
+
 		const pathElement = document.createElement("div");
 		pathElement.innerHTML = `<strong>${path}</strong>`;
 		gid("strtappsugs").appendChild(pathElement);
-		items.forEach(async item => {
+		}
+		for (const item of items) {
 			if (!mostRelevantItem) mostRelevantItem = item;
 			const newElement = document.createElement("div");
-			newElement.innerHTML = `<div onclick="openfile('${item.id}')">${(await getAppIcon(0, item.id))} ${item.name}</div><span class="material-symbols-rounded">arrow_outward</span>`;
+			if (item.type == "folder")
+				icon = await getAppIcon(0, item.id);
+			else
+				icon = await getAppIcon(0, item.id);
+			newElement.innerHTML = `<div onclick="openfile('${item.id}')">${icon} ${item.name}</div><span class="material-symbols-rounded">arrow_outward</span>`;
 			gid("strtappsugs").appendChild(newElement);
 			elements++;
-		});
-	});
+		}
+	}
 	gid("strtappsugs").style.display = "flex";
 	if (mostRelevantItem) {
 		gid("partrecentapps").style.display = "none";
@@ -1423,15 +1418,15 @@ async function strtappse(event) {
 		gid('seprw-openb').onclick = function () {
 			openfile(mostRelevantItem.id);
 		};
-
 	} else {
 		gid("partrecentapps").style.display = "block";
 		gid("seapppreview").style.display = "none";
 	}
 	if (elements == 0) {
-		gid("strtappsugs").innerHTML = `<p style="margin:1rem; opacity: 0.5;">No results</p>`
+		gid("strtappsugs").innerHTML = `<p style="margin:1rem; opacity: 0.5;">No results</p>`;
 	}
 }
+
 function calculateSimilarity(string1, string2) {
 	const m = string1.length;
 	const n = string2.length;

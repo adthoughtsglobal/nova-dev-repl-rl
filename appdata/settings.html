@@ -1550,6 +1550,12 @@
 			& .appname {
 				font-size: 1.5em;
 			}
+			
+			& .app_risk {
+				opacity: .5;
+				font-size: small;
+				user-select: text;
+			}
 
 			& .app_options {
 				padding: 1em;
@@ -2683,21 +2689,6 @@
 		<div id="apps" class="tabcontent">
 			<h1>Installed Apps</h1>
 			<div id="appslist">
-				<div class="singular_app">
-					<div class="app_left">
-						<div class="app_icon"></div>
-						<div class="app_detail">
-							<div class="app_name">Settings</div>
-							<div class="app_risk">Very risky</div>
-						</div>
-					</div>
-
-					<div class="app_options">
-						<span class="material-symbols-rounded">
-							more_vert
-						</span>
-					</div>
-				</div>
 			</div>
 			<h1>Default apps</h1>
 			<segr>
@@ -2722,7 +2713,6 @@
 					appslist.innerHTML = "";
 
 					for (let key in registry) {
-
 						let perms = registry[key].perms || [];
 						let riskLevel = perms.length + " permissions";
 						if (perms.includes("unsandboxed")) {
@@ -2763,18 +2753,19 @@
 					let name = await window.parent.getFileNameByID(appID);
 
 					document.querySelector("#big_app_card .app_icon").innerHTML = icon;
+					document.querySelector("#big_app_card .app_risk").textContent = "ID: "+appID;
 					document.querySelector("#big_app_card .appname").textContent = name;
 					document.querySelector("#app_setting_nav").textContent = name;
 
-					document.querySelectorAll('.appInfoMngBtns')[0].querySelector('button').onclick = function () {
+					document.querySelectorAll('.appInfoMngBtns')[0].onclick = function () {
 						window.parent.remfile(appID);
 					};
 
-					document.querySelectorAll('.appInfoMngBtns')[1].querySelector('button').onclick = function () {
+					document.querySelectorAll('.appInfoMngBtns')[1].onclick = function () {
 						window.parent.extractAndRegisterCapabilities(appID);
 					};
 
-					document.querySelectorAll('.appInfoMngBtns')[2].querySelector('button').onclick = async function () {
+					document.querySelectorAll('.appInfoMngBtns')[2].onclick = async function () {
 						await ntxSession.send("olp.useHandler", "text_editor", appID);
 					};
 
@@ -2858,6 +2849,7 @@
 						<div class="app_icon"></div>
 						<div class="appdets">
 							<div class="appname">App</div>
+            <div class="app_risk">Installed</div>
 						</div>
 						<span id="openappwindowbtn" class="app_options material-symbols-rounded">
 							open_in_new

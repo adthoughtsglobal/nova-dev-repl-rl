@@ -607,11 +607,6 @@
 			transform: scale(1.2) translate(1px, 1px);
 		}
 
-		[flap-files] svg.thisfolderisempty {
-			margin-bottom: 1rem;
-			height: 50px;
-		}
-
 		[flap-files] .file svg {
 			object-fit: contain;
 			aspect-ratio: 1/1;
@@ -683,10 +678,15 @@
 		}
 
 		.thisfolderisempty {
-			padding-top: 3rem;
-			opacity: 0.5;
-			scale: 0.7;
-		}
+    margin: 2em auto;
+    opacity: .5;
+	font-size: small;
+	width: 8em;
+	&>svg {
+		width: 3em;
+		height: 3em;
+	} 
+}
 
 		#choosefile {
 			display: flex;
