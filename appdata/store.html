@@ -1647,7 +1647,9 @@
 		async function greenflag() {
 			const data = myWindow?.params?.data?.opener;
 
+			prepareAppData();
 			if (data == 'themes') {
+				loadThemes();
 				openCity(event, 'themes');
 				document.body.classList.remove("initloadin");
 				return;
