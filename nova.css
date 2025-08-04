@@ -47,9 +47,10 @@
     height: .5em;
 }
 
-::-webkit-scrollbar-track {
-	background: var(--col-bg1);
-	width: 5px;
+::-webkit-scrollbar-track {    
+	background: var(--col-bg2);
+    width: 5px;
+    border-radius: var(--siz-radius1);
 }
 
 ::-webkit-scrollbar-thumb {
