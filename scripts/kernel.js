@@ -187,8 +187,6 @@ async function buildIframeApiBridge(appid, title, winuid, perms) {
             winds[winuid].zIndex = targetWindow.style.zIndex;
         } else if (event.data.transactionId && event.data.action) {
             handleNtxSessionMessage(event);
-        } else if (event.data.isEventBus && event.data.type) {
-            eventBusWorker.deliver(event.data);
         }
     }
 
@@ -267,15 +265,6 @@ class NTXSession {
             window.parent.postMessage({ transactionId: txnId, action: action, params: params, iframeId: '${winuid}' }, "*");
         });
     }
-    eventBus = {
-        send: (type, detail) => {
-            window.parent.postMessage({ type: type, detail: detail, isEventBus: true, iframeId: '${winuid}' }, "*");
-        },
-        listen: (type, callback) => {
-            if (!this.listeners[type]) this.listeners[type] = [];
-            this.listeners[type].push(callback);
-        }
-    };
 }
 var ntxSession = new NTXSession();
 </script>`;
@@ -431,26 +420,37 @@ class NTXSession {
             }, "*");
         });
     }
-
-    eventBus = {
-        send: (type, detail) => {
-            window.parent.postMessage({
-                type: type,
-                detail: detail,
-                isEventBus: true,
-                iframeId: '${winuid}'
-            }, "*");
-        },
-        listen: (type, callback) => {
-            if (!this.listeners[type]) {
-                this.listeners[type] = [];
-            }
-            this.listeners[type].push(callback);
-        }
-    };
 }
 
 var ntxSession = new NTXSession();
+
+const eventBus = (() => {
+    const listeners = [];
+
+    function deliver(msg) {
+        if (typeof msg !== 'object' || !msg.type || !msg.event) return;
+        window.parent.postMessage({ __eventBus: true, payload: msg }, '*');
+    }
+
+    function listen({ type = '*', event = '*', callback }) {
+        listeners.push({ type, event, callback });
+    }
+
+    window.addEventListener('message', e => {
+        const { data } = e;
+        if (!data || !data.__eventBus || !data.payload) return;
+
+        const msg = data.payload;
+        listeners.forEach(({ type, event, callback }) => {
+            if ((type === msg.type || type === '*') && (event === msg.event || event === '*')) {
+                callback(msg);
+            }
+        });
+    });
+
+    return { deliver, listen };
+})();
+
 </script>
 `;
 
@@ -478,16 +478,9 @@ async function loadIframe(windowContent, windowLoader, loaderSpinner, cont, appi
     }
     iframe.src = blobURL;
     iframe.onload = async () => {
-        const myWindowData = { appID: appid, windowID: winuid, eventBusURL, setTitle: "later", ...(params && { params }) };
+        const myWindowData = { appID: appid, windowID: winuid, setTitle: "later", ...(params && { params }) };
         iframe.contentWindow.postMessage({ type: "myWindow", data: myWindowData }, "*");
         await buildIframeApiBridge(appid, title, winuid, registry.perms);
-
-        eventBusWorkerE.addEventListener('message', (event) => {
-            const { type, detail } = event.data;
-            if (type) {
-                iframe.contentWindow.postMessage({ type, payload: detail }, '*');
-            }
-        });
     };
 
     windowContent.appendChild(iframe);
@@ -535,34 +528,35 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
     attachResizeHandlers(windowDiv);
 }
 
-async function openapp(x, od, customtodo, headless = false) {
+async function openapp(x, external, customtodo, headless = false) {
     if (gid('appdmod').open) gid('appdmod').close();
     if (gid('searchwindow').open) gid('searchwindow').close();
 
     const fetchDataAndSave = async (x) => {
         try {
-            var y;
-            if (od == 1) {
-                y = await fetchData("appdata/" + x + ".html");
-                if (y.startsWith("App Launcher: CRITICAL ERR")) {
-                    y = null;
-                    await normieprocess();
+            var AppContent;
+            if (external == 1) {
+                AppContent = await fetchData("appdata/" + x + ".html");
+                if (AppContent == null) {
                     return;
                 } else {
-                    od = await createFile("Apps/", toTitleCase(x), "app", y);
+                    external = await createFile("Apps/", toTitleCase(x), "app", AppContent);
+                    console.log(342, await getFileById(external))
                 }
             } else {
                 await normieprocess();
             }
             async function normieprocess() {
-                y = await getFileById(od);
-                if (!x) { x = y.fileName }
-                y = y.content;
+                AppContent = await getFileById(external);
+                if (!x) { x = AppContent.fileName }
+                AppContent = AppContent.content;
             }
 
             if (headless) {
                 if (Gtodo == null && customtodo) Gtodo = customtodo;
-                await openwindow("headless_373452343985$#%", y, await getAppIcon(0, od) || defaultAppIcon, getAppTheme(y), getAppAspectRatio(y), od, customtodo);
+                let appIcon = 0;
+                try { appIcon = await getAppIcon(external); } catch (e) { };
+                await openwindow("Running...", AppContent, appIcon, getAppTheme(AppContent), getAppAspectRatio(AppContent), external, customtodo);
                 gid("window" + Object.keys(winds).pop()).style.display = "none";
                 Gtodo = null;
                 return;
@@ -571,7 +565,9 @@ async function openapp(x, od, customtodo, headless = false) {
 
             if (Gtodo == null && customtodo) Gtodo = customtodo;
 
-            openwindow(x, y, await getAppIcon(0, od) || defaultAppIcon, getAppTheme(y), getAppAspectRatio(y), od, Gtodo);
+            let appIcon = defaultAppIcon;
+            try { appIcon = await getAppIcon(external); } catch (e) { };
+            openwindow(x, AppContent, appIcon, getAppTheme(AppContent), getAppAspectRatio(AppContent), external, Gtodo);
             Gtodo = null;
         } catch (error) {
             console.error("Error fetching data:", error);

@@ -5,111 +5,43 @@ const encoder = new TextEncoder();
 const decoder = new TextDecoder();
 var lethalpasswordtimes = true;
 
-// event bus
-const eventBusBlob = new Blob([`
-    
-    const eventBus = new EventTarget();
-    const listeners = new Map();
-    self.addEventListener('message', (e) => {
-    const { type, event: evt, key, id, action } = e.data;
+const eventBusWorker = (() => {
+    const listeners = [];
 
-    if (action === 'addListener') {
-        const handler = (e) => {
-            self.postMessage({
-                type: e.type,
-                detail: e.detail,
-            });
-        };
-        listeners.set(id, { type, handler });
-        eventBus.addEventListener(type, handler);
-    } else if (action === 'removeListener') {
-        const listener = listeners.get(id);
-        if (listener) {
-            eventBus.removeEventListener(listener.type, listener.handler);
-            listeners.delete(id);
-        }
-    } else {
-        eventBus.dispatchEvent(
-    new CustomEvent(type, {
-        detail: { ...e.data } // Spread all properties from e.data
-    })
-);
+    function deliver(msg, sourceWindow = null) {
+        if (typeof msg !== 'object' || !msg.type || !msg.event) return;
+
+        listeners.forEach(({ type, event, callback }) => {
+            if ((type === msg.type || type === '*') && (event === msg.event || event === '*')) {
+                callback(msg);
+            }
+        });
+
+        broadcastToIframes(msg, sourceWindow);
     }
-});`
-], { type: 'application/javascript' });
 
-const eventBusURL = URL.createObjectURL(eventBusBlob);
-const eventBusWorkerE = new Worker(eventBusURL);
-const eventBusWorker = {
-    handlers: new Map(),
-    deliver: (message) => {
-        const id = message.id || Date.now().toString(36) + Math.random().toString(36).slice(2);
-        eventBusWorkerE.postMessage({ ...message, id });
-    },
-    listen: (type, handler, initiator) => {
-        const id = Date.now().toString(36) + Math.random().toString(36).slice(2);
-        const cleanup = () => {
-            eventBusWorkerE.postMessage({ action: 'removeListener', id });
-            eventBusWorker.handlers.delete(id);
-        };
+    function listen({ type = '*', event = '*', callback }) {
+        listeners.push({ type, event, callback });
+    }
 
-        const listener = (event) => {
-            const { type: eventType, detail, action, id: msgId } = event.data;
-
-            if (action === 'removeListener') {
-                eventBusWorker.handlers.delete(msgId);
-                return;
+    function broadcastToIframes(msg, sourceWindow) {
+        const iframes = document.querySelectorAll('iframe');
+        iframes.forEach(iframe => {
+            if (iframe.contentWindow !== sourceWindow) {
+                iframe.contentWindow.postMessage({ __eventBus: true, payload: msg }, '*');
             }
+        });
+    }
 
-            if (action === 'addListener') {
-                return;
-            }
-
-            for (const [handlerId, entry] of eventBusWorker.handlers.entries()) {
-                if (eventType === entry.type) {
-                    entry.handler(detail);
-                }
-            }
-        };
-
-        eventBusWorkerE.addEventListener('message', listener);
-        eventBusWorkerE.postMessage({ action: 'addListener', type, id });
-        eventBusWorker.handlers.set(id, { type, handler });
-
-        if (initiator instanceof Node) {
-            const observer = new MutationObserver(() => {
-                if (!document.body.contains(initiator)) {
-                    cleanup();
-                    observer.disconnect();
-                }
-            });
-            observer.observe(document.body, { childList: true, subtree: true });
-        }
-
-        return cleanup;
-    },
-};
-
-if (!window._workerForwarderAttached) {
-    eventBusWorkerE.addEventListener('message', (event) => {
-        const { type, detail } = event.data;
-        if (!type) return;
-
-        for (const [id, iframeWindow] of Object.entries(iframeReferences)) {
-            try {
-                iframeWindow.postMessage({
-                    type,
-                    payload: detail
-                }, '*');
-            } catch (e) {
-                console.warn(`iframe ${id} seems dead`, e);
-                delete iframeReferences[id];
-            }
-        }
-
+    window.addEventListener('message', e => {
+        const { data, source } = e;
+        if (!data || !data.__eventBus || !data.payload) return;
+        deliver(data.payload, source);
     });
-    window._workerForwarderAttached = true;
-}
+
+    return { deliver, listen };
+})();
+
 
 // database functions
 
@@ -653,7 +585,7 @@ async function resetSettings(fileName = "preferences.json", dirPath = "System/")
             await ctntMgr.set(fileContent.id, resetBase64Data);
 
             await setdb(`reset settings in ${fileName}`);
-            eventBusWorksettingser.deliver({
+            eventBusWorker.deliver({
                 type: "settings",
                 event: "reset",
                 file: fileName

@@ -648,7 +648,7 @@ async function fetchData(url) {
 		return data;
 	} catch (error) {
 		console.error("Error fetching data:", error.message);
-		const data = "App Launcher: CRITICAL ERROR<br><br><sup>" + error.message + "</sup>";
+		const data = null;
 		return data;
 	}
 }
