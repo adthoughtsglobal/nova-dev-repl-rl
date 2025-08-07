@@ -206,18 +206,20 @@ document.addEventListener('mousedown', () => {
     window.parent.postMessage({ type: 'iframeClick', iframeId: '${winuid}' }, '*');
 });
 var myWindow = {};
-window.addEventListener("message", async e => {
+window.addEventListener("message", async (e) => {
+    console.log(888, e);
     if (e.data.type === "myWindow") {
-        myWindow = {
-            ...e.data.data,
-            close: () => ntxSession.send("sysUI.clwin", myWindow.windowID),
-            setTitle: (e) => ntxSession.send("sysUI.setTitle", myWindow.windowID, e)
-        };
+    console.log(889, e.data);
         try {
             await onStartup();
             setTimeout(() => myWindow.close(), 1000);
 
         } catch (t) {}
+        myWindow = {
+            ...e.data.data,
+            close: () => ntxSession.send("sysUI.clwin", myWindow.windowID),
+            setTitle: (e) => ntxSession.send("sysUI.setTitle", myWindow.windowID, e)
+        };
         window.parent.postMessage({ data: "gfdone", iframeId: myWindow.windowID }, "*");
     }
 });
@@ -478,6 +480,7 @@ async function loadIframe(windowContent, windowLoader, loaderSpinner, cont, appi
     }
     iframe.src = blobURL;
     iframe.onload = async () => {
+        console.log(340993)
         const myWindowData = { appID: appid, windowID: winuid, setTitle: "later", ...(params && { params }) };
         iframe.contentWindow.postMessage({ type: "myWindow", data: myWindowData }, "*");
         await buildIframeApiBridge(appid, title, winuid, registry.perms);

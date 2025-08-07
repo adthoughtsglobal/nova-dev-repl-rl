@@ -1705,10 +1705,11 @@
 				if (localVer != onlineVer) count++;
 			}
 
+			let tbupcontr = document.getElementsByClassName("tobeupdatedcounter")[0];
 			if (count)
 				document.getElementById("tobeupdatedalert").innerText = count;
 			else
-				document.getElementsByClassName("tobeupdatedcounter")[0].remove();
+				(tbupcontr)? tbupcontr.remove(): false;
 		}
 
 		async function loadMyApps() {
@@ -1933,15 +1934,20 @@
 		}
 
 		async function onStartup() {
+				console.log("ahfter")
 			const lastCheckData = await ntxSession.send("appStorage.get", "lastCheck");
 			const lastCheck = lastCheckData || 0;
 
 			if (Date.now() - lastCheck > 300000) {
-				checkUpdatesHeadless();
-				await ntxSession.send("appStorage.set", "lastCheck", Date.now());
+				ntxSession.send("appStorage.set", "lastCheck", Date.now());
+				console.log("befef")
+				await checkUpdatesHeadless();
+				console.log("ahfter")
+				
 			} else {
 				console.log(404)
 			}
+			myWindow.close();
 		}
 
 
