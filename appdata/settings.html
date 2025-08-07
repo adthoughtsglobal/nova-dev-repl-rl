@@ -2970,8 +2970,8 @@
 					</div>
 				</segr>
 				<script>
-					function loginOnceRotur() {
-						window.parent.setuprotur();
+					async function loginOnceRotur() {
+						await window.parent.setuprotur();
 						window.parent.roturExtension.login_prompt({ STYLE_URL: "http://127.0.0.1:3000//libs/roturstyle.css" });
 					}
 					async function signoutrtrsets() {

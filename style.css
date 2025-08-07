@@ -1369,7 +1369,7 @@ codeblock {
 	height: 39px;
 	width: 39px;
 	aspect-ratio: 1 / 1;
-    overflow: hidden;
+    overflow: visible;
 }
 
 .adock .tooltiptext {

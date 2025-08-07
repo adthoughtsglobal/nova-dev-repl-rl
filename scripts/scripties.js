@@ -147,7 +147,6 @@ async function qsetsRefresh() {
 }
 
 async function setuprotur() {
-	roturExtension = new RoturExtension();
 	if (roturExtension.is_connected) {
 		return true;
 	}
