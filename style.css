@@ -1245,7 +1245,7 @@ input#novamenusearchinp {
 @keyframes notifpull {
 	from {
 		opacity: 0;
-		transform: translateY(50px);
+		transform: translateY(25px);
 	}
 
 	to {
@@ -2421,7 +2421,7 @@ div#toasticon {
 }
 
 .notifpullanim {
-	animation: notifpull .2s;
+	animation: notifpull var(--time2);
 }
 
 @keyframes slideInTop {

@@ -566,7 +566,7 @@ async function openapp(x, external, customtodo, headless = false) {
             if (Gtodo == null && customtodo) Gtodo = customtodo;
 
             let appIcon = defaultAppIcon;
-            try { appIcon = await getAppIcon(external); } catch (e) { };
+            try { appIcon = await getAppIcon(0, external); } catch (e) { };
             openwindow(x, AppContent, appIcon, getAppTheme(AppContent), getAppAspectRatio(AppContent), external, Gtodo);
             Gtodo = null;
         } catch (error) {
