@@ -122,6 +122,7 @@
 			.singular_ad {
 				flex-direction: column;
 			}
+
 			.tab .btnlike {
 				width: 38px;
 			}
@@ -949,15 +950,16 @@
 		}
 
 		.thisfolderisempty {
-    margin: 2em auto;
-    opacity: .5;
-	font-size: small;
-	width: 8em;
-	&>svg {
-		width: 3em;
-		height: 3em;
-	} 
-}
+			margin: 2em auto;
+			opacity: .5;
+			font-size: small;
+			width: 8em;
+
+			&>svg {
+				width: 3em;
+				height: 3em;
+			}
+		}
 	</style>
 </head>
 
@@ -1709,7 +1711,7 @@
 			if (count)
 				document.getElementById("tobeupdatedalert").innerText = count;
 			else
-				(tbupcontr)? tbupcontr.remove(): false;
+				(tbupcontr) ? tbupcontr.remove() : false;
 		}
 
 		async function loadMyApps() {
@@ -1934,20 +1936,19 @@
 		}
 
 		async function onStartup() {
-				console.log("ahfter")
+			console.log("STORE ONSTARTUP")
 			const lastCheckData = await ntxSession.send("appStorage.get", "lastCheck");
 			const lastCheck = lastCheckData || 0;
 
 			if (Date.now() - lastCheck > 300000) {
 				ntxSession.send("appStorage.set", "lastCheck", Date.now());
-				console.log("befef")
+				console.log("STORE CACHE SET")
 				await checkUpdatesHeadless();
 				console.log("ahfter")
-				
+
 			} else {
-				console.log(404)
+				console.log("fine")
 			}
-			myWindow.close();
 		}
 
 
@@ -1955,7 +1956,6 @@
 			const localApps = await ntxSession.send("appStorage.get", "versionsData");
 
 			const metaData = await fetchAppData();
-
 			let count = 0;
 			for (const tag of Object.keys(localApps)) {
 				const appDetails = metaData.apps.find(app => getAppTag(app) === tag);

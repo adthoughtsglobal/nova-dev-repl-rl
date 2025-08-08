@@ -137,7 +137,7 @@ async function buildIframeApiBridge(appid, title, winuid, perms) {
 
 
     async function handleNtxSessionMessage(event) {
-        console.log(event.data)
+        console.log('HANDLE NTX INCOMING',event.data)
         const { action, params, transactionId } = event.data;
         const contextID = genUID();
         console.log(5345, appid)
@@ -209,15 +209,15 @@ var myWindow = {};
 window.addEventListener("message", async (e) => {
     console.log(888, e);
     if (e.data.type === "myWindow") {
-    console.log(889, e.data);
+    console.log("TRY CALL ONSTARTUP", e.data);
         try {
             await onStartup();
-            setTimeout(() => myWindow.close(), 1000);
-
+    console.log("ONSTARTUP OVER", e.data);
+            setTimeout(() => myWindow.close(), 0);
         } catch (t) {}
         myWindow = {
             ...e.data.data,
-            close: () => ntxSession.send("sysUI.clwin", myWindow.windowID),
+            close: () => {console.log("CLOSEREQ");ntxSession.send("sysUI.clwin", myWindow.windowID)},
             setTitle: (e) => ntxSession.send("sysUI.setTitle", myWindow.windowID, e)
         };
         window.parent.postMessage({ data: "gfdone", iframeId: myWindow.windowID }, "*");
@@ -269,6 +269,7 @@ class NTXSession {
     }
 }
 var ntxSession = new NTXSession();
+    console.log("this frame is responding");
 </script>`;
     const html = `<!DOCTYPE html><html><head><meta charset="utf-8"></head><body>${contentString}${ntxScript}<script defer>window.parent.postMessage({type:"iframeReady",windowID:"${winuid}"}, "*");</script></body></html>`;
     return new Blob([html], { type: 'text/html' });
@@ -425,6 +426,7 @@ class NTXSession {
 }
 
 var ntxSession = new NTXSession();
+    console.log("this regular frame is responding");
 
 const eventBus = (() => {
     const listeners = [];
@@ -462,6 +464,7 @@ const eventBus = (() => {
 }
 
 async function loadIframe(windowContent, windowLoader, loaderSpinner, cont, appid, winuid, title, params) {
+    console.log("LOADFRAME:", title)
     const iconHtml = await getAppIcon(0, appid) || defaultAppIcon;
     loaderSpinner.insertAdjacentHTML('beforebegin', iconHtml);
 
@@ -480,8 +483,8 @@ async function loadIframe(windowContent, windowLoader, loaderSpinner, cont, appi
     }
     iframe.src = blobURL;
     iframe.onload = async () => {
-        console.log(340993)
         const myWindowData = { appID: appid, windowID: winuid, setTitle: "later", ...(params && { params }) };
+        console.log("TRY INJECT MYWINDOW",myWindowData,iframe)
         iframe.contentWindow.postMessage({ type: "myWindow", data: myWindowData }, "*");
         await buildIframeApiBridge(appid, title, winuid, registry.perms);
     };
@@ -559,7 +562,7 @@ async function openapp(x, external, customtodo, headless = false) {
                 if (Gtodo == null && customtodo) Gtodo = customtodo;
                 let appIcon = 0;
                 try { appIcon = await getAppIcon(external); } catch (e) { };
-                await openwindow("Running...", AppContent, appIcon, getAppTheme(AppContent), getAppAspectRatio(AppContent), external, customtodo);
+                await openwindow("headless_373452343985$#%", AppContent, appIcon, getAppTheme(AppContent), getAppAspectRatio(AppContent), external, customtodo);
                 gid("window" + Object.keys(winds).pop()).style.display = "none";
                 Gtodo = null;
                 return;

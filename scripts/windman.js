@@ -88,7 +88,7 @@ function populateWindowHeader(header, title, ic, winuid) {
     const titleSpan = document.createElement("div");
     titleSpan.className = "title";
     titleSpan.id = "window" + winuid + "titlespan";
-    titleSpan.innerHTML = toTitleCase(basename(title));
+    titleSpan.innerHTML = (title == "headless_373452343985$#%") ? "Running..." : toTitleCase(basename(title));
 
     dataSpan.appendChild(titleSpan);
     header.appendChild(dataSpan);
