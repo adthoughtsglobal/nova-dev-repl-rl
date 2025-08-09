@@ -7,7 +7,7 @@
 	<meta name="nova-include" content="nova.css">
 	<meta name="nova-icon"
 		content="<svg width='214' height='214' viewBox='0 0 214 214' fill='none' xmlns='http://www.w3.org/2000/svg'> <g clip-path='url(#clip0_6_2)'> <path d='M0 214V0H214V214H0Z' fill='white'/> <ellipse cx='124.5' cy='107' rx='35.5' ry='35' fill='#FFC853'/> <path d='M58.4553 81L142.75 133.171L108.631 214H-0.25V133.171L58.4553 81Z' fill='#9DACFF'/> <path d='M183.879 47L214 88.75V214H21L80.1272 138.85L109.691 156.835L183.879 47Z' fill='#6179FF'/> </g> <defs> <clipPath id='clip0_6_2'> <rect width='214' height='214' fill='white'/> </clipPath> </defs> </svg>">
-	<meta name="capabilities" content="gallery">
+	<meta name="capabilities" content=".webm,.jpeg,.png,.jpg,.webp, gallery">
 	<meta name="permissions" content="fileGet, unsandboxed">
 	<title>Gallery</title>
 	<style>
@@ -36,14 +36,32 @@
 			font-style: normal;
 		}
 
-		#cont img {
+		#cont .media-container {
+			position: relative;
 			width: 100px;
 			border-radius: 5px;
 			margin: 5px;
 			height: 100px;
-			object-fit: cover;
 			animation: pop .2s;
 			transition: .2s;
+			overflow: hidden;
+			display: inline-block;
+
+			&>img {
+				object-fit: cover;
+				height: 100%;
+				width: 100%;
+			}
+
+			&>.material-symbols-rounded {
+				position: absolute;
+				top: 5px;
+				z-index: 99;
+				right: 5px;
+				color: #626262;
+				background: white;
+				border-radius: 50%;
+			}
 		}
 
 		@keyframes pop {
@@ -381,9 +399,14 @@
 				document.getElementById("nextbtn").style.visibility = imgmap[id + 1] ? "visible" : "hidden";
 			}
 
-
-			function greenflag() {
+			async function greenflag() {
 				renderlist();
+				try {
+					if (myWindow.params.data) {
+						showimg(myWindow.params.data)
+					}
+				} catch (error) {
+				}
 			}
 
 			async function renderlist() {
@@ -399,54 +422,77 @@
 
 					document.getElementById("cont").innerHTML = ``
 					for (const item of lcldata) {
-						let x = await window.parent.getFileById(item.id);
-						let t = window.parent.getbaseflty(window.parent.ptypext(item.name));
-						if (t === 'image' || t === 'video') {
-							let metadata = {};
+						try {
+							let x = await window.parent.getFileById(item.id);
+							let t = window.parent.getbaseflty(window.parent.ptypext(item.name));
+							if (t === 'image' || t === 'video') {
+								let metadata = {};
 
-							if (x.metadata) {
-								metadata = x.metadata;
-							}
-
-							if (metadata.datetime) {
-								let datetime = new Date(metadata.datetime);
-
-								const yr = datetime.getFullYear();
-								const mo = (datetime.getMonth() + 1).toString().padStart(2, '0');
-								const dy = datetime.getDate().toString().padStart(2, '0');
-								const dateIdentifier = `${yr}-${mo}-${dy}`;
-
-								if (!dyDivs[dateIdentifier]) {
-									dyDivs[dateIdentifier] = document.createElement("div");
-									let dyHeader = document.createElement("div");
-									dyHeader.classList.add("dyheader");
-									dyHeader.innerHTML = '<b>' + dateIdentifier + '</b>';
-									dyDivs[dateIdentifier].appendChild(dyHeader);
-									document.getElementById("cont").appendChild(dyDivs[dateIdentifier]);
+								if (x.metadata) {
+									metadata = x.metadata;
 								}
 
-								const img = new Image();
-								if (t === 'video') {
-									img.src = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='185.08451' height='185.08451' viewBox='0,0,105.08451,105.08451'%3E%3Cg transform='translate(-187.45774,-127.45774)'%3E%3Cg stroke-miterlimit='10'%3E%3Cpath d='M187.45775,180c0,-29.01828 23.52397,-52.54225 52.54226,-52.54225c29.01828,0 52.54226,23.52397 52.54226,52.54226c0,29.01828 -23.52397,52.54226 -52.54226,52.54226c-29.01828,0 -52.54226,-23.52397 -52.54226,-52.54226z' fill='%231f1f1f' stroke='none' stroke-width='0'/%3E%3Cpath d='M231.79595,159.56003c3.92025,2.72189 17.51812,12.16313 24.78105,17.2059c2.79959,1.9438 2.32533,4.85363 0.17898,6.34388c-4.06375,2.82153 -18.16365,12.61133 -25.20448,17.49989c-2.46572,1.71199 -4.06571,0.76078 -4.06571,-2.46554c0,-10.13354 0,-30.12185 0,-35.40324c0,-2.28129 2.23192,-4.62385 4.31015,-3.1809z' fill='none' stroke='%23ffffff' stroke-width='2.5'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E`;
-								} else {
-									let content = x.content;
-									img.src = content;
+								if (metadata.datetime) {
+									let datetime = new Date(metadata.datetime);
+									const yr = datetime.getFullYear();
+									const mo = (datetime.getMonth() + 1).toString().padStart(2, '0');
+									const dy = datetime.getDate().toString().padStart(2, '0');
+									const dateIdentifier = `${yr}-${mo}-${dy}`;
+
+									if (!dyDivs[dateIdentifier]) {
+										dyDivs[dateIdentifier] = document.createElement("div");
+										let dyHeader = document.createElement("div");
+										dyHeader.classList.add("dyheader");
+										dyHeader.innerHTML = '<b>' + dateIdentifier + '</b>';
+										dyDivs[dateIdentifier].appendChild(dyHeader);
+										document.getElementById("cont").appendChild(dyDivs[dateIdentifier]);
+									}
+
+									const container = document.createElement("div");
+									container.classList.add("media-container");
+
+									const img = new Image();
+									if (t === 'video') {
+										img.src = "";1
+										Promise.resolve().then(() => {
+											const video = document.createElement('video');
+											video.src = x.content;
+											video.preload = 'metadata';
+											video.onloadedmetadata = () => video.currentTime = 0;
+											video.onseeked = () => {
+												const canvas = document.createElement('canvas');
+												canvas.width = video.videoWidth;
+												canvas.height = video.videoHeight;
+												canvas.getContext('2d').drawImage(video, 0, 0);
+												img.src = canvas.toDataURL('image/png');
+											};
+											const playIcon = document.createElement("div");
+											playIcon.innerText = "play_circle";
+											playIcon.classList.add("material-symbols-rounded");
+											container.appendChild(playIcon);
+										});
+
+									} else {
+										img.src = x.content;
+									}
+
+									await new Promise((resolve) => {
+										img.onload = resolve;
+									});
+
+									const thisid = imgid++;
+									imgmap[thisid] = item;
+
+									img.onclick = function () {
+										showimg(thisid);
+									};
+
+									container.appendChild(img);
+									dyDivs[dateIdentifier].appendChild(container);
 								}
 
-								await new Promise((resolve) => {
-									img.onload = resolve;
-								});
-
-								const thisid = imgid++;
-								imgmap[thisid] = item;
-
-								img.onclick = function () {
-									showimg(thisid);
-								};
-
-								dyDivs[dateIdentifier].appendChild(img);
 							}
-						}
+						} catch (err) { console.error(err) }
 					}
 				} catch (error) {
 					console.error(error);
