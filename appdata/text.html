@@ -133,8 +133,8 @@
                     });
                 } else {
                     const dataUri = `data:text/plain;base64,${encodedContent}`;
-                    let y = await ntxSession.send("sysUI.ask", "Enter a file name:", "untitled.txt");
-                    await ntxSession.send("fileSet.createFile", "Documents", y, false, dataUri);
+                    let toBeSavedToData = await ntxSession.send("olp.useHandler", "file_manager", { "opener": 'saveas',  "value":"Text file.txt"});
+                    await ntxSession.send("fileSet.createFile", toBeSavedToData.path, toBeSavedToData.name, false, dataUri);
                 }
             } catch (e) { console.log(e) }
             ntxSession.send("sysUI.toast", "File saved")

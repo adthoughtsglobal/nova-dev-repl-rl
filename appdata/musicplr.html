@@ -7,6 +7,7 @@
 	<title>Music app</title>
 	<meta name="permissions" content="unsandboxed">
 	<meta name="aspect-ratio" content="1/1">
+	<meta name="capabilities" content=".mp3,.flac,.m4a,.wav,.ogg, music_player">
 	<meta name="nova-include" content="material-symbols-rounded nova.css">
 	<meta name="nova-icon"
 		content="<svg version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='51' height='49.50242' viewBox='0,0,51,49.50242'><g transform='translate(-214.5,-154.75988)'><g data-paper-data='{&quot;isPaintingLayer&quot;:true}' fill-rule='nonzero' stroke-linejoin='miter' stroke-miterlimit='10' stroke-dasharray='' stroke-dashoffset='0' style='mix-blend-mode: normal'><path d='M214.5,177.00988c0,-14.08326 4.66674,-22.25 18.75,-22.25c14.08326,0 32.25,14.16674 32.25,28.25c0,14.08326 -11.89966,17.91973 -23.5,20.5c-20.43901,4.54627 -27.5,-12.41674 -27.5,-26.5z' fill='#6179ff' stroke='none' stroke-width='0' stroke-linecap='butt'/><path d='M235.26333,186.05913l-2.26753,-13.83446l11.61789,0.96088l2.46892,13.36372' fill='none' stroke='#ffffff' stroke-width='3.5' stroke-linecap='round'/><path d='M227.30363,185.33244c0.21528,-2.60295 2.4999,-4.53854 5.10285,-4.32326c2.60295,0.21528 4.53854,2.49991 4.32326,5.10286c-0.21528,2.60295 -2.49991,4.53853 -5.10286,4.32325c-2.60295,-0.21528 -4.53853,-2.4999 -4.32325,-5.10285z' fill='#ffffff' stroke='none' stroke-width='0' stroke-linecap='butt'/><path d='M239.88904,186.49159c0.20118,-2.43237 2.33609,-4.24111 4.76846,-4.03994c2.43237,0.20118 4.24111,2.33608 4.03994,4.76845c-0.20118,2.43237 -2.33608,4.24112 -4.76845,4.03995c-2.43237,-0.20118 -4.24112,-2.33609 -4.03995,-4.76846z' fill='#ffffff' stroke='none' stroke-width='0' stroke-linecap='butt'/></g></g></svg>">
@@ -184,23 +185,6 @@
 			flex: 0;
 			align-items: center;
 			justify-content: center;
-
-			&:hover>.choosebtn {
-				opacity: .3;
-			}
-
-			&>.choosebtn {
-				padding: 1em;
-				opacity: 0;
-				display: flex;
-				border: 1px solid #ffffff1f;
-				border-radius: 50%;
-				position: absolute;
-
-				&:hover {
-					opacity: 1;
-				}
-			}
 		}
 
 		.slider_container {
@@ -577,14 +561,9 @@
 				</div>
 			</div>
 
-			<div class="single_scrn" id="visualizer" onclick="vizchange()">
+			<div class="single_scrn" id="visualizer">
 				<canvas id="particleCanvas"></canvas>
-				<div class="choosebtn">
-					<span class="material-symbols-rounded">
-						more_horiz
-					</span>
-				</div>
-				<div id="lyrics">Lyrics show up here</div>
+				<div id="lyrics"></div>
 			</div>
 		</div>
 		<div id="player">
@@ -594,6 +573,13 @@
 					<input type="range" min="1" max="100" value="0" class="seek_slider" onchange="seekTo()">
 					<div class="total-duration">00:00</div>
 				</div>
+				<div class="divider_vert"></div>
+				<span class="material-symbols-rounded" id="lyribtn">
+					lyrics
+				</span>
+				<span class="material-symbols-rounded" onclick="vizchange()">
+					equalizer
+				</span>
 				<div class="divider_vert"></div>
 				<div class="slider_container volume_slider_container">
 					<input type="range" min="1" max="100" value="99" class="volume_slider" onchange="setVolume()">
@@ -975,10 +961,13 @@
 			const fileID = await ntxSession.send("olp.useHandler", "file_manager", { "opener": 'any', "dir": "Downloads/" });
 			const file = await ntxSession.send("fileGet.byId", fileID);
 			readthefile(file, file.fileName);
-			primaryalert.style.display = "none";
 		}
 
 		function readthefile(filethings, fileName = 'Unknown Title') {
+			if (primaryalert.open) {
+				primaryalert.style.display = "none";
+				primaryalert.close();
+			}
 			const base64String = filethings.content.split(',')[1];
 			const binaryString = atob(base64String);
 			const bytes = new Uint8Array(binaryString.length);
@@ -1291,7 +1280,7 @@
 		window.addEventListener('resize', resizeupdate);
 
 		let e = 1;
-		let firstTime = 1;
+		var firstTime = 1;
 		function toggleQueue() {
 			if (e == 1) {
 				document.getElementById("viztogglebtn").style.transform = "rotate(270deg)";
@@ -1303,7 +1292,6 @@
 					document.getElementById("visualizer").style.flex = "0";
 				}, 10);
 				e = 0;
-				firstTime = 0;
 			} else {
 				document.getElementById("viztogglebtn").style.transform = "rotate(90deg)";
 				const queue = document.getElementById("queue");
@@ -1314,18 +1302,20 @@
 				}, 250);
 				setTimeout(() => {
 					queue.style.display = "none";
-
-					loadVisualizerFromURL("https://novaos-web.github.io/plr/visualizers/fluid.js");
+					console.log(firstTime)
+					if (firstTime == 1) {
+						loadVisualizerFromURL("https://novaos-web.github.io/plr/visualizers/fluid.js");
+						firstTime = 0;
+					}
 				}, 500);
 				e = 1;
-				firstTime = 0;
 			}
 			resizeupdate();
 		}
 		toggleQueue();
 		const lyricsDiv = document.getElementById('lyrics');
-		const loadLyricsButton = lyricsDiv;
-			const lrcInput = document.getElementById('lrc_input');
+		const loadLyricsButton = document.getElementById("lyribtn");
+		const lrcInput = document.getElementById('lrc_input');
 
 		loadLyricsButton.onclick = () => {
 
@@ -1345,7 +1335,7 @@
 					const text = e.target.result;
 					lyrics = parseLRC(text);
 					currLine = -1;
-					lyricsDiv.innerHTML = 'a';
+					lyricsDiv.innerHTML = '';
 				};
 				reader.readAsText(file);
 			};
@@ -1368,7 +1358,7 @@
 			curr_track.onloadeddata = () => {
 				lyrics = [];
 				currLine = -1;
-				lyricsDiv.innerHTML = 'lrc';
+				lyricsDiv.innerHTML = '';
 			};
 
 			function parseLRC(text) {
@@ -1390,7 +1380,49 @@
 				return result;
 			}
 		};
-	</script>
+
+		async function greenflag() {
+			firstTime = 1;
+
+			eventBus.listen({
+				type: 'musicplr',
+				event: 'newSession',
+				callback: async (msg) => {
+					const file = await ntxSession.send("fileGet.byId", msg.key);
+					readthefile(file, file.fileName);
+console.log(msg.key, file)
+					eventBus.deliver({
+						type: "musicplr",
+						event: "sessionKill",
+						key: msg.key,
+					});
+				}
+			});
+
+			try {
+				if (myWindow.params.data) {
+
+					eventBus.deliver({
+						type: "musicplr",
+						event: "newSession",
+						key: myWindow.params.data,
+					});
+					eventBus.listen({
+						type: 'musicplr',
+						event: 'sessionKill',
+						callback: (msg) => {
+							myWindow.close();
+						}
+					});
+					setTimeout(async () => {
+					const file = await ntxSession.send("fileGet.byId", myWindow.params.data);
+					readthefile(file, file.fileName);
+
+					}, 500)
+				}
+			} catch (error) {
+			}
+		}
 	</script>
 </body>
 

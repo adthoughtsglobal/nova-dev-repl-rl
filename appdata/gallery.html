@@ -357,7 +357,9 @@
 			let crntimgIndex = null;
 
 			async function showimg(id) {
-				if (!imgmap[id]) return;
+				if (!imgmap[id]) {
+					imgmap[id] = {name: await window.parent.getFileNameByID(id), id};
+				};
 				const item = imgmap[id];
 				crntimg = item.id;
 				crntimgIndex = id;

@@ -353,12 +353,11 @@
 		[flap-fl-bottomnav] {
 			padding: 5px 7px;
 			background-color: var(--col-bg2);
-			border: 1px solid #ffffff0c;
+			border: var(--box-crisp);
 			color: var(--colors-text-section);
 			border-radius: var(--siz-radius1);
 			transition: .3s ease-out;
-			margin: 0.2rem;
-			width: calc(100% - 25px);
+			margin: 0.3em;
 		}
 
 		.upload-box {
@@ -688,39 +687,41 @@
 			}
 		}
 
-		#choosefile {
+		.extraFunctionUI {
 			display: flex;
 			margin: 0.3rem;
-			gap: 2px;
+			gap: 3px;
 			border-radius: var(--siz-radius1);
 			overflow: hidden;
-			width: calc(100% - 1rem);
-		}
+			border: var(--box-crisp);
+    margin-top: 0;
 
-		#choosefile input {
-			flex: 1;
-			padding: 0.3rem;
-			font-size: 0.8rem;
-			font-family: inherit;
-			color: white;
-			border-radius: 0;
-			background-color: var(--col-bg2);
-			border: 1px solid #ffffff0c;
-			color: var(--colors-text-section);
-			border: none;
-			width: 0;
-			border: none;
-		}
+			&>input {
+				flex: 1;
+				padding: 0.5em;
+				font-size: 1em;
+				font-family: inherit;
+				color: white;
+				border-radius: 0;
+				background-color: var(--col-bg2);
+				border: 1px solid #ffffff0c;
+				color: var(--colors-text-section);
+				border: none;
+				width: 0;
+				border: none;
 
-		#choosefile button {
-			padding: 0.3rem;
-			font-size: 0.8rem;
-			font-family: inherit;
-			color: var(--colors-text-sub);
-			border-radius: 0;
-			background: var(--col-bg3);
-			border: none;
-			width: fit-content;
+			}
+
+			&>button {
+				padding: 0.5em;
+				font-size: inherit;
+				font-family: inherit;
+				color: var(--colors-text-sub);
+				border-radius: 0;
+				background: var(--col-bg3);
+				border: none;
+				width: fit-content;
+			}
 		}
 
 		div#moretoolsdropdwn {
@@ -964,9 +965,13 @@
 					</div>
 					<div flap-fl-bottomnav id="fileinfobn">Click on a file to select it.
 					</div>
-					<div id="choosefile">
+					<div id="choosefile" class="extraFunctionUI">
 						<input placeholder="Double click to choose File" id="choosefileinp" disabled>
 						<button onclick="choosefile()">Open</button>
+					</div>
+					<div id="saveas" class="extraFunctionUI">
+						<input placeholder="Enter a file Name..." id="saveasFileNameInp">
+						<button onclick="saveFileAs()">Save</button>
 					</div>
 				</div>
 			</div>
@@ -1272,7 +1277,6 @@
 				}
 
 				if (await ntxSession.send("settings.get", "filesSidenavSize")) {
-					console.log(87.1)
 					document.getElementById("flap-sidenav").style.width = await ntxSession.send("settings.get", "filesSidenavSize");
 				} else {
 					fitsizesidenav();
@@ -1512,7 +1516,9 @@
 		var PrevPath = "Downloads";
 
 		async function listFiles(folderName = currentPath, gen) {
-			myWindow.setTitle(removeEndSlash(folderName) + " - Files");
+			if (sessiontype != "opener" && sessiontype != "saveas") {
+				myWindow.setTitle(removeEndSlash(folderName) + " - Files");
+			}
 
 			if (sessiontype == "directory") {
 				return;
@@ -1781,6 +1787,7 @@
 		}
 
 		async function populateFileActions(fileData) {
+			if (sessiontype === "opener") { return }
 			const toolsContainer = document.getElementById("filetools");
 			const moreToolsContainer = document.getElementById("moretoolsdropdwn");
 
@@ -2086,8 +2093,10 @@
 		function greenflag() {
 			const data = myWindow?.params?.data;
 			document.getElementById("dirviewbtn").innerText = window.parent.CurrentUsername;
+
+			document.getElementById("choosefile").style.display = "none";
+			document.getElementById("saveas").style.display = "none";
 			if (data?.opener) {
-				console.log(909090, data)
 				sessionreturnreqid = myWindow.params.trid;
 				sessiontype = data.opener === 'showFile' ? 'showFile' : 'opener';
 				switch (data.opener) {
@@ -2100,20 +2109,28 @@
 					case "opener":
 						sessiontype = "opener"
 						break;
+					case "saveas":
+						sessiontype = "saveas"
+						break;
 					case "directory":
 						directorySelector();
 						return;
 						break;
 				}
-				myWindow.setTitle(data.opener === 'showFile' ? "View File" : "Choose File");
-				document.getElementById("choosefile").style.display = data.opener === 'showFile' ? "none" : "flex";
+				document.getElementById("choosefile").style.display = (data.opener === 'showFile') ? "flex" : "none";
+				document.getElementById("saveas").style.display = "none";
 
 				if (data.opener === 'showFile') {
 					initializeFilesApp(data.id ?? false, "showFile");
-					document.getElementById("choosefile").style.display = "none";
+					myWindow.setTitle("View File");
 				} else if (data.opener === 'showDir') {
 					initializeFilesApp(data.path ?? false, "showDir");
-					document.getElementById("choosefile").style.display = "none";
+				} else if (data.opener === 'saveas') {
+					initializeFilesApp();
+					myWindow.setTitle("Save file as");
+					document.getElementById("saveas").style.display = "flex";
+					document.getElementById("saveasFileNameInp").focus();
+					if (data.value) { document.getElementById("saveasFileNameInp").value = data.value }
 				} else {
 					initializeFilesApp(data.dir ?? false);
 				}
@@ -2434,6 +2451,13 @@
 				contextMenu.style.display = 'none';
 			}
 		});
+
+		async function saveFileAs() {
+			window.parent.OLPreturn({
+				"path": currentPath, "name":
+					document.getElementById("saveasFileNameInp").value
+			}, sessionreturnreqid)
+		}
 	</script>
 </body>
 
