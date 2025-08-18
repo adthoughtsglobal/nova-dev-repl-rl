@@ -62,8 +62,15 @@ function cuteee() {
 
 async function checkAndRunFromURL() {
 	const params = new URLSearchParams(window.location.search);
-
+	
 	const run = params.get('run');
+	const viewapp = params.get('view');
+
+	if (viewapp) {
+		onstartup.push(async () => {
+			useHandler("content_store", {'opener':'viewapp', 'data':viewapp})
+		});
+	}
 
 	if (run === 'erdbsfull') {
 		let x = await justConfirm("Reset all your data?", "The link you opened NovaOS had a param to erase your device. Do this only if its instructed to do so by NovaOS developers.");

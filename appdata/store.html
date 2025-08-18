@@ -1324,12 +1324,12 @@
 
 
 
-		function renderapps() {
-			fetchAppData().then(appData => {
+		async function renderapps() {
+			await fetchAppData().then(async (appData) => {
 				document.getElementById("offlinesug")?.remove();
 				document.body.classList.remove("initloadin");
-				renderSections();
-				populateApps(appData);
+				await renderSections();
+				await populateApps(appData);
 			}).catch(error => {
 				displayErrorMessage(0, error);
 				console.error('Error:', error);
@@ -1475,6 +1475,7 @@
 				const name = details.name;
 				const cat = details.cat || "Others";
 				const appDiv = createAppDiv(name, details, vdevs, featured);
+				appDiv.setAttribute("data-tag", getAppTag(details));
 
 				if (featured.appName === name) {
 					document.getElementById("featuredappname").innerText = name;
@@ -1659,9 +1660,14 @@
 				openCity(event, 'themes');
 				document.body.classList.remove("initloadin");
 				return;
+			} else 
+			await renderapps();
+			if (data == "viewapp"){
+				console.log("23", 34, myWindow?.params)
+				const el = document.querySelector('[data-tag="'+myWindow?.params?.data.data+'"]');
+				el.click();
 			}
 
-			renderapps();
 			prepareAppData();
 		}
 
