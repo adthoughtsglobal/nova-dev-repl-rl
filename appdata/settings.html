@@ -1995,6 +1995,14 @@
 				</div>
 				<div class="single_setting">
 					<div class="settingName">
+						<b>Auto update checks</b>
+						<p>Automatically check and apply default app updates on startup.
+					</p>
+					</div>
+					<input class="turnon_checkbox" type="checkbox" settingkey="nvaupdcheck">
+				</div>
+				<div class="single_setting">
+					<div class="settingName">
 						<b>SmartSearch</b>
 						<p>Search through your files based on similarity algorithms.
 					</p>
@@ -2995,13 +3003,6 @@
 						document.getElementById("rtrinitspace").style.display = "none";
 					}
 
-					eventBus.listen({
-            type: "rotur",
-            event: "authDone",
-				callback: () => {
-					loaduprtour();
-				}
-			});
 				</script>
 
 				</segr>
@@ -3739,15 +3740,12 @@
 				if (el.hasAttribute('settingkey')) {
 					const key = el.getAttribute('settingkey');
 					try {
-						console.log(43, key);
 						const val = await ntxSession.send("settings.get", key);
-						console.log(val);
 						el.checked = val === true || val === 'true' || val != null;
 					} catch (e) {
 						console.error(e);
 					}
 					el.addEventListener('change', () => {
-						console.log(97, el.checked);
 						ntxSession.send("settings.set", key, el.checked === true);
 					});
 				}
@@ -3863,6 +3861,13 @@
 				replaceSelects();
 			} catch (e) { }
 
+					eventBus.listen({
+            type: "rotur",
+            event: "authDone",
+				callback: () => {
+					loaduprtour();
+				}
+			});
 		}
 	</script>
 </body>

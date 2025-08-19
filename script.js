@@ -243,7 +243,8 @@ async function startup() {
 			}
 
 
-			await fetchDataAndUpdate();
+			let shouldcheckupd = await getSetting("nvaupdcheck");
+			if (shouldcheckupd) await fetchDataAndUpdate();
 			removeInvalidMagicStrings();
 			function startUpdateTime() {
 				let now = new Date();

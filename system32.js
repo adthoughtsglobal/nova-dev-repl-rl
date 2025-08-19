@@ -372,7 +372,8 @@ const defaultFileData = {
         "CamImgFormat": "WEBP",
         "defSearchEngine": "Bing",
         "darkMode": true,
-        "simpleMode": true
+        "simpleMode": true,
+        "nvaupdcheck": true
     }
 };
 async function ensureFileExists(fileName = "preferences.json", dirPath = "System/") {
