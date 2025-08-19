@@ -375,9 +375,9 @@ nav [navobj] {
 	border: 1px solid #ffffff0c;
 
 	& h1 {
-    font-weight: normal;
-    opacity: .7;
-}
+		font-weight: normal;
+		opacity: .7;
+	}
 }
 
 #searchwindow {
@@ -395,8 +395,8 @@ nav [navobj] {
 .appdmodestuff {
 	display: flex;
 	flex-direction: column;
-    height: 100%;
-    justify-content: space-between;
+	height: 100%;
+	justify-content: space-between;
 }
 
 .strtsearcont {
@@ -435,7 +435,8 @@ nav [navobj] {
 	width: 80%;
 	max-width: 280px;
 	box-shadow: 0 0 10px #00000075;
-	border: var(--box-crisp);;
+	border: var(--box-crisp);
+	;
 	animation: pop var(----time1);
 	outline: 0;
 }
@@ -463,7 +464,8 @@ nav [navobj] {
 		width: 80%;
 		max-width: 280px;
 		box-shadow: 0 0 10em #000000ba;
-		border: var(--box-crisp);;
+		border: var(--box-crisp);
+		;
 		animation: pop var(----time1);
 	}
 
@@ -513,15 +515,16 @@ nav [navobj] {
 	color: inherit;
 	background: var(--col-bg1);
 	border-radius: var(--siz-radius1);
-	border: var(--box-crisp);;
+	border: var(--box-crisp);
+	;
 }
 
 .modal-items p {
 	text-align: left;
 	overflow-wrap: normal;
 	max-height: 40%;
-    overflow: hidden auto;
-    padding-right: 10px;
+	overflow: hidden auto;
+	padding-right: 10px;
 }
 
 .modal-items select {
@@ -532,7 +535,8 @@ nav [navobj] {
 	outline: none;
 	display: block;
 	width: 100%;
-	border: var(--box-crisp);;
+	border: var(--box-crisp);
+	;
 }
 
 .modal-items button {
@@ -543,7 +547,8 @@ nav [navobj] {
 	cursor: pointer;
 	border-radius: var(--siz-radius1);
 	width: 100%;
-	border: var(--box-crisp);;
+	border: var(--box-crisp);
+	;
 }
 
 .modal-items button:focus {
@@ -641,9 +646,11 @@ nav [navobj] {
 		border-radius: var(--siz-radius1);
 		align-items: center;
 		cursor: pointer;
-		
-   flex-grow: 0; /* Prevent expansion */
-   flex-shrink: 0; /* Prevent shrinking */
+
+		flex-grow: 0;
+		/* Prevent expansion */
+		flex-shrink: 0;
+		/* Prevent shrinking */
 
 		&:hover {
 			background-color: var(--col-bg2);
@@ -1117,24 +1124,23 @@ input#novamenusearchinp {
 
 #bobthedropdown {
 	visibility: visible;
-    display: flex
-;
-    flex-direction: row;
+	display: flex;
+	flex-direction: row;
 	width: 100%;
 	gap: .5em;
 
 	&>.toolspart {
-	display: flex;
-	flex: 1;
-	padding: 1px 3px;
-	justify-content: flex-start;
-	align-items: center;
-	flex-direction: row;
-	flex-wrap: nowrap;
-	gap: 5px;
-	background-color: var(--col-bg2);
-	border-radius: var(--siz-radius2);
-	border: var(--box-crisp);
+		display: flex;
+		flex: 1;
+		padding: 1px;
+		justify-content: flex-start;
+		align-items: center;
+		flex-direction: row;
+		flex-wrap: nowrap;
+		gap: 2px;
+		background-color: var(--col-bg2);
+		border-radius: var(--siz-radius2);
+		border: var(--box-crisp);
 	}
 }
 
@@ -1373,8 +1379,8 @@ codeblock {
 	height: 39px;
 	width: 39px;
 	aspect-ratio: 1 / 1;
-    overflow: visible;
-    border-radius: 6px;
+	overflow: visible;
+	border-radius: 6px;
 }
 
 .adock .tooltiptext {
@@ -2403,22 +2409,21 @@ div#toastdiv {
 }
 
 div#toasticon {
-    width: 2em;
-    height: 2em;
-    overflow: hidden;
-    margin-right: 0px;
-    border-radius: 50%;
-    transform: translateX(-7px);
-    display: flex
-;
-    align-items: center;
-    justify-content: center;
+	width: 2em;
+	height: 2em;
+	overflow: hidden;
+	margin-right: 0px;
+	border-radius: 50%;
+	transform: translateX(-7px);
+	display: flex;
+	align-items: center;
+	justify-content: center;
 
 	&>svg {
-    width: 80%;
-    height: auto;
-    aspect-ratio: 1 / 1;
-}
+		width: 80%;
+		height: auto;
+		aspect-ratio: 1 / 1;
+	}
 }
 
 #toastdivtext:active {
@@ -2615,35 +2620,38 @@ div#appgrp_list {
 	0% {
 		background-position: right;
 	}
+
 	100% {
 		background-position: left;
 	}
 }
 
 dialog#lazarus {
-    width: fit-content;
-    height: fit-content;
-    border: 0;
-    background: transparent;
-    color: white;
-    font-size: 5em;
-    font-weight: bold;
-		outline: none;
+	width: fit-content;
+	height: fit-content;
+	border: 0;
+	background: transparent;
+	color: white;
+	font-size: 5em;
+	font-weight: bold;
+	outline: none;
+
 	&:focus {
 		outline: none;
 	}
+
 	&::backdrop {
 		background-color: black;
 	}
 
 	h1#lazarus-title {
-    background: url(libs/lazarus.png);
-    -webkit-background-clip: text;
-    background-size: 50%;
-    -webkit-text-fill-color: transparent;
-    background-position: center;
-	animation: backgroundzoom 5s infinite linear;
+		background: url(libs/lazarus.png);
+		-webkit-background-clip: text;
+		background-size: 50%;
+		-webkit-text-fill-color: transparent;
+		background-position: center;
+		animation: backgroundzoom 5s infinite linear;
 
 
-}
+	}
 }

@@ -200,13 +200,6 @@ async function startup() {
 
 	updateNavSize();
 
-	let localupdatedataver = localStorage.getItem("updver");
-	let localupdatedataverstring = parseFloat(localStorage.getItem("updver"));
-	if (localupdatedataverstring <= 1.7 || !localupdatedataverstring) {
-		console.log("Preparing NovaOS2 switch.");
-		return;
-	}
-
 	await updateMemoryData().then(async () => {
 		try {
 			setsrtpprgbr(70);
@@ -214,7 +207,7 @@ async function startup() {
 				qsetsRefresh()
 				timetypecondition = await getSetting("timefrmt") == '24 Hour' ? false : true;
 			} catch { }
-			gid('startupterms').innerHTML = "Initialising...";
+			gid('startupterms').innerHTML = "Initializing...";
 			updateTime();
 			setsrtpprgbr(80);
 			await checkdmode();
@@ -229,19 +222,26 @@ async function startup() {
 			async function fetchDataAndUpdate() {
 				let fetchupdatedata = await fetch("versions.json");
 				if (fetchupdatedata.ok) {
-					fetchupdatedataver = (await fetchupdatedata.json()).osver;
-					if (localupdatedataver !== fetchupdatedataver) {
-						if (await justConfirm("Update default apps?", "Your default apps are old. Update them to access new features and fixes.")) {
-							await installdefaultapps();
-							startup();
-						} else {
-							say("You can always update apps on settings app/Preferances")
+					let fetchupdatedataver = await fetchupdatedata.json();
+					let lclver = await getSetting("versions", "defaultApps.json") || {};
+					let howmany = 0;
+					for (let item of Object.keys(fetchupdatedataver)) {
+						let local = lclver[item] || 6754999;
+						if (local && fetchupdatedataver[item] != local) {
+							initialization = 1;
+							await updateApp(item);
+							initialization = 0;
+							howmany++;
+							lclver[item] = fetchupdatedataver[item];
 						}
 					}
+					await setSetting("versions", lclver, "defaultApps.json")
+					if (howmany) toast( howmany+ " default app(s) have been updated")
 				} else {
 					console.error("Failed to fetch data from the server.");
 				}
 			}
+
 
 			await fetchDataAndUpdate();
 			removeInvalidMagicStrings();
@@ -260,7 +260,7 @@ async function startup() {
 			const end = performance.now();
 
 			rllog(
-				`You are using \n\n%cNovaOS%c\n%cNovaOS is the web system made for you.%c\n\nStartup: ${(end - start).toFixed(2)}ms\nUsername: ${CurrentUsername}\nCurrent: ${localupdatedataver}\n12hr Time format: ${timetypecondition}\nNewest: ${fetchupdatedataver}`,
+				`You are using \n\n%cNovaOS%c\n%cNovaOS is the web system made for you.%c\n\nStartup: ${(end - start).toFixed(2)}ms\nUsername: ${CurrentUsername}\n12hr Time format: ${timetypecondition}`,
 				'color: white; background-color: #101010; font-size: 2rem; padding: 0.7rem 1rem; border-radius: 1rem;',
 				'',
 				'padding:5px 0; padding-top:1rem;',
@@ -912,6 +912,7 @@ async function registerApp(appId, capabilities) {
 		await setSetting('RunOnStartup', startupApps);
 	}
 
+	if (!initialization)
 	notify(await getFileNameByID(appId) + " installed", "Registered " + capabilities.toString(), "NovaOS System");
 	return capabilities.toString();
 }
@@ -1230,6 +1231,26 @@ async function initializeOS() {
 				initialization = false;
 			})
 	})
+} async function updateApp(appName, attempt = 1) {
+	try {
+		const filePath = "appdata/" + appName + ".html";
+		const response = await fetch(filePath);
+		if (!response.ok) {
+			throw new Error("Failed to fetch file for " + appName);
+		}
+		const fileContent = await response.text();
+		await createFile("Apps/", toTitleCase(appName), "app", fileContent);
+		return true;
+	} catch (error) {
+		console.error("Error updating " + appName + ":", error.message);
+		if (attempt < maxRetries) {
+			return await updateApp(appName, attempt + 1);
+		} else {
+			console.error("Max retries reached for " + appName + ". Skipping update.");
+			failedApps.push(appName);
+			return false;
+		}
+	}
 }
 async function installdefaultapps() {
 	nonotif = true;
@@ -1241,29 +1262,6 @@ async function installdefaultapps() {
 
 	const maxRetries = 3;
 	const failedApps = [];
-
-	async function updateApp(appName, attempt = 1) {
-		try {
-			const filePath = "appdata/" + appName + ".html";
-			const response = await fetch(filePath);
-			if (!response.ok) {
-				throw new Error("Failed to fetch file for " + appName);
-			}
-			const fileContent = await response.text();
-			await createFile("Apps/", toTitleCase(appName), "app", fileContent);
-			return true;
-		} catch (error) {
-			console.error("Error updating " + appName + ":", error.message);
-			if (attempt < maxRetries) {
-				return await updateApp(appName, attempt + 1);
-			} else {
-				console.error("Max retries reached for " + appName + ". Skipping update.");
-				failedApps.push(appName);
-				return false;
-			}
-		}
-	}
-
 	async function waitForNonNull() {
 		let result = null;
 		while (result === null) {
@@ -1282,7 +1280,7 @@ async function installdefaultapps() {
 		const interval = setInterval(() => {
 			const randomIndex = Math.floor(Math.random() * hangMessages.length);
 			gid('startupterms').innerText = hangMessages[randomIndex];
-		}, 1000);
+		}, 2500);
 
 		for (let i = 0; i < defAppsList.length; i++) {
 			await new Promise(res => setTimeout(res, 300));
@@ -1293,14 +1291,6 @@ async function installdefaultapps() {
 			setsrtpprgbr(Math.round((i + 1) / defAppsList.length * 100));
 		}
 		clearInterval(interval);
-
-		let fetchupdatedata = await fetch("versions.json");
-		if (fetchupdatedata.ok) {
-			let fetchupdatedataver = (await fetchupdatedata.json()).osver;
-			localStorage.setItem("updver", fetchupdatedataver);
-		} else {
-			console.error("Failed to fetch data from the server.");
-		}
 
 		if (failedApps.length > 0) {
 			const response = await say(failedApps.length + " apps failed to download. This might be an internet issue, retry?");
@@ -2030,11 +2020,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 	genTaskBar = debounce(realgenTaskBar, 500);
 	genDesktop = debounce(realgenDesktop, 500);
 
-	let localupdatedataver = parseFloat(localStorage.getItem("updver"));
-	if (localupdatedataver <= 1.7) {
-		console.log("Preparing NovaOS2 switch.");
-		return;
-	}
 	const searchInput5342 = document.querySelector('#novamenusearchinp');
 	let keyHeld = false;
 
