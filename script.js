@@ -2168,7 +2168,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 		return null;
 	}
 	waitForNonNull().then(async (result) => {
-		checkAndRunFromURL();
+		await checkAndRunFromURL();
 		gid('startupterms').innerHTML = "<span>Checking database...</span>";
 		try {
 			if (result || result == 3) {

@@ -1669,28 +1669,44 @@ var roturExtension = null;
 onstartup.push(async () => {
   let localroturdata = await window.getSetting("roturLink");
   if (localroturdata) {
-    roturExtension = new RoturExtension();
-    await setuprotur();
+    await attemptConnection();
   }
 });
+
+async function attemptConnection() {
+	if (roturExtension?.is_connected) {
+		return true;
+	} else if (!roturExtension) {
+    roturExtension = new RoturExtension();
+  }
+	roturExtension.connectToServer({ DESIGNATION: "nva", SYSTEM: "novaOS", VERSION: "2" });
+}
+
+async function logoutofrtr() {
+	remSettingKey("roturLink");
+	await roturExtension.logout();
+	roturExtension.disconnect();
+}
 
 function roturTWEventCall(data) {
   if (data == "roturEXT_whenAuthenticated") {
     fetch("https://social.rotur.dev/claim_daily?auth=" + roturExtension.userToken).then((response) => {
       if (response.ok) {
         notify(`Logged in as ${roturExtension.username}`, "You got the daily credit!", "RoturTW", 1)
-
       } else {
-
         notify(`Logged in as ${roturExtension.user.username}`, "Welcome back!", "RoturTW", 1)
         throw new Error('Failed to claim daily reward');
       }
     })
+    eventBusWorker.deliver({
+            type: "rotur",
+            event: "authDone"
+        });
   } else if (data == "roturEXT_whenConnected") {
     (async () => {
-      sysLog("RoturTW", `Trying to log in`);
       let localroturdata = await window.getSetting("roturLink");
       if (localroturdata) {
+      sysLog("RoturTW", `Trying to log in`);
         let targettype = JSON.parse(localroturdata).type;
         if (targettype == "pswd") {
           let targetun = JSON.parse(localroturdata).username;
@@ -1699,6 +1715,8 @@ function roturTWEventCall(data) {
         } else if (targettype == "token") {
           await roturExtension.loginToken({ TOKEN: JSON.parse(localroturdata).token })
         }
+      } else {
+        roturExtension.login_prompt({ STYLE_URL: "https://adthoughtsglobal.github.io/nova-dev-repl-rl/libs/roturstyle.css" });
       }
     })();
   }

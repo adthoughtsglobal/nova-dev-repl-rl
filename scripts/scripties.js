@@ -153,19 +153,6 @@ async function qsetsRefresh() {
 	return await updateMemoryData();
 }
 
-async function setuprotur() {
-	if (roturExtension.is_connected) {
-		return true;
-	}
-	roturExtension.connectToServer({ DESIGNATION: "nva", SYSTEM: "novaOS", VERSION: "2" });
-}
-
-async function logoutofrtr() {
-	remSettingKey("roturLink");
-	await roturExtension.logout();
-	roturExtension.disconnect();
-}
-
 // themes
 async function checkdmode() {
 	if (!novadotcsscache) {

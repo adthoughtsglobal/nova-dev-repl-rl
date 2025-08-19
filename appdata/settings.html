@@ -143,7 +143,7 @@
 			user-select: none;
 			background: var(--col-bg3);
 			border: var(--box-crisp);
-			border-radius: var(--siz-radius1);
+			border-radius: var(--siz-radius2);
 			font-size: var(--font-size-normal);
 			outline: none;
 			width: 7rem;
@@ -439,7 +439,7 @@
 				content: "";
 				display: block;
 				position: absolute;
-				background-color: var(--col-bg3);
+        background-color: var(--box-crisp-col);
 				width: 100%;
 				height: 1px;
 				left: 0;
@@ -1301,7 +1301,7 @@
 
 		.task {
 			padding: var(--sizing-normal);
-			background-color: var(--col-bgh);
+			background-color: var(--col-bg2);
 			color: var(--colors-text-section);
 			border-radius: var(--siz-radius1);
 			margin: 5px 0;
@@ -1314,9 +1314,8 @@
 		.task .stpicn {
 			cursor: pointer;
 			width: fit-content;
-			padding: 0.3rem;
-			background: var(--col-bg3);
-			border-radius: var(--siz-radius1);
+			font-size: 20px;
+			background: transparent;
 			color: var(--col-bad);
 		}
 
@@ -1550,7 +1549,7 @@
 			& .appname {
 				font-size: 1.5em;
 			}
-			
+
 			& .app_risk {
 				opacity: .5;
 				font-size: small;
@@ -2679,7 +2678,6 @@
 						tasksList.appendChild(taskDiv);
 					});
 
-					// Call taskmg again after 3 seconds
 					setTimeout(taskmg, 5000);
 				}
 
@@ -2753,7 +2751,7 @@
 					let name = await window.parent.getFileNameByID(appID);
 
 					document.querySelector("#big_app_card .app_icon").innerHTML = icon;
-					document.querySelector("#big_app_card .app_risk").textContent = "ID: "+appID;
+					document.querySelector("#big_app_card .app_risk").textContent = "ID: " + appID;
 					document.querySelector("#big_app_card .appname").textContent = name;
 					document.querySelector("#app_setting_nav").textContent = name;
 
@@ -2849,7 +2847,7 @@
 						<div class="app_icon"></div>
 						<div class="appdets">
 							<div class="appname">App</div>
-            <div class="app_risk">Installed</div>
+							<div class="app_risk">Installed</div>
 						</div>
 						<span id="openappwindowbtn" class="app_options material-symbols-rounded">
 							open_in_new
@@ -2971,8 +2969,8 @@
 				</segr>
 				<script>
 					async function loginOnceRotur() {
-						await window.parent.setuprotur();
-						window.parent.roturExtension.login_prompt({ STYLE_URL: "http://127.0.0.1:3000//libs/roturstyle.css" });
+						await window.parent.attemptConnection();
+						window.parent.roturExtension.login_prompt({ STYLE_URL: "https://adthoughtsglobal.github.io/nova-dev-repl-rl/libs/roturstyle.css" });
 					}
 					async function signoutrtrsets() {
 						await window.parent.logoutofrtr();
@@ -2996,6 +2994,14 @@
 
 						document.getElementById("rtrinitspace").style.display = "none";
 					}
+
+					eventBus.listen({
+            type: "rotur",
+            event: "authDone",
+				callback: () => {
+					loaduprtour();
+				}
+			});
 				</script>
 
 				</segr>
@@ -3248,7 +3254,7 @@
 						</span></button>
 				</div>
 				<div class="single_setting" windowopener="Advanced theme"
-					onclick="openCity(event, 'advancedthemesets');">
+					onclick="openCity(event, 'advancedthemesets');initColorPickers();">
 					<div class="settingName"><b>Advanced theme settings</b>
 						<p>Configure UI Colors, visuals...</p>
 					</div>
@@ -3459,19 +3465,24 @@
 					document.querySelectorAll('[data-variable]').forEach(button => {
 						const variableName = button.dataset.variable;
 						if (button.classList.contains('colorpickerui')) {
-							button.jscolor = new jscolor(button, {
-								preset: 'dark',
-								width: 150,
-								paletteCols: 0,
-								onInput: () => debouncedSaveColor(button, variableName)
-							});
-							button.jscolor.fromString(getCSSVariableValue(variableName));
+							if (button.jscolor) {
+								button.jscolor.fromString(getCSSVariableValue(variableName));
+							} else {
+								button.jscolor = new jscolor(button, {
+									preset: 'dark',
+									width: 150,
+									paletteCols: 0,
+									onInput: () => debouncedSaveColor(button, variableName)
+								});
+								button.jscolor.fromString(getCSSVariableValue(variableName));
+							}
 						} else {
-							button.value = (getCSSVariableValue(variableName));
+							button.value = getCSSVariableValue(variableName);
 							button.addEventListener('input', () => debouncedSaveColor(button, variableName));
 							button.addEventListener('change', () => debouncedSaveColor(button, variableName));
 						}
 					});
+
 
 					// nav theme
 					async function saveNovNavCtrlSetting() {
@@ -3506,8 +3517,6 @@
 						timeout = setTimeout(() => func.apply(this, args), wait);
 					};
 				}
-
-				window.addEventListener('load', initColorPickers);
 			</script>
 			</segr>
 			<script defer>
