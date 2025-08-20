@@ -622,7 +622,6 @@ nav [navobj] {
 	animation: pop var(----time1);
 	overflow-y: auto;
 	overflow-x: hidden;
-	max-height: 30vh;
 	padding-right: 5px;
 	gap: 3px;
 	flex-direction: column;
@@ -1006,8 +1005,8 @@ nav [navobj] {
 	flex-direction: row;
 }
 
-.backbtnscont ion-icon {
-	font-size: 15px;
+.backbtnscont .material-symbols-rounded {
+	font-size: 20px;
 	margin: 5px;
 }
 
@@ -1538,7 +1537,6 @@ dialog#terminal {
 	display: flex;
 	flex-direction: row;
 	flex-wrap: nowrap;
-	aspect-ratio: 9/6;
 	width: 100%;
 }
 
@@ -1551,7 +1549,7 @@ dialog#terminal {
 	width: 0;
 	transition: 0.3s;
 	gap: 0.5rem;
-	height: 100%;
+	height: 40vh;
 }
 
 .searchside .smalltitl {
