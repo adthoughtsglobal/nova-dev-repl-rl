@@ -146,8 +146,8 @@ nav [navobj] {
 [navobj] [app-shortcut] {
 	background-color: transparent;
 	cursor: pointer;
-	animation: appop 0.3s;
-	transition: var(----time1);
+	animation: appop 0.3s var(--time2);
+	transition: var(--time1);
 }
 
 #novaic {
@@ -259,7 +259,7 @@ nav [navobj] {
 	padding: 10px;
 	cursor: pointer;
 	width: 70px;
-	animation: pop var(----time1);
+	animation: pop var(--time1);
 	display: inline-block;
 	border: 1px solid transparent;
 	text-align: center;
@@ -291,18 +291,14 @@ nav [navobj] {
 .app-shortcut span svg {
 	width: 29px;
 	height: 29px;
-	animation: pop .5s;
+	animation: pop var(--time2);
+	overflow: hidden;
 }
 
 @keyframes appop {
 	0% {
 		opacity: 0;
-		transform: scale(0.7);
-	}
-
-	35% {
-		opacity: 0.4;
-		transform: scale(1.1);
+		transform: translateY(.5em);
 	}
 
 	100% {
