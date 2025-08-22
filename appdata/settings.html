@@ -1987,6 +1987,14 @@
 			<segr>
 				<div class="single_setting">
 					<div class="settingName">
+						<b>Window loader</b>
+						<p>Show an animation while the app is initializing.
+					</p>
+					</div>
+					<input class="turnon_checkbox" type="checkbox" settingkey="windowloader">
+				</div>
+				<div class="single_setting">
+					<div class="settingName">
 						<b>Use NovaOS offline</b>
 						<p>If enabled, Nova will try to cache the os and save it offline.
 					</p>
@@ -3529,7 +3537,10 @@
 						newurl.value = (fileID) ? fileID : '';
 					}
 					await ntxSession.send("settings.set", "wall", newurl.value);
-					setTimeout(() => { window.parent.genDesktop() }, 1000)
+						await window.parent.loadSessionSettings();
+					setTimeout(async () => { 
+						window.parent.genDesktop();
+					 }, 1000)
 
 				}
 				var prevCityBtn = null;
