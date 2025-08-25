@@ -1660,11 +1660,11 @@
 				openCity(event, 'themes');
 				document.body.classList.remove("initloadin");
 				return;
-			} else 
-			await renderapps();
-			if (data == "viewapp"){
+			} else
+				await renderapps();
+			if (data == "viewapp") {
 				console.log("23", 34, myWindow?.params)
-				const el = document.querySelector('[data-tag="'+myWindow?.params?.data.data+'"]');
+				const el = document.querySelector('[data-tag="' + myWindow?.params?.data.data + '"]');
 				el.click();
 			}
 
@@ -1959,18 +1959,32 @@
 
 
 		async function checkUpdatesHeadless() {
-			const localApps = await ntxSession.send("appStorage.get", "versionsData");
+			const controller = new AbortController();
+			const timeout = setTimeout(() => controller.abort(), 3000);
 
-			const metaData = await fetchAppData();
-			let count = 0;
-			for (const tag of Object.keys(localApps)) {
-				const appDetails = metaData.apps.find(app => getAppTag(app) === tag);
-				if (!appDetails) continue;
-				if (localApps[tag].ver != appDetails.ver) count++;
-			}
+			try {
+				const localApps = await Promise.race([
+					ntxSession.send("appStorage.get", "versionsData"),
+					new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 3000))
+				]);
 
-			if (count > 0)
-				ntxSession.send("sysUI.notify", (count === 1 ? "An app needs update" : `${count} apps need updates`), "Click to update now");
+				const metaData = await Promise.race([
+					fetchAppData(),
+					new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 3000))
+				]);
+
+				let count = 0;
+				for (const tag of Object.keys(localApps)) {
+					const appDetails = metaData.apps.find(app => getAppTag(app) === tag);
+					if (!appDetails) continue;
+					if (localApps[tag].ver != appDetails.ver) count++;
+				}
+
+				if (count > 0)
+					ntxSession.send("sysUI.notify", (count === 1 ? "An app needs update" : `${count} apps need updates`), "Click to update now");
+			} catch (e) { }
+			clearTimeout(timeout);
+
 		}
 
 		function updateButtonText() {

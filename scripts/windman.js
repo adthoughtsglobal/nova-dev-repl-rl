@@ -69,7 +69,7 @@ function createWindowShell(winuid, appid) {
 
     const windowLoader = document.createElement("div");
     windowLoader.className = "windowloader";
-    setTimeout(async ()=> {if (!(await getSetting("windowloader"))) {windowLoader.style.height = 0;windowLoader.style.opacity = "0";}}, 0);
+    setTimeout(async ()=> {if (!(await getSetting("windowloader"))) {windowLoader.style.opacity = "0";}}, 0);
     const loaderSpinner = document.createElement("div");
     loaderSpinner.className = "loader33";
     windowLoader.appendChild(loaderSpinner);

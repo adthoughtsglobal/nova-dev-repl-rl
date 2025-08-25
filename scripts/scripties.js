@@ -125,7 +125,9 @@ async function getMimeType(extension) {
 	return 'application/octet-stream';
 }
 
-function useNovaOffline() {
+async function useNovaOffline() {
+	if (await justConfirm("Turn on offline mode?", "Offline mode saves a copy of NovaOS in your browser.")) {
+		
 	if ('serviceWorker' in navigator) {
 		navigator.serviceWorker.register('sw.js', { scope: '/' })
 			.then((registration) => {
@@ -134,6 +136,7 @@ function useNovaOffline() {
 			.catch((error) => {
 				console.log('Service Worker registration failed:', error);
 			});
+	}
 	}
 }
 
