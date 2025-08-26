@@ -126,7 +126,7 @@ async function getMimeType(extension) {
 }
 
 async function useNovaOffline() {
-	if (await justConfirm("Turn on offline mode?", "Offline mode saves a copy of NovaOS in your browser.")) {
+	if (await justConfirm("Turn on offline mode?", "Offline mode saves a copy of NovaOS (~5MB) in your browser.")) {
 		
 	if ('serviceWorker' in navigator) {
 		navigator.serviceWorker.register('sw.js', { scope: '/' })
