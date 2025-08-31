@@ -553,13 +553,14 @@ function getAppAspectRatio(unshrunkContent) {
 	return content.includes("aspect-ratio") ? getMetaTagContent(content, 'aspect-ratio', false) : null;
 }
 async function getAppIcon(content, id, lazy = 0) {
-	if (content, id == undefined) {
+	try {
+if (content, id == undefined) {
 		if (content == 'folder')
 			return `<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="var(--col-txt1)"><path d="M160-160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h207q16 0 30.5 6t25.5 17l57 57h360q17 0 28.5 11.5T880-680q0 17-11.5 28.5T840-640H447l-80-80H160v480l79-263q8-26 29.5-41.5T316-560h516q41 0 64.5 32.5T909-457l-72 240q-8 26-29.5 41.5T760-160H160Zm84-80h516l72-240H316l-72 240Zm-84-262v-218 218Zm84 262 72-240-72 240Z"/></svg>`;
 
 		return defaultAppIcon;
 	} else if (id == "info") {
-		
+		return `<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="var(--col-txt1)"><path d="M440-280h80v-240h-80v240Zm40-320q17 0 28.5-11.5T520-640q0-17-11.5-28.5T480-680q-17 0-28.5 11.5T440-640q0 17 11.5 28.5T480-600Zm0 520q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"/></svg>`
 	}
 	const withTimeout = (promise) =>
 		Promise.race([promise, new Promise((_, reject) => setTimeout(() => reject(), 3000))]);
@@ -603,6 +604,8 @@ async function getAppIcon(content, id, lazy = 0) {
 		console.error("Error in getAppIcon:", err);
 	}
 
+	} catch (e) {}
+	
 	const fallbackIcon = generateFallbackIcon(id);
 	appicns[id] = fallbackIcon;
 

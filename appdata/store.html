@@ -1655,6 +1655,7 @@
 			const data = myWindow?.params?.data?.opener;
 
 			prepareAppData();
+				console.log("23", 34, myWindow?.params)
 			if (data == 'themes') {
 				loadThemes();
 				openCity(event, 'themes');
@@ -1663,12 +1664,15 @@
 			} else
 				await renderapps();
 			if (data == "viewapp") {
-				console.log("23", 34, myWindow?.params)
 				const el = document.querySelector('[data-tag="' + myWindow?.params?.data.data + '"]');
 				el.click();
+			} else if (data == "search") {
+				const input = document.getElementById("searchInput");
+				input.value = myWindow?.params?.data.data;
+				if (myWindow?.params?.data.data.length > 0) {
+					searchApps(myWindow?.params?.data.data)
+				}
 			}
-
-			prepareAppData();
 		}
 
 
@@ -2054,23 +2058,26 @@
 		}
 
 		function displaySearchResults(results) {
-			console.log(results)
-			const resultsDiv = document.getElementById("searchresults");
-			resultsDiv.innerHTML = "";
-			if (results.length === 0) {
-				resultsDiv.innerHTML = "<p class='searchnores'>No results found.</p>";
-				return;
-			}
-			results.forEach(result => {
-				const item = document.createElement("div");
-				item.className = "searchResult";
-				item.innerHTML = `<span>${result.name}</span><i class="material-symbols-rounded">chevron_forward</i>`;
-				item.setAttribute("onclick", `openappinstr('${result.name}', ${JSON.stringify(result)})`);
+	console.log(results)
+	const resultsDiv = document.getElementById("searchresults");
+	resultsDiv.innerHTML = "";
+	if (results.length === 0) {
+		resultsDiv.innerHTML = "<p class='searchnores'>No results found.</p>";
+		return;
+	}
+	results.forEach(result => {
+		const item = document.createElement("div");
+		item.className = "searchResult";
+		item.innerHTML = `<span>${result.name}</span><i class="material-symbols-rounded">chevron_forward</i>`;
+		item.setAttribute("onclick", `openappinstr('${result.name}', ${JSON.stringify(result)})`);
+		resultsDiv.appendChild(item);
+	});
+	if (results.length === 1) {
+		openappinstr(results[0].name, results[0]);
+		return;
+	}
+}
 
-				resultsDiv.appendChild(item);
-			});
-
-		}
 	</script>
 </body>
 

@@ -510,7 +510,7 @@ nav [navobj] {
 	width: calc(100% - 1.7em);
 	color: inherit;
 	background: var(--col-bg1);
-	border-radius: var(--siz-radius1);
+	border-radius: var(--siz-radius2);
 	border: var(--box-crisp);
 	;
 }
@@ -526,7 +526,7 @@ nav [navobj] {
 .modal-items select {
 	background: var(--col-bgh);
 	color: var(--col-txth);
-	border-radius: var(--siz-radius1);
+	border-radius: var(--siz-radius2);
 	padding: 0.5rem;
 	outline: none;
 	display: block;
@@ -541,7 +541,7 @@ nav [navobj] {
 	color: inherit;
 	flex-grow: 1;
 	cursor: pointer;
-	border-radius: var(--siz-radius1);
+	border-radius: var(--siz-radius2);
 	width: 100%;
 	border: var(--box-crisp);
 	;
@@ -558,6 +558,22 @@ nav [navobj] {
 
 .modal-items a {
 	color: #71bbff;
+
+	&[type="btn"] {
+		padding: .5em;
+		background-color: #ffffff1c;
+		border: var(--box-crisp);
+		border-radius: var(--siz-radius2);
+		display: flex;
+		color: var(--col-txt1);
+		margin-top: .5em;
+		cursor: pointer;
+        justify-content: space-between;
+		&>.material-symbols-rounded {
+			opacity: .5;
+			font-size: 20px;
+		}
+	}
 }
 
 #startup {
