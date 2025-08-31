@@ -1862,15 +1862,15 @@
 		}
 
 		async function openfile(x, all) {
+			console.log(34534, x, all)
 			if (sessiontype == "opener") {
 				choosefile()
 				return;
 			}
 
 			if (all == 'any') {
-				currentreqID = window.parent.genUID();
-				let appIdToOpen = window.parent.handlers['file_manager'] || null;
-				window.parent.openlaunchprotocol(appIdToOpen, { "opener": "app", "dir": "Apps/" }, currentreqID, myWindow.windowID);
+				let appIdToOpen = await ntxSession.send("olp.useHandler", "file_manager", { "opener": "app", "dir": "Apps/" });
+				await ntxSession.send("olp.launch", appIdToOpen, x);
 				return;
 			} else if (all == 'text') {
 				await ntxSession.send("olp.useHandler", "text_editor", slfileID);
@@ -2272,7 +2272,7 @@
 					icon: action.icon,
 					color: action.color,
 					label: action.label,
-					action: (itemuid) => action.action(itemuid),
+					action: () => action.action(itemuid),
 				}));
 			}
 			return [

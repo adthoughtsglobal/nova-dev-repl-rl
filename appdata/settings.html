@@ -2256,7 +2256,6 @@
 								clickedRowId = `row-${type}`;
 
 								replaceableapp = handlers;
-								let appIdToOpen = window.parent.handlers['file_manager'] || null;
 								let newHandler = await ntxSession.send("olp.useHandler", "file_manager", { "opener": "app", "dir": "Apps/" });
 
 								for (let key in window.parent.handlers) {
