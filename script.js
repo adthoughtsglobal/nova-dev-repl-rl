@@ -33,7 +33,6 @@ function setbgimagetourl(x) {
 			nextImg.classList.add('current-bg');
 			currentImage = currentImage === 1 ? 2 : 1;
 
-
 			const wallpos = await getSetting("wallpaperPos") || "center";
 			document.getElementsByClassName("current-bg")[0].style.objectPosition = wallpos;
 		};
@@ -93,7 +92,6 @@ async function showloginmod() {
 			closeElementedis();
 		});
 	};
-
 
 	document.getElementsByClassName("backbtnscont")[0].style.display = "none";
 	function createUserDivs(users) {
@@ -168,7 +166,6 @@ function setsrtpprgbr(val) {
 	progressBar.style.width = width + '%';
 }
 
-
 async function loadFileTypeAssociations() {
 	const associations = await getSetting('fileTypeAssociations');
 	fileTypeAssociations = associations || {};
@@ -177,7 +174,6 @@ async function loadFileTypeAssociations() {
 
 	cleanupInvalidAssociations();
 }
-
 
 function closeElementedis(element) {
 	if (!element) {
@@ -242,7 +238,6 @@ async function startup() {
 				}
 			}
 
-
 			let shouldcheckupd = await getSetting("nvaupdcheck");
 			if (shouldcheckupd) await fetchDataAndUpdate();
 			removeInvalidMagicStrings();
@@ -287,7 +282,6 @@ async function startup() {
 		} catch (err) { console.error("startup error:", err); }
 	})
 }
-
 
 function updateTime() {
 	const now = new Date();
@@ -527,7 +521,6 @@ function clwin(x) {
 	}
 	loadtaskspanel()
 	if (!el) return;
-
 
 	el.classList.add("transp3");
 	setTimeout(() => {
@@ -846,7 +839,6 @@ async function extractAndRegisterCapabilities(appId, content) {
 				}
 			}
 
-
 			permissions.sort((a, b) => getNamespaceRisk(b) - getNamespaceRisk(a));
 
 			if (permissions.includes("unsandboxed")) {
@@ -1061,7 +1053,6 @@ function openModal(type, { title = '', message, options = null, status = null, p
 				resolve(true);
 			}
 		};
-
 
 		if (registerRef) {
 			document.getElementById("window" + notificationContext[registerRef]?.windowID).querySelectorAll(".windowcontent")[0].appendChild(modal);
@@ -1767,7 +1758,6 @@ async function realgenTaskBar() {
 				index++;
 				var islnk = false;
 
-
 				var appShortcutDiv = document.createElement("biv");
 				appShortcutDiv.setAttribute("draggable", true);
 				appShortcutDiv.setAttribute("ondragstart", "dragfl(event, this)");
@@ -1797,7 +1787,6 @@ async function realgenTaskBar() {
 				appShortcutDiv.appendChild(iconSpan);
 				appShortcutDiv.appendChild(tooltisp);
 				appbarelement.appendChild(appShortcutDiv);
-
 
 				if (!app.id) {
 					let folderName = app.name;
@@ -2124,7 +2113,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 				openn();
 			}
 		});
-
 
 		makedialogclosable('searchwindow');
 		prepareArrayToSearch();

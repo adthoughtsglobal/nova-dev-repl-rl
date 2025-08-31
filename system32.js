@@ -42,7 +42,6 @@ const eventBusWorker = (() => {
     return { deliver, listen };
 })();
 
-
 // database functions
 
 async function readAllData(db, storeName) {
@@ -158,7 +157,6 @@ async function checkPassword(password) {
     }
 }
 
-
 async function removeInvalidMagicStrings() {
     const magicStrings = JSON.parse(await sharedStore.get(0, "magic"));
     if (!magicStrings) return;
@@ -224,7 +222,6 @@ async function changePassword(oldPassword, newPassword) {
         }
 
 
-
         const writeTransaction = dbCache.transaction('contentpool', 'readwrite');
         const writeStore = writeTransaction.objectStore('contentpool');
 
@@ -260,7 +257,6 @@ async function changePassword(oldPassword, newPassword) {
     lethalpasswordtimes = false;
     return true;
 }
-
 
 // memory collector
 
@@ -596,7 +592,6 @@ async function resetSettings(fileName = "preferences.json", dirPath = "System/")
         }
     });
 }
-
 
 async function resetAllSettings() {
     return enqueueTask(async () => {
@@ -963,7 +958,6 @@ async function updateFile(folderName, fileId, newData) {
         if (fileLocation) {
             let fileToUpdate = fileLocation.parent[fileLocation.key];
 
-
             // Update metadata only if newData.metadata is defined and has properties
             if (newData.metadata && Object.keys(newData.metadata).length > 0) {
                 fileToUpdate.metadata = newData.metadata;
@@ -1095,7 +1089,6 @@ async function createFile(folderName, fileName, type, content, metadata = {}) {
 
 }
 
-
 const createFolderQueue = [];
 let isProcessingCreateFolderQueue = false;
 async function createFolder(folderNames, folderData = {}) {
@@ -1145,7 +1138,6 @@ async function processCreateFolderQueue() {
                 }
             };
 
-
             if (folderData && typeof folderData === 'object') {
                 insertData(current, folderData);
             }
@@ -1169,7 +1161,6 @@ async function processCreateFolderQueue() {
         processCreateFolderQueue();
     }
 }
-
 
 // other
 

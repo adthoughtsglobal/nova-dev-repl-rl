@@ -45,7 +45,6 @@ async function useHandler(name, stufftodo) {
     });
 }
 
-
 const iframeReferences = {};
 
 async function openfile(x, stufftodo) {
@@ -137,7 +136,6 @@ async function buildIframeApiBridge(appid, title, winuid, perms) {
         }
     }
 
-
     async function handleNtxSessionMessage(event) {
         console.log('HANDLE NTX INCOMING',event.data)
         const { action, params, transactionId } = event.data;
@@ -199,7 +197,6 @@ async function buildIframeApiBridge(appid, title, winuid, perms) {
     if (!window._messageListeners) window._messageListeners = {};
     window._messageListeners[winuid] = handleMessage;
 }
-
 
 async function prepareIframeContentHeadless(cont, appid, winuid) {
     const contentString = isBase64(cont) ? decodeBase64Content(cont) : (cont || "<center><h1>Unavailable</h1>App Data cannot be read.</center>");
@@ -326,7 +323,6 @@ async function prepareIframeContent(cont, appid, winuid) {
         cacheFont(fontUrl, 'material-symbols-rounded');
         styleBlock += `<style>@font-face{font-family:'Material Symbols Rounded';font-style:normal;src:url(${fontUrl}) format('woff2');}.material-symbols-rounded{font-family:'Material Symbols Rounded';font-weight:normal;font-style:normal;font-size:24px;line-height:1;display:inline-block;white-space:nowrap;direction:ltr;-webkit-font-smoothing:antialiased;}</style>`;
     }
-
 
     const ctxScript = getMetaTagContent(contentString, 'nova-include')?.includes('contextMenu') ? await fetch('scripts/ctxmenu.js').then(res => res.text()) : '';
 
@@ -569,7 +565,6 @@ async function openapp(x, external, customtodo, headless = false) {
                 Gtodo = null;
                 return;
             }
-
 
             if (Gtodo == null && customtodo) Gtodo = customtodo;
 

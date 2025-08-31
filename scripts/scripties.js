@@ -9,7 +9,6 @@ function updateNavSize() {
 	navheight = navheight + (0.3 * remToPx);
 }
 
-
 // more stuff
 function isDark(hexColor) {
 	// Remove '#' if present
@@ -26,7 +25,6 @@ function isDark(hexColor) {
 	// Return true if luminance is less than or equal to 0.5 (considered dark), false otherwise
 	return luminance <= 0.5;
 }
-
 
 function terminal() {
 	gid("terminal").showModal()
@@ -234,7 +232,6 @@ function applyTheme(colors, doc) {
 	broadcastStyleToIframes(themeStyleTag.textContent);
 }
 
-
 const broadcastStyleToIframes = (css) => {
 	document.querySelectorAll('iframe').forEach((iframe) => {
 		if (iframe.contentWindow) {
@@ -384,7 +381,6 @@ function backupsdia() {
 	window.open(url, title, features);
 }
 
-
 async function addShortcut(flid) {
 	const getFolderNames = (memory, parentPath = '', level = 0) => {
 		let folders = [];
@@ -398,7 +394,6 @@ async function addShortcut(flid) {
 		});
 		return folders;
 	};
-
 
 	let folders = getFolderNames(memory.root);
 

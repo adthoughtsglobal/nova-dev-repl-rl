@@ -173,7 +173,6 @@
 			justify-content: flex-start;
 		}
 
-
 		.file[list] .flfrname {
 			display: inline-block;
 			overflow: hidden;
@@ -905,7 +904,6 @@
 				document.getElementById("fupibu").innerHTML = "File(s) Saved";
 			}
 
-
 			function readFileAsBase64(file) {
 				return new Promise((resolve, reject) => {
 					const reader = new FileReader();
@@ -1219,7 +1217,6 @@
 					window.parent.notify("Created file", "File " + fname + " created at " + currentPath, "Files");
 				});
 		}
-
 
 		async function createfol() {
 			let fname = document.getElementById("makfolname").value;
@@ -1643,7 +1640,6 @@
 			fllist.appendChild(fileElement);
 		}
 
-
 		function updpth(currentPath2 = currentPath) {
 			const pathDisp = document.getElementById("pathdisp");
 			pathDisp.innerHTML = "/";
@@ -1689,7 +1685,6 @@
 				treeviewopen = true;
 			}
 		}
-
 
 		async function slfile(element, param) {
 			element.scrollIntoView({ behavior: "smooth", block: "nearest" });
@@ -1847,7 +1842,6 @@
 			});
 		}
 
-
 		async function remfile(ID) {
 			try {
 
@@ -1934,7 +1928,6 @@
 				return folders;
 			};
 
-
 			let folders = getFolderNames(window.parent.memory.root);
 			folders = folders.filter(folder => folder.value.trim() !== currentPath);
 
@@ -2020,7 +2013,6 @@
 			return "fas fa-folder";
 		}
 
-
 		function upmd() {
 			document.getElementById("fupibu").innerHTML = "Import";
 
@@ -2060,7 +2052,6 @@
 			return str.endsWith('/') ? str.slice(0, -1) : str;
 		}
 
-
 		var currentreqID;
 
 		window.addEventListener('message', async (event) => {
@@ -2085,7 +2076,6 @@
 				});
 				return folders;
 			};
-
 
 			let folders = getFolderNames(window.parent.memory.root);
 
@@ -2280,9 +2270,7 @@
 			];
 		}
 
-
 		var contextMenu;
-
 
 		function createContextMenu(event) {
 			if (!contextMenu) {
@@ -2302,7 +2290,6 @@
 
 			return contextMenu;
 		}
-
 
 		function createDropdownMenu(items) {
 			const dropdownMenu = document.createElement('div');
@@ -2327,7 +2314,6 @@
 
 			return dropdownMenu;
 		}
-
 
 		function adjustPositionToFitViewport(x, y, menu, dialogRect = null) {
 			menu.style.display = 'block';
