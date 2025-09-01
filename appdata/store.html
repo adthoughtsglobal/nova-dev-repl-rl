@@ -2039,23 +2039,60 @@
 		}
 
 		function searchApps(query) {
-			const resultsDiv = document.getElementById("searchresults");
-			resultsDiv.style.display = 'flex';
-			resultsDiv.innerHTML = "<div class='loader'></div>";
-			fetch("https://adthoughtsglobal.github.io/Nova-Store/db/v2.json")
-				.then(response => response.json())
-				.then(data => {
-					const results = data.apps.filter(app => {
-						const appName = app.name;
-						return appName.toLowerCase().includes(query.toLowerCase());
-					});
-					displaySearchResults(results);
-				})
-				.catch(error => {
-					console.error("Error fetching app data:", error);
-					resultsDiv.innerHTML = "Error loading search results.";
-				});
-		}
+  const resultsDiv = document.getElementById("searchresults");
+  resultsDiv.style.display = 'flex';
+  resultsDiv.innerHTML = "<div class='loader'></div>";
+  fetch("https://adthoughtsglobal.github.io/Nova-Store/db/v2.json")
+    .then(response => response.json())
+    .then(data => {
+      const threshold = 0.6;
+      const similarity = (a, b) => {
+        a = a.toLowerCase();
+        b = b.toLowerCase();
+        const longer = a.length > b.length ? a : b;
+        const shorter = a.length > b.length ? b : a;
+        const longerLength = longer.length;
+        if (longerLength === 0) return 1.0;
+        const editDist = (s1, s2) => {
+          const costs = [];
+          for (let i = 0; i <= s1.length; i++) {
+            let lastValue = i;
+            for (let j = 0; j <= s2.length; j++) {
+              if (i === 0) costs[j] = j;
+              else {
+                if (j > 0) {
+                  let newValue = costs[j - 1];
+                  if (s1.charAt(i - 1) !== s2.charAt(j - 1))
+                    newValue = Math.min(Math.min(newValue, lastValue), costs[j]) + 1;
+                  costs[j - 1] = lastValue;
+                  lastValue = newValue;
+                }
+              }
+            }
+            if (i > 0) costs[s2.length] = lastValue;
+          }
+          return costs[s2.length];
+        };
+        return (longerLength - editDist(longer, shorter)) / parseFloat(longerLength);
+      };
+      const results = data.apps.filter(app => {
+        return (
+          similarity(app.name, query) >= threshold ||
+          similarity(app.desc || "", query) >= threshold ||
+          similarity(app.ldesc || "", query) >= threshold ||
+          app.name.toLowerCase().includes(query.toLowerCase()) ||
+          (app.desc || "").toLowerCase().includes(query.toLowerCase()) ||
+          (app.ldesc || "").toLowerCase().includes(query.toLowerCase())
+        );
+      });
+      displaySearchResults(results);
+    })
+    .catch(error => {
+      console.error("Error fetching app data:", error);
+      resultsDiv.innerHTML = "Error loading search results.";
+    });
+}
+
 
 		function displaySearchResults(results) {
 	console.log(results)

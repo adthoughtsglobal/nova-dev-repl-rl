@@ -47,12 +47,13 @@
             width: fit-content;
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: space-between;
             height: fit-content;
             height: 100%;
             padding: 0 .5em;
             background: var(--col-bg2);
             border-left: 1px solid #7b7b7b4f;
+            align-items: center;
 
             &>.actionBtnPrt {
                 width: fit-content;
@@ -66,11 +67,20 @@
                 height: fit-content;
                 border-radius: var(--siz-radius1);
             }
+
+            &>.filter_btn_section {
+                padding: .5em;
+                background: var(--col-bg3);
+                border: var(--box-crisp);
+                border-radius: var(--siz-radius1);
+                display: flex;
+                margin-top: 1em;
+            }
         }
 
         #video-container {
             width: 100%;
-    height: 0;
+            height: 0;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -103,7 +113,7 @@
                 border-radius: var(--siz-radius1);
                 flex-direction: row;
                 gap: 1px;
-        background-color: #7b7b7b3b;
+                background-color: #7b7b7b3b;
                 border: 1px solid #7b7b7b0c;
                 overflow: hidden;
             }
@@ -274,6 +284,16 @@
                 height: auto;
             }
         }
+
+        img#last_img_prviw {
+    width: 2.5em;
+    object-fit: cover;
+    aspect-ratio: 1 / 1;
+    margin-bottom: 1em;
+    border-radius: var(--siz-radius1);
+    border: var(--box-crisp);
+    cursor: pointer;
+}
     </style>
     <meta name="nova-include" content="nova.css material-symbols-rounded">
 </head>
@@ -312,6 +332,11 @@
             </div>
         </div>
         <div class="toolpart">
+            <div class="filter_btn_section" onclick="ntxSession.send('sysUI.toast', 'Filters are coming soon...');">
+                <span class="material-symbols-rounded">
+                    blur_on
+                </span>
+            </div>
             <div class="actionBtnPrt">
                 <button class="captoolbtn" id="photo-btn" onclick="capture(this)">
                     <span class="material-symbols-rounded">camera</span>
@@ -326,7 +351,9 @@
                     <button class="captoolbtn" id="stop-btn" style="display: none;">
                         <span class="material-symbols-rounded">stop</span></button>
             </div>
-
+            <div class="view_output_section" onclick="ntxSession.send('olp.useHandler', 'gallery');">
+                <img src="" id="last_img_prviw">
+            </div>
         </div>
     </div>
     <script>
@@ -458,8 +485,16 @@
                 stopBtn.style.display = "none";
             }
         }
+
+        async function updatePreviewImage() {
+            let lastFileID = await ntxSession.send("appStorage.get", "lastFile");
+            let lastFileContent = await ntxSession.send("fileGet.byId", lastFileID);
+            document.getElementById("last_img_prviw").src = lastFileContent.content;
+        }
+
         function greenflag() {
             startCamera();
+            updatePreviewImage();
 
             document.getElementById("pause-btn").addEventListener("click", function () {
                 if (isPaused) {
@@ -551,25 +586,7 @@
             document.getElementById("stop-btn").onclick = stopRecording;
         }
 
-        function saveRecording() {
 
-            async function createFileWithTimestamp() {
-                let now = new Date();
-                let timestamp = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}, ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-                let filename = `video_${timestamp} ${await ntxSession.send("utility.genUID")}`;
-
-                let blob = new Blob(recordedChunks, { type: 'video/webm' });
-
-                let reader = new FileReader();
-                reader.onloadend = async function () {
-                    let dataUri = reader.result;
-                    await ntxSession.send("fileSet.createFile", "Media/", filename, "webm", dataUri);
-                };
-                reader.readAsDataURL(blob);
-            }
-
-            createFileWithTimestamp();
-        }
 
 
         function updateStopwatch() {
@@ -608,7 +625,6 @@
 
             return dataUrl;
         }
-
         async function capture(obj1) {
             obj = obj1;
             const video = document.getElementById('video');
@@ -645,22 +661,45 @@
                 try {
                     let imgData = await captureCameraImage();
                     let format = (await ntxSession.send("settings.get", "CamImgFormat")) || 'webp';
-
-                    let now = new Date();
-                    let timestamp = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}, ${now.getHours()}:${now.getMinutes()}`;
-                    let filename = `${timestamp} ${await ntxSession.send("utility.genUID",)}`;
-
-                    ntxSession.send("fileSet.createFile", "Media/", filename, format, imgData);
+                    let filename = await generateFilename();
+                    let lastFileID = await createFile("Media/", filename, format, imgData);
+                    ntxSession.send("appStorage.set", "lastFile", lastFileID);
                     obj.innerHTML = originalText;
                     video.style.display = "block";
                 } catch (error) {
                     console.log("Capture error:", error);
                     obj.innerHTML = originalText;
                 }
-
                 timerelem.style.display = 'none';
             }
         }
+
+        function saveRecording() {
+            async function createFileWithTimestamp() {
+                let filename = await generateFilename("video");
+                let blob = new Blob(recordedChunks, { type: 'video/webm' });
+                let reader = new FileReader();
+                reader.onloadend = async function () {
+                    let dataUri = reader.result;
+                    await createFile("Media/", filename, "webm", dataUri);
+                };
+                reader.readAsDataURL(blob);
+            }
+            createFileWithTimestamp();
+        }
+
+        async function generateFilename(prefix = "") {
+            let now = new Date();
+            let timestamp = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}, ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+            let uid = await ntxSession.send("utility.genUID");
+            return prefix ? `${prefix}_${timestamp} ${uid}` : `${timestamp} ${uid}`;
+        }
+
+        async function createFile(path, filename, format, data) {
+            return await ntxSession.send("fileSet.createFile", path, filename, format, data);
+            
+        }
+
 
         function toggleMirror() {
             const video = document.getElementById('video');
