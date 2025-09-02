@@ -2640,11 +2640,21 @@ dialog#lazarus {
 	width: fit-content;
 	height: fit-content;
 	border: 0;
-	background: transparent;
 	color: white;
 	font-size: 5em;
+	background-color: transparent;
 	font-weight: bold;
 	outline: none;
+	animation: appop .5s;
+
+	&>span {
+    font-size: 14px;
+    font-weight: normal;
+    position: absolute;
+    width: calc(100% - 12em);
+    text-align: center;
+	opacity: .5;
+}
 
 	&:focus {
 		outline: none;
@@ -2652,6 +2662,7 @@ dialog#lazarus {
 
 	&::backdrop {
 		background-color: black;
+	background: #101010;
 	}
 
 	h1#lazarus-title {
