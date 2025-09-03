@@ -525,6 +525,10 @@ opacity:.5;
     .modal-content {
         background: var(--col-bg1);
     }
+
+    .account-sidebar {
+    width: 100%;
+}
 }
 
 @media (max-width: 480px) {

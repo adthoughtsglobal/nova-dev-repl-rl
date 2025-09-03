@@ -391,7 +391,6 @@ class RoturExtension {
     if (!this.is_connected) { console.error("Not Connected"); return; }
     if (this.authenticated) { console.error("Already Logged In"); return; }
 
-    // Create iframe for authentication
     const e = document.createElement("iframe");
     e.id = "rotur-auth";
     e.src = `https://rotur.dev/auth?styles=${encodeURIComponent(STYLE_URL)}`;
@@ -408,22 +407,18 @@ class RoturExtension {
       zIndex: 999
     });
 
-    const t = document.body.appendChild(e);
+    document.body.appendChild(e);
 
     const _roturAuthHandler = (a) => {
       console.log("Rotur Auth Message Received", a);
       if ("https://rotur.dev" === a.origin && "rotur-auth-token" === a.data?.type) {
-
-        document.body.removeChild(t);
+        t.remove()
         window.removeEventListener("message", _roturAuthHandler);
-
-        // Now authenticate with the token
         this.loginToken({ TOKEN: a.data.token });
-        
-				setSetting( "roturLink", JSON.stringify({
-							"type": "token",
-							"token": a.data.token
-						}));
+        setSetting("roturLink", JSON.stringify({
+          "type": "token",
+          "token": a.data.token
+        }));
       }
     };
 
@@ -1674,18 +1669,18 @@ onstartup.push(async () => {
 });
 
 async function attemptConnection() {
-	if (roturExtension?.is_connected) {
-		return true;
-	} else if (!roturExtension) {
+  if (roturExtension?.is_connected) {
+    return true;
+  } else if (!roturExtension) {
     roturExtension = new RoturExtension();
   }
-	roturExtension.connectToServer({ DESIGNATION: "nva", SYSTEM: "novaOS", VERSION: "2" });
+  roturExtension.connectToServer({ DESIGNATION: "nva", SYSTEM: "novaOS", VERSION: "2" });
 }
 
 async function logoutofrtr() {
-	remSettingKey("roturLink");
-	await roturExtension.logout();
-	roturExtension.disconnect();
+  remSettingKey("roturLink");
+  await roturExtension.logout();
+  roturExtension.disconnect();
 }
 
 function roturTWEventCall(data) {
@@ -1699,14 +1694,14 @@ function roturTWEventCall(data) {
       }
     })
     eventBusWorker.deliver({
-            type: "rotur",
-            event: "authDone"
-        });
+      type: "rotur",
+      event: "authDone"
+    });
   } else if (data == "roturEXT_whenConnected") {
     (async () => {
       let localroturdata = await window.getSetting("roturLink");
       if (localroturdata) {
-      sysLog("RoturTW", `Trying to log in`);
+        sysLog("RoturTW", `Trying to log in`);
         let targettype = JSON.parse(localroturdata).type;
         if (targettype == "pswd") {
           let targetun = JSON.parse(localroturdata).username;
