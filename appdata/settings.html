@@ -437,7 +437,7 @@
 				content: "";
 				display: block;
 				position: absolute;
-        background-color: var(--box-crisp-col);
+				background-color: var(--box-crisp-col);
 				width: 100%;
 				height: 1px;
 				left: 0;
@@ -1974,7 +1974,7 @@
 					</div>
 					<input class="turnon_checkbox" type="checkbox" settingkey="windowoutline">
 				</div>
-				
+
 			</segr>
 
 			<h3>Behaviours</h3>
@@ -2572,14 +2572,6 @@
 						<p>Join us for support, exclusive news and much more.</p>
 					</div>
 					<button onclick="window.open('https://discord.gg/atkqbwEQU8')">Join</button>
-				</div>
-				<div class="single_setting">
-					<div class="settingName">
-						<b>Feedback</b>
-						<p>Tell us about it, we are here for help!</p>
-					</div>
-					<button
-						onclick="window.open('https://docs.google.com/forms/d/e/1FAIpQLSdqhloOUkpZVUG-V1Vu2HFJufaSLmdwsGvPHKDSwoJwrwps6w/viewform?usp=dialog')">Continue</button>
 				</div>
 			</segr>
 			<h3>Credits</h3>
@@ -3523,10 +3515,10 @@
 						newurl.value = (fileID) ? fileID : '';
 					}
 					await ntxSession.send("settings.set", "wall", newurl.value);
-						await window.parent.loadSessionSettings();
-					setTimeout(async () => { 
+					await window.parent.loadSessionSettings();
+					setTimeout(async () => {
 						window.parent.genDesktop();
-					 }, 1000)
+					}, 1000)
 
 				}
 				var prevCityBtn = null;
@@ -3858,9 +3850,9 @@
 				replaceSelects();
 			} catch (e) { }
 
-					eventBus.listen({
-            type: "rotur",
-            event: "authDone",
+			eventBus.listen({
+				type: "rotur",
+				event: "authDone",
 				callback: () => {
 					loaduprtour();
 				}

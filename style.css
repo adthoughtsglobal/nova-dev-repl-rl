@@ -2573,7 +2573,7 @@ div#toasticon {
 	max-height: 300px;
 	overflow: hidden auto;
 	border: var(--box-crisp);
-	border-radius: var(--siz-radius1);
+	border-radius: var(--siz-radius2);
 	padding: 0;
 	display: flex;
 	flex-direction: column;
