@@ -35,6 +35,8 @@ function setbgimagetourl(x) {
 
 			const wallpos = await getSetting("wallpaperPos") || "center";
 			document.getElementsByClassName("current-bg")[0].style.objectPosition = wallpos;
+			const wallsiz = await getSetting("wallpaperSiz") || "cover";
+			document.getElementsByClassName("current-bg")[0].style.objectFit = wallsiz;
 		};
 	};
 

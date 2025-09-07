@@ -2038,22 +2038,35 @@
 							console.log("No wallpaper set ", storedwall);
 						}
 
-						async function savewallpaperalginment() {
-							let newValue = document.getElementById("wallpaperPos").value
-							await ntxSession.send("settings.set", "wallpaperPos", newValue);
-						}
 
-						document.getElementById("wallpaperPos").addEventListener("change", savewallpaperalginment);
+					}
 
+					async function savewallpaperalginment() {
+						let newValue = document.getElementById("wallpaperPos").value
+						ntxSession.send("settings.set", "wallpaperPos", newValue);
+
+						let newValue2 = document.getElementById("wallpaperSiz").value
+						ntxSession.send("settings.set", "wallpaperSiz", newValue2);
+						console.log("alignSETTTTTT")
+					}
+
+					document.addEventListener("DOMContentLoaded", async () => {
+						document.getElementById("wallpaperPos").addEventListener("change", savewallpaperalginment)
+						document.getElementById("wallpaperSiz").addEventListener("change", savewallpaperalginment)
 						try {
 							let currentSettings = await ntxSession.send("settings.get", "wallpaperPos");
 							if (currentSettings) {
-								document.getElementById("wallpaperPos").checked = currentSettings;
+								document.getElementById("wallpaperPos").value = currentSettings;
+							}
+							let currentSettings2 = await ntxSession.send("settings.get", "wallpaperSiz");
+							if (currentSettings2) {
+								document.getElementById("wallpaperSiz").value = currentSettings2;
 							}
 						} catch (error) {
 							console.error(error);
 						}
-					}
+					})
+
 
 					async function defs5() {
 						console.log("defs5 loaded");
@@ -3356,6 +3369,15 @@
 
 					</select>
 				</div>
+				<div class="single_setting" class="colorsetting">
+					<b>Wallpaper sizing</b>
+					<select id="wallpaperSiz">
+						<option value="cover">Cover</option>
+						<option value="contain">Fit</option>
+						<option value="fill">Stretch</option>
+
+					</select>
+				</div>
 			</segr>
 
 			<h1>Icon pack <div class="betatag">beta</div>
@@ -3776,7 +3798,7 @@
 							optionDiv.onclick = () => {
 								selected.textContent = option.textContent;
 								select.value = option.value;
-								select.dispatchEvent(new Event('change'));
+								select.dispatchEvent(new Event('change', { bubbles: true }));
 								dialog.close();
 								openDialog = null;
 							};
