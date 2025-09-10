@@ -483,11 +483,11 @@ nav [navobj] {
 		border-bottom: 1px solid #80808082;
 		padding-bottom: .5em;
 	}
-}
 
-#AppInstDia span.dangertext {
-	color: inherit;
-	font-weight: bold;
+	& span.dangertext {
+		color: inherit;
+		font-weight: bold;
+	}
 }
 
 .modal-items .button-container {
@@ -568,7 +568,8 @@ nav [navobj] {
 		color: var(--col-txt1);
 		margin-top: .5em;
 		cursor: pointer;
-        justify-content: space-between;
+		justify-content: space-between;
+
 		&>.material-symbols-rounded {
 			opacity: .5;
 			font-size: 20px;
@@ -2648,13 +2649,13 @@ dialog#lazarus {
 	animation: appop .5s;
 
 	&>span {
-    font-size: 14px;
-    font-weight: normal;
-    position: absolute;
-    width: calc(100% - 12em);
-    text-align: center;
-	opacity: .5;
-}
+		font-size: 14px;
+		font-weight: normal;
+		position: absolute;
+		width: calc(100% - 12em);
+		text-align: center;
+		opacity: .5;
+	}
 
 	&:focus {
 		outline: none;
@@ -2662,7 +2663,7 @@ dialog#lazarus {
 
 	&::backdrop {
 		background-color: black;
-	background: #101010;
+		background: #101010;
 	}
 
 	h1#lazarus-title {

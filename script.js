@@ -997,7 +997,7 @@ function openModal(type, { title = '', message, options = null, status = null, p
 		}
 
 		const p = document.createElement('p');
-		if (type === 'say') {
+		if (type === 'say' || type === 'confirm') {
 			p.innerHTML = `${message}`;
 		} else {
 			p.textContent = message;
