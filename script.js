@@ -1605,7 +1605,7 @@ function displayToast(text, duration, regref) {
 
 		const windValues = Object.values(winds).map(wind => Number(wind.zIndex) || 0);
 		const maxWindValue = Math.max(...windValues);
-		document.getElementById("toastdiv").style.zIndex = maxWindValue + 1;
+		document.getElementById("toastdiv").style.zIndex = maxWindValue + 2;
 		document.getElementById("toastdiv").classList.add('notifpullanim');
 		document.getElementById("toastdiv").style.display = "block";
 

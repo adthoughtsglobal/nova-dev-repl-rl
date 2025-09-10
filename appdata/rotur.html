@@ -111,14 +111,20 @@
             }
         }
 
-        #signout {
-            position: absolute;
-            background-color: var(--col-bg2);
-            width: fit-content;
-            border-radius: 2em;
-            padding: .5em 1em;
-            color: inherit;
-            bottom: 3em;
+        .floatgotos {
+                position: absolute;
+                bottom: 3em;
+            &>button {
+                background-color: var(--col-bg2);
+                width: fit-content;
+                border-radius: 2em;
+                padding: .5em 1em;
+                color: inherit;
+                &.high {
+                    background: var(--col-bgh);
+    color: var(--col-txth);
+                }
+            }
         }
     </style>
 </head>
@@ -132,7 +138,10 @@
                 check
             </span>
             <h1>Signed in as <span id="signedinas">Admin</span>!</h1>
-            <button id="signout" onclick="signoutrtrsets()">Sign Out</button>
+            <div class="floatgotos">
+                <button id="signout" onclick="signoutrtrsets()">Sign Out</button>
+                <button class="high" onclick="window.parent.useHandler('content_store', {'opener':'search', 'data':'rotur'});">Search Rotur apps</button>
+            </div>
         </div>
     </div>
     <script>
