@@ -526,7 +526,7 @@
                 video: { deviceId: deviceId },
                 audio: true
             });
-            video.srcObject = stream;1
+            video.srcObject = stream; 1
             currentStream = stream;
 
             video.onloadedmetadata = () => {
@@ -662,71 +662,73 @@
             }
         }
         let recordingStartTime;
-        let elapsedPausedTime = 0;
-        let lastPauseTime;
+let elapsedPausedTime = 0;
+let lastPauseTime;
 
-        function actuallyStartRecording() {
-            recordedChunks = [];
+async function actuallyStartRecording() {
+    recordedChunks = [];
 
-            const video = document.getElementById('video');
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
+    const video = document.getElementById('video');
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
 
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
 
-            function drawFrame() {
-                ctx.save();
-                if (isMirrored) {
-                    ctx.translate(canvas.width, 0);
-                    ctx.scale(-1, 1);
-                }
-                if (filterFunctions[currentFilter]) {
-                    filterFunctions[currentFilter](ctx, canvas, video);
-                } else {
-                    filterFunctions.original(ctx, canvas, video);
-                }
-                ctx.restore();
-                requestAnimationFrame(drawFrame);
-            }
-            drawFrame();
-
-            const filteredStream = canvas.captureStream(30);
-            const options = { mimeType: "video/webm; codecs=vp9" };
-            mediaRecorder = new MediaRecorder(filteredStream, options);
-
-            mediaRecorder.ondataavailable = (event) => {
-                if (event.data && event.data.size > 0) {
-                    recordedChunks.push(event.data);
-                }
-            };
-
-            mediaRecorder.onstop = saveRecording;
-
-            mediaRecorder.start();
-            isRecording = true;
-            isPaused = false;
-            elapsedPausedTime = 0;
-
-            updateUI("recording");
-            document.getElementById("stopwatch-btn").style.display = "inline-flex";
-
-            recordingStartTime = Date.now();
-            updateStopwatch();
-            stopwatchInterval = setInterval(updateStopwatch, 1000);
-
-            document.getElementById("pause-btn").onclick = function () {
-                if (isPaused) {
-                    resumeRecording();
-                } else {
-                    pauseRecording();
-                }
-            };
-            document.getElementById("stop-btn").onclick = stopRecording;
+    function drawFrame() {
+        ctx.save();
+        if (isMirrored) {
+            ctx.translate(canvas.width, 0);
+            ctx.scale(-1, 1);
         }
+        if (filterFunctions[currentFilter]) {
+            filterFunctions[currentFilter](ctx, canvas, video);
+        } else {
+            filterFunctions.original(ctx, canvas, video);
+        }
+        ctx.restore();
+        requestAnimationFrame(drawFrame);
+    }
+    drawFrame();
 
+    const videoStream = canvas.captureStream(30);
+    const audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const combinedStream = new MediaStream([
+        ...videoStream.getTracks(),
+        ...audioStream.getTracks()
+    ]);
 
+    mediaRecorder = new MediaRecorder(combinedStream, { mimeType: "video/webm; codecs=vp9" });
 
+    mediaRecorder.ondataavailable = (event) => {
+        if (event.data && event.data.size > 0) {
+            recordedChunks.push(event.data);
+        }
+    };
+
+    mediaRecorder.onstop = saveRecording;
+
+    mediaRecorder.start();
+    isRecording = true;
+    isPaused = false;
+    elapsedPausedTime = 0;
+
+    updateUI("recording");
+    document.getElementById("stopwatch-btn").style.display = "inline-flex";
+
+    recordingStartTime = Date.now();
+    updateStopwatch();
+    stopwatchInterval = setInterval(updateStopwatch, 1000);
+
+    document.getElementById("pause-btn").onclick = function () {
+        if (isPaused) {
+            resumeRecording();
+        } else {
+            pauseRecording();
+        }
+    };
+    document.getElementById("stop-btn").onclick = stopRecording;
+}
 
         function updateStopwatch() {
             if (!isRecording || isPaused) return; // Don't update if paused
@@ -819,14 +821,23 @@
                 ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
                 let imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
                 let d = imgData.data;
-                for (let i = 0; i < d.length; i += 4) {
-                    let grain = (Math.random() - 0.5) * 50;
-                    d[i] = Math.min(255, Math.max(0, d[i] + grain));
-                    d[i + 1] = Math.min(255, Math.max(0, d[i + 1] + grain));
-                    d[i + 2] = Math.min(255, Math.max(0, d[i + 2] + grain));
+
+                for (let y = 0; y < canvas.height; y++) {
+                    for (let x = 0; x < canvas.width; x++) {
+                        let i = (y * canvas.width + x) * 4;
+                        let fine = (Math.random() - 0.5) * 20;
+                        let medium = (Math.sin(x * 0.8 + y * 0.8 + Math.random() * 5) - 0.5) * 10;
+                        let coarse = (Math.sin(x * 0.2 + y * 0.2 + Math.random() * 20) - 0.5) * 5;
+                        let grain = fine + medium + coarse;
+                        d[i] = Math.min(255, Math.max(0, d[i] + grain));
+                        d[i + 1] = Math.min(255, Math.max(0, d[i + 1] + grain));
+                        d[i + 2] = Math.min(255, Math.max(0, d[i + 2] + grain));
+                    }
                 }
+
                 ctx.putImageData(imgData, 0, 0);
-            },
+            }
+            ,
             posterize: (ctx, canvas, video) => {
                 ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
                 let imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
@@ -918,69 +929,6 @@
                     d[i + 2] = Math.floor(d[i + 2] / 255 * levels) * (255 / (levels - 1));
                 }
                 ctx.putImageData(imgData, 0, 0);
-            },
-            bokeh: (ctx, canvas, video) => {
-                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-                let frame = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                let w = canvas.width, h = canvas.height;
-                let block = 16;
-                let sharpness = [];
-
-                for (let by = 0; by < h; by += block) {
-                    for (let bx = 0; bx < w; bx += block) {
-                        let sum = 0, count = 0;
-                        for (let y = 1; y < block - 1; y++) {
-                            for (let x = 1; x < block - 1; x++) {
-                                let px = ((by + y) * w + (bx + x)) * 4;
-                                let g = 0.299 * frame.data[px] + 0.587 * frame.data[px + 1] + 0.114 * frame.data[px + 2];
-                                let gx = (0.299 * frame.data[px + 4] + 0.587 * frame.data[px + 5] + 0.114 * frame.data[px + 6]) - g;
-                                let gy = (0.299 * frame.data[px + 4 * w] + 0.587 * frame.data[px + 4 * w + 1] + 0.114 * frame.data[px + 4 * w + 2]) - g;
-                                sum += gx * gx + gy * gy;
-                                count++;
-                            }
-                        }
-                        sharpness.push(sum / count);
-                    }
-                }
-
-                let max = Math.max(...sharpness);
-                let maskCanvas = document.createElement("canvas");
-                maskCanvas.width = w;
-                maskCanvas.height = h;
-                let mctx = maskCanvas.getContext("2d");
-                let mask = mctx.createImageData(w, h);
-
-                for (let i = 0; i < sharpness.length; i++) {
-                    let val = sharpness[i] / max;
-                    let alpha = Math.min(255, Math.max(0, val * 255));
-                    let bx = (i % (w / block)) * block;
-                    let by = Math.floor(i / (w / block)) * block;
-                    for (let y = 0; y < block; y++) {
-                        for (let x = 0; x < block; x++) {
-                            let p = ((by + y) * w + (bx + x)) * 4;
-                            mask.data[p] = mask.data[p + 1] = mask.data[p + 2] = alpha;
-                            mask.data[p + 3] = 255;
-                        }
-                    }
-                }
-                mctx.putImageData(mask, 0, 0);
-
-                let blurred = document.createElement("canvas");
-                blurred.width = w;
-                blurred.height = h;
-                let bctx = blurred.getContext("2d");
-                bctx.filter = "blur(20px)";
-                bctx.drawImage(video, 0, 0, w, h);
-
-                ctx.save();
-                ctx.globalCompositeOperation = "destination-in";
-                ctx.drawImage(maskCanvas, 0, 0);
-                ctx.restore();
-
-                ctx.globalCompositeOperation = "destination-over";
-                ctx.drawImage(blurred, 0, 0);
-                ctx.globalCompositeOperation = "source-over";
             },
             halftone: (ctx, canvas, video) => {
                 ctx.drawImage(video, 0, 0, canvas.width, canvas.height);

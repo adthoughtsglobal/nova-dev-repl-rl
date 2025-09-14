@@ -137,7 +137,7 @@ async function buildIframeApiBridge(appid, title, winuid, perms) {
     }
 
     async function handleNtxSessionMessage(event) {
-        console.log('HANDLE NTX INCOMING',event.data)
+        console.log('HANDLE NTX INCOMING', event.data)
         const { action, params, transactionId } = event.data;
         const contextID = genUID();
         console.log(5345, appid)
@@ -482,7 +482,7 @@ async function loadIframe(windowContent, windowLoader, loaderSpinner, cont, appi
     iframe.src = blobURL;
     iframe.onload = async () => {
         const myWindowData = { appID: appid, windowID: winuid, setTitle: "later", ...(params && { params }) };
-        console.log("TRY INJECT MYWINDOW",myWindowData,iframe)
+        console.log("TRY INJECT MYWINDOW", myWindowData, iframe)
         iframe.contentWindow.postMessage({ type: "myWindow", data: myWindowData }, "*");
         await buildIframeApiBridge(appid, title, winuid, registry.perms);
     };
@@ -532,27 +532,21 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
     attachResizeHandlers(windowDiv);
 }
 
-async function openapp(x, external, customtodo, headless = false) {
+async function openapp(appTitle, external, customtodo, headless = false) {
     if (gid('appdmod').open) gid('appdmod').close();
     if (gid('searchwindow').open) gid('searchwindow').close();
 
-    const fetchDataAndSave = async (x) => {
+    const fetchDataAndSave = async (appTitle) => {
         try {
-            var AppContent;
-            if (external == 1) {
-                AppContent = await fetchData("appdata/" + x + ".html");
-                if (AppContent == null) {
-                    return;
-                } else {
-                    external = await createFile("Apps/", toTitleCase(x), "app", AppContent);
-                    console.log(342, await getFileById(external))
-                }
+            let AppContent;
+            if (external === 1) {
+                AppContent = await fetchData(`appdata/${appTitle}.html`);
+                if (!AppContent) return;
+
+                external = await createFile("Apps/", toTitleCase(appTitle), "app", AppContent);
             } else {
-                await normieprocess();
-            }
-            async function normieprocess() {
                 AppContent = await getFileById(external);
-                if (!x) { x = AppContent.fileName }
+                if (!appTitle) appTitle = AppContent.fileName;
                 AppContent = AppContent.content;
             }
 
@@ -570,14 +564,14 @@ async function openapp(x, external, customtodo, headless = false) {
 
             let appIcon = defaultAppIcon;
             try { appIcon = await getAppIcon(0, external); } catch (e) { };
-            openwindow(x, AppContent, appIcon, getAppTheme(AppContent), getAppAspectRatio(AppContent), external, Gtodo);
+            openwindow(appTitle, AppContent, appIcon, getAppTheme(AppContent), getAppAspectRatio(AppContent), external, Gtodo);
             Gtodo = null;
         } catch (error) {
             console.error("Error fetching data:", error);
         }
     };
 
-    fetchDataAndSave(x);
+    fetchDataAndSave(appTitle);
 }
 
 function minim(winuid) {

@@ -580,16 +580,21 @@
 
 
 			#apptheme {
-				display: grid;
+				display: flex;
 				width: 100%;
-				justify-content: center;
+				justify-content: space-between;
 				align-items: center;
 				justify-items: center;
-				padding: 1rem 0;
+				padding: 1em;
 				font-size: var(--font-size-subheading);
 				background: var(--col-bg2);
 				border-radius: 5px;
-				text-shadow: 0 0 10px BLACK;
+				text-shadow: 0 0 10px #000000ab;
+				flex-direction: row-reverse;
+
+				&>.material-symbols-rounded {
+					font-size: 30px;
+				}
 			}
 
 			#installer #installerappby {
@@ -614,6 +619,7 @@
 				opacity: .5;
 				font-size: small;
 				gap: 1em;
+				flex-wrap: wrap;
 			}
 		}
 
@@ -958,6 +964,20 @@
 			&>svg {
 				width: 3em;
 				height: 3em;
+			}
+		}
+
+		@keyframes gradientFlow {
+			0% {
+				background-position: 0% 50%
+			}
+
+			50% {
+				background-position: 100% 50%
+			}
+
+			100% {
+				background-position: 0% 50%
 			}
 		}
 	</style>
@@ -1394,8 +1414,10 @@
 				const img = document.createElement('img');
 				img.src = item.img;
 				const color = data.apps.find(app => app.name === item.appName)?.th;
-				img.style.border = `1px solid ${color}`
+				panel.style.background = `linear-gradient(-45deg, ${color}, ${color}33, #141414, #1e1e1e, ${color}33, ${color})`;
 
+				panel.style.backgroundSize = "400% 400%";
+				panel.style.animation = "gradientFlow 15s ease infinite";
 
 				panel.appendChild(adLeft);
 				panel.appendChild(img);
@@ -1510,8 +1532,6 @@
 			});
 		}
 
-
-
 		function createAppDiv(appName, appDetails, vdevs, featured) {
 			const appDiv = document.createElement('div');
 			appDiv.className = 'app';
@@ -1611,15 +1631,18 @@
 					const appqtitem = appDetails?.qt || '';
 					const appcatitem = appDetails?.cat || '';
 
-					document.getElementById("apptheme").innerHTML = (appqtitem || appcatitem);
-					document.getElementById("apptheme").style.background = (appthitem || "#141414");
+					document.getElementById("apptheme").innerHTML = `<span class="material-symbols-rounded">${appDetails.symbol || 'rocket_launch'}</span>` + (appqtitem || appcatitem);
+					document.getElementById("apptheme").style.background = `linear-gradient(-45deg, ${appthitem}, ${appthitem}33, #141414, #1e1e1e, ${appthitem}33, ${appthitem})`;
+
+					document.getElementById("apptheme").style.backgroundSize = "400% 400%";
+					document.getElementById("apptheme").style.animation = "gradientFlow 15s ease infinite";
+
 
 					function getBaseName(name) {
 						return name.split('.')[0];
 					}
 
 					const existingApp = appald.find(app => getBaseName(app.name) === appName);
-
 					openButton.style.display = "none";
 					updateButton.style.display = "none";
 					installButton.style.display = "none";
@@ -1630,12 +1653,14 @@
 						openButton.innerText = "Open";
 						openButton.onclick = () => window.parent.openfile(existingApp.id);
 
+						removeButton.style.display = "inline-block";
+						removeButton.innerText = "Uninstall";
+						removeButton.onclick = () => safeUninstall(existingApp.id);
+
 						if (await hasUpdate(getAppTag(appDetails))) {
 							updateButton.style.display = "inline-block";
+							updateButton.innerText = "Update";
 							updateButton.onclick = () => installapp(appDetails, appName, updateButton, "full");
-						} else {
-							removeButton.style.display = "inline-block";
-							removeButton.onclick = () => safeUninstall(existingApp.id);
 						}
 					} else {
 						installButton.style.display = "inline-block";
