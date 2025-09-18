@@ -1400,9 +1400,9 @@
 				const img = document.createElement('img');
 				img.src = item.img;
 				const color = data.apps.find(app => app.name === item.appName)?.th;
-				panel.style.background = `linear-gradient(-45deg, ${color}, ${color}33, #141414, #1e1e1e, ${color}33, ${color})`;
+				panel.style.background = `linear-gradient(-45deg, ${color}, ${color}33, ${color}33, ${color})`;
 
-				panel.style.backgroundSize = "400% 400%";
+				panel.style.backgroundSize = "300% 300%";
 				panel.style.animation = "gradientFlow 15s ease infinite";
 
 				panel.appendChild(adLeft);
@@ -1619,9 +1619,9 @@
 					const appcatitem = appDetails?.cat || '';
 
 					document.getElementById("apptheme").innerHTML = `<span class="material-symbols-rounded">${appDetails.symbol || 'rocket_launch'}</span>` + (appqtitem || appcatitem);
-					document.getElementById("apptheme").style.background = `linear-gradient(-45deg, ${appthitem}, ${appthitem}33, #141414, #1e1e1e, ${appthitem}33, ${appthitem})`;
+					document.getElementById("apptheme").style.background = `linear-gradient(-45deg, ${appthitem}, ${appthitem}33, ${appthitem}33, ${appthitem})`;
 
-					document.getElementById("apptheme").style.backgroundSize = "400% 400%";
+					document.getElementById("apptheme").style.backgroundSize = "300% 300%";
 					document.getElementById("apptheme").style.animation = "gradientFlow 15s ease infinite";
 
 

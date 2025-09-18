@@ -171,7 +171,7 @@ nav [navobj] {
 	box-sizing: border-box;
 	border: 1px solid var(--col-bg3);
 	will-change: transform;
-	box-shadow: 0px 0px .5em 1px #00000070;
+	box-shadow: 0px 0px .5em 1px #00000000;
 	transition: box-shadow .5s;
 
 	&:hover {
