@@ -60,13 +60,13 @@ function cuteee() {
 
 async function checkAndRunFromURL() {
 	const params = new URLSearchParams(window.location.search);
-	
+
 	const run = params.get('run');
 	const viewapp = params.get('view');
 
 	if (viewapp) {
 		onstartup.push(async () => {
-			useHandler("content_store", {'opener':'viewapp', 'data':viewapp})
+			useHandler("content_store", { 'opener': 'viewapp', 'data': viewapp })
 		});
 	}
 
@@ -125,16 +125,16 @@ async function getMimeType(extension) {
 
 async function useNovaOffline() {
 	if (await justConfirm("Turn on offline mode?", "Offline mode saves a copy of NovaOS (~5MB) in your browser.")) {
-		
-	if ('serviceWorker' in navigator) {
-		navigator.serviceWorker.register('sw.js', { scope: '/' })
-			.then((registration) => {
-				console.log('Service Worker registered with scope:', registration.scope);
-			})
-			.catch((error) => {
-				console.log('Service Worker registration failed:', error);
-			});
-	}
+
+		if ('serviceWorker' in navigator) {
+			navigator.serviceWorker.register('sw.js', { scope: '/' })
+				.then((registration) => {
+					console.log('Service Worker registered with scope:', registration.scope);
+				})
+				.catch((error) => {
+					console.log('Service Worker registration failed:', error);
+				});
+		}
 	}
 }
 
@@ -175,7 +175,7 @@ function applyThemeNonVisual(data, doc) {
 	}
 
 	window.top.setSetting("themeColors", data.colors);
-} 
+}
 
 const appliedThemeVars = new Set();
 let themeStyleTag = null;

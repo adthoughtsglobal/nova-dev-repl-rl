@@ -1184,6 +1184,14 @@ async function makewall(deid) {
 	}
 	await setSetting("wall", deid);
 }
+eventBusWorker.listen({
+	type: "settings",
+	event: "set",
+	key: "wall",
+	callback: () => {
+		setTimeout(()=>{loadSessionSettings();renderWall()}, 1500)
+	}
+});
 async function initializeOS() {
 	if (badlaunch) { return }
 	dbCache = null;
@@ -1872,28 +1880,32 @@ async function realgenDesktop() {
 			appShortcutDiv.appendChild(nameSpan);
 			gid("desktop").appendChild(appShortcutDiv);
 		});
-		x = await getSetting("wall");
-		if (x != undefined && x != '' && x != ' ') {
-			let unshrinkbsfX;
-			if (x.startsWith("http")) {
-				unshrinkbsfX = x;
-			} else {
-				unshrinkbsfX = await getFileById(x);
-				unshrinkbsfX = unshrinkbsfX.content;
-			}
-			setbgimagetourl(unshrinkbsfX);
-		}
-		document.getElementById("bgimage").onerror = async function (event) {
-			toast("It doesn't seem to work as the wallpaper...")
-			setbgimagetourl(novaFeaturedImage);
-			if (await getSetting("wall")) {
-				remSettingKey("wall");
-			}
-		};
+		renderWall();
 	} catch (error) {
 		console.error(error)
 	}
 
+}
+
+async function renderWall() {
+	let x = await getSetting("wall");
+	if (x != undefined && x != '' && x != ' ') {
+		let unshrinkbsfX;
+		if (x.startsWith("http")) {
+			unshrinkbsfX = x;
+		} else {
+			unshrinkbsfX = await getFileById(x);
+			unshrinkbsfX = unshrinkbsfX.content;
+		}
+		setbgimagetourl(unshrinkbsfX);
+	}
+	document.getElementById("bgimage").onerror = async function (event) {
+		toast("It doesn't seem to work as the wallpaper...")
+		setbgimagetourl(novaFeaturedImage);
+		if (await getSetting("wall")) {
+			remSettingKey("wall");
+		}
+	};
 }
 
 async function opensearchpanel(preset = "") {

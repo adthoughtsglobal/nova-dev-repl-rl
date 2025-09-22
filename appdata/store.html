@@ -968,7 +968,8 @@
 <body>
 	<container>
 		<div class="tab">
-			<button class="tablinks btnlike" onclick="openCity(event, 'search')"><i
+			<button class="tablinks btnlike"
+				onclick="openCity(event, 'search'); document.getElementById('searchInput').focus();"><i
 					class="material-symbols-rounded">search</i> Search</button>
 			<button class="tablinks btnlike" onclick="openCity(event, 'system')" id="defaultOpen"><i
 					class="material-symbols-rounded">apps</i> Apps</button>
@@ -1006,7 +1007,7 @@
 				<i class="material-symbols-rounded" id="actionButton">search</i>
 			</div>
 			<div id="searchOutputList" class="applist">
-				
+
 			</div>
 		</div>
 		<div id="installer" class="tabcontent">
@@ -1584,9 +1585,46 @@
 			const updateButton = document.getElementById("updateButton");
 			const removeButton = document.getElementById("removeButton");
 
+			function setupButton(button, label, visible, color, action) {
+				button.style.display = visible ? "inline-block" : "none";
+				if (visible) {
+					button.innerText = label;
+					button.style.backgroundColor = color || "";
+					button.onclick = async () => {
+						await action();
+						renderButtons();
+					};
+				}
+			}
+
+			function resetButtons() {
+				[installButton, openButton, updateButton, removeButton].forEach(btn => {
+					btn.style.display = "none";
+					btn.onclick = null;
+				});
+			}
+
+			function renderButtons() {
+				resetButtons();
+				window.parent.getFileNamesByFolder("Apps").then(async (appald) => {
+					const existingApp = appald.find(app => app.name.split('.')[0] === appName);
+					if (existingApp) {
+						if (await hasUpdate(getAppTag(appDetails))) {
+							setupButton(updateButton, "Update", true, "", () => installapp(appDetails, appName, updateButton, "full"));
+							setupButton(removeButton, "Uninstall", true, "", () => safeUninstall(existingApp.id));
+						} else {
+							setupButton(openButton, "Open", true, "", () => window.parent.openfile(existingApp.id));
+							setupButton(removeButton, "Uninstall", true, "", () => safeUninstall(existingApp.id));
+						}
+					} else {
+						setupButton(installButton, "Install", true, "var(--col-good)", () => installapp(appDetails, appName, installButton, "full"));
+					}
+				});
+			}
+
 			installButton.className = 'insbtn';
 
-			window.parent.getFileNamesByFolder("Apps").then(async (appald) => {
+			window.parent.getFileNamesByFolder("Apps").then(async () => {
 				try {
 					document.getElementById("installerappname").textContent = appName;
 					document.getElementById("installerappby").textContent = appDetails.by;
@@ -1620,42 +1658,10 @@
 
 					document.getElementById("apptheme").innerHTML = `<span class="material-symbols-rounded">${appDetails.symbol || 'rocket_launch'}</span>` + (appqtitem || appcatitem);
 					document.getElementById("apptheme").style.background = `linear-gradient(-45deg, ${appthitem}, ${appthitem}33, ${appthitem}33, ${appthitem})`;
-
 					document.getElementById("apptheme").style.backgroundSize = "300% 300%";
 					document.getElementById("apptheme").style.animation = "gradientFlow 15s ease infinite";
 
-
-					function getBaseName(name) {
-						return name.split('.')[0];
-					}
-
-					const existingApp = appald.find(app => getBaseName(app.name) === appName);
-					openButton.style.display = "none";
-					updateButton.style.display = "none";
-					installButton.style.display = "none";
-					removeButton.style.display = "none";
-
-					if (existingApp) {
-						openButton.style.display = "inline-block";
-						openButton.innerText = "Open";
-						openButton.onclick = () => window.parent.openfile(existingApp.id);
-
-						removeButton.style.display = "inline-block";
-						removeButton.innerText = "Uninstall";
-						removeButton.onclick = () => safeUninstall(existingApp.id);
-
-						if (await hasUpdate(getAppTag(appDetails))) {
-							updateButton.style.display = "inline-block";
-							updateButton.innerText = "Update";
-							updateButton.onclick = () => installapp(appDetails, appName, updateButton, "full");
-						}
-					} else {
-						installButton.style.display = "inline-block";
-						installButton.innerText = "Install";
-						installButton.style.backgroundColor = "var(--col-good)";
-						installButton.onclick = () => installapp(appDetails, appName, installButton, "full");
-					}
-
+					renderButtons();
 					openCity(event, 'installer');
 				} catch (error) {
 					console.error(error);
@@ -1701,7 +1707,6 @@
 
 		async function safeUninstall(appId) {
 			try {
-				await ntxSession.send("appStorage.remove", "versionsData");
 				await window.parent.remfile(appId);
 			} catch (error) {
 				console.error("Error uninstalling app:", error);
@@ -2022,11 +2027,11 @@
 			let newHtml;
 
 			if (isValidUrl(input)) {
-				newHtml = ' <div class="material-symbols-rounded installbtnicn">download</div>';
+				newHtml = ' download';
 			} else if (input.length > 0) {
-				newHtml = ' <div class="material-symbols-rounded installbtnicn">search</div>';
+				newHtml = ' search';
 			} else {
-				newHtml = ' <div class="material-symbols-rounded installbtnicn">download</div>';
+				newHtml = 'download';
 			}
 
 			if (currentHtml !== newHtml) {
