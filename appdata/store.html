@@ -1699,6 +1699,7 @@
 				const input = document.getElementById("searchInput");
 				input.value = myWindow?.params?.data.data;
 				if (myWindow?.params?.data.data.length > 0) {
+					openCity(event, 'search');
 					searchApps(myWindow?.params?.data.data)
 				}
 			}
