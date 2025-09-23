@@ -366,10 +366,10 @@ const defaultFileData = {
         "wsnapping": true,
         "smartsearch": true,
         "CamImgFormat": "WEBP",
-        "defSearchEngine": "Bing",
-        "darkMode": true,
-        "simpleMode": true,
-        "nvaupdcheck": true
+        "defSearchEngine": "NWP",
+        "nvaupdcheck": true,
+        "windowloader": true,
+        "keepvisible": true
     }
 };
 async function ensureFileExists(fileName = "preferences.json", dirPath = "System/") {
