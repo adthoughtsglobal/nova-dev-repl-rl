@@ -121,6 +121,23 @@
 			display: flex;
 			width: calc(100% - 5px);
 			height: 100%;
+			position: relative;
+		}
+
+		#flap-resizer {
+			width: 3px;
+			cursor: ew-resize;
+			border-radius: 0 5px 5px 0;
+			height: 90%;
+			margin-top: 0;
+			background: var(--col-bgh);
+			opacity: 0;
+			transition: .3s;
+
+			&:hover {
+				opacity: 1;
+				width: 7px;
+			}
 		}
 
 		[flap-fl-topnav] {
@@ -509,7 +526,7 @@
 		}
 
 		a.dropdownerthebob {
-			color: var(--colors-text-section);
+			color: var(--col-txt1);
 			text-decoration: none;
 			display: flex;
 			flex-direction: column;
@@ -518,8 +535,6 @@
 			white-space: nowrap;
 			text-overflow: ellipsis;
 			align-items: center;
-			display: flex;
-			flex-direction: column;
 			opacity: 0.7;
 			font-size: 11px;
 			padding: 0.3rem .5rem;
@@ -616,14 +631,13 @@
 			height: 100%;
 			padding: 0 3px;
 			overflow-x: auto;
-			padding-bottom: 50px;
 			width: calc(100% - 9px);
 		}
 
 		.subdir {
 			padding: 5px .5em;
 			background: var(--col-bg2);
-			margin-bottom: 5px;
+			margin-bottom: 1px;
 			min-width: 6em;
 			display: flex;
 			flex-direction: row;
@@ -632,10 +646,18 @@
 			gap: 5px;
 			border-radius: 5px;
 
+			&.current {
+				background-color: var(--col-bg3);
+			}
+
 			button.toggle {
-				all: unset;
+				color: inherit;
+				background-color: transparent;
+				padding: 0;
+				border: 0;
+				border-radius: 0;
 				opacity: .5;
-				font-size: 10px;
+				font-size: 15px;
 			}
 
 			&>.material-symbols-rounded {
@@ -934,6 +956,18 @@
 
 					</div>
 				</div>
+				<div id="flap-resizer"></div>
+				<script>const sidenav = document.getElementById("flap-sidenav");
+					const resizer = document.getElementById("flap-resizer");
+					let isResizing = false;
+					resizer.addEventListener("mousedown", () => { isResizing = true; document.body.style.cursor = "ew-resize"; });
+					document.addEventListener("mousemove", e => {
+						if (!isResizing) return;
+						let newWidth = e.clientX;
+						if (newWidth < 50) newWidth = 50; sidenav.style.width = newWidth + "px"; resizer.style.left = newWidth + "px";
+					});
+					document.addEventListener("mouseup", () => { isResizing = false; document.body.style.cursor = "default"; });
+				</script>
 				<div flap-mains style="flex-grow: 3;
 		display: flex;
 		flex-direction: column;
@@ -1151,24 +1185,29 @@
 					folderDiv.setAttribute('data-path', currentPath);
 					folderDiv.style.marginLeft = `${level * 10}px`;
 
-					const toggleBtn = document.createElement('button');
-					toggleBtn.classList.add('toggle');
-					toggleBtn.classList.add("material-symbols-rounded");
-					toggleBtn.textContent = 'chevron_forward';
-					toggleBtn.style.transform = 'rotate(0deg)';
-					toggleBtn.style.transition = 'transform 0.2s';
-					toggleBtn.onclick = () => {
-						const next = folderDiv.nextSibling;
-						if (next && next.classList.contains('subtree')) {
-							if (next.style.display === 'none') {
-								next.style.display = '';
-								toggleBtn.style.transform = 'rotate(90deg)';
-							} else {
-								next.style.display = 'none';
-								toggleBtn.style.transform = 'rotate(0deg)';
+					let hasSubtree = Object.keys(memory[key]).some(k => k.endsWith('/'));
+					let toggleBtn;
+					if (hasSubtree) {
+						toggleBtn = document.createElement('button');
+						toggleBtn.classList.add('toggle', 'material-symbols-rounded');
+						toggleBtn.textContent = 'chevron_forward';
+						toggleBtn.style.transform = 'rotate(0deg)';
+						toggleBtn.style.transition = 'transform 0.2s';
+						toggleBtn.onclick = e => {
+							e.stopPropagation();
+							const next = folderDiv.nextSibling;
+							if (next && next.classList.contains('subtree')) {
+								if (next.style.display === 'none') {
+									next.style.display = '';
+									toggleBtn.style.transform = 'rotate(90deg)';
+								} else {
+									next.style.display = 'none';
+									toggleBtn.style.transform = 'rotate(0deg)';
+								}
 							}
-						}
-					};
+						};
+						folderDiv.appendChild(toggleBtn);
+					}
 
 					const dirIcDiv = document.createElement("div");
 					dirIcDiv.classList.add("material-symbols-rounded");
@@ -1177,10 +1216,15 @@
 					const dirNameDiv = document.createElement("div");
 					dirNameDiv.textContent = removeEndSlash(key);
 
-					folderDiv.appendChild(toggleBtn);
 					folderDiv.appendChild(dirIcDiv);
 					folderDiv.appendChild(dirNameDiv);
 					wrapper.appendChild(folderDiv);
+
+					folderDiv.addEventListener('click', e => {
+						if (e.target.classList.contains('toggle')) return;
+						document.querySelectorAll('.subdir.current').forEach(el => el.classList.remove('current'));
+						folderDiv.classList.add('current');
+					});
 
 					if (Object.keys(memory[key]).length > 0) {
 						const subtree = memoryToDivTree(memory[key], currentPath, level + 1);
@@ -1194,10 +1238,10 @@
 		}
 
 
-
 		function addClickListeners() {
 			document.querySelectorAll('.subdir').forEach(element => {
 				element.addEventListener('click', async e => {
+					if (e.target.classList.contains('toggle')) return;
 					e.stopPropagation();
 					const selectedPath = element.getAttribute('data-path');
 					if (selectedPath) {
@@ -1209,6 +1253,7 @@
 				});
 			});
 		}
+
 
 		function addDragAndDropListeners() {
 			document.querySelectorAll('.subdir').forEach(element => {
@@ -1585,6 +1630,12 @@
 			fileElement.setAttribute('draggable', !isFolder);
 			fileElement.setAttribute("path", file.path)
 			fileElement.setAttribute('onclick', `slfile(this, '')`);
+			if (file.id == fileToSelect) {
+				setTimeout(() => {
+					slfile(fileElement, '');
+				}, 300);
+				fileToSelect = null;
+			}
 			if (!isFolder) {
 				fileElement.setAttribute('ondragstart', 'dragfl(event, this)');
 			}
@@ -2093,12 +2144,11 @@
 						return;
 						break;
 				}
-				document.getElementById("choosefile").style.display = (data.opener === 'showFile') ? "flex" : "none";
+				document.getElementById("choosefile").style.display = (sessiontype == 'opener') ? "flex" : "none";
 				document.getElementById("saveas").style.display = "none";
 
 				if (data.opener === 'showFile') {
 					initializeFilesApp(data.id ?? false, "showFile");
-					myWindow.setTitle("View File");
 				} else if (data.opener === 'showDir') {
 					initializeFilesApp(data.path ?? false, "showDir");
 				} else if (data.opener === 'saveas') {
