@@ -32,9 +32,8 @@
 			flex-grow: 2;
 			height: calc(100% - 10px);
 			overflow-y: auto;
+			max-width: 150px;
 			max-width: 200px;
-			width: 25vw;
-			min-width: 100px;
 			display: flex;
 			flex-direction: column;
 			gap: 0.2rem;
@@ -1294,7 +1293,7 @@
 					const response = await fetch(prefixurl + x.src);
 					const content = await response.text();
 					const tempid = await window.parent.createFile("Apps", appName, "app", content);
-					ntxSession.send("appStorage.set", "versionsData", { [getAppTag(x)]: { id: tempid, ver: x.ver, updated: Date.now() } });
+					ntxSession.send("settings.set", "versionsData", { [getAppTag(x)]: { id: tempid, ver: x.ver, updated: Date.now() } }, "thirdpartyApps.json");
 
 				} catch { }
 				setTimeout(() => {
@@ -1725,7 +1724,7 @@
 			return localApp.ver != appDetails.ver;
 		}
 		async function loadLocalApps() {
-			const localApps = await ntxSession.send("appStorage.get", "versionsData") || 0;
+			const localApps = await ntxSession.send("settings.get", "versionsData", "thirdpartyApps.json") || 0;
 			cachedLocalApps = localApps;
 			return localApps;
 		}
@@ -1976,11 +1975,11 @@
 
 		async function onStartup() {
 			console.log("STORE ONSTARTUP")
-			const lastCheckData = await ntxSession.send("appStorage.get", "lastCheck");
+			const lastCheckData = await ntxSession.send("settings.get", "lastCheck", "thirdpartyApps.json");
 			const lastCheck = lastCheckData || 0;
 
 			if (Date.now() - lastCheck > 300000) {
-				ntxSession.send("appStorage.set", "lastCheck", Date.now());
+				ntxSession.send("settings.set", "lastCheck", Date.now(), "thirdpartyApps.json");
 				console.log("STORE CACHE SET")
 				await checkUpdatesHeadless();
 				console.log("ahfter")
@@ -1997,7 +1996,7 @@
 
 			try {
 				const localApps = await Promise.race([
-					ntxSession.send("appStorage.get", "versionsData"),
+					ntxSession.send("settings.get", "versionsData", "thirdpartyApps.json"),
 					new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 3000))
 				]);
 

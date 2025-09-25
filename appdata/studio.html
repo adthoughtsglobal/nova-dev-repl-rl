@@ -280,9 +280,6 @@
 			</div>
 		</div>
 		</div>
-		<div title="Run in preview" class="navitem" id="runbtn" onclick="run()">
-			Preview
-		</div>
 		<div title="Run in new window" class="navitem" id="runbtn" onclick="runnewwin()">
 			Run
 		</div>
@@ -591,8 +588,10 @@
 			justify-content:center;
             align-items: center;
 			font-size: 1.5rem;
+			flex-direction:column;
 			padding:2rem;
 			margin:0;
+			gap: .5em;
 			}
 			
 			a {
@@ -605,6 +604,7 @@
 			   Check out the docs at <a href="https://novaos.gitbook.io/main">this website</a> to learn how to make NovaOS apps.
 			</p>
 		
+			   <strong>App previews are sandboxed.</strong>
 		</body></html>`, 1);
 			gid("outputframe").style.display = "flex"
 			gid("console").style.display = "none"

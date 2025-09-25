@@ -1169,13 +1169,20 @@
 	<script>
 		function liststuff() {
 			const container = document.getElementById('jstree');
+			const expanded = new Set(
+				[...container.querySelectorAll('.subtree')]
+					.filter(el => el.style.display !== 'none')
+					.map(el => el.previousSibling?.getAttribute('data-path'))
+					.filter(Boolean)
+			);
 			container.innerHTML = '';
-			const tree = memoryToDivTree(window.parent.memory.root);
+			const tree = memoryToDivTree(window.parent.memory.root, '', 0, expanded);
 			container.appendChild(tree);
 			addClickListeners();
 			addDragAndDropListeners();
 		}
-		function memoryToDivTree(memory, parentPath = '', level = 0) {
+
+		function memoryToDivTree(memory, parentPath = '', level = 0, expanded = new Set()) {
 			const wrapper = document.createElement('div');
 			for (let key in memory) {
 				if (memory.hasOwnProperty(key) && key.endsWith('/')) {
@@ -1191,8 +1198,8 @@
 						toggleBtn = document.createElement('button');
 						toggleBtn.classList.add('toggle', 'material-symbols-rounded');
 						toggleBtn.textContent = 'chevron_forward';
-						toggleBtn.style.transform = 'rotate(0deg)';
 						toggleBtn.style.transition = 'transform 0.2s';
+						toggleBtn.style.transform = expanded.has(currentPath) ? 'rotate(90deg)' : 'rotate(0deg)';
 						toggleBtn.onclick = e => {
 							e.stopPropagation();
 							const next = folderDiv.nextSibling;
@@ -1227,15 +1234,16 @@
 					});
 
 					if (Object.keys(memory[key]).length > 0) {
-						const subtree = memoryToDivTree(memory[key], currentPath, level + 1);
+						const subtree = memoryToDivTree(memory[key], currentPath, level + 1, expanded);
 						subtree.classList.add('subtree');
-						subtree.style.display = 'none';
+						subtree.style.display = expanded.has(currentPath) ? '' : 'none';
 						wrapper.appendChild(subtree);
 					}
 				}
 			}
 			return wrapper;
 		}
+
 
 
 		function addClickListeners() {
@@ -1254,18 +1262,18 @@
 			});
 		}
 
-
 		function addDragAndDropListeners() {
 			document.querySelectorAll('.subdir').forEach(element => {
-				const folderName = element.firstChild.textContent;
+				const targetPath = element.getAttribute('data-path');
 				element.addEventListener('dragover', e => {
 					Allowdrop(e, element);
 				});
 				element.addEventListener('drop', e => {
-					dropfl(e, folderName);
+					dropfl(e, targetPath);
 				});
 			});
 		}
+
 
 		function getLastSegment(path) {
 			const segments = path.replace(/\/$/, '').split('/');
