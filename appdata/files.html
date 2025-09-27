@@ -348,7 +348,8 @@
 			display: block;
 		}
 
-		#slfile, .multisel {
+		#slfile,
+		.multisel {
 			background: var(--col-bg3);
 			color: var(--colors-text-sub);
 			cursor: pointer;
@@ -1904,6 +1905,16 @@
 			} catch (error) {
 				console.error("Safe Error fetching or updating data:", error);
 			}
+		}
+
+		async function deleteFiles(ids) {
+			if (!ids?.length) return;
+			for (const id of ids) {
+				await remfile(id);
+			}
+			selectedFiles = [];
+			document.querySelectorAll(".multisel").forEach(el => el.classList.remove("multisel"));
+			populateFileActions();
 		}
 
 		async function openfile(x, all) {
