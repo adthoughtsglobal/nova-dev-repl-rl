@@ -358,7 +358,7 @@
 
 			async function showimg(id) {
 				if (!imgmap[id]) {
-					imgmap[id] = {name: await window.parent.getFileNameByID(id), id};
+					imgmap[id] = { name: await window.parent.getFileNameByID(id), id };
 				};
 				const item = imgmap[id];
 				crntimg = item.id;
@@ -419,83 +419,77 @@
 						document.getElementById("cont").innerHTML = nofilesimg;
 						return;
 					}
-
 					const dyDivs = {};
+					document.getElementById("cont").innerHTML = ``;
 
-					document.getElementById("cont").innerHTML = ``
+					const observer = new IntersectionObserver(entries => {
+						for (const e of entries) {
+							const el = e.target;
+							if (e.isIntersecting) {
+								if (el.dataset.src) {
+									el.src = el.dataset.src;
+									delete el.dataset.src;
+								}
+							} else {
+								if (!el.dataset.src && el.src) {
+									el.dataset.src = el.src;
+									el.src = "";
+								}
+							}
+						}
+					}, { rootMargin: "200px" });
+
 					for (const item of lcldata) {
 						try {
 							let x = await window.parent.getFileById(item.id);
 							let t = window.parent.getbaseflty(window.parent.ptypext(item.name));
-							if (t === 'image' || t === 'video') {
-								let metadata = {};
-
-								if (x.metadata) {
-									metadata = x.metadata;
-								}
-
-								if (metadata.datetime) {
-									let datetime = new Date(metadata.datetime);
-									const yr = datetime.getFullYear();
-									const mo = (datetime.getMonth() + 1).toString().padStart(2, '0');
-									const dy = datetime.getDate().toString().padStart(2, '0');
-									const dateIdentifier = `${yr}-${mo}-${dy}`;
-
-									if (!dyDivs[dateIdentifier]) {
-										dyDivs[dateIdentifier] = document.createElement("div");
-										let dyHeader = document.createElement("div");
-										dyHeader.classList.add("dyheader");
-										dyHeader.innerHTML = '<b>' + dateIdentifier + '</b>';
-										dyDivs[dateIdentifier].appendChild(dyHeader);
-										document.getElementById("cont").appendChild(dyDivs[dateIdentifier]);
+							if (t === "image" || t === "video") {
+								let md = x.metadata || {};
+								if (md.datetime) {
+									let d = new Date(md.datetime);
+									let id = `${d.getFullYear()}-${(d.getMonth() + 1 + "").padStart(2, "0")}-${(d.getDate() + "").padStart(2, "0")}`;
+									if (!dyDivs[id]) {
+										dyDivs[id] = document.createElement("div");
+										let h = document.createElement("div");
+										h.classList.add("dyheader");
+										h.innerHTML = "<b>" + id + "</b>";
+										dyDivs[id].appendChild(h);
+										document.getElementById("cont").appendChild(dyDivs[id]);
 									}
-
-									const container = document.createElement("div");
-									container.classList.add("media-container");
-
+									const c = document.createElement("div");
+									c.classList.add("media-container");
 									const img = new Image();
-									if (t === 'video') {
-										img.src = "";1
+									if (t === "video") {
 										Promise.resolve().then(() => {
-											const video = document.createElement('video');
-											video.src = x.content;
-											video.preload = 'metadata';
-											video.onloadedmetadata = () => video.currentTime = 0;
-											video.onseeked = () => {
-												const canvas = document.createElement('canvas');
-												canvas.width = video.videoWidth;
-												canvas.height = video.videoHeight;
-												canvas.getContext('2d').drawImage(video, 0, 0);
-												img.src = canvas.toDataURL('image/png');
+											const v = document.createElement("video");
+											v.src = x.content; v.preload = "metadata";
+											v.onloadedmetadata = () => v.currentTime = 0;
+											v.onseeked = () => {
+												const canvas = document.createElement("canvas");
+												canvas.width = v.videoWidth; canvas.height = v.videoHeight;
+												canvas.getContext("2d").drawImage(v, 0, 0);
+												img.dataset.src = canvas.toDataURL("image/png");
+												observer.observe(img);
 											};
-											const playIcon = document.createElement("div");
-											playIcon.innerText = "play_circle";
-											playIcon.classList.add("material-symbols-rounded");
-											container.appendChild(playIcon);
 										});
-
+										const playIcon = document.createElement("div");
+										playIcon.innerText = "play_circle";
+										playIcon.classList.add("material-symbols-rounded");
+										c.appendChild(playIcon);
 									} else {
-										img.src = x.content;
+										img.dataset.src = x.content;
+										observer.observe(img);
 									}
-
-									await new Promise((resolve) => {
-										img.onload = resolve;
-									});
-
 									const thisid = imgid++;
 									imgmap[thisid] = item;
-
-									img.onclick = function () {
-										showimg(thisid);
-									};
-
-									container.appendChild(img);
-									dyDivs[dateIdentifier].appendChild(container);
+									img.onclick = () => showimg(thisid);
+									c.appendChild(img);
+									dyDivs[id].appendChild(c);
 								}
-
 							}
-						} catch (err) { console.error(err) }
+						} catch (e) { console.error(e) }
 					}
+
 				} catch (error) {
 					console.error(error);
 				}

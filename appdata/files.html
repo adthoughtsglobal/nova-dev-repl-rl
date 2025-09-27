@@ -1572,7 +1572,6 @@
 			await window.parent.updateMemoryData();
 
 			function findFolder(path, obj) {
-				console.log(45, path)
 				let parts = path.split('/').filter(p => p !== '');
 				for (let i = 0; i < parts.length; i++) {
 					let key = parts[i] + '/';
@@ -1625,7 +1624,6 @@
 			}
 		}
 		async function createFileElement(file) {
-			console.log(file);
 
 			const fileElement = document.createElement('div');
 			fileElement.classList.add('file');
@@ -1897,7 +1895,6 @@
 		}
 
 		async function openfile(x, all) {
-			console.log(34534, x, all)
 			if (sessiontype == "opener") {
 				choosefile()
 				return;
@@ -2042,7 +2039,7 @@
 				"System": "settings",
 				"Dock": "rocket",
 				"Media": "play_circle",
-				"Documents": "file",
+				"Documents": "folder",
 				"Favorites": "favorite"
 			};
 
@@ -2197,7 +2194,6 @@
 				type: 'memory',
 				event: '*',
 				callback: msg => {
-					console.log(456346834656, msg)
 					if (msg.event == "update" && msg.key == currentPath) {
 						listFiles();
 					}
@@ -2292,7 +2288,6 @@
 				const itemuid = target.getAttribute("unid");
 				slfileID = itemuid;
 				const file = { unid: itemuid, type: 'app', fileName: await window.parent.getFileNameByID(itemuid) };
-				console.log("File:", file, target);
 
 				const actions = Object.values(window.fileActions);
 				const conditions = await Promise.all(actions.map(async (action) => await action.condition(file)));

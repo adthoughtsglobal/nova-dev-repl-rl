@@ -7,7 +7,6 @@ var batteryLevel, winds = {}, memory = {}, _nowapp, fulsapp = false, appsHistory
 	"musicplr",
 	"camera",
 	"time",
-	"media",
 	"gallery",
 	"browser",
 	"studio"
@@ -1189,6 +1188,7 @@ eventBusWorker.listen({
 	event: "set",
 	key: "wall",
 	callback: () => {
+		console.log(342423424)
 		setTimeout(()=>{loadSessionSettings();renderWall()}, 1500)
 	}
 });

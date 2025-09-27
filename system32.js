@@ -11,8 +11,10 @@ const eventBusWorker = (() => {
     function deliver(msg, sourceWindow = null) {
         if (typeof msg !== 'object' || !msg.type || !msg.event) return;
 
-        listeners.forEach(({ type, event, callback }) => {
-            if ((type === msg.type || type === '*') && (event === msg.event || event === '*')) {
+        listeners.forEach(({ type, event, key, callback }) => {
+            if ((type === msg.type || type === '*') &&
+                (event === msg.event || event === '*') &&
+                (key === undefined || key === msg.key || key === '*')) {
                 callback(msg);
             }
         });
@@ -20,8 +22,8 @@ const eventBusWorker = (() => {
         broadcastToIframes(msg, sourceWindow);
     }
 
-    function listen({ type = '*', event = '*', callback }) {
-        listeners.push({ type, event, callback });
+    function listen({ type = '*', event = '*', key, callback }) {
+        listeners.push({ type, event, key, callback });
     }
 
     function broadcastToIframes(msg, sourceWindow) {
