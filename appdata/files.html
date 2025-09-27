@@ -348,7 +348,7 @@
 			display: block;
 		}
 
-		#slfile {
+		#slfile, .multisel {
 			background: var(--col-bg3);
 			color: var(--colors-text-sub);
 			cursor: pointer;
@@ -1624,18 +1624,17 @@
 			}
 		}
 		async function createFileElement(file) {
-
 			const fileElement = document.createElement('div');
 			fileElement.classList.add('file');
 			fileElement.setAttribute(flmode, '');
-
 			if (file.id) fileElement.setAttribute("unid", file.id);
 
 			const isFolder = file.type === 'folder';
-
 			fileElement.setAttribute('draggable', !isFolder);
-			fileElement.setAttribute("path", file.path)
-			fileElement.setAttribute('onclick', `slfile(this, '')`);
+			fileElement.setAttribute("path", file.path);
+
+			fileElement.addEventListener("click", e => slfile(fileElement, '', e));
+
 			if (file.id == fileToSelect) {
 				setTimeout(() => {
 					slfile(fileElement, '');
@@ -1673,7 +1672,6 @@
 
 			fileElement.appendChild(iconSpan);
 			fileElement.appendChild(flnameSpan);
-
 			fileElement.setAttribute('title', `${file.name}\n${isFolder ? 'Folder' : 'File'}`);
 
 			fllist.appendChild(fileElement);
@@ -1724,39 +1722,55 @@
 				treeviewopen = true;
 			}
 		}
+		let selectedFiles = [];
+		let lastSelectedIndex = null;
 
-		async function slfile(element, param) {
+		async function slfile(element, param, event) {
 			element.scrollIntoView({ behavior: "smooth", block: "nearest" });
+			const uniqueId = element.getAttribute("unid");
+			if (!uniqueId) return;
+			const files = Array.from(document.querySelectorAll(".file[unid]"));
+			const idx = files.indexOf(element);
+
+			if (event?.shiftKey && lastSelectedIndex !== null) {
+				const [start, end] = [lastSelectedIndex, idx].sort((a, b) => a - b);
+				selectedFiles = files.slice(start, end + 1).map(el => el.getAttribute("unid"));
+			} else if (event?.ctrlKey || event?.metaKey) {
+				if (selectedFiles.includes(uniqueId)) {
+					selectedFiles = selectedFiles.filter(id => id !== uniqueId);
+				} else {
+					selectedFiles.push(uniqueId);
+				}
+				lastSelectedIndex = idx;
+			} else {
+				selectedFiles = [uniqueId];
+				lastSelectedIndex = idx;
+			}
+
+			files.forEach(el => el.classList.toggle("multisel", selectedFiles.includes(el.getAttribute("unid"))));
+			populateFileActions();
 
 			const isSelected = element.id === "slfile";
-			const uniqueId = element.getAttribute("unid");
-			(!param) ? param = uniqueId : null;
-			const isFolder = !uniqueId;
+			if (!param) param = uniqueId;
 
 			if (isSelected) {
-				if (isFolder) {
-					const folderName = element.querySelector(".flfrname").innerText.trim();
+				if (element.classList.contains("folder")) {
 					listFiles(element.getAttribute("path"));
 					return;
 				}
-
-				if (sessiontype === "opener") {
-					choosefile();
-				} else {
-					openfile(param);
-				}
+				if (sessiontype === "opener") choosefile(); else openfile(param);
 				return;
 			}
 
 			updateSelectedFileElement(element, uniqueId);
-
-			if (isFolder) {
+			if (element.classList.contains("folder")) {
 				showFolderInfo(element);
 				document.getElementById("fileinfobn").innerHTML = "Folder";
 			} else {
 				await handleFileSelection(uniqueId);
 			}
 		}
+
 
 		function updateSelectedFileElement(element, uniqueId) {
 			if (document.getElementById("slfile")) {
@@ -1825,10 +1839,9 @@
 		}
 
 		async function populateFileActions(fileData) {
-			if (sessiontype === "opener") { return }
+			if (sessiontype === "opener") return;
 			const toolsContainer = document.getElementById("filetools");
 			const moreToolsContainer = document.getElementById("moretoolsdropdwn");
-
 			toolsContainer.innerHTML = "";
 			moreToolsContainer.innerHTML = "";
 
@@ -1836,8 +1849,17 @@
 			contentDiv.className = "dropup-content";
 			toolsContainer.appendChild(contentDiv);
 
-			const visibleOptions = [];
+			if (selectedFiles.length > 1) {
+				const deleteAll = document.createElement("a");
+				deleteAll.className = "dropdownerthebob";
+				deleteAll.innerHTML = `<span class="material-symbols-rounded">delete</span> <b>Delete All</b>`;
+				deleteAll.onclick = () => deleteFiles(selectedFiles);
+				contentDiv.appendChild(deleteAll);
+				document.getElementById("fileinfobn").innerHTML = "Selected " + selectedFiles.length + " files";
+				return;
+			}
 
+			const visibleOptions = [];
 			for (const action of Object.values(fileActions)) {
 				if (await action.condition(fileData)) {
 					const option = document.createElement("a");
@@ -1845,7 +1867,6 @@
 					option.title = action.label;
 					option.onclick = () => action.action(fileData.id);
 					option.innerHTML = `<span class="material-symbols-rounded" style="color: ${action.color}">${action.icon}</span> <b>${action.label}</b>`;
-
 					visibleOptions.push(option);
 					contentDiv.appendChild(option);
 				}
@@ -1855,29 +1876,20 @@
 			moreToggle.classList.add("dropdownerthebob");
 			moreToggle.title = "More Tools";
 			moreToggle.innerHTML = `<span class="material-symbols-rounded">more_vert</span> <b>More</b>`;
-			moreToggle.onclick = () => {
-				moreToolsContainer.classList.toggle("visible");
-			};
+			moreToggle.onclick = () => moreToolsContainer.classList.toggle("visible");
 			moreToggle.style.visibility = "hidden";
 			contentDiv.appendChild(moreToggle);
 
 			requestAnimationFrame(() => {
 				let overflow = false;
-
 				while (visibleOptions.length > 0) {
 					if (contentDiv.scrollWidth <= contentDiv.clientWidth) break;
-
 					const last = visibleOptions.pop();
 					contentDiv.removeChild(last);
 					moreToolsContainer.appendChild(last);
 					overflow = true;
 				}
-
-				if (overflow) {
-					moreToggle.style.visibility = "visible";
-				} else {
-					contentDiv.removeChild(moreToggle);
-				}
+				if (overflow) moreToggle.style.visibility = "visible"; else contentDiv.removeChild(moreToggle);
 			});
 		}
 
@@ -2282,17 +2294,17 @@
 				condition: (file) => true,
 			},
 		};
-
 		async function getMenuItems(target) {
+			if (selectedFiles.length > 1) {
+				return [{ label: "Delete All", action: () => deleteFiles(selectedFiles) }];
+			}
 			if (target.classList.contains('file')) {
 				const itemuid = target.getAttribute("unid");
 				slfileID = itemuid;
 				const file = { unid: itemuid, type: 'app', fileName: await window.parent.getFileNameByID(itemuid) };
-
 				const actions = Object.values(window.fileActions);
 				const conditions = await Promise.all(actions.map(async (action) => await action.condition(file)));
 				const filteredActions = actions.filter((_, index) => conditions[index]);
-
 				return filteredActions.map(action => ({
 					icon: action.icon,
 					color: action.color,
@@ -2300,9 +2312,7 @@
 					action: () => action.action(itemuid),
 				}));
 			}
-			return [
-				{ label: 'Inspect', action: () => console.log('Inspect clicked') },
-			];
+			return [{ label: 'Inspect', action: () => console.log('Inspect clicked') }];
 		}
 
 		var contextMenu;
