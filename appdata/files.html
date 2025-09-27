@@ -1894,10 +1894,14 @@
 			});
 		}
 
+		var isitBulkRemfile = false;
 		async function remfile(ID) {
 			try {
 
 				window.parent.remfile(ID);
+				if (isitBulkRemfile) {
+					return
+				}
 				await window.parent.updateMemoryData().then(() => {
 					window.parent.toast("Removed " + ID);
 				});
@@ -1909,11 +1913,13 @@
 
 		async function deleteFiles(ids) {
 			if (!ids?.length) return;
+			isitBulkRemfile = true;
 			for (const id of ids) {
 				await remfile(id);
 			}
 			selectedFiles = [];
 			document.querySelectorAll(".multisel").forEach(el => el.classList.remove("multisel"));
+			isitBulkRemfile = false;
 			populateFileActions();
 		}
 
