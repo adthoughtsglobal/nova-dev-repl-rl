@@ -1749,7 +1749,6 @@
 			}
 
 			files.forEach(el => el.classList.toggle("multisel", selectedFiles.includes(el.getAttribute("unid"))));
-			populateFileActions();
 
 			const isSelected = element.id === "slfile";
 			if (!param) param = uniqueId;
@@ -1900,12 +1899,12 @@
 
 				window.parent.remfile(ID);
 				if (isitBulkRemfile) {
+					document.querySelector(`[unid="${ID}"]`).style.opacity = 0.2;
 					return
 				}
 				await window.parent.updateMemoryData().then(() => {
 					window.parent.toast("Removed " + ID);
 				});
-				document.querySelector(`[unid="${ID}"]`).style.opacity = 0.2;
 			} catch (error) {
 				console.error("Safe Error fetching or updating data:", error);
 			}
