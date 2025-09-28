@@ -116,34 +116,7 @@
 			margin-left: 10px;
 		}
 
-		@media only screen and (max-width: 600px) {
-
-			.singular_ad {
-				flex-direction: column;
-			}
-
-			.tab .btnlike {
-				width: 38px;
-			}
-
-			.tab {
-				width: 55px;
-				flex-grow: 0;
-				overflow: hidden;
-				min-width: 0;
-			}
-
-			#navSearch {
-				display: none;
-			}
-		}
-
-		@media only screen and (max-width: 100px) {
-			.tab button i {
-				margin-bottom: 8px;
-				display: block;
-			}
-		}
+		
 
 		h1 {
 			font-weight: normal;
@@ -959,6 +932,40 @@
 
 			100% {
 				background-position: 0% 50%
+			}
+		}
+
+		@media only screen and (max-width: 600px) {
+
+			.singular_ad {
+				flex-direction: column;
+				height: 50vh;
+				overflow: hidden;
+				&>* {
+					width: 100%;
+				}
+			}
+
+			.tab .btnlike {
+				width: 38px;
+			}
+
+			.tab {
+				width: 55px;
+				flex-grow: 0;
+				overflow: hidden;
+				min-width: 0;
+			}
+
+			#navSearch {
+				display: none;
+			}
+		}
+
+		@media only screen and (max-width: 100px) {
+			.tab button i {
+				margin-bottom: 8px;
+				display: block;
 			}
 		}
 	</style>

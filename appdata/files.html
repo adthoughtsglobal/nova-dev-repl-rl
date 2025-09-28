@@ -1636,12 +1636,13 @@
 
 			fileElement.addEventListener("click", e => slfile(fileElement, '', e));
 
-			if (file.id == fileToSelect) {
+			if (!isFolder && file.id == fileToSelect) {
 				setTimeout(() => {
 					slfile(fileElement, '');
 				}, 300);
 				fileToSelect = null;
 			}
+
 			if (!isFolder) {
 				fileElement.setAttribute('ondragstart', 'dragfl(event, this)');
 			}
@@ -1729,9 +1730,29 @@
 		async function slfile(element, param, event) {
 			element.scrollIntoView({ behavior: "smooth", block: "nearest" });
 			const uniqueId = element.getAttribute("unid");
-			if (!uniqueId) return;
+			const isFolder = element.classList.contains("folder");
+			if (!uniqueId && !isFolder) return;
+
 			const files = Array.from(document.querySelectorAll(".file[unid]"));
 			const idx = files.indexOf(element);
+
+			if (isFolder) {
+				const isAlreadySelected = element.id === "slfile";
+
+				selectedFiles = [];
+				lastSelectedIndex = null;
+				document.querySelectorAll(".multisel").forEach(el => el.classList.remove("multisel"));
+
+				if (isAlreadySelected) {
+					listFiles(element.getAttribute("path"));
+					return;
+				}
+
+				updateSelectedFileElement(element, uniqueId);
+				showFolderInfo(element);
+				document.getElementById("fileinfobn").innerHTML = "Folder";
+				return;
+			}
 
 			if (event?.shiftKey && lastSelectedIndex !== null) {
 				const [start, end] = [lastSelectedIndex, idx].sort((a, b) => a - b);
@@ -1749,26 +1770,16 @@
 			}
 
 			files.forEach(el => el.classList.toggle("multisel", selectedFiles.includes(el.getAttribute("unid"))));
-
-			const isSelected = element.id === "slfile";
 			if (!param) param = uniqueId;
 
+			const isSelected = element.id === "slfile";
 			if (isSelected) {
-				if (element.classList.contains("folder")) {
-					listFiles(element.getAttribute("path"));
-					return;
-				}
 				if (sessiontype === "opener") choosefile(); else openfile(param);
 				return;
 			}
 
 			updateSelectedFileElement(element, uniqueId);
-			if (element.classList.contains("folder")) {
-				showFolderInfo(element);
-				document.getElementById("fileinfobn").innerHTML = "Folder";
-			} else {
-				await handleFileSelection(uniqueId);
-			}
+			await handleFileSelection(uniqueId);
 		}
 
 
