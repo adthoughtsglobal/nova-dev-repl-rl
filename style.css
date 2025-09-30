@@ -76,10 +76,10 @@ dialog {
 	display: flex;
 	flex-direction: column;
 	height: 100%;
-}
 
-#maxappscontainer {
-	flex: 1;
+	&>#maxappscontainer {
+		flex: 1;
+	}
 }
 
 nav {
@@ -1775,10 +1775,34 @@ div#seapppreview {
 	.window {
 		resize: none;
 		border-radius: 0;
-		max-height: calc(100vh - 72px);
+		height: 100% !important;
+		position: static !important;
+		min-width: 100vw !important;
+		scroll-snap-align: start;
+        flex-direction: column-reverse;
 		&>.windowheader {
 			border-radius: 0;
 		}
+
+		&>.windowcontent {
+			border-radius: 0;
+		}
+
+		&>.resizer {
+			display: none;
+		}
+	}
+
+	#windowscont {
+		display: flex;
+		overflow-x: auto;
+		overflow-y: hidden;
+		flex-direction: row;
+		height: 100%;
+		width: 100%;
+		overflow-x: auto;
+		scroll-snap-type: x mandatory;
+		-webkit-overflow-scrolling: touch;
 	}
 
 	nav {

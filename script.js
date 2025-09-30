@@ -1091,13 +1091,7 @@ async function loadtaskspanel() {
 		.map(([winID, data]) => data.title + winID);
 
 	let now = performance.now();
-	if (window.innerWidth < 768) {
-		appbarelement.onclick = () => {
-			let appIds = validKeys.map(k => winds[k.slice(-12)]?.appid);
-			appGroupModal("", appIds);
-		}
-		appbarelement.innerHTML = "MANY"
-		appbarelement.style.display = "flex";
+	if (window.innerWidth < 500) {
 		return
 	} else {
 		appbarelement.onclick = null;

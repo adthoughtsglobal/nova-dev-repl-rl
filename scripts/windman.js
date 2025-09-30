@@ -266,7 +266,7 @@ function attachResizeHandlers(windowDiv) {
 }
 
 function finalizeWindow(windowDiv, winuid) {
-    document.body.appendChild(windowDiv);
+    document.getElementById("windowscont").appendChild(windowDiv);
     console.log(windowDiv)
 
     const zIndexes = Object.values(winds).map(w => Number(w.zIndex) || 0);
