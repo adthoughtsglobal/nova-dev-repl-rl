@@ -99,7 +99,7 @@ function createHeaderControls(winuid, windowDiv) {
     const controlsContainer = document.createElement("div");
     controlsContainer.className = "ibtnsside";
 
-    const isMobile = matchMedia('(pointer: coarse)').matches;
+    const isMobile = matchMedia('(max-width: 500px)').matches;
 
     const createButton = (title, icon, ...classes) => {
         const button = document.createElement("button");

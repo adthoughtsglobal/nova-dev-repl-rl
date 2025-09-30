@@ -380,7 +380,11 @@ async function openn() {
 		gid("closeallwinsbtn").setAttribute("disabled", false);
 	}
 
+	const isMobile = matchMedia('(max-width: 500px)').matches;
+
 	gid("appdmod").showModal();
+	if (isMobile)
+		document.activeElement.blur()
 }
 async function loadrecentapps() {
 	gid("serrecentapps").innerHTML = ``
