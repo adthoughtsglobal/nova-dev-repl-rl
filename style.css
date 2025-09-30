@@ -1779,7 +1779,8 @@ div#seapppreview {
 		position: static !important;
 		min-width: 100vw !important;
 		scroll-snap-align: start;
-        flex-direction: column-reverse;
+		flex-direction: column-reverse;
+
 		&>.windowheader {
 			border-radius: 0;
 		}
@@ -1795,14 +1796,22 @@ div#seapppreview {
 
 	#windowscont {
 		display: flex;
-		overflow-x: auto;
+		overflow-x: clip;
 		overflow-y: hidden;
 		flex-direction: row;
 		height: 100%;
 		width: 100%;
-		overflow-x: auto;
 		scroll-snap-type: x mandatory;
 		-webkit-overflow-scrolling: touch;
+
+		&.reselector {
+				overflow-x: auto;
+			.window {
+				transform: scale(.9);
+				min-width: 70% !important;
+				width: 70% !important;
+			}
+		}
 	}
 
 	nav {

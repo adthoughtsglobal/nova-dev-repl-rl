@@ -1091,10 +1091,25 @@ async function loadtaskspanel() {
 		.map(([winID, data]) => data.title + winID);
 
 	let now = performance.now();
-	if (window.innerWidth < 500) {
+	if ((window.innerWidth < 500) && validKeys.length > 0) {
+		let appShortcutDiv = document.createElement("div");
+		appShortcutDiv.className = "app-shortcut ctxAvail tooltip adock sizableuielement";
+
+		appShortcutDiv.addEventListener("click", () => {
+			gid("windowscont").classList.toggle("reselector");
+		});
+
+		let iconSpan = document.createElement("span");
+		iconSpan.classList.add("appicnspan");
+		iconSpan.innerHTML = `<span ic class="material-symbols-rounded directxicons">
+								select_window
+							</span>`
+
+		appShortcutDiv.appendChild(iconSpan);
+		appbarelement.innerHTML = "";
+		appbarelement.appendChild(appShortcutDiv)
+		appbarelement.style.display = "flex";
 		return
-	} else {
-		appbarelement.onclick = null;
 	}
 
 
