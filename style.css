@@ -1775,11 +1775,12 @@ div#seapppreview {
 	.window {
 		resize: none;
 		border-radius: 0;
-		height: 100% !important;
+		height: 100%;
 		position: static !important;
 		min-width: 100vw !important;
-		scroll-snap-align: start;
+		scroll-snap-align: center;
 		flex-direction: column-reverse;
+		transition: var(--time2);
 
 		&>.windowheader {
 			border-radius: 0;
@@ -1803,13 +1804,24 @@ div#seapppreview {
 		width: 100%;
 		scroll-snap-type: x mandatory;
 		-webkit-overflow-scrolling: touch;
+		transition: .3s ease-out;
 
 		&.reselector {
-				overflow-x: auto;
-			.window {
+			overflow-x: auto;
+			padding: 0 2em;
+			width: calc(100% - 4em);
+
+			&>.window {
 				transform: scale(.9);
 				min-width: 70% !important;
 				width: 70% !important;
+				border-radius: 1em;
+				overflow: hidden;
+				aspect-ratio: 9/6;
+				&>.windowcontent {
+					
+				pointer-events: none;
+				}
 			}
 		}
 	}

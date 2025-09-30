@@ -69,7 +69,7 @@ function createWindowShell(winuid, appid) {
 
     const windowLoader = document.createElement("div");
     windowLoader.className = "windowloader";
-    setTimeout(async ()=> {if (!(await getSetting("windowloader"))) {windowLoader.style.opacity = "0";}}, 0);
+    setTimeout(async () => { if (!(await getSetting("windowloader"))) { windowLoader.style.opacity = "0"; } }, 0);
     const loaderSpinner = document.createElement("div");
     loaderSpinner.className = "loader33";
     windowLoader.appendChild(loaderSpinner);
@@ -140,8 +140,8 @@ function createHeaderControls(winuid, windowDiv) {
 }
 
 async function applyWindowAppearance(windowDiv, header, theme, aspectratio) {
-    const isMobile = matchMedia('(pointer: coarse)').matches;
-    const sizeStyles = !isMobile ? calculateWindowSize(aspectratio) : { left: '0', top: '0', width: 'calc(100% - 0px)', height: 'calc(100% - 58px)' };
+    const isMobile = matchMedia('(max-width: 500px)').matches;
+    const sizeStyles = !isMobile ? calculateWindowSize(aspectratio) : { left: '0', top: '0', width: 'calc(100% - 0px)' };
     Object.assign(windowDiv.style, sizeStyles);
 
     let bgColor = await getSetting("WindowBgColor");
@@ -296,8 +296,8 @@ function resetWindow(id) {
 function maximizeWindow(id) {
     updateNavSize();
     const x = document.getElementById("window" + id);
-   suppressNudge = true;
-x.classList.add("snapping");
+    suppressNudge = true;
+    x.classList.add("snapping");
     x.style.width = "calc(100% - 0px)";
     x.style.height = "calc(100% - " + navheight + "px)";
     x.style.top = "0";
@@ -307,9 +307,9 @@ x.classList.add("snapping");
     winds[id]["visualState"] = "fullscreen";
 
     setTimeout(() => {
-    x.classList.remove("snapping");
-    suppressNudge = false;
-}, 1000);
+        x.classList.remove("snapping");
+        suppressNudge = false;
+    }, 1000);
 }
 
 let suppressNudge = false;
@@ -350,10 +350,10 @@ async function checksnapping(x, event, winuid) {
     if (event.target.closest('.ibtnsside')) return;
     updateNavSize();
     const [wsnappingSetting, keepVisibleSetting] = await Promise.all([
-    getSetting("wsnapping"),
-    getSetting("keepvisible")
-]);
-sessionSettings.keepvisible = keepVisibleSetting;
+        getSetting("wsnapping"),
+        getSetting("keepvisible")
+    ]);
+    sessionSettings.keepvisible = keepVisibleSetting;
     const logData = {
         x: x,
         eventType: event.type,
@@ -361,7 +361,7 @@ sessionSettings.keepvisible = keepVisibleSetting;
         cursorY: event.clientY,
         viewportWidth: window.innerWidth,
         viewportHeight: window.innerHeight,
-        wsnappingSetting:wsnappingSetting
+        wsnappingSetting: wsnappingSetting
     };
 
 
@@ -399,24 +399,24 @@ sessionSettings.keepvisible = keepVisibleSetting;
             maximizeWindow(winuid);
         } else if (logData.cursorX < VWInPixels) {
             suppressNudge = true;
-x.classList.add("snapping");
+            x.classList.add("snapping");
             x.style = `left: 0; top: 0; width: calc(50% - 0px); height: calc(100% - ${navheight}px);`;
             x.getElementsByClassName("flbtn")[0].innerHTML = "open_in_full";
             winds[winuid]["visualState"] = "snapped";
             setTimeout(() => {
-    x.classList.remove("snapping");
-    suppressNudge = false;
-}, 1000);
+                x.classList.remove("snapping");
+                suppressNudge = false;
+            }, 1000);
         } else if ((logData.viewportWidth - logData.cursorX) < VWInPixels) {
             suppressNudge = true;
-x.classList.add("snapping");
+            x.classList.add("snapping");
             x.style = `right: 0; top: 0; width: calc(50% - 0px); height: calc(100% - ${navheight}px);`;
             x.getElementsByClassName("flbtn")[0].innerHTML = "open_in_full";
             winds[winuid]["visualState"] = "snapped";
             setTimeout(() => {
-    x.classList.remove("snapping");
-    suppressNudge = false;
-}, 1000);
+                x.classList.remove("snapping");
+                suppressNudge = false;
+            }, 1000);
         }
     }
 
