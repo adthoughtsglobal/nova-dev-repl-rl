@@ -1091,6 +1091,18 @@ async function loadtaskspanel() {
 		.map(([winID, data]) => data.title + winID);
 
 	let now = performance.now();
+	if (window.innerWidth < 768) {
+		appbarelement.onclick = () => {
+			let appIds = validKeys.map(k => winds[k.slice(-12)]?.appid);
+			appGroupModal("", appIds);
+		}
+		appbarelement.innerHTML = "MANY"
+		appbarelement.style.display = "flex";
+		return
+	} else {
+		appbarelement.onclick = null;
+	}
+
 
 	for (let element of currentShortcuts) {
 		let key = element.dataset.key;
@@ -1189,7 +1201,7 @@ eventBusWorker.listen({
 	key: "wall",
 	callback: () => {
 		console.log(342423424)
-		setTimeout(()=>{loadSessionSettings();renderWall()}, 1500)
+		setTimeout(() => { loadSessionSettings(); renderWall() }, 1500)
 	}
 });
 async function initializeOS() {
@@ -2186,6 +2198,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 });
 
 async function appGroupModal(name, list) {
+	console.log(list)
 	const modal = gid("appgrpmodal");
 	const listElement = gid("appgrp_list");
 	const heading = gid("appgrp_name");
@@ -2204,33 +2217,36 @@ async function appGroupModal(name, list) {
 	}
 
 	list.forEach(async (appid) => {
-		let app = await getFileById(appid, "fileName");
+		try {
+			let app = await getFileById(appid, "fileName");
 
-		var appShortcutDiv = document.createElement("div");
-		appShortcutDiv.className = "app-shortcut sizableuielement";
-		appShortcutDiv.setAttribute("unid", app.id || '');
-		appShortcutDiv.dataset.appId = app.id;
-		appShortcutDiv.addEventListener("click", () => openfile(app.id));
+			var appShortcutDiv = document.createElement("div");
+			appShortcutDiv.className = "app-shortcut sizableuielement";
+			appShortcutDiv.setAttribute("unid", app.id || '');
+			appShortcutDiv.dataset.appId = app.id;
+			appShortcutDiv.addEventListener("click", () => openfile(app.id));
 
-		var iconSpan = document.createElement("span");
-		iconSpan.classList.add("appicnspan");
-		iconSpan.innerHTML = "<span class='taskbarloader'></span>";
-		getAppIcon(false, app.id).then((appIcon) => {
-			iconSpan.innerHTML = appIcon;
-		});
+			var iconSpan = document.createElement("span");
+			iconSpan.classList.add("appicnspan");
+			iconSpan.innerHTML = "<span class='taskbarloader'></span>";
+			getAppIcon(false, app.id).then((appIcon) => {
+				iconSpan.innerHTML = appIcon;
+			});
 
-		function getapnme(x) {
-			return x.split(".")[0];
-		}
+			function getapnme(x) {
+				return x.split(".")[0];
+			}
 
-		var nameSpan = document.createElement("span");
-		nameSpan.className = "appname";
-		nameSpan.textContent = getapnme(app.fileName);
+			var nameSpan = document.createElement("span");
+			nameSpan.className = "appname";
+			nameSpan.textContent = getapnme(app.fileName);
 
-		appShortcutDiv.appendChild(iconSpan);
-		appShortcutDiv.appendChild(nameSpan);
+			appShortcutDiv.appendChild(iconSpan);
+			appShortcutDiv.appendChild(nameSpan);
 
-		listElement.appendChild(appShortcutDiv);
+			listElement.appendChild(appShortcutDiv);
+		} catch (err) { console.error(err) }
+
 	})
 }
 
