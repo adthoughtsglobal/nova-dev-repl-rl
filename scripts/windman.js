@@ -142,6 +142,13 @@ function createHeaderControls(winuid, windowDiv) {
 async function applyWindowAppearance(windowDiv, header, theme, aspectratio) {
     const isMobile = matchMedia('(max-width: 500px)').matches;
     const sizeStyles = !isMobile ? calculateWindowSize(aspectratio) : { left: '0', top: '0', width: 'calc(100% - 0px)' };
+    if (isMobile) {
+        windowDiv.addEventListener("click", () => {
+            if ([...gid("windowscont").classList].includes("reselector")) {
+                gid("windowscont").classList.toggle("reselector");
+            }
+        })
+    }
     Object.assign(windowDiv.style, sizeStyles);
 
     let bgColor = await getSetting("WindowBgColor");
