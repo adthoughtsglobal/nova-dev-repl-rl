@@ -1270,7 +1270,8 @@ async function initializeOS() {
 				let textcontentwelcome = await fetch("appdata/welcome.html");
 				textcontentwelcome = await textcontentwelcome.text();
 				await createFile('Downloads/', 'Welcome.html', 'html', textcontentwelcome)
-				notify("Welcome to NovaOS, " + CurrentUsername + "!", "I really think you'd enjoy it!", "NovaOS")
+				notify("Welcome to NovaOS, " + CurrentUsername + "!", "I really think you'd enjoy it!", "NovaOS");
+				setSetting("narrowMode", matchMedia('(max-width: 500px)').matches);
 				initialization = false;
 			})
 	})
@@ -2183,8 +2184,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 				badlaunch = true;
 			}
 		});
-
-		setSetting("narrowMode", matchMedia('(max-width: 500px)').matches)
 	}
 
 	startfunctions();
