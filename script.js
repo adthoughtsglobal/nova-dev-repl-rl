@@ -322,6 +322,8 @@ async function openn() {
 
 	initmenuload = false;
 
+	const isMobile = await getSetting("narrowMode");
+
 	let existingAppElements = [...gid("appsindeck").children];
 	let existingAppIds = new Set(existingAppElements.map((child) => child.dataset.appId));
 	let newAppIds = new Set(x.map((app) => app.id));
@@ -380,11 +382,15 @@ async function openn() {
 		gid("closeallwinsbtn").setAttribute("disabled", false);
 	}
 
-	const isMobile = matchMedia('(max-width: 500px)').matches;
-
-	gid("appdmod").showModal();
-	if (isMobile)
-		document.activeElement.blur()
+	if (isMobile) {
+		const el = gid("windowscont");
+		if (el.classList.contains("reselector")) {
+			el.classList.toggle("hidden")
+			document.activeElement.blur()
+		} else {
+			gid("appdmod").showModal();
+		}
+	}
 }
 async function loadrecentapps() {
 	gid("serrecentapps").innerHTML = ``
@@ -1100,7 +1106,12 @@ async function loadtaskspanel() {
 		appShortcutDiv.className = "app-shortcut ctxAvail tooltip adock sizableuielement";
 
 		appShortcutDiv.addEventListener("click", () => {
-			gid("windowscont").classList.toggle("reselector");
+			const el = gid("windowscont");
+			el.classList.toggle("reselector");
+
+			if (el.classList.contains("hidden")) {
+				el.classList.remove("hidden")
+			};
 		});
 
 		let iconSpan = document.createElement("span");
@@ -2172,6 +2183,8 @@ document.addEventListener("DOMContentLoaded", async function () {
 				badlaunch = true;
 			}
 		});
+
+		setSetting("narrowMode", matchMedia('(max-width: 500px)').matches)
 	}
 
 	startfunctions();

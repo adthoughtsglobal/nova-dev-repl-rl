@@ -116,7 +116,7 @@
 			margin-left: 10px;
 		}
 
-		
+
 
 		h1 {
 			font-weight: normal;
@@ -543,6 +543,7 @@
 				flex-direction: row;
 				justify-content: space-between;
 				margin: 1em 0;
+				gap: .5em;
 				align-items: center;
 			}
 
@@ -941,6 +942,7 @@
 				flex-direction: column;
 				height: 50vh;
 				overflow: hidden;
+
 				&>* {
 					width: 100%;
 				}
@@ -959,6 +961,18 @@
 
 			#navSearch {
 				display: none;
+			}
+
+			.installerappbasedata {
+				flex-direction: column !important;
+
+				&>div {
+					width: 100%;
+				}
+
+				& .dostuffwithit > button {
+					flex: 1;
+				}
 			}
 		}
 

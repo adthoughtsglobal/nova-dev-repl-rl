@@ -500,7 +500,7 @@ async function openwindow(title, cont, ic, theme, aspectratio, appid, params) {
     const { windowDiv, windowHeader, windowContent, windowLoader, loaderSpinner } = createWindowShell(winuid, appid);
 
     populateWindowHeader(windowHeader, title, ic, winuid);
-    const controls = createHeaderControls(winuid, windowDiv);
+    const controls = await createHeaderControls(winuid, windowDiv);
     windowHeader.appendChild(controls);
 
     await applyWindowAppearance(windowDiv, windowHeader, theme, aspectratio);

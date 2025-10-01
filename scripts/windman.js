@@ -95,11 +95,11 @@ function populateWindowHeader(header, title, ic, winuid) {
     header.appendChild(dataSpan);
 }
 
-function createHeaderControls(winuid, windowDiv) {
+async function createHeaderControls(winuid, windowDiv) {
     const controlsContainer = document.createElement("div");
     controlsContainer.className = "ibtnsside";
 
-    const isMobile = matchMedia('(max-width: 500px)').matches;
+    let isMobile = await getSetting("narrowMode");
 
     const createButton = (title, icon, ...classes) => {
         const button = document.createElement("button");
@@ -140,14 +140,18 @@ function createHeaderControls(winuid, windowDiv) {
 }
 
 async function applyWindowAppearance(windowDiv, header, theme, aspectratio) {
-    const isMobile = matchMedia('(max-width: 500px)').matches;
+    const isMobile = await getSetting("narrowMode");
     const sizeStyles = !isMobile ? calculateWindowSize(aspectratio) : { left: '0', top: '0', width: 'calc(100% - 0px)' };
     if (isMobile) {
-        windowDiv.addEventListener("click", () => {
-            if ([...gid("windowscont").classList].includes("reselector")) {
-                gid("windowscont").classList.toggle("reselector");
+        const handler = () => {
+            const el = gid("windowscont");
+            windowDiv.scrollIntoView({ behavior: "auto", inline: "center" });
+            if (el.classList.contains("reselector")) {
+                el.classList.toggle("reselector")
             }
-        })
+        };
+        windowDiv.addEventListener("click", handler);
+
     }
     Object.assign(windowDiv.style, sizeStyles);
 
@@ -272,9 +276,14 @@ function attachResizeHandlers(windowDiv) {
     });
 }
 
-function finalizeWindow(windowDiv, winuid) {
+async function finalizeWindow(windowDiv, winuid) {
     document.getElementById("windowscont").appendChild(windowDiv);
-    console.log(windowDiv)
+
+    const isMobile = await getSetting("narrowMode");
+    if (isMobile) {
+        const container = document.querySelector('#windowscont');
+        container.scrollLeft = container.scrollWidth;
+    }
 
     const zIndexes = Object.values(winds).map(w => Number(w.zIndex) || 0);
     const maxZ = Math.max(0, ...zIndexes);

@@ -1763,13 +1763,26 @@ div#seapppreview {
 
 	#appdmod,
 	#searchwindow {
-		width: 100%;
+		width: calc(100% - 45px);
 		height: calc(100vh - 100px);
 		padding: 22px;
 		bottom: 10px;
 		box-shadow: none;
 		border-radius: 0;
 		max-height: none;
+	}
+
+	.searchwincont {
+		flex-direction: column;
+
+		&>div {
+			width: 100%;
+		}
+
+		& > .previewsside {
+			margin-left: 0;
+			background: transparent;
+		}
 	}
 
 	.window {
@@ -1812,6 +1825,10 @@ div#seapppreview {
 			width: calc(100% - 4em);
 			align-items: center;
 			gap: 5px;
+
+			&.hidden {
+				display: none;
+			}
 
 			&>.window {
 				min-width: 90% !important;

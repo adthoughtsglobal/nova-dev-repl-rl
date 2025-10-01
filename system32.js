@@ -404,7 +404,7 @@ const pendingFetches = new Map();
 const settingCache = new Map();
 
 var sessionSettings = {};
-var sessionSettingKeys = ["wsnapping", "smartsearch", "keepvisible", "windowoutline"];
+var sessionSettingKeys = ["wsnapping", "smartsearch", "keepvisible", "windowoutline", "narrowMode"];
 let sessionSettingsLoaded = false;
 
 async function loadSessionSettings(fileName = "preferences.json", dirPath = "System/") {
