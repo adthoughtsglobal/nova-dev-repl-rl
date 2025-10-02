@@ -393,7 +393,7 @@ class RoturExtension {
 
     const e = document.createElement("iframe");
     e.id = "rotur-auth";
-    e.src = `https://rotur.dev/auth?styles=${encodeURIComponent(STYLE_URL)}`;
+    e.src = `https://rotur.dev/auth?system=novaOS&styles=${encodeURIComponent(STYLE_URL)}`;
     Object.assign(e.style, {
       width: "70%",
       height: "80%",

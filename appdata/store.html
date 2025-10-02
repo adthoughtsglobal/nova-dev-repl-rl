@@ -506,8 +506,7 @@
 				display: flex;
 				flex-direction: row;
 				align-items: stretch;
-				gap: 1px;
-				border-radius: var(--siz-radius1);
+				gap: .2em;
 				overflow: hidden;
 				height: fit-content;
 
@@ -516,10 +515,23 @@
 					border: none;
 					padding: .5em 1em;
 					min-width: 5.5em;
-					background-color: #43A047 !important;
+					border: 1px solid var(--col-bgh);
+					background-color: var(--col-bg2);
+					border-radius: var(--siz-radius1);
 
 					&:hover {
-						background-color: #3c933c;
+						background-color: var(--col-bg3);
+					}
+
+					&#installButton,
+					&#openbtn,
+					&#updateButton {
+						border: 1px solid #43A047;
+						background-color: #43A047 !important;
+
+						&:hover {
+							background-color: #3c933c;
+						}
 					}
 				}
 			}
@@ -536,7 +548,6 @@
 					font-size: small;
 				}
 			}
-
 
 			.installerappbasedata {
 				display: flex;
@@ -970,7 +981,7 @@
 					width: 100%;
 				}
 
-				& .dostuffwithit > button {
+				& .dostuffwithit>button {
 					flex: 1;
 				}
 			}
@@ -1045,10 +1056,10 @@
 
 					</div>
 					<div class="dostuffwithit">
-						<button id="openbtn">Open</button>
 						<button id="removeButton">Uninstall</button>
-						<button id="installButton">Install</button>
+						<button id="openbtn">Open</button>
 						<button id="updateButton">Update</button>
+						<button id="installButton">Install</button>
 					</div>
 				</div>
 				<p id="installerappdesc">...</p>

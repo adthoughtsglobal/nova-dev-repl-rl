@@ -531,26 +531,22 @@
 				});
 			}
 
-			function makeMenu(items) {
+			async function makeMenu(items) {
 				const dropdownMenu = document.getElementById("flamenu");
 				dropdownMenu.innerHTML = "";
-				let bannedActions = [
-					"Reinstall", "appSettings"
-				]
-				items.forEach(item => {
-					if (bannedActions.includes((item.label))) {
-						return;
+				const file = await window.parent.getFileById(crntimg);
+				await Promise.all(items.map(async item => {
+					if (await item.condition(file)) {
+						const menuItem = document.createElement('div');
+						menuItem.innerHTML = `<span class="material-symbols-rounded">${item.icon || ""}</span>
+        <span class="tooltiptext">${item.label}</span>`;
+						menuItem.classList.add('flamenuitem', 'tooltip', 'smoothtltp');
+						menuItem.addEventListener('click', () => item.action(crntimg));
+						dropdownMenu.appendChild(menuItem);
 					}
-					const menuItem = document.createElement('div');
-					menuItem.innerHTML = `<span class="material-symbols-rounded">${item.icon || ""}</span>
-        <span class=" tooltiptext">${item.label}</span>`;
-					menuItem.classList.add('flamenuitem', 'tooltip', 'smoothtltp');
-					menuItem.addEventListener('click', () => {
-						item.action(crntimg);
-					});
-					dropdownMenu.appendChild(menuItem);
-				});
+				}));
 			}
+
 
 
 		</script>
