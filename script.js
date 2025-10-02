@@ -387,10 +387,11 @@ async function openn() {
 		if (el.classList.contains("reselector")) {
 			el.classList.toggle("hidden")
 			document.activeElement.blur()
-		} else {
-			gid("appdmod").showModal();
+			return;
 		}
+		gid("appdmod").showModal();
 	}
+	gid("appdmod").showModal();
 }
 async function loadrecentapps() {
 	gid("serrecentapps").innerHTML = ``
