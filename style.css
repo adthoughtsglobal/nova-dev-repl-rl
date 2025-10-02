@@ -1760,6 +1760,22 @@ div#seapppreview {
 }
 
 @media only screen and (max-width: 500px) {
+	#lazarus {
+		font-size: 3em !important;
+		text-align: center;
+		position: relative;
+		&>span {
+			width: 100% !important;
+            position: absolute !important;
+            bottom: 0;
+            width: 100% !important;
+            left: 0;
+		}
+	}
+
+	#lazarus-title {
+		font-size: 1em;
+	}
 
 	#appdmod,
 	#searchwindow {
@@ -1779,7 +1795,7 @@ div#seapppreview {
 			width: 100%;
 		}
 
-		& > .previewsside {
+		&>.previewsside {
 			margin-left: 0;
 			background: transparent;
 		}
