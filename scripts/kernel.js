@@ -246,7 +246,6 @@ class NTXSession {
                     }
                 } else {
                     if (this.pendingRequests[s]) {
-                        console.log(45, t.data.result, s)
                         d ? this.pendingRequests[s].resolve(t.data.result) : this.pendingRequests[s].reject(r);
                         delete this.pendingRequests[s];
                     }
@@ -256,6 +255,7 @@ class NTXSession {
             }
         });
     }
+        
     generateTransactionId() {
         return \`txn_\${Date.now()}_\${this.transactionIdCounter++}\`;
     }
@@ -267,8 +267,19 @@ class NTXSession {
         });
     }
 }
+
 var ntxSession = new NTXSession();
-    console.log("this frame is responding");
+
+const ntx = new Proxy({}, {
+    get(_, category) {
+        return new Proxy({}, {
+            get(_, action) {
+                return (...args) => ntxSession.send(\`\${category}.\${action}\`, ...args);
+            }
+        });
+    }
+});
+
 </script>`;
     const html = `<!DOCTYPE html><html><head><meta charset="utf-8"></head><body>${contentString}${ntxScript}<script defer>window.parent.postMessage({type:"iframeReady",windowID:"${winuid}"}, "*");</script></body></html>`;
     return new Blob([html], { type: 'text/html' });
@@ -354,32 +365,17 @@ window.addEventListener("message", async e => {
         styleTag.textContent = e.data.css;
     }
 });
-
 class NTXSession {
     constructor() {
         this.transactionIdCounter = 0;
         this.pendingRequests = {};
         this.listeners = {};
         const chunks = {};
-
         window.addEventListener("message", t => {
-            const {
-                transactionId: s,
-                chunk: n,
-                chunkIndex: i,
-                totalChunks: o,
-                isJson: a,
-                success: d,
-                error: r,
-                type: c,
-                payload: l
-            } = t.data;
-
+            const { transactionId: s, chunk: n, chunkIndex: i, totalChunks: o, isJson: a, success: d, error: r, type: c, payload: l } = t.data;
             if (s && typeof d === "boolean") {
                 if (a && n !== undefined) {
-                    if (!chunks[s]) {
-                        chunks[s] = { chunks: [], received: 0, total: o };
-                    }
+                    if (!chunks[s]) chunks[s] = { chunks: [], received: 0, total: o };
                     chunks[s].chunks[i] = n;
                     chunks[s].received++;
                     if (chunks[s].received === o) {
@@ -393,7 +389,6 @@ class NTXSession {
                     }
                 } else {
                     if (this.pendingRequests[s]) {
-                        console.log(45,t.data.result, s)
                         d ? this.pendingRequests[s].resolve(t.data.result) : this.pendingRequests[s].reject(r);
                         delete this.pendingRequests[s];
                     }
@@ -403,28 +398,30 @@ class NTXSession {
             }
         });
     }
-
+        
     generateTransactionId() {
         return \`txn_\${Date.now()}_\${this.transactionIdCounter++}\`;
     }
-
     send(action, ...params) {
-                        console.log(45, action)
         return new Promise((resolve, reject) => {
             const txnId = this.generateTransactionId();
             this.pendingRequests[txnId] = { resolve, reject };
-            window.parent.postMessage({
-                transactionId: txnId,
-                action: action,
-                params: params,
-                iframeId: '${winuid}'
-            }, "*");
+            window.parent.postMessage({ transactionId: txnId, action: action, params: params, iframeId: '${winuid}' }, "*");
         });
     }
 }
 
 var ntxSession = new NTXSession();
-    console.log("this regular frame is responding");
+
+const ntx = new Proxy({}, {
+    get(_, category) {
+        return new Proxy({}, {
+            get(_, action) {
+                return (...args) => ntxSession.send(\`\${category}.\${action}\`, ...args);
+            }
+        });
+    }
+});
 
 const eventBus = (() => {
     const listeners = [];

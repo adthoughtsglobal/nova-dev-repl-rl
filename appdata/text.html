@@ -108,12 +108,10 @@
         var currentMime = 'text/plain';
         var currentreqID = null;
 
-        var ntxSession;
         async function openfromfiles() {
             document.getElementById("thedisplay").value = "Waiting for you to open a file...";
-            const fileID = await ntxSession.send("olp.useHandler", "file_manager", { "opener": 'any', "dir": "Downloads/" });
-            const file = await ntxSession.send("fileGet.byId", fileID);
-            console.log(4534, fileID, file)
+            const fileID = await ntx.olp.useHandler( "file_manager", { "opener": 'any', "dir": "Downloads/" });
+            const file = await ntx.fileGet.byId(fileID);
             readthefile(file);
         }
 

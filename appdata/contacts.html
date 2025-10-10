@@ -196,7 +196,7 @@
         #userData {
             display: grid;
             gap: .3em;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 2fr));
+            grid-template-columns: repeat(auto-fit, minmax(250px, 2fr));
             padding: .8em;
         }
 
@@ -234,7 +234,7 @@
             position: absolute;
             bottom: 1em;
             right: 1em;
-            width:fit-content;
+            width: fit-content;
         }
     </style>
 
@@ -278,7 +278,7 @@
         </div>
         <div id="userData">
             <div class="field">
-                <span>Email</span>
+                <span>Note</span>
                 <input placeholder="value">
             </div>
             <div class="field">
@@ -286,17 +286,51 @@
                 <input placeholder="value">
             </div>
             <div class="field">
-                <span>Email</span>
+                <span>Discord</span>
+                <input placeholder="value">
+            </div>
+            <div class="field">
+                <span>Rotur user</span>
                 <input placeholder="value">
             </div>
 
         </div>
-            <div class="addnew">
-                <i class="material-symbols-rounded">add</i>
-            </div>
+        <div class="addnew">
+            <i class="material-symbols-rounded">add</i>
+        </div>
     </div>
     <script>
+        var contacts = {
+            "darkdot": {
+                "note": "omg darkie",
+                "email": "hi@hello.com",
+                "discord": "dark.dot",
+                "rotur": "darkdot"
+            },
+            "nova": {
+                "email": "hi@nova.com",
+                "discord": "novaos",
+                "rotur": "nova"
+            }
+        }
 
+        var userslist = document.getElementById("userslist");
+            userslist.innerHTML = '';
+        Object.keys(contacts).forEach((key) => {
+            let desc = (contacts[key].note) ? contacts[key].note: Object.values(contacts[key])[0];
+            const code = `<div class="pfppart">
+                    <img
+                        src="https://cdn.vectorstock.com/i/500p/97/68/account-avatar-dark-mode-glyph-ui-icon-vector-44429768.jpg">
+                </div>
+                <div class="datapart">
+                    <div class="name">${key}</div>
+                    <div class="desc">${desc}</div>
+                </div>`;
+            const elem = document.createElement("div");
+            elem.classList.add("user");
+            elem.innerHTML = code;
+            userslist.appendChild(elem);
+        })
     </script>
 </body>
 
